@@ -49,11 +49,11 @@
     vec3 coreParticleRange()
     {
     #if defined(_CORE_OPTION_NO_ROTATION_)
-        return coreTranspose(coreMat4to3(u_m4Camera)) * vec3(a_v2LowPosition * a_v1DivScale, 0.0);
+        return vec3(a_v2LowPosition * a_v1DivScale, 0.0) * coreMat4to3(u_m4Camera);
     #else
         float v1Sin = sin(a_v1DivAngle);
         float v1Cos = cos(a_v1DivAngle);
-        return coreTranspose(coreMat4to3(u_m4Camera)) * vec3(mat2(v1Cos, v1Sin, -v1Sin, v1Cos) * (a_v2LowPosition * a_v1DivScale), 0.0);
+        return vec3(mat2(v1Cos, v1Sin, -v1Sin, v1Cos) * (a_v2LowPosition * a_v1DivScale), 0.0) * coreMat4to3(u_m4Camera);
     #endif
     }
 

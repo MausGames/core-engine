@@ -835,9 +835,12 @@ void coreData::SetCommandLine(const coreInt32 iArgc, const coreChar* const* ppcA
 /* log all current environment variables */
 void coreData::LogEnvironment()
 {
+#if defined(_CORE_MACOS_)
+    extern coreChar** environ;
+#endif
+
     Core::Log->ListStartInfo("Environment Variables");
     {
-        extern coreChar** environ;
         for(coreChar** ppcEnviron = environ; (*ppcEnviron); ++ppcEnviron)
         {
             const coreChar* pcAssign = std::strchr((*ppcEnviron), '=');
@@ -2068,19 +2071,19 @@ coreFloat coreData::StrVersion(const coreChar* pcInput)
 
 // ****************************************************************
 /* copy string into another buffer */
-coreBool coreData::StrCopy(coreChar* OUTPUT pcOutput, const coreUintW iMaxSize, const coreChar* pcInput)
+coreBool coreData::StrCopy(coreChar* OUTPUT pcOutput, const coreUintW iOutputSize, const coreChar* pcInput, const coreUintW iNum)
 {
-    ASSERT(pcOutput && iMaxSize && pcInput)
+    ASSERT(pcOutput && iOutputSize && pcInput && (iNum <= std::strlen(pcInput)))
 
     // calculate string length
-    const coreUintW iInputLen  = std::strlen(pcInput);
-    const coreUintW iOutputLen = MIN(iInputLen, iMaxSize - 1u);
+    const coreUintW iInputLen  = iNum ? iNum : std::strlen(pcInput);
+    const coreUintW iOutputLen = MIN(iInputLen, iOutputSize - 1u);
 
     // copy string with guaranteed null-termination
     std::memcpy(pcOutput, pcInput, iOutputLen);
     pcOutput[iOutputLen] = '\0';
 
-    WARN_IF(iInputLen >= iMaxSize) return false;
+    WARN_IF(iInputLen >= iOutputSize) return false;
     return true;
 }
 

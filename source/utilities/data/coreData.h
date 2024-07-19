@@ -85,13 +85,13 @@ public:
     DISABLE_CONSTRUCTION(coreData)
 
     /* create formatted string */
-    static coreInt32 PrintBase (coreChar* OUTPUT pcOutput, const coreInt32 iMaxLen, SDL_PRINTF_FORMAT_STRING const coreChar* pcFormat, ...) SDL_PRINTF_VARARG_FUNC(3);
-    static coreInt32 PrintBaseV(coreChar* OUTPUT pcOutput, const coreInt32 iMaxLen, const coreChar* pcFormat, va_list oArgs);
+    static coreInt32 PrintBase (coreChar* OUTPUT pcOutput, const coreInt32 iMaxLen, SDL_PRINTF_FORMAT_STRING const coreChar* pcFormat, ...)           SDL_PRINTF_VARARG_FUNC (3);
+    static coreInt32 PrintBaseV(coreChar* OUTPUT pcOutput, const coreInt32 iMaxLen, SDL_PRINTF_FORMAT_STRING const coreChar* pcFormat, va_list oArgs) SDL_PRINTF_VARARG_FUNCV(3);
     template <typename... A> static RETURN_RESTRICT const coreChar* Print(const coreChar* pcFormat, A&&... vArgs);
     static constexpr                RETURN_RESTRICT const coreChar* Print(const coreChar* pcFormat) {return pcFormat;}
 
     /* convert between trivial value and string */
-    template <typename T>                static const coreChar* ToChars  (const T& tValue);
+    template <typename T, typename... A> static const coreChar* ToChars  (const T& tValue,                                A&&... vArgs);
     template <typename T, typename... A> static T               FromChars(const coreChar* pcString, const coreUintW iLen, A&&... vArgs);
 
     /* get application properties */
@@ -199,7 +199,7 @@ public:
     static const coreChar*        StrDirectory(const coreChar* pcInput);
     static const coreChar*        StrExtension(const coreChar* pcInput);
     static coreFloat              StrVersion  (const coreChar* pcInput);
-    static coreBool               StrCopy     (coreChar* OUTPUT pcOutput, const coreUintW iMaxLen, const coreChar* pcInput);
+    static coreBool               StrCopy     (coreChar* OUTPUT pcOutput, const coreUintW iOutputSize, const coreChar* pcInput, const coreUintW iNum = 0u);
 
     /* operate with containers */
     template <typename T> static inline void Shuffle(const T& tBegin, const T& tEnd, const coreUint32 iSeed = std::time(NULL)) {std::shuffle(tBegin, tEnd, std::minstd_rand(iSeed));}
@@ -234,12 +234,12 @@ template <typename... A> RETURN_RESTRICT const coreChar* coreData::Print(const c
 
 // ****************************************************************
 /* convert trivial value to string */
-template <typename T> const coreChar* coreData::ToChars(const T& tValue)
+template <typename T, typename... A> const coreChar* coreData::ToChars(const T& tValue, A&&... vArgs)
 {
     coreChar* pcString = coreData::__NextTempString();
 
     // use high-performance conversion
-    const std::to_chars_result oResult = std::to_chars(pcString, pcString + CORE_DATA_STRING_LEN - 1u, tValue);
+    const std::to_chars_result oResult = std::to_chars(pcString, pcString + CORE_DATA_STRING_LEN - 1u, tValue, std::forward<A>(vArgs)...);
     WARN_IF(oResult.ec != std::errc()) return "";
 
     // always null-terminate
