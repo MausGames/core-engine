@@ -89,6 +89,7 @@ coreStatus coreFrameBuffer::Create(const coreVector2 vResolution, const coreFram
         case 0u: iAttachment = GL_DEPTH_ATTACHMENT;           break;
         case 1u: iAttachment = GL_STENCIL_ATTACHMENT;         break;
         }
+        if(pTarget->oSpec.iFormat == GL_DEPTH_STENCIL) iAttachment = GL_DEPTH_STENCIL_ATTACHMENT;
 
         if(pTarget->pTexture)
         {
@@ -130,8 +131,7 @@ coreStatus coreFrameBuffer::Create(const coreVector2 vResolution, const coreFram
             for(coreUintW i = 0u; i < CORE_SHADER_OUTPUT_COLORS; ++i)
             {
                 // check for available color attachments
-                if(m_aColorTarget[i].IsValid())
-                    aiAttachment[iNum++] = GL_COLOR_ATTACHMENT0 + i;
+                if(m_aColorTarget[i].IsValid()) aiAttachment[iNum++] = GL_COLOR_ATTACHMENT0 + i;
             }
             glDrawBuffers(iNum, aiAttachment);
         }
@@ -466,8 +466,7 @@ coreStatus coreFrameBuffer::Invalidate(const coreFrameBufferTarget eTargets)
             for(coreUintW i = 0u; i < CORE_SHADER_OUTPUT_COLORS; ++i)
             {
                 // check for available color attachments
-                if(m_aColorTarget[i].IsValid())
-                    aiAttachment[iNum++] = GL_COLOR_ATTACHMENT0 + i;
+                if(m_aColorTarget[i].IsValid()) aiAttachment[iNum++] = GL_COLOR_ATTACHMENT0 + i;
             }
         }
         if(HAS_FLAG(eTargets, CORE_FRAMEBUFFER_TARGET_DEPTH)   && m_DepthTarget  .IsValid()) aiAttachment[iNum++] = GL_DEPTH_ATTACHMENT;
@@ -505,8 +504,11 @@ coreFrameBuffer::coreRenderTarget* coreFrameBuffer::__AttachTarget(const coreFra
 {
     ASSERT(!m_iIdentifier && (iColorIndex < CORE_SHADER_OUTPUT_COLORS))
 
-    // only one color attachment supported
+    // check for multi color attachment support
     if(!CORE_GL_SUPPORT(EXT_draw_buffers) && (iColorIndex > 0u)) return NULL;
+
+    // check for packed depth-stencil support
+    if(!CORE_GL_SUPPORT(EXT_packed_depth_stencil) && (oSpec.iFormat == GL_DEPTH_STENCIL)) return NULL;
 
     // get requested render target structure
     coreRenderTarget* pTarget = NULL;
