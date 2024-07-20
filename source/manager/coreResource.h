@@ -13,9 +13,10 @@
 // TODO 3: call OnLoad directly after load instead with delayed function callback ?
 // TODO 4: resources exist only within handles, redefine all interfaces
 // TODO 5: investigate possible GPU memory fragmentation when streaming in and out lots of resources
-// TODO 1: defer resource-unload on ref-count 0 to an explicit call at the end of a frame, and expose explicit unload function (nullify?) -> can also be used for restart
 // TODO 3: set textures which are still loaded to default values (default_white.webp, default_normal.webp) "placeholder", as those do not prevent rendering (like models and shaders), and cause flickering (because textures of previous render-calls are used), but how to handle IsLoaded/IsUsable state for situations where components wait on textures, maybe set manually, or use LOAD option
 // TODO 3: set resources which could not be found (or loaded) to fallback values
+// TODO 3: CORE_OK for non-automatic resource-handle constructor and nullify might be wrong (as it gets marked as successful)
+// TODO 3: on startup, assigning shader handles to to the progams quickly increases and decreases the ref-count (back to 0)
 
 
 // ****************************************************************
@@ -86,8 +87,9 @@ private:
     coreFile*     m_pFile;                 // pointer to resource file
 
     coreString m_sName;                    // identifier of this resource handle
-    coreBool   m_bAutomatic;               // updated automatically by the resource manager
-    coreBool   m_bProxy;                   // resource proxy without own resource
+    coreBool   m_bAutomatic : 1;           // updated automatically by the resource manager
+    coreBool   m_bProxy     : 1;           // resource proxy without own resource
+    coreBool   m_bUnload    : 1;           // check if resource needs to be unloaded
 
     coreResourceIndex m_iIndex;            // unique resource index
 
@@ -114,7 +116,7 @@ public:
 
     /* control the reference-counter */
     inline void RefIncrease() {m_iRefCount.FetchAdd(1u); ASSERT(m_iRefCount)}
-    inline void RefDecrease() {ASSERT(m_iRefCount) if(!m_iRefCount.SubFetch(1u)) this->Nullify();}
+    inline void RefDecrease() {ASSERT(m_iRefCount) if(!m_iRefCount.SubFetch(1u)) m_bUnload = true;}
 
     /* handle resource loading */
     inline coreBool Update () {if(!m_bProxy) {const coreSpinLocker oLocker(&m_UpdateLock); if(this->IsLoading() && !m_bAutomatic)      {m_eStatus = m_pResource->Load(m_pFile);                      return true;}} return false;}
@@ -222,6 +224,9 @@ public:
     /* refresh resource proxy */
     void        RefreshProxy(coreResourceHandle*   pProxy);
     inline void RefreshProxy(const coreHashString& sProxy) {this->RefreshProxy(this->Get<coreResourceDummy>(sProxy));}
+
+    /* unload all unreferenced resources */
+    void ApplyNullify();
 
     /* reset all resources and relation-objects */
     void Reset(const coreResourceReset eInit);

@@ -291,6 +291,9 @@ coreStatus Core::Run()
             Manager::Resource->UpdateResources(0.004f);
             Manager::Resource->UpdateFunctions();
         }
+
+        // unload all unreferenced resources
+        Manager::Resource->ApplyNullify();
     }
 
 #if defined(_CORE_EMSCRIPTEN_)

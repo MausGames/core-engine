@@ -21,6 +21,7 @@ coreResourceHandle::coreResourceHandle(coreResource* pResource, coreFile* pFile,
 , m_sName      (pcName)
 , m_bAutomatic (bAutomatic)
 , m_bProxy     (false)
+, m_bUnload    (false)
 , m_iIndex     (0u)
 , m_UpdateLock ()
 , m_eStatus    ((pFile || bAutomatic) ? CORE_BUSY : CORE_OK)
@@ -331,6 +332,24 @@ void coreResourceManager::RefreshProxy(coreResourceHandle* pProxy)
         // reset and forward status again
         pProxy->m_eStatus = CORE_BUSY;
         pForeign->OnLoadedOnce([=]() {pProxy->m_eStatus = pForeign->m_eStatus;});
+    }
+}
+
+
+// ****************************************************************
+/* unload all unreferenced resources */
+void coreResourceManager::ApplyNullify()
+{
+    FOR_EACH(it, m_apHandle)
+    {
+        coreResourceHandle* pCurHandle = (*it);
+
+        // only process marked resource handles
+        if(!pCurHandle->m_bUnload) continue;
+        pCurHandle->m_bUnload = false;
+
+        // check reference-counter and unload
+        if(!pCurHandle->GetRefCount()) pCurHandle->Nullify();
     }
 }
 
