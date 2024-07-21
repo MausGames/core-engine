@@ -14,12 +14,13 @@
 // TODO 3: on IsClicked: make right mouse button on mobile a longer push or multiple fingers ?
 // TODO 3: on IsClicked: consider finger number
 // TODO 4: move transform*ortho matrix multiplication from render to move, though raw transform is needed for interaction
-// TODO 3: implement Z component (default value should behave like before)
 // TODO 5: <old comment style>
 
 
 // ****************************************************************
 /* 2d-object definitions */
+#define CORE_OBJECT2D_ORDER_DEFAULT (100u)
+
 enum coreObject2DStyle : coreUint8
 {
     CORE_OBJECT2D_STYLE_NOTHING   = 0x00u,   // override nothing
@@ -36,22 +37,25 @@ class coreObject2D : public coreObject
 private:
     coreVector2 m_vPosition;    // position of the 2d-object (aspect ratio independent)
     coreVector2 m_vSize;        // size-factor of the 2d-object (independent)
-    coreVector2 m_vDirection;   // direction for the rotation matrix (independent)
+    coreVector2 m_vDirection;   // direction of the 2d-object (independent)
     coreVector2 m_vCenter;      // screen space origin (depending)
     coreVector2 m_vAlignment;   // offset factor (independent)
 
 
 protected:
-    coreMatrix3x2 m_mTransform;     // transformation matrix
+    coreVector2 m_vScreenPosition;    // transformed position
+    coreVector2 m_vScreenSize;        // transformed size-factor (without rotation)
+    coreVector2 m_vScreenDirection;   // transformed direction
 
-    coreObject2DStyle m_eStyle;     // style overrides
+    coreObject2DStyle m_eStyle;       // style overrides
+    coreUint8         m_iOrder;       // depth order (higher = farther away)
 
-    coreUint8   m_iFocused;         // interaction status (0 = hold, 1 = enter, 2 = leave)
-    coreBool    m_bFocusable;       // enabled interaction handling
-    coreVector2 m_vFocusModifier;   // size-modifier for interaction handling
+    coreUint8   m_iFocused;           // interaction status (0 = hold, 1 = enter, 2 = leave)
+    coreBool    m_bFocusable;         // enabled interaction handling
+    coreVector2 m_vFocusModifier;     // size-modifier for interaction handling
 
 #if defined(_CORE_MOBILE_)
-    coreUint32 m_iFinger;           // separate finger interaction status (bitwise)
+    coreUint32 m_iFinger;             // separate finger interaction status (bitwise)
 #endif
 
 
@@ -84,10 +88,10 @@ public:
     inline const coreBool& IsFocusable   ()const {return m_bFocusable;}
 
     /* retrieve transformation components */
-    inline coreVector2 GetScreenPosition ()const {return coreMatrix3(m_mTransform).GetPosition ();}
-    inline coreVector2 GetScreenSize     ()const {return coreMatrix3(m_mTransform).GetSize     ();}
-    inline coreVector2 GetScreenSize90   ()const {return coreMatrix3(m_mTransform).GetSize90   ();}
-    inline coreVector2 GetScreenDirection()const {return coreMatrix3(m_mTransform).GetDirection();}
+    inline const coreVector2& GetScreenPosition ()const {return m_vScreenPosition;}
+    inline const coreVector2& GetScreenDirection()const {return m_vScreenDirection;}
+    inline       coreVector2  GetScreenBound    ()const {return m_vScreenDirection.x ? coreVector2::Bound(m_vScreenSize, m_vScreenDirection) : m_vScreenSize;}
+    inline       coreVector2  GetScreenBound90  ()const {return m_vScreenDirection.x ? m_vScreenSize.yx()                                    : m_vScreenSize;}
 
     /* set object properties */
     inline void SetPosition     (const coreVector2       vPosition)      {if(m_vPosition  != vPosition)  {ADD_FLAG(m_eUpdate, CORE_OBJECT_UPDATE_TRANSFORM) m_vPosition  = vPosition;}}
@@ -96,6 +100,7 @@ public:
     inline void SetCenter       (const coreVector2       vCenter)        {if(m_vCenter    != vCenter)    {ADD_FLAG(m_eUpdate, CORE_OBJECT_UPDATE_TRANSFORM) m_vCenter    = vCenter;}}
     inline void SetAlignment    (const coreVector2       vAlignment)     {if(m_vAlignment != vAlignment) {ADD_FLAG(m_eUpdate, CORE_OBJECT_UPDATE_TRANSFORM) m_vAlignment = vAlignment;}}
     inline void SetStyle        (const coreObject2DStyle eStyle)         {if(m_eStyle     != eStyle)     {ADD_FLAG(m_eUpdate, CORE_OBJECT_UPDATE_TRANSFORM) m_eStyle     = eStyle;}}
+    inline void SetOrder        (const coreUint8         iOrder)         {m_iOrder         = iOrder;}
     inline void SetFocused      (const coreBool          bFocused)       {SET_BIT(m_iFocused, 0u, bFocused)}
     inline void SetFocusable    (const coreBool          bFocusable)     {m_bFocusable     = bFocusable;}
     inline void SetFocusModifier(const coreVector2       vFocusModifier) {m_vFocusModifier = vFocusModifier;}
@@ -106,8 +111,8 @@ public:
     inline const coreVector2&       GetDirection()const {return m_vDirection;}
     inline const coreVector2&       GetCenter   ()const {return m_vCenter;}
     inline const coreVector2&       GetAlignment()const {return m_vAlignment;}
-    inline const coreMatrix3x2&     GetTransform()const {return m_mTransform;}
     inline const coreObject2DStyle& GetStyle    ()const {return m_eStyle;}
+    inline const coreUint8&         GetOrder    ()const {return m_iOrder;}
 };
 
 

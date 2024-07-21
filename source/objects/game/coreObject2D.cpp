@@ -12,19 +12,22 @@
 // ****************************************************************
 /* constructor */
 coreObject2D::coreObject2D()noexcept
-: coreObject       ()
-, m_vPosition      (coreVector2(0.0f,0.0f))
-, m_vSize          (coreVector2(0.0f,0.0f))
-, m_vDirection     (coreVector2(0.0f,1.0f))
-, m_vCenter        (coreVector2(0.0f,0.0f))
-, m_vAlignment     (coreVector2(0.0f,0.0f))
-, m_mTransform     (coreMatrix3x2::Identity())
-, m_eStyle         (CORE_OBJECT2D_STYLE_NOTHING)
-, m_iFocused       (0u)
-, m_bFocusable     (false)
-, m_vFocusModifier (coreVector2(1.0f,1.0f))
+: coreObject         ()
+, m_vPosition        (coreVector2(0.0f,0.0f))
+, m_vSize            (coreVector2(0.0f,0.0f))
+, m_vDirection       (coreVector2(0.0f,1.0f))
+, m_vCenter          (coreVector2(0.0f,0.0f))
+, m_vAlignment       (coreVector2(0.0f,0.0f))
+, m_vScreenPosition  (coreVector2(0.0f,0.0f))
+, m_vScreenSize      (coreVector2(0.0f,0.0f))
+, m_vScreenDirection (coreVector2(0.0f,1.0f))
+, m_eStyle           (CORE_OBJECT2D_STYLE_NOTHING)
+, m_iOrder           (CORE_OBJECT2D_ORDER_DEFAULT)
+, m_iFocused         (0u)
+, m_bFocusable       (false)
+, m_vFocusModifier   (coreVector2(1.0f,1.0f))
 #if defined(_CORE_MOBILE_)
-, m_iFinger        (0u)
+, m_iFinger          (0u)
 #endif
 {
     // bind to object manager
@@ -32,19 +35,22 @@ coreObject2D::coreObject2D()noexcept
 }
 
 coreObject2D::coreObject2D(const coreObject2D& c)noexcept
-: coreObject       (c)
-, m_vPosition      (c.m_vPosition)
-, m_vSize          (c.m_vSize)
-, m_vDirection     (c.m_vDirection)
-, m_vCenter        (c.m_vCenter)
-, m_vAlignment     (c.m_vAlignment)
-, m_mTransform     (c.m_mTransform)
-, m_eStyle         (c.m_eStyle)
-, m_iFocused       (c.m_iFocused)
-, m_bFocusable     (c.m_bFocusable)
-, m_vFocusModifier (c.m_vFocusModifier)
+: coreObject         (c)
+, m_vPosition        (c.m_vPosition)
+, m_vSize            (c.m_vSize)
+, m_vDirection       (c.m_vDirection)
+, m_vCenter          (c.m_vCenter)
+, m_vAlignment       (c.m_vAlignment)
+, m_vScreenPosition  (c.m_vScreenPosition)
+, m_vScreenSize      (c.m_vScreenSize)
+, m_vScreenDirection (c.m_vScreenDirection)
+, m_eStyle           (c.m_eStyle)
+, m_iOrder           (c.m_iOrder)
+, m_iFocused         (c.m_iFocused)
+, m_bFocusable       (c.m_bFocusable)
+, m_vFocusModifier   (c.m_vFocusModifier)
 #if defined(_CORE_MOBILE_)
-, m_iFinger        (c.m_iFinger)
+, m_iFinger          (c.m_iFinger)
 #endif
 {
     // bind to object manager
@@ -52,19 +58,22 @@ coreObject2D::coreObject2D(const coreObject2D& c)noexcept
 }
 
 coreObject2D::coreObject2D(coreObject2D&& m)noexcept
-: coreObject       (std::move(m))
-, m_vPosition      (m.m_vPosition)
-, m_vSize          (m.m_vSize)
-, m_vDirection     (m.m_vDirection)
-, m_vCenter        (m.m_vCenter)
-, m_vAlignment     (m.m_vAlignment)
-, m_mTransform     (m.m_mTransform)
-, m_eStyle         (m.m_eStyle)
-, m_iFocused       (m.m_iFocused)
-, m_bFocusable     (m.m_bFocusable)
-, m_vFocusModifier (m.m_vFocusModifier)
+: coreObject         (std::move(m))
+, m_vPosition        (m.m_vPosition)
+, m_vSize            (m.m_vSize)
+, m_vDirection       (m.m_vDirection)
+, m_vCenter          (m.m_vCenter)
+, m_vAlignment       (m.m_vAlignment)
+, m_vScreenPosition  (m.m_vScreenPosition)
+, m_vScreenSize      (m.m_vScreenSize)
+, m_vScreenDirection (m.m_vScreenDirection)
+, m_eStyle           (m.m_eStyle)
+, m_iOrder           (m.m_iOrder)
+, m_iFocused         (m.m_iFocused)
+, m_bFocusable       (m.m_bFocusable)
+, m_vFocusModifier   (m.m_vFocusModifier)
 #if defined(_CORE_MOBILE_)
-, m_iFinger        (m.m_iFinger)
+, m_iFinger          (m.m_iFinger)
 #endif
 {
     // bind to object manager
@@ -87,18 +96,21 @@ coreObject2D& coreObject2D::operator = (const coreObject2D& c)noexcept
 {
     // copy properties
     this->coreObject::operator = (c);
-    m_vPosition      = c.m_vPosition;
-    m_vSize          = c.m_vSize;
-    m_vDirection     = c.m_vDirection;
-    m_vCenter        = c.m_vCenter;
-    m_vAlignment     = c.m_vAlignment;
-    m_mTransform     = c.m_mTransform;
-    m_eStyle         = c.m_eStyle;
-    m_iFocused       = c.m_iFocused;
-    m_bFocusable     = c.m_bFocusable;
-    m_vFocusModifier = c.m_vFocusModifier;
+    m_vPosition        = c.m_vPosition;
+    m_vSize            = c.m_vSize;
+    m_vDirection       = c.m_vDirection;
+    m_vCenter          = c.m_vCenter;
+    m_vAlignment       = c.m_vAlignment;
+    m_vScreenPosition  = c.m_vScreenPosition;
+    m_vScreenSize      = c.m_vScreenSize;
+    m_vScreenDirection = c.m_vScreenDirection;
+    m_eStyle           = c.m_eStyle;
+    m_iOrder           = c.m_iOrder;
+    m_iFocused         = c.m_iFocused;
+    m_bFocusable       = c.m_bFocusable;
+    m_vFocusModifier   = c.m_vFocusModifier;
 #if defined(_CORE_MOBILE_)
-    m_iFinger        = c.m_iFinger;
+    m_iFinger          = c.m_iFinger;
 #endif
 
     return *this;
@@ -108,18 +120,21 @@ coreObject2D& coreObject2D::operator = (coreObject2D&& m)noexcept
 {
     // move properties
     this->coreObject::operator = (std::move(m));
-    m_vPosition      = m.m_vPosition;
-    m_vSize          = m.m_vSize;
-    m_vDirection     = m.m_vDirection;
-    m_vCenter        = m.m_vCenter;
-    m_vAlignment     = m.m_vAlignment;
-    m_mTransform     = m.m_mTransform;
-    m_eStyle         = m.m_eStyle;
-    m_iFocused       = m.m_iFocused;
-    m_bFocusable     = m.m_bFocusable;
-    m_vFocusModifier = m.m_vFocusModifier;
+    m_vPosition        = m.m_vPosition;
+    m_vSize            = m.m_vSize;
+    m_vDirection       = m.m_vDirection;
+    m_vCenter          = m.m_vCenter;
+    m_vAlignment       = m.m_vAlignment;
+    m_vScreenPosition  = m.m_vScreenPosition;
+    m_vScreenSize      = m.m_vScreenSize;
+    m_vScreenDirection = m.m_vScreenDirection;
+    m_eStyle           = m.m_eStyle;
+    m_iOrder           = m.m_iOrder;
+    m_iFocused         = m.m_iFocused;
+    m_bFocusable       = m.m_bFocusable;
+    m_vFocusModifier   = m.m_vFocusModifier;
 #if defined(_CORE_MOBILE_)
-    m_iFinger        = m.m_iFinger;
+    m_iFinger          = m.m_iFinger;
 #endif
 
     return *this;
@@ -149,9 +164,11 @@ coreBool coreObject2D::Prepare(const coreProgramPtr& pProgram)
 
     // update all object uniforms
     coreProgram* pLocal = pProgram.GetResource();
-    pLocal->SendUniform(CORE_SHADER_UNIFORM_2D_SCREENVIEW, coreMatrix3(m_mTransform) * Core::Graphics->GetOrtho().m124(), false);
-    pLocal->SendUniform(CORE_SHADER_UNIFORM_COLOR,         m_vColor);
-    pLocal->SendUniform(CORE_SHADER_UNIFORM_TEXPARAM,      coreVector4(m_vTexSize, m_vTexOffset));
+    pLocal->SendUniform(CORE_SHADER_UNIFORM_2D_POSITION, coreVector3(m_vScreenPosition, I_TO_F(m_iOrder) / 255.0f));
+    pLocal->SendUniform(CORE_SHADER_UNIFORM_2D_SIZE,     m_vScreenSize);
+    pLocal->SendUniform(CORE_SHADER_UNIFORM_2D_ROTATION, m_vScreenDirection);
+    pLocal->SendUniform(CORE_SHADER_UNIFORM_COLOR,       m_vColor);
+    pLocal->SendUniform(CORE_SHADER_UNIFORM_TEXPARAM,    coreVector4(m_vTexSize, m_vTexOffset));
 
     // enable all active textures
     coreTexture::EnableAll(m_apTexture);
@@ -194,24 +211,25 @@ void coreObject2D::Move()
     // check current update status
     if(HAS_FLAG(m_eUpdate, CORE_OBJECT_UPDATE_TRANSFORM))
     {
+        const coreVector2 vResolution = Core::System->GetResolution();
+        const coreVector2 vViewDir    = HAS_FLAG(m_eStyle, CORE_OBJECT2D_STYLE_VIEWDIR)   ? Core::Manager::Object->GetSpriteViewDir  () : coreVector2(0.0f,1.0f);
+        const coreVector2 vAltCenter  = HAS_FLAG(m_eStyle, CORE_OBJECT2D_STYLE_ALTCENTER) ? Core::Manager::Object->GetSpriteAltCenter() : vResolution;
+
         // calculate resolution-modified transformation parameters
-        const coreVector2 vResolution     = Core::System->GetResolution();
-        const coreVector2 vViewDir        = HAS_FLAG(m_eStyle, CORE_OBJECT2D_STYLE_VIEWDIR)   ? Core::Manager::Object->GetSpriteViewDir  () : coreVector2(0.0f,1.0f);
-        const coreVector2 vAltCenter      = HAS_FLAG(m_eStyle, CORE_OBJECT2D_STYLE_ALTCENTER) ? Core::Manager::Object->GetSpriteAltCenter() : vResolution;
-        const coreVector2 vScreenPosition = m_vPosition * vResolution.Min() + m_vCenter * ((vViewDir.y != 0.0f) ? vAltCenter : vAltCenter.yx());
-        const coreVector2 vScreenSize     = m_vSize     * vResolution.Min();
+        m_vScreenPosition  = m_vPosition * vResolution.Min();
+        m_vScreenSize      = m_vSize     * vResolution.Min();
+        m_vScreenDirection = m_vDirection.InvertedX();
 
-        // update transformation matrix
-        m_mTransform._11 = vScreenSize.x *  m_vDirection.y; m_mTransform._12 = vScreenSize.x * m_vDirection.x;
-        m_mTransform._21 = vScreenSize.y * -m_vDirection.x; m_mTransform._22 = vScreenSize.y * m_vDirection.y;
-        m_mTransform._31 = vScreenPosition.x;               m_mTransform._32 = vScreenPosition.y;
-
-        // add alignment-offset to position
-        m_mTransform._31 += 0.5f * m_vAlignment.x * coreVector2(m_mTransform._11, m_mTransform._21).Length();
-        m_mTransform._32 += 0.5f * m_vAlignment.y * coreVector2(m_mTransform._12, m_mTransform._22).Length();
+        // add origin and offset to position
+        m_vScreenPosition += m_vCenter    * ((vViewDir.x != 0.0f) ? vAltCenter.yx() : vAltCenter);
+        m_vScreenPosition += m_vAlignment * (this->GetScreenBound() * 0.5f);   // # after base calculations
 
         // apply global rotation
-        if(vViewDir.y != 1.0f) m_mTransform = (coreMatrix3(m_mTransform) * coreMatrix3::Rotation(vViewDir)).m3x2();
+        if(vViewDir.y != 1.0f)
+        {
+            m_vScreenPosition  = m_vScreenPosition .MapToAxisInv(vViewDir);
+            m_vScreenDirection = m_vScreenDirection.MapToAxisInv(vViewDir);
+        }
 
         // reset the update status
         m_eUpdate = CORE_OBJECT_UPDATE_NOTHING;
@@ -234,9 +252,9 @@ void coreObject2D::Interact()
 
     // get resolution-modified transformation parameters
     const coreVector2 vResolution      = Core::System->GetResolution();
-    const coreVector2 vScreenDirection = this->GetScreenDirection();
-    const coreVector2 vScreenPosition  = this->GetScreenPosition();
-    const coreVector2 vScreenSize      = m_vSize * m_vFocusModifier * (0.5f * vResolution.Min());
+    const coreVector2 vScreenPosition  = m_vScreenPosition;
+    const coreVector2 vScreenDirection = m_vScreenDirection;
+    const coreVector2 vFocusRange      = m_vScreenSize * m_vFocusModifier * 0.5f;
 
 #if defined(_CORE_MOBILE_)
 
@@ -251,8 +269,8 @@ void coreObject2D::Interact()
         const coreVector2 vRotated = vInput.MapToAxis(vScreenDirection);
 
         // test for intersection
-        if((ABS(vRotated.x) < vScreenSize.x) &&
-           (ABS(vRotated.y) < vScreenSize.y))
+        if((ABS(vRotated.x) < vFocusRange.x) &&
+           (ABS(vRotated.y) < vFocusRange.y))
         {
             ADD_BIT(m_iFocused, 0u)
             ADD_BIT(m_iFinger,  i)
@@ -266,8 +284,8 @@ void coreObject2D::Interact()
     const coreVector2 vRotated = vInput.MapToAxis(vScreenDirection);
 
     // test for intersection
-    SET_BIT(m_iFocused, 0u, (ABS(vRotated.x) < vScreenSize.x) &&
-                            (ABS(vRotated.y) < vScreenSize.y))
+    SET_BIT(m_iFocused, 0u, (ABS(vRotated.x) < vFocusRange.x) &&
+                            (ABS(vRotated.y) < vFocusRange.y))
 
 #endif
 

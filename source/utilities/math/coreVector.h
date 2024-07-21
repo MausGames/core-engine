@@ -156,6 +156,7 @@ public:
     static inline    coreVector2 Rand      (const coreFloat fMinX, const coreFloat fMaxX, const coreFloat fMinY, const coreFloat fMaxY, coreRand* OUTPUT pRand = Core::Rand);
     static inline    coreVector2 RandUni   (coreRand* OUTPUT pRand = Core::Rand);
     static constexpr coreVector2 Reflect   (const coreVector2 vVelocity, const coreVector2 vNormal);
+    static constexpr coreVector2 Bound     (const coreVector2 vSize, const coreVector2 vDirection);
     static inline    coreBool    Intersect (const coreVector2 vPosition1, const coreVector2 vDirection1, const coreVector2 vPosition2, const coreVector2 vDirection2, coreVector2* OUTPUT pvIntersection);
 
     /* packing functions */
@@ -588,6 +589,15 @@ constexpr coreVector2 coreVector2::Reflect(const coreVector2 vVelocity, const co
 {
     const coreFloat fDot = coreVector2::Dot(vVelocity, vNormal);
     return (fDot >= 0.0f) ? vVelocity : (vVelocity - vNormal * (2.0f*fDot));
+}
+
+
+// ****************************************************************
+/* calculate axis-aligned bounding-box from oriented bounding-box */
+constexpr coreVector2 coreVector2::Bound(const coreVector2 vSize, const coreVector2 vDirection)
+{
+    return coreVector2((vDirection.Rotated90() * vSize).Length(),
+                       (vDirection             * vSize).Length());
 }
 
 

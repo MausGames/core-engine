@@ -206,7 +206,9 @@ uniform mediump vec3 u_v3Size;
 uniform mediump vec4 u_v4Rotation;
 
 // 2d-object uniforms
-uniform highp   mat3 u_m3ScreenView;
+uniform highp   vec3 u_v3TwoPosition;
+uniform highp   vec2 u_v2TwoSize;
+uniform mediump vec2 u_v2TwoRotation;
 
 // default object uniforms
 uniform lowp    vec4 u_v4Color;

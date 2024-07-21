@@ -44,7 +44,9 @@
 #define CORE_SHADER_UNIFORM_3D_POSITION         "u_v3Position"
 #define CORE_SHADER_UNIFORM_3D_SIZE             "u_v3Size"
 #define CORE_SHADER_UNIFORM_3D_ROTATION         "u_v4Rotation"
-#define CORE_SHADER_UNIFORM_2D_SCREENVIEW       "u_m3ScreenView"
+#define CORE_SHADER_UNIFORM_2D_POSITION         "u_v3TwoPosition"
+#define CORE_SHADER_UNIFORM_2D_SIZE             "u_v2TwoSize"
+#define CORE_SHADER_UNIFORM_2D_ROTATION         "u_v2TwoRotation"
 #define CORE_SHADER_UNIFORM_COLOR               "u_v4Color"
 #define CORE_SHADER_UNIFORM_TEXPARAM            "u_v4TexParam"
 #define CORE_SHADER_UNIFORM_TEXTURE_2D          "u_as2Texture2D[%zu]"
@@ -75,10 +77,11 @@
 #define CORE_SHADER_ATTRIBUTE_DIV_COLOR_NUM     (7u)
 #define CORE_SHADER_ATTRIBUTE_DIV_TEXPARAM_NUM  (8u)
 
-#define CORE_SHADER_ATTRIBUTE_USER_NUM          (DEFINED(_CORE_GLES_) ? 10u : 9u)
-
 #define CORE_SHADER_OUTPUT_COLOR                "o_av4OutColor[%zu]"
 #define CORE_SHADER_OUTPUT_COLORS               (2u)
+
+#define CORE_SHADER_BUFFER_USER_NUM             (3u)
+#define CORE_SHADER_ATTRIBUTE_USER_NUM          (DEFINED(_CORE_GLES_) ? 10u : 9u)
 
 #define CORE_SHADER_OPTION_INSTANCING           "#define _CORE_OPTION_INSTANCING_"     " (1) \n"
 #define CORE_SHADER_OPTION_NO_ROTATION          "#define _CORE_OPTION_NO_ROTATION_"    " (1) \n"

@@ -29,6 +29,8 @@ Functions
     vec3 coreObject3DTransform(in vec3 v3Vector)
     vec3 coreObject3DTransformRaw()
     vec3 coreObject3DTransformLow()
+    vec2 coreObject2DTransform(in vec2 v2Vector)
+    vec2 coreObject2DTransform()
 
     // default particle range calculation (transformed rectangle corner incl. camera alignment)
     vec3 coreParticleRange()
@@ -72,7 +74,9 @@ Input
     // object2D attributes
     vec2 a_v2LowPosition     // raw vertex position
     vec2 a_v2LowTexCoord     // raw texture coordinate
-    mat3 u_m3ScreenView      // full screen-view matrix
+    vec3 u_v3TwoPosition     // position offset         (resolution-modified) (xy = position, z = depth)
+    vec2 u_v2TwoSize         // non-uniform size factor (resolution-modified)
+    vec2 u_v2TwoRotation     // rotation vector
     vec2 u_v2TexSize         // texture size
     vec2 u_v2TexOffset       // texture offset
 
