@@ -273,7 +273,7 @@ void CoreAudio::PauseSound(const coreUint8 iType)
 
     for(coreUintW i = CORE_AUDIO_SOURCES_MUSIC; i < CORE_AUDIO_SOURCES; ++i)
     {
-        if((iType >= CORE_AUDIO_TYPES) || (m_aSourceData[i].iType == iType))
+        if(m_aSourceData[i].iBuffer && ((iType >= CORE_AUDIO_TYPES) || (m_aSourceData[i].iType == iType)))
         {
             // collect audio sources
             aiSource[iNum++] = m_aiSource[i];
@@ -291,7 +291,7 @@ void CoreAudio::ResumeSound(const coreUint8 iType)
 
     for(coreUintW i = CORE_AUDIO_SOURCES_MUSIC; i < CORE_AUDIO_SOURCES; ++i)
     {
-        if((iType >= CORE_AUDIO_TYPES) || (m_aSourceData[i].iType == iType))
+        if(m_aSourceData[i].iBuffer && ((iType >= CORE_AUDIO_TYPES) || (m_aSourceData[i].iType == iType)))
         {
             // check status
             ALint iStatus;
@@ -313,7 +313,7 @@ void CoreAudio::CancelSound(const coreUint8 iType)
 
     for(coreUintW i = CORE_AUDIO_SOURCES_MUSIC; i < CORE_AUDIO_SOURCES; ++i)
     {
-        if((iType >= CORE_AUDIO_TYPES) || (m_aSourceData[i].iType == iType))
+        if(m_aSourceData[i].iBuffer && ((iType >= CORE_AUDIO_TYPES) || (m_aSourceData[i].iType == iType)))
         {
             // collect audio sources
             aiSource[iNum++] = m_aiSource[i];
@@ -324,8 +324,12 @@ void CoreAudio::CancelSound(const coreUint8 iType)
         }
     }
 
-    // stop audio sources
-    if(iNum) alSourceStopv(iNum, aiSource);
+    if(iNum)
+    {
+        // stop audio sources
+        alSourceStopv(iNum, aiSource);
+        for(coreUintW i = 0u; i < iNum; ++i) alSourcei(aiSource[i], AL_BUFFER, 0);
+    }
 }
 
 
