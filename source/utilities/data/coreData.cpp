@@ -975,6 +975,28 @@ const coreChar* coreData::UserFolderPrivate(const coreChar* pcPath)
 
 
 // ****************************************************************
+/* test if dynamic library is already loaded */
+coreBool coreData::TestLibrary(const coreChar* pcName)
+{
+    ASSERT(pcName)
+
+#if defined(_CORE_WINDOWS_)
+
+    return GetModuleHandleW(coreData::__ToWideChar(pcName));
+
+#elif defined(_CORE_LINUX_) || defined(_CORE_MACOS_)
+
+    return dlopen(pcName, RTLD_LAZY | RTLD_NOLOAD);
+
+#else
+
+    return false;
+
+#endif
+}
+
+
+// ****************************************************************
 /* open dynamic library */
 void* coreData::OpenLibrary(const coreChar* pcName)
 {

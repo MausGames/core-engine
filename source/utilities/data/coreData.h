@@ -137,6 +137,7 @@ public:
     static const coreChar* UserFolderPrivate(const coreChar* pcPath);
 
     /* handle dynamic libraries */
+    static coreBool   TestLibrary (const coreChar* pcName);
     static void*      OpenLibrary (const coreChar* pcName);
     static void*      GetAddress  (void* pLibrary, const coreChar* pcName);
     static coreStatus CloseLibrary(void* pLibrary);
