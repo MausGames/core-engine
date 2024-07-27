@@ -19,6 +19,7 @@
 // TODO 5: GL_EXT_texture_storage_compression, GL_IMG_texture_filter_cubic
 // TODO 3: static functions for WebGL (removing GetProcAddress, extension-checks could be enough, how to merge extensions-functions?)
 // TODO 4: add all missing "shader extensions"
+// TODO 3: CORE_CONFIG_GRAPHICS_DISABLEEXTENSIONS does not work for static version-checked extensions
 
 
 // ****************************************************************

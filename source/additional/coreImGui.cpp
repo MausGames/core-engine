@@ -16,6 +16,7 @@
     #pragma warning(push, 3)
 
     #pragma warning(disable : 4355)   // 'this' used in base member initializer list
+    #pragma warning(disable : 4514)   // unreferenced inline function removed
     #pragma warning(disable : 5039)   // potentially throwing function passed to extern C function
     #pragma warning(disable : 5045)   // possible Spectre vulnerability
     #pragma warning(disable : 5219)   // implicit conversion between different types

@@ -389,7 +389,7 @@
 #define STRING(a)                   __STRING(a)
 #define __CONCAT(a,b)               a ## b
 #define CONCAT(a,b)                 __CONCAT(a, b)
-#define __DEFINED(a,b)              FORCE_COMPILE_TIME(coreStrCmpConst(#a, b))
+#define __DEFINED(a,b)              !!FORCE_COMPILE_TIME(coreStrCmpConst(#a, b))
 #define DEFINED(a)                  __DEFINED(a, #a)
 #define CALL(...)                   do {__VA_ARGS__} while(false)
 

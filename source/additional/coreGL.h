@@ -12,6 +12,7 @@
 
 // TODO 3: also log function remapping (similar to extension override) (4. line in load-message)
 // TODO 3: reuse (pooled) resource names
+// TODO 3: CORE_CONFIG_GRAPHICS_DISABLEEXTENSIONS does not work for shader extensions (also on GLES)
 
 
 // ****************************************************************
