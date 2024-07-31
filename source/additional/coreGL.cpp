@@ -13,7 +13,6 @@
 #elif defined(_CORE_LINUX_)
     #include <EGL/egl.h>
     #include <GL/glx.h>
-    #include <wayland-client.h>
 #endif
 
 coreBool GLEW_V2_compatibility = false;
@@ -374,83 +373,41 @@ void corePlatformExtensions(coreString* OUTPUT psOutput)
 
     #define __LOAD_FUNCTION(x,y) decltype(x)* __ ## x = r_cast<decltype(x)*>(coreData::GetAddress(y, #x));
     {
-        // open EGL library
-        void* pLibraryEGL = coreData::OpenLibrary("libEGL.so");
-        if(pLibraryEGL)
+        if(!std::strcmp(SDL_GetCurrentVideoDriver(), "wayland"))
         {
-            __LOAD_FUNCTION(eglGetCurrentContext, pLibraryEGL)
-            __LOAD_FUNCTION(eglGetDisplay,        pLibraryEGL)
-            __LOAD_FUNCTION(eglInitialize,        pLibraryEGL)
-            __LOAD_FUNCTION(eglTerminate,         pLibraryEGL)
-            __LOAD_FUNCTION(eglQueryString,       pLibraryEGL)
-
-            if(__eglGetCurrentContext && __eglGetDisplay && __eglInitialize && __eglTerminate && __eglQueryString && (__eglGetCurrentContext() != EGL_NO_CONTEXT))
+            // open EGL library
+            void* pLibrary = coreData::OpenLibrary("libEGL.so");
+            if(pLibrary)
             {
-                // open Wayland library
-                void* pLibraryWL = coreData::OpenLibrary("libwayland-client.so");
-                if(pLibraryWL)
+                __LOAD_FUNCTION(eglGetCurrentDisplay, pLibrary)
+                __LOAD_FUNCTION(eglQueryString,       pLibrary)
+
+                if(__eglGetCurrentDisplay && __eglQueryString)
                 {
-                    __LOAD_FUNCTION(wl_display_connect,    pLibraryWL)
-                    __LOAD_FUNCTION(wl_display_disconnect, pLibraryWL)
-
-                    if(__wl_display_connect && __wl_display_disconnect)
+                    // get connection to default display
+                    EGLDisplay pDisplay = __eglGetCurrentDisplay();
+                    if(pDisplay)
                     {
-                        // open connection to default display
-                        wl_display* pDisplayWL = __wl_display_connect(NULL);
-                        if(pDisplayWL)
-                        {
-                            // initialize connection
-                            EGLDisplay pDisplayEGL = __eglGetDisplay(pDisplayWL);
-                            if(__eglInitialize(pDisplayEGL, NULL, NULL))
-                            {
-                                // get full extension string (EGL)
-                                (*psOutput) += __eglQueryString(pDisplayEGL,    EGL_EXTENSIONS);   // display extensions
-                                (*psOutput) += ' ';
-                                (*psOutput) += __eglQueryString(EGL_NO_DISPLAY, EGL_EXTENSIONS);   // client extensions
-
-                                // terminate connection
-                                __eglTerminate(pDisplayEGL);
-                            }
-
-                            // close connection
-                            __wl_display_disconnect(pDisplayWL);
-                        }
+                        // get full extension string (EGL)
+                        (*psOutput) += __eglQueryString(pDisplay,       EGL_EXTENSIONS);   // display extensions
+                        (*psOutput) += ' ';
+                        (*psOutput) += __eglQueryString(EGL_NO_DISPLAY, EGL_EXTENSIONS);   // client extensions
                     }
-
-                    // close Wayland library
-                    coreData::CloseLibrary(pLibraryWL);
                 }
+
+                // close EGL library
+                coreData::CloseLibrary(pLibrary);
             }
-            else
+        }
+        else
+        {
+            // get connection to default display
+            Display* pDisplay = glXGetCurrentDisplay();
+            if(pDisplay)
             {
-                // open X11 library
-                void* pLibraryX = coreData::OpenLibrary("libX11.so");
-                if(pLibraryX)
-                {
-                    __LOAD_FUNCTION(XOpenDisplay,  pLibraryX)
-                    __LOAD_FUNCTION(XCloseDisplay, pLibraryX)
-
-                    if(__XOpenDisplay && __XCloseDisplay)
-                    {
-                        // open connection to default display
-                        Display* pDisplayX = __XOpenDisplay(NULL);
-                        if(pDisplayX)
-                        {
-                            // get full extension string (GLX)
-                            (*psOutput) = glXQueryExtensionsString(pDisplayX, DefaultScreen(pDisplayX));
-
-                            // close connection
-                            __XCloseDisplay(pDisplayX);
-                        }
-                    }
-
-                    // close X11 library
-                    coreData::CloseLibrary(pLibraryX);
-                }
+                // get full extension string (GLX)
+                (*psOutput) = glXQueryExtensionsString(pDisplay, DefaultScreen(pDisplay));
             }
-
-            // close EGL library
-            coreData::CloseLibrary(pLibraryEGL);
         }
     }
     #undef __LOAD_FUNCTION
