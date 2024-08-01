@@ -7,6 +7,7 @@
 //*-----------------------------------------------------*//
 ///////////////////////////////////////////////////////////
 #include "Core.h"
+#include "coreBlob.h"
 #include <EGL/egl.h>
 
 coreString  g_sExtensions = "";
@@ -308,7 +309,21 @@ void __coreInitOpenGLES()
 
     // map various extensions to GL_CORE_texture_float (# only for half-float)
     if(g_CoreContext.__GL_OES_texture_half_float && g_CoreContext.__GL_OES_texture_half_float_linear && (g_CoreContext.__GL_EXT_color_buffer_float || g_CoreContext.__GL_EXT_color_buffer_half_float))
+    {
         g_CoreContext.__GL_CORE_texture_float = true;
+    }
+
+    // start up blob-cache
+    coreInitBlobCache();
+}
+
+
+// ****************************************************************
+/* exit OpenGL ES */
+void __coreExitOpenGLES()
+{
+    // shut down blob-cache
+    coreExitBlobCache();
 }
 
 

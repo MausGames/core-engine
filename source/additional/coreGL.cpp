@@ -7,6 +7,7 @@
 //*-----------------------------------------------------*//
 ///////////////////////////////////////////////////////////
 #include "Core.h"
+#include "coreBlob.h"
 
 #if defined(_CORE_WINDOWS_)
     #include <GL/wglew.h>
@@ -304,6 +305,9 @@ void __coreInitOpenGL()
     // check for minimum OpenGL support
     if(!GLEW_VERSION_2_0)            Core::Log->Warning("OpenGL 2.0 or higher not detected, application may not work properly");
     if(!GLEW_EXT_framebuffer_object) Core::Log->Warning("Frame Buffer Object support not detected, application may not work properly");
+
+    // start up blob-cache
+    coreInitBlobCache();
 }
 
 
@@ -315,6 +319,9 @@ void __coreExitOpenGL()
     CORE_GL_POOL_RESET(s_PoolTextures2D,   glDeleteTextures)
     CORE_GL_POOL_RESET(s_PoolBuffers,      glDeleteBuffers)
     CORE_GL_POOL_RESET(s_PoolVertexArrays, glDeleteVertexArrays)
+
+    // shut down blob-cache
+    coreExitBlobCache();
 }
 
 

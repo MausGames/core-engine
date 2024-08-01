@@ -759,7 +759,9 @@ void coreProgram::ClearShaderCache()
 
     // delete entries
     FOR_EACH(it, s_aBinaryMap)
+    {
         DYNAMIC_DELETE(it->pData)
+    }
 
     // clear memory
     s_aBinaryMap.clear();

@@ -562,8 +562,9 @@ extern coreBool CORE_GL_ES2_restriction;
 // ****************************************************************
 /* init and exit OpenGL ES */
 extern void __coreInitOpenGLES();
+extern void __coreExitOpenGLES();
 #define coreInitOpenGL __coreInitOpenGLES
-#define coreExitOpenGL [](){}
+#define coreExitOpenGL __coreExitOpenGLES
 
 
 // ****************************************************************
