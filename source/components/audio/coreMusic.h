@@ -16,7 +16,7 @@
 // TODO 5: <old comment style>
 // TODO 3: on play, only stream first buffer, and move streaming other buffers to next iterations (queue them empty ?) (on update still keep loop, to handle possible catch-up, to not decay to single-buffering and stuttering if chunks-per-iteration > 1.0)
 // TODO 3: in the end of a track, if sound-buffers are not re-queued anymore (on norepeat, last track), and then switching to a different track, buffering-chain is broken which can cause stuttering
-// TODO 1: Ogg Vorbis is obsolete (coreLegacy ? wrap into Opus API ? (rate cannot be wrapped))
+// TODO 1: [CORE2] Ogg Vorbis is obsolete (coreLegacy ? wrap into Opus API ? (rate cannot be wrapped))
 
 // NOTE: changing pitch during playback in Emscripten is very expensive and can cause crackling (even on a single change)
 

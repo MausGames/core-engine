@@ -4227,7 +4227,7 @@ GLboolean __WGLEW_EXT_extensions_string = GL_FALSE;
 
 #ifdef WGL_ARB_extensions_string
 
-static GLboolean _glewInit_WGL_ARB_extensions_string ()
+static GLboolean _glewInit_WGL_ARB_extensions_string (void)
 {
   GLboolean r = GL_FALSE;
 
@@ -4240,7 +4240,7 @@ static GLboolean _glewInit_WGL_ARB_extensions_string ()
 
 #ifdef WGL_EXT_extensions_string
 
-static GLboolean _glewInit_WGL_EXT_extensions_string ()
+static GLboolean _glewInit_WGL_EXT_extensions_string (void)
 {
   GLboolean r = GL_FALSE;
 
@@ -4273,9 +4273,8 @@ GLboolean GLEWAPIENTRY wglewGetExtension (const char* name)
   return _glewSearchExtension(name, start, end);
 }
 
-GLenum GLEWAPIENTRY wglewInit ()
+GLenum GLEWAPIENTRY wglewInit (void)
 {
-  GLboolean crippled;
   const GLubyte* extStart;
   const GLubyte* extEnd;
   /* find wgl extension string query functions */
@@ -4291,14 +4290,11 @@ GLenum GLEWAPIENTRY wglewInit ()
     extStart = (const GLubyte*)_wglewGetExtensionsStringARB(wglGetCurrentDC());
   extEnd = extStart + _glewStrLen(extStart);
   /* initialize extensions */
-  crippled = _wglewGetExtensionsStringARB == NULL && _wglewGetExtensionsStringEXT == NULL;
 #ifdef WGL_ARB_extensions_string
-  WGLEW_ARB_extensions_string = _glewSearchExtension("WGL_ARB_extensions_string", extStart, extEnd);
-  if (glewExperimental || WGLEW_ARB_extensions_string|| crippled) WGLEW_ARB_extensions_string= !_glewInit_WGL_ARB_extensions_string();
+  WGLEW_ARB_extensions_string = !_glewInit_WGL_ARB_extensions_string();
 #endif /* WGL_ARB_extensions_string */
 #ifdef WGL_EXT_extensions_string
-  WGLEW_EXT_extensions_string = _glewSearchExtension("WGL_EXT_extensions_string", extStart, extEnd);
-  if (glewExperimental || WGLEW_EXT_extensions_string|| crippled) WGLEW_EXT_extensions_string= !_glewInit_WGL_EXT_extensions_string();
+  WGLEW_EXT_extensions_string = !_glewInit_WGL_EXT_extensions_string();
 #endif /* WGL_EXT_extensions_string */
 
   return GLEW_OK;

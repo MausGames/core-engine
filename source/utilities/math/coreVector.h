@@ -14,7 +14,7 @@
 // TODO 3: extract axis from quaternion
 // TODO 3: extract angle from quaternion
 // TODO 5: quaternion spline, with spherically interpolation of quaternions using a smooth cubic spline
-// TODO 2: fix flipped rotation in 2d-space (Rotated90 etc. goes into the wrong direction, normal rotation is CCW)
+// TODO 2: [CORE2] fix flipped rotation in 2d-space (Rotated90 etc. goes into the wrong direction, normal rotation is CCW)
 
 // NOTE: normalization needs to be safe by default, because an accidental null-normalization is hard to predict or detect in gameplay-code and can be fatal
 // NOTE: 2d-vectors start at the top and rotate CCW

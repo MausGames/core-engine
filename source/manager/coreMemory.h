@@ -41,7 +41,7 @@
 #define ZERO_NEW(t,c)       (__CHECK_ALLOC(t, c), ASSUME_ALIGNED(s_cast<t*>(std::calloc((c), sizeof(t))), ALIGNMENT_NEW))
 #define ZERO_DELETE(p)      {std::free(p); (p) = NULL;}
 
-#define DYNAMIC_RESIZE(p,c) {__CHECK_ALLOC(decltype(*(p)), c); (p) = ASSUME_ALIGNED(s_cast<decltype(p)>(std::realloc((p), (c) * sizeof(*(p)))), ALIGNMENT_NEW);}
+#define DYNAMIC_RESIZE(p,c) {__CHECK_ALLOC(decltype(*(p)), c); (p) = ASSUME_ALIGNED(s_cast<decltype(p)>(std::realloc((p), (c) * sizeof(*(p)))), ALIGNMENT_NEW); ASSERT(p)}
 #define DYNAMIC_DELETE(p)   {std::free(p); (p) = NULL;}
 
 #define STATIC_MEMORY(t,p)  alignas(alignof(t)) static coreByte CONCAT(__m, __LINE__)[sizeof(t) + sizeof(coreBool)] = {}; t* const p = r_cast<t*>(CONCAT(__m, __LINE__));

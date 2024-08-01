@@ -11,7 +11,7 @@
 #define _CORE_GUARD_OBJECT_H_
 
 // TODO 5: re-implement relative object behavior (parent-child hierarchy) (additional classes?)
-// TODO 5: GL_NV_fill_rectangle for low-memory model (state-tracking for polygon-mode ?)
+// TODO 5: GL_NV_fill_rectangle for low-memory model (state-tracking for polygon-mode ?) (how does rotation and shading work ? (e.g. vertex attributes))
 // TODO 4: cleanup resource-manager reset of object-manager, change location of global resources/objects (incl. single triangle)
 // TODO 2: add pre-registering interface to object manager ? accessing a non-existing list can cause issues
 // TODO 4: [const coreObject3D*] should be [const coreObject3D&], but pointers are swapped (for performance reasons)
