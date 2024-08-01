@@ -12,6 +12,8 @@
 
 // TODO 3: implement CheckAsync which uses the function-attachment interface (which thread?)
 // TODO 3: how to handle MAX_CLIENT_WAIT_TIMEOUT_WEBGL? Firefox returns 1'000'000'000ns (1s), Chromium returns 0ns
+// TODO 3: maybe remove flush on resource-loading and just flush once if work was done in resource-manager
+// TODO 3: separate flush and wait on check (and parameter could be just wait true/false, not sure if nanosecond granularity is ever needed)
 
 
 // ****************************************************************

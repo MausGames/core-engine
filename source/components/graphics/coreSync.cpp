@@ -33,21 +33,24 @@ coreSync& coreSync::operator = (coreSync&& m)noexcept
 /* create sync object */
 coreBool coreSync::Create(const coreSyncCreate eCreate)
 {
-    if(!m_pSync)
+    if(CORE_GL_SUPPORT(ARB_sync))
     {
-        if(CORE_GL_SUPPORT(ARB_sync))
-        {
-            // generate new sync object
-            m_pSync = glFenceSync(GL_SYNC_GPU_COMMANDS_COMPLETE, 0u);
-            if(eCreate) glClientWaitSync(m_pSync, GL_SYNC_FLUSH_COMMANDS_BIT, 0u);   // # flush needs to happen on the same thread/context
-            return true;
-        }
+        // delete sync object
+        this->Delete();
 
-        // or flush all commands
-        coreSync::Flush();
+        // generate new sync object
+        m_pSync = glFenceSync(GL_SYNC_GPU_COMMANDS_COMPLETE, 0u);
+        if(eCreate) coreSync::Flush();   // # flush needs to happen on the same thread/context
+
+        return true;
     }
+    else
+    {
+        // always flush all commands
+        coreSync::Flush();
 
-    return false;
+        return false;
+    }
 }
 
 
@@ -55,12 +58,11 @@ coreBool coreSync::Create(const coreSyncCreate eCreate)
 /* delete sync object */
 void coreSync::Delete()
 {
-    if(m_pSync)
-    {
-        // delete sync object
-        glDeleteSync(m_pSync);
-        m_pSync = NULL;
-    }
+    if(!m_pSync) return;
+
+    // delete sync object
+    glDeleteSync(m_pSync);
+    m_pSync = NULL;
 }
 
 
@@ -71,7 +73,7 @@ coreStatus coreSync::Check(const coreUint64 iNanoWait)
     if(!m_pSync) return CORE_INVALID_CALL;
 
     // retrieve and compare status
-    if(glClientWaitSync(m_pSync, 0u, MAX(iNanoWait, CORE_SYNC_MINIMUM)) != GL_TIMEOUT_EXPIRED)
+    if(glClientWaitSync(m_pSync, iNanoWait ? GL_SYNC_FLUSH_COMMANDS_BIT : 0u, MAX(iNanoWait, CORE_SYNC_MINIMUM)) != GL_TIMEOUT_EXPIRED)
     {
         // delete sync object
         this->Delete();
