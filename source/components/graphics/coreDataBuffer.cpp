@@ -75,11 +75,19 @@ void coreDataBuffer::Create(const GLenum iTarget, const coreUint32 iSize, const 
     {
         if(CORE_GL_SUPPORT(ARB_buffer_storage) && CORE_GL_SUPPORT(ARB_map_buffer_range))
         {
-            // allocate dynamic immutable buffer memory
-            glBufferStorage(m_iTarget, m_iSize, pData, GL_MAP_PERSISTENT_BIT | GL_MAP_WRITE_BIT);
+            if((Core::Graphics->SystemGpuType() == CORE_GPU_AMD) && DEFINED(_CORE_LINUX_))   // # AMD hotfix: prevent elusive driver crash
+            {
+                // allocate dynamic immutable buffer memory (without persistent mapping)
+                glBufferStorage(m_iTarget, m_iSize, pData, GL_MAP_WRITE_BIT);
+            }
+            else
+            {
+                // allocate dynamic immutable buffer memory
+                glBufferStorage(m_iTarget, m_iSize, pData, GL_MAP_PERSISTENT_BIT | GL_MAP_WRITE_BIT);
 
-            // map persistent mapped buffer
-            m_pPersistentBuffer = s_cast<coreByte*>(glMapBufferRange(m_iTarget, 0, m_iSize, GL_MAP_PERSISTENT_BIT | GL_MAP_WRITE_BIT | GL_MAP_FLUSH_EXPLICIT_BIT));
+                // map persistent mapped buffer
+                m_pPersistentBuffer = s_cast<coreByte*>(glMapBufferRange(m_iTarget, 0, m_iSize, GL_MAP_PERSISTENT_BIT | GL_MAP_WRITE_BIT | GL_MAP_FLUSH_EXPLICIT_BIT));
+            }
         }
         else
         {

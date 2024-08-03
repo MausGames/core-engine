@@ -14,9 +14,10 @@
 
 
 // ****************************************************************
-/* support deprecated features */
-extern coreBool GLEW_V2_compatibility;
-#define GLEW_ES2_restriction false
+/* handle custom extensions */
+extern coreBool GLEW_CORE_shared_context;      // general support for shared contexts
+extern coreBool GLEW_CORE_gl2_compatibility;   // handle deprecated OpenGL features
+#define GLEW_CORE_es2_restriction false        // handle certain OpenGL ES limitations
 
 
 // ****************************************************************

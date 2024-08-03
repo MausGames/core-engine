@@ -13,7 +13,7 @@
 coreString  g_sExtensions = "";
 coreContext g_CoreContext = {};
 
-coreBool CORE_GL_ES2_restriction = false;
+coreBool CORE_GL_CORE_es2_restriction = false;
 
 
 // ****************************************************************
@@ -37,8 +37,8 @@ void __coreInitOpenGLES()
     const coreBool  bES30    =  g_CoreContext.__bES30;
     const coreBool  bES32    =  g_CoreContext.__bES32;
 
-    // handle support for deprecated features
-    CORE_GL_ES2_restriction = !bES30;
+    // handle support for certain limitations
+    CORE_GL_CORE_es2_restriction = !bES30;
 
     // implement GL_ANDROID_extension_pack_es31a
     __CORE_GLES_CHECK(GL_ANDROID_extension_pack_es31a, false);
@@ -311,6 +311,12 @@ void __coreInitOpenGLES()
     if(g_CoreContext.__GL_OES_texture_half_float && g_CoreContext.__GL_OES_texture_half_float_linear && (g_CoreContext.__GL_EXT_color_buffer_float || g_CoreContext.__GL_EXT_color_buffer_half_float))
     {
         g_CoreContext.__GL_CORE_texture_float = true;
+    }
+
+    // # Nvidia hotfix: prevent hang when trying to retrieve shader-program binaries
+    if((Core::Graphics->SystemGpuType() == CORE_GPU_NVIDIA) && DEFINED(_CORE_ANGLE_))
+    {
+        g_CoreContext.__GL_OES_get_program_binary = false;
     }
 
     // start up blob-cache

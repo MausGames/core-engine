@@ -134,7 +134,7 @@ void coreTexture::Create(const coreUint32 iWidth, const coreUint32 iHeight, cons
     const coreBool bFilterable  = !DEFINED(_CORE_GLES_) || ((oSpec.iFormat != GL_DEPTH_COMPONENT) && (oSpec.iFormat != GL_DEPTH_STENCIL));
     const coreBool bAnisotropic = CORE_GL_SUPPORT(ARB_texture_filter_anisotropic)                && HAS_FLAG(eMode, CORE_TEXTURE_MODE_FILTER);
     const coreBool bMipMap      = CORE_GL_SUPPORT(EXT_framebuffer_object)                        && HAS_FLAG(eMode, CORE_TEXTURE_MODE_FILTER);
-    const coreBool bMipMapOld   = CORE_GL_SUPPORT(V2_compatibility) && !bMipMap                  && HAS_FLAG(eMode, CORE_TEXTURE_MODE_FILTER);
+    const coreBool bMipMapOld   = CORE_GL_SUPPORT(CORE_gl2_compatibility) && !bMipMap            && HAS_FLAG(eMode, CORE_TEXTURE_MODE_FILTER);
     const coreBool bTarget      = CORE_GL_SUPPORT(ANGLE_texture_usage)                           && HAS_FLAG(eMode, CORE_TEXTURE_MODE_TARGET);
     const coreBool bCompress    = Core::Config->GetBool(CORE_CONFIG_GRAPHICS_TEXTURECOMPRESSION) && HAS_FLAG(eMode, CORE_TEXTURE_MODE_COMPRESS);
     const coreBool bTrilinear   = Core::Config->GetBool(CORE_CONFIG_GRAPHICS_TEXTURETRILINEAR)   && bFilterable;
@@ -171,7 +171,7 @@ void coreTexture::Create(const coreUint32 iWidth, const coreUint32 iHeight, cons
             case GL_RGB8:  if(CORE_GL_SUPPORT(EXT_texture_compression_s3tc)) {iNewSpec = CORE_TEXTURE_SPEC_COMPRESSED_DXT1;  iBlockSize = stb_dxt_blocksize(3);} break;
             case GL_RGBA8: if(CORE_GL_SUPPORT(EXT_texture_compression_s3tc)) {iNewSpec = CORE_TEXTURE_SPEC_COMPRESSED_DXT5;  iBlockSize = stb_dxt_blocksize(4);} break;
             }
-            if(iNewSpec.iInternal) {m_Spec = iNewSpec; m_bCompressed = true; if((bMipMap || bMipMapOld) && !CORE_GL_SUPPORT(ES2_restriction)) m_iLevels = F_TO_UI(LOG2(m_vResolution.Min())) - 1u;}
+            if(iNewSpec.iInternal) {m_Spec = iNewSpec; m_bCompressed = true; if((bMipMap || bMipMapOld) && !CORE_GL_SUPPORT(CORE_es2_restriction)) m_iLevels = F_TO_UI(LOG2(m_vResolution.Min())) - 1u;}
         }
     }
 
@@ -214,7 +214,7 @@ void coreTexture::Create(const coreUint32 iWidth, const coreUint32 iHeight, cons
         else
         {
             // create only first standard level
-            glTexImage2D(GL_TEXTURE_2D, 0, CORE_GL_SUPPORT(ES2_restriction) ? m_Spec.iFormat : m_Spec.iInternal, iWidth, iHeight, 0, m_Spec.iFormat, m_Spec.iType, NULL);
+            glTexImage2D(GL_TEXTURE_2D, 0, CORE_GL_SUPPORT(CORE_es2_restriction) ? m_Spec.iFormat : m_Spec.iInternal, iWidth, iHeight, 0, m_Spec.iFormat, m_Spec.iType, NULL);
         }
     }
 }

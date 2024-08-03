@@ -16,7 +16,8 @@
     #include <GL/glx.h>
 #endif
 
-coreBool GLEW_V2_compatibility = false;
+coreBool GLEW_CORE_shared_context    = false;
+coreBool GLEW_CORE_gl2_compatibility = false;
 
 
 // ****************************************************************
@@ -300,8 +301,11 @@ void __coreInitOpenGL()
     }
     #undef __REMAP
 
+    // # Intel hotfix: prevent hang on old drivers
+    GLEW_CORE_shared_context = (Core::Graphics->SystemGpuType() != CORE_GPU_INTEL) || GLEW_VERSION_4_1;
+
     // handle support for deprecated features
-    GLEW_V2_compatibility = !GLEW_VERSION_3_1;
+    GLEW_CORE_gl2_compatibility = !GLEW_VERSION_3_0;
 
     // change extension status through configuration file (e.g. GL_EXT_framebuffer_object)
     coreData::StrForEachToken(Core::Config->GetString(CORE_CONFIG_GRAPHICS_DISABLEEXTENSIONS), " ,;", [](const coreChar* pcToken) {glewDisableExtension(pcToken);});

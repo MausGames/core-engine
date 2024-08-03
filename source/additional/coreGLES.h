@@ -544,9 +544,10 @@ template <typename... A> void __UNUSED_ARGS(A...) {}
 
 
 // ****************************************************************
-/* support deprecated features */
-#define CORE_GL_V2_compatibility false
-extern coreBool CORE_GL_ES2_restriction;
+/* handle custom extensions */
+#define CORE_GL_CORE_shared_context    true
+#define CORE_GL_CORE_gl2_compatibility false
+extern coreBool CORE_GL_CORE_es2_restriction;
 
 
 // ****************************************************************

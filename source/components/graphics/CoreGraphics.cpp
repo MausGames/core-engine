@@ -112,8 +112,8 @@ CoreGraphics::CoreGraphics()noexcept
     else Core::Log->Warning("Vertical synchronization not directly supported (SDL: %s)", SDL_GetError());
 
     // setup texturing and packing
-    if(CORE_GL_SUPPORT(V2_compatibility) || DEFINED(_CORE_GLES_)) glHint(GL_GENERATE_MIPMAP_HINT, GL_NICEST);
-    if(CORE_GL_SUPPORT(ARB_seamless_cube_map))                    glEnable(GL_TEXTURE_CUBE_MAP_SEAMLESS);
+    if(CORE_GL_SUPPORT(CORE_gl2_compatibility) || DEFINED(_CORE_GLES_)) glHint(GL_GENERATE_MIPMAP_HINT, GL_NICEST);
+    if(CORE_GL_SUPPORT(ARB_seamless_cube_map))                          glEnable(GL_TEXTURE_CUBE_MAP_SEAMLESS);
     glHint(GL_TEXTURE_COMPRESSION_HINT, GL_NICEST);
     glPixelStorei(GL_PACK_ALIGNMENT,   4);
     glPixelStorei(GL_UNPACK_ALIGNMENT, 4);
@@ -142,7 +142,7 @@ CoreGraphics::CoreGraphics()noexcept
     glBlendEquation(GL_FUNC_ADD);
 
     // setup shading and rasterization
-    if(CORE_GL_SUPPORT(V2_compatibility))           glHint(GL_PERSPECTIVE_CORRECTION_HINT, GL_NICEST);
+    if(CORE_GL_SUPPORT(CORE_gl2_compatibility))     glHint(GL_PERSPECTIVE_CORRECTION_HINT, GL_NICEST);
     if(CORE_GL_SUPPORT(NV_multisample_filter_hint)) glHint(GL_MULTISAMPLE_FILTER_HINT_NV,  GL_NICEST);
     if(CORE_GL_SUPPORT(ARB_multisample))            glEnable(GL_MULTISAMPLE);
     if(CORE_GL_SUPPORT(ARB_framebuffer_sRGB))       glDisable(GL_FRAMEBUFFER_SRGB);
@@ -180,7 +180,7 @@ CoreGraphics::CoreGraphics()noexcept
     SDL_GL_SwapWindow(Core::System->GetWindow());
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | (CoreApp::Settings::Graphics::StencilSize ? GL_STENCIL_BUFFER_BIT : 0u));
 
-    if(Core::Config->GetBool(CORE_CONFIG_BASE_ASYNCMODE) && !DEFINED(_CORE_EMSCRIPTEN_))
+    if(Core::Config->GetBool(CORE_CONFIG_BASE_ASYNCMODE) && !DEFINED(_CORE_EMSCRIPTEN_) && CORE_GL_SUPPORT(CORE_shared_context))
     {
         // create resource context (after reset, because of flickering on Windows with fullscreen)
         m_pResourceContext = SDL_GL_CreateContext(Core::System->GetWindow());
