@@ -226,75 +226,79 @@ void __coreInitOpenGL()
     }
     #undef __IMPROVE
 
-    // remap GL_ARB_instanced_arrays to OpenGL 3.1 and 3.3
-    if(!glDrawArraysInstanced)   glDrawArraysInstanced   = glDrawArraysInstancedARB;
-    if(!glDrawElementsInstanced) glDrawElementsInstanced = glDrawElementsInstancedARB;
-    if(!glVertexAttribDivisor)   glVertexAttribDivisor   = glVertexAttribDivisorARB;
+    #define __REMAP(x,y) {if(!(x)) {(x) = (y); Core::Log->Info("Remapped function (" #x ")");}}
+    {
+        // remap GL_ARB_instanced_arrays to OpenGL 3.1 and 3.3
+        __REMAP(glDrawArraysInstanced,   glDrawArraysInstancedARB)
+        __REMAP(glDrawElementsInstanced, glDrawElementsInstancedARB)
+        __REMAP(glVertexAttribDivisor,   glVertexAttribDivisorARB)
 
-    // remap GL_ARB_robustness to OpenGL 4.5
-    if(!glGetGraphicsResetStatus) glGetGraphicsResetStatus = glGetGraphicsResetStatusARB;
-    if(!glGetnCompressedTexImage) glGetnCompressedTexImage = glGetnCompressedTexImageARB;
-    if(!glGetnTexImage)           glGetnTexImage           = glGetnTexImageARB;
-    if(!glGetnUniformdv)          glGetnUniformdv          = glGetnUniformdvARB;
-    if(!glGetnUniformfv)          glGetnUniformfv          = glGetnUniformfvARB;
-    if(!glGetnUniformiv)          glGetnUniformiv          = glGetnUniformivARB;
-    if(!glGetnUniformuiv)         glGetnUniformuiv         = glGetnUniformuivARB;
-    if(!glReadnPixels)            glReadnPixels            = glReadnPixelsARB;
+        // remap GL_ARB_robustness to OpenGL 4.5
+        __REMAP(glGetGraphicsResetStatus, glGetGraphicsResetStatusARB)
+        __REMAP(glGetnCompressedTexImage, glGetnCompressedTexImageARB)
+        __REMAP(glGetnTexImage,           glGetnTexImageARB)
+        __REMAP(glGetnUniformdv,          glGetnUniformdvARB)
+        __REMAP(glGetnUniformfv,          glGetnUniformfvARB)
+        __REMAP(glGetnUniformiv,          glGetnUniformivARB)
+        __REMAP(glGetnUniformuiv,         glGetnUniformuivARB)
+        __REMAP(glReadnPixels,            glReadnPixelsARB)
 
-    // remap GL_ARB_sample_shading to OpenGL 4.0
-    if(!glMinSampleShading) glMinSampleShading = glMinSampleShadingARB;
+        // remap GL_ARB_sample_shading to OpenGL 4.0
+        __REMAP(glMinSampleShading, glMinSampleShadingARB)
 
-    // remap GL_EXT_framebuffer_blit to GL_ARB_framebuffer_object
-    if(!glBlitFramebuffer) glBlitFramebuffer = glBlitFramebufferEXT;
+        // remap GL_EXT_framebuffer_blit to GL_ARB_framebuffer_object
+        __REMAP(glBlitFramebuffer, glBlitFramebufferEXT)
 
-    // remap GL_EXT_framebuffer_multisample to GL_ARB_framebuffer_object
-    if(!glRenderbufferStorageMultisample) glRenderbufferStorageMultisample = glRenderbufferStorageMultisampleEXT;
+        // remap GL_EXT_framebuffer_multisample to GL_ARB_framebuffer_object
+        __REMAP(glRenderbufferStorageMultisample, glRenderbufferStorageMultisampleEXT)
 
-    // remap GL_EXT_framebuffer_object to GL_ARB_framebuffer_object
-    if(!glBindFramebuffer)                     glBindFramebuffer                     = glBindFramebufferEXT;
-    if(!glBindRenderbuffer)                    glBindRenderbuffer                    = glBindRenderbufferEXT;
-    if(!glCheckFramebufferStatus)              glCheckFramebufferStatus              = glCheckFramebufferStatusEXT;
-    if(!glDeleteFramebuffers)                  glDeleteFramebuffers                  = glDeleteFramebuffersEXT;
-    if(!glDeleteRenderbuffers)                 glDeleteRenderbuffers                 = glDeleteRenderbuffersEXT;
-    if(!glFramebufferRenderbuffer)             glFramebufferRenderbuffer             = glFramebufferRenderbufferEXT;
-    if(!glFramebufferTexture1D)                glFramebufferTexture1D                = glFramebufferTexture1DEXT;
-    if(!glFramebufferTexture2D)                glFramebufferTexture2D                = glFramebufferTexture2DEXT;
-    if(!glFramebufferTexture3D)                glFramebufferTexture3D                = glFramebufferTexture3DEXT;
-    if(!glGenFramebuffers)                     glGenFramebuffers                     = glGenFramebuffersEXT;
-    if(!glGenRenderbuffers)                    glGenRenderbuffers                    = glGenRenderbuffersEXT;
-    if(!glGenerateMipmap)                      glGenerateMipmap                      = glGenerateMipmapEXT;
-    if(!glGetFramebufferAttachmentParameteriv) glGetFramebufferAttachmentParameteriv = glGetFramebufferAttachmentParameterivEXT;
-    if(!glGetRenderbufferParameteriv)          glGetRenderbufferParameteriv          = glGetRenderbufferParameterivEXT;
-    if(!glIsFramebuffer)                       glIsFramebuffer                       = glIsFramebufferEXT;
-    if(!glIsRenderbuffer)                      glIsRenderbuffer                      = glIsRenderbufferEXT;
-    if(!glRenderbufferStorage)                 glRenderbufferStorage                 = glRenderbufferStorageEXT;
+        // remap GL_EXT_framebuffer_object to GL_ARB_framebuffer_object
+        __REMAP(glBindFramebuffer,                     glBindFramebufferEXT)
+        __REMAP(glBindRenderbuffer,                    glBindRenderbufferEXT)
+        __REMAP(glCheckFramebufferStatus,              glCheckFramebufferStatusEXT)
+        __REMAP(glDeleteFramebuffers,                  glDeleteFramebuffersEXT)
+        __REMAP(glDeleteRenderbuffers,                 glDeleteRenderbuffersEXT)
+        __REMAP(glFramebufferRenderbuffer,             glFramebufferRenderbufferEXT)
+        __REMAP(glFramebufferTexture1D,                glFramebufferTexture1DEXT)
+        __REMAP(glFramebufferTexture2D,                glFramebufferTexture2DEXT)
+        __REMAP(glFramebufferTexture3D,                glFramebufferTexture3DEXT)
+        __REMAP(glGenFramebuffers,                     glGenFramebuffersEXT)
+        __REMAP(glGenRenderbuffers,                    glGenRenderbuffersEXT)
+        __REMAP(glGenerateMipmap,                      glGenerateMipmapEXT)
+        __REMAP(glGetFramebufferAttachmentParameteriv, glGetFramebufferAttachmentParameterivEXT)
+        __REMAP(glGetRenderbufferParameteriv,          glGetRenderbufferParameterivEXT)
+        __REMAP(glIsFramebuffer,                       glIsFramebufferEXT)
+        __REMAP(glIsRenderbuffer,                      glIsRenderbufferEXT)
+        __REMAP(glRenderbufferStorage,                 glRenderbufferStorageEXT)
 
-    // remap GL_EXT_gpu_shader4 to OpenGL 3.0
-    if(!glBindFragDataLocation) glBindFragDataLocation = glBindFragDataLocationEXT;
-    if(!glUniform1ui)           glUniform1ui           = glUniform1uiEXT;
-    if(!glUniform1uiv)          glUniform1uiv          = glUniform1uivEXT;
-    if(!glUniform2ui)           glUniform2ui           = glUniform2uiEXT;
-    if(!glUniform2uiv)          glUniform2uiv          = glUniform2uivEXT;
-    if(!glUniform3ui)           glUniform3ui           = glUniform3uiEXT;
-    if(!glUniform3uiv)          glUniform3uiv          = glUniform3uivEXT;
-    if(!glUniform4ui)           glUniform4ui           = glUniform4uiEXT;
-    if(!glUniform4uiv)          glUniform4uiv          = glUniform4uivEXT;
-    if(!glVertexAttribIPointer) glVertexAttribIPointer = glVertexAttribIPointerEXT;
+        // remap GL_EXT_gpu_shader4 to OpenGL 3.0
+        __REMAP(glBindFragDataLocation, glBindFragDataLocationEXT)
+        __REMAP(glUniform1ui,           glUniform1uiEXT)
+        __REMAP(glUniform1uiv,          glUniform1uivEXT)
+        __REMAP(glUniform2ui,           glUniform2uiEXT)
+        __REMAP(glUniform2uiv,          glUniform2uivEXT)
+        __REMAP(glUniform3ui,           glUniform3uiEXT)
+        __REMAP(glUniform3uiv,          glUniform3uivEXT)
+        __REMAP(glUniform4ui,           glUniform4uiEXT)
+        __REMAP(glUniform4uiv,          glUniform4uivEXT)
+        __REMAP(glVertexAttribIPointer, glVertexAttribIPointerEXT)
 
-    // remap GL_EXT_shader_image_load_store to GL_ARB_shader_image_load_store
-    if(!glBindImageTexture) glBindImageTexture = r_cast<PFNGLBINDIMAGETEXTUREPROC>(glBindImageTextureEXT);
-    if(!glMemoryBarrier)    glMemoryBarrier    = glMemoryBarrierEXT;
+        // remap GL_EXT_shader_image_load_store to GL_ARB_shader_image_load_store
+        __REMAP(glBindImageTexture, r_cast<PFNGLBINDIMAGETEXTUREPROC>(glBindImageTextureEXT))
+        __REMAP(glMemoryBarrier,    glMemoryBarrierEXT)
 
-    // remap GL_EXT_texture_storage to GL_ARB_texture_storage
-    if(!glTexStorage1D) glTexStorage1D = glTexStorage1DEXT;
-    if(!glTexStorage2D) glTexStorage2D = glTexStorage2DEXT;
-    if(!glTexStorage3D) glTexStorage3D = glTexStorage3DEXT;
+        // remap GL_EXT_texture_storage to GL_ARB_texture_storage
+        __REMAP(glTexStorage1D, glTexStorage1DEXT)
+        __REMAP(glTexStorage2D, glTexStorage2DEXT)
+        __REMAP(glTexStorage3D, glTexStorage3DEXT)
 
-    // remap GL_KHR_parallel_shader_compile to GL_ARB_parallel_shader_compile
-    if(!glMaxShaderCompilerThreadsARB) glMaxShaderCompilerThreadsARB = glMaxShaderCompilerThreadsKHR;
+        // remap GL_KHR_parallel_shader_compile to GL_ARB_parallel_shader_compile
+        __REMAP(glMaxShaderCompilerThreadsARB, glMaxShaderCompilerThreadsKHR)
 
-    // remap GL_NV_copy_image to GL_ARB_copy_image
-    if(!glCopyImageSubData) glCopyImageSubData = glCopyImageSubDataNV;
+        // remap GL_NV_copy_image to GL_ARB_copy_image
+        __REMAP(glCopyImageSubData, glCopyImageSubDataNV)
+    }
+    #undef __REMAP
 
     // handle support for deprecated features
     GLEW_V2_compatibility = !GLEW_VERSION_3_1;
