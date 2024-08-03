@@ -539,7 +539,8 @@ constexpr coreBool coreVector2::SameDir180(const coreVector2 v1, const coreVecto
 /* calculate angle between two vectors */
 inline coreFloat coreVector2::Angle(const coreVector2 v1, const coreVector2 v2)
 {
-    return ACOS(coreVector2::Dot(v1, v2));
+    ASSERT(v1.IsNormalized() && v2.IsNormalized())
+    return ACOS(CLAMP(coreVector2::Dot(v1, v2), -1.0f, 1.0f));
 }
 
 
@@ -810,7 +811,8 @@ constexpr coreBool coreVector3::SameDir180(const coreVector3 v1, const coreVecto
 /* calculate angle between two vectors */
 inline coreFloat coreVector3::Angle(const coreVector3 v1, const coreVector3 v2)
 {
-    return ACOS(coreVector3::Dot(v1, v2));
+    ASSERT(v1.IsNormalized() && v2.IsNormalized())
+    return ACOS(CLAMP(coreVector3::Dot(v1, v2), -1.0f, 1.0f));
 }
 
 

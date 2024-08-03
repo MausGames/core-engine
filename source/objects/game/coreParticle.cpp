@@ -132,6 +132,8 @@ void coreParticleSystem::Render()
                     std::memcpy(pCursor + 20u, &iColor,    sizeof(coreUint32));
                     pCursor += CORE_PARTICLE_INSTANCE_SIZE_HIGH;
                 }
+
+                ASSERT(coreUint32(pCursor - pRange) == m_apRenderList.size() * CORE_PARTICLE_INSTANCE_SIZE_HIGH)
             }
             else
             {
@@ -160,6 +162,8 @@ void coreParticleSystem::Render()
                     std::memcpy(pCursor + 24u, &iColor,    sizeof(coreUint32));
                     pCursor += CORE_PARTICLE_INSTANCE_SIZE_LOW;
                 }
+
+                ASSERT(coreUint32(pCursor - pRange) == m_apRenderList.size() * CORE_PARTICLE_INSTANCE_SIZE_LOW)
             }
 
             // unmap buffer

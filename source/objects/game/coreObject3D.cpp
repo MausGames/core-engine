@@ -618,6 +618,8 @@ void coreBatchList::__RenderDefault(const coreProgramPtr& pProgramInstanced, con
                         pCursor += CORE_BATCHLIST_INSTANCE_SIZE_HIGH;
                     }
                 }
+
+                ASSERT(coreUint32(pCursor - pRange) == iRenderCount * CORE_BATCHLIST_INSTANCE_SIZE_HIGH)
             }
             else
             {
@@ -648,6 +650,8 @@ void coreBatchList::__RenderDefault(const coreProgramPtr& pProgramInstanced, con
                         pCursor += CORE_BATCHLIST_INSTANCE_SIZE_LOW;
                     }
                 }
+
+                ASSERT(coreUint32(pCursor - pRange) == iRenderCount * CORE_BATCHLIST_INSTANCE_SIZE_LOW)
             }
 
             // unmap buffer
@@ -735,6 +739,8 @@ void coreBatchList::__RenderCustom(const coreProgramPtr& pProgramInstanced, cons
                     pCursor += m_iCustomSize;
                 }
             }
+
+            ASSERT(coreUint32(pCursor - pRange) == iRenderCount * m_iCustomSize)
 
             // unmap buffer
             m_paCustomBuffer->current().Unmap();
