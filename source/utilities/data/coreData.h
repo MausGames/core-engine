@@ -53,6 +53,23 @@ STATIC_ASSERT(CORE_DATA_STRING_LEN >= CORE_DATA_MAX_PATH)
     #define strtok_r strtok_s
 #endif
 
+enum coreCpuType : coreUint8
+{
+    CORE_CPU_AMD     = 1u,
+    CORE_CPU_INTEL   = 2u,
+    CORE_CPU_APPLE   = 3u,
+    CORE_CPU_UNKNOWN = 0xFFu,
+};
+
+enum coreGpuType : coreUint8
+{
+    CORE_GPU_AMD     = 1u,
+    CORE_GPU_NVIDIA  = 2u,
+    CORE_GPU_INTEL   = 3u,
+    CORE_GPU_APPLE   = 4u,
+    CORE_GPU_UNKNOWN = 0xFFu,
+};
+
 STATIC_ASSERT(sizeof(std::time_t) == 8u)
 
 
@@ -102,15 +119,16 @@ public:
     static inline const coreChar*  ProcessDir   () {return coreData::StrDirectory(coreData::ProcessPath());}
 
     /* get operating system properties */
-    static       coreBool   SystemMemory    (coreUint64* OUTPUT piAvailable, coreUint64* OUTPUT piTotal);
-    static       coreBool   SystemSpace     (coreUint64* OUTPUT piAvailable, coreUint64* OUTPUT piTotal);
-    static const coreChar*  SystemOsName    ();
-    static       coreUint32 SystemUserID    ();
-    static const coreChar*  SystemUserName  ();
-    static const coreChar*  SystemCpuVendor ();
-    static const coreChar*  SystemCpuBrand  ();
-    static const coreChar*  SystemDirAppData();
-    static const coreChar*  SystemDirTemp   ();
+    static       coreBool     SystemMemory    (coreUint64* OUTPUT piAvailable, coreUint64* OUTPUT piTotal);
+    static       coreBool     SystemSpace     (coreUint64* OUTPUT piAvailable, coreUint64* OUTPUT piTotal);
+    static const coreChar*    SystemOsName    ();
+    static       coreUint32   SystemUserID    ();
+    static const coreChar*    SystemUserName  ();
+    static const coreChar*    SystemCpuVendor ();
+    static const coreChar*    SystemCpuBrand  ();
+    static const coreCpuType& SystemCpuType   ();
+    static const coreChar*    SystemDirAppData();
+    static const coreChar*    SystemDirTemp   ();
 
     /* get build properties */
     static const coreChar* BuildCompiler  ();

@@ -117,9 +117,10 @@ public:
     void CheckOpenGL();
     void LabelOpenGL(const GLenum iType, const GLuint iIdentifier, const coreChar* pcLabel);
 
-    /* retrieve graphics memory */
-    coreUint64 ProcessGpuMemory()const;
-    coreBool   SystemGpuMemory (coreUint64* OUTPUT piAvailable, coreUint64* OUTPUT piTotal)const;
+    /* retrieve graphics properties */
+    coreUint64         ProcessGpuMemory()const;
+    coreBool           SystemGpuMemory (coreUint64* OUTPUT piAvailable, coreUint64* OUTPUT piTotal)const;
+    const coreGpuType& SystemGpuType   ()const;
 
     /* take screenshot */
     void        TakeScreenshot(const coreChar* pcPath)const;

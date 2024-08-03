@@ -644,6 +644,30 @@ coreBool CoreGraphics::SystemGpuMemory(coreUint64* OUTPUT piAvailable, coreUint6
 
 
 // ****************************************************************
+/* get GPU vendor identifier */
+const coreGpuType& CoreGraphics::SystemGpuType()const
+{
+    static const coreGpuType s_eGpuType = []()
+    {
+        // retrieve vendor string
+        const coreChar* pcVendor = coreData::StrToLower(PRINT("%s", glGetString(GL_VENDOR)));   // to handle NULL
+
+        // determine GPU vendor
+        if(std::strstr(pcVendor, "amd"))    return CORE_GPU_AMD;
+        if(std::strstr(pcVendor, "ati"))    return CORE_GPU_AMD;
+        if(std::strstr(pcVendor, "nvidia")) return CORE_GPU_NVIDIA;
+        if(std::strstr(pcVendor, "intel"))  return CORE_GPU_INTEL;
+        if(std::strstr(pcVendor, "apple"))  return CORE_GPU_APPLE;
+
+        WARN_IF(true) {}
+        return CORE_GPU_UNKNOWN;
+    }();
+
+    return s_eGpuType;
+}
+
+
+// ****************************************************************
 /* take screenshot */
 void CoreGraphics::TakeScreenshot(const coreChar* pcPath)const
 {

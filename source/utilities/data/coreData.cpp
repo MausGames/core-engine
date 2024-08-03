@@ -503,6 +503,28 @@ const coreChar* coreData::SystemCpuBrand()
 
 
 // ****************************************************************
+/* get CPU vendor identifier */
+const coreCpuType& coreData::SystemCpuType()
+{
+    static const coreCpuType s_eCpuType = []()
+    {
+        // retrieve brand string (vendor string is unreliable)
+        const coreChar* pcBrand = coreData::StrToLower(coreData::SystemCpuBrand());
+
+        // determine CPU vendor
+        if(std::strstr(pcBrand, "amd"))   return CORE_CPU_AMD;
+        if(std::strstr(pcBrand, "intel")) return CORE_CPU_INTEL;
+        if(std::strstr(pcBrand, "apple")) return CORE_CPU_APPLE;
+
+        WARN_IF(true) {}
+        return CORE_CPU_UNKNOWN;
+    }();
+
+    return s_eCpuType;
+}
+
+
+// ****************************************************************
 /* get path to store application data */
 const coreChar* coreData::SystemDirAppData()
 {
