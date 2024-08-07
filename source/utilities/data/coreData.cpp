@@ -2162,13 +2162,18 @@ const coreWchar* coreData::__ToWideChar(const coreChar* pcText)
 
     if(pcText)
     {
-        STATIC_ASSERT(sizeof(coreWchar) == sizeof(coreChar) * 2u)
+        // wide temp-string structure (defined here for easier handling)
+        struct alignas(ALIGNMENT_CACHE) coreTempStringW final
+        {
+            coreWchar aacData[4][CORE_DATA_STRING_LEN];
+            coreUintW iCurrent;
+        };
+        static THREAD_LOCAL coreTempStringW s_TempStringW;
+        coreTempStringW& A = s_TempStringW;
 
-        coreTempString& A = s_TempString;
-
-        // use multiple temp-strings as single target
-        if(++A.iCurrent >= CORE_DATA_STRING_NUM - 1u) A.iCurrent = 0u;       // one less
-        coreWchar* pcString = r_cast<coreWchar*>(A.aacData[A.iCurrent++]);   // one more
+        // access next wide temp-string
+        if(++A.iCurrent >= ARRAY_SIZE(A.aacData)) A.iCurrent = 0u;
+        coreWchar* pcString = A.aacData[A.iCurrent];
 
         // convert from UTF-8 string to UTF-16 string
         const coreInt32 iReturn = MultiByteToWideChar(CP_UTF8, 0u, pcText, -1, pcString, CORE_DATA_STRING_LEN);
