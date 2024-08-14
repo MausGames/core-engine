@@ -107,7 +107,7 @@ coreStatus coreModel::Load(coreFile* pFile)
 
     // apply post-transform vertex cache optimization to index data
     coreUint16* piOptimizedData = new coreUint16[m_iNumIndices];
-    Forsyth::OptimizeFaces(oImport.aiIndexData.data(), m_iNumIndices, m_iNumVertices, piOptimizedData, 16u);
+    Forsyth::OptimizeFaces(oImport.aiIndexData.data(), m_iNumIndices, m_iNumVertices, piOptimizedData);
 
     // apply pre-transform vertex cache optimization to vertex data
     coreUint16 iCurIndex = 0u;
@@ -483,8 +483,7 @@ coreVertexBuffer* coreModel::CreateVertexBuffer(const coreUint32 iNumVertices, c
     ASSERT(m_iNumVertices && (m_iNumVertices == iNumVertices))
 
     // create vertex buffer
-    m_aVertexBuffer.emplace_back();
-    m_aVertexBuffer.back().Create(iNumVertices, iVertexSize, pVertexData, eStorageType);
+    m_aVertexBuffer.emplace_back().Create(iNumVertices, iVertexSize, pVertexData, eStorageType);
 
     // disable current model object (to fully enable the next model)
     coreModel::Disable(false);

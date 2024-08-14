@@ -72,7 +72,7 @@ void stb_compress_dxt_block(unsigned char* __restrict dest, const unsigned char*
 #include <stdlib.h>
 #include <math.h>
 
-static const unsigned char stb__OMatch5[256][2] = {
+alignas(64) static const unsigned char stb__OMatch5[256][2] = {
    {  0,  0 }, {  0,  0 }, {  0,  1 }, {  0,  1 }, {  1,  0 }, {  1,  0 }, {  1,  0 }, {  1,  1 },
    {  1,  1 }, {  1,  1 }, {  1,  2 }, {  0,  4 }, {  2,  1 }, {  2,  1 }, {  2,  1 }, {  2,  2 },
    {  2,  2 }, {  2,  2 }, {  2,  3 }, {  1,  5 }, {  3,  2 }, {  3,  2 }, {  4,  0 }, {  3,  3 },
@@ -106,7 +106,8 @@ static const unsigned char stb__OMatch5[256][2] = {
    { 29, 29 }, { 29, 30 }, { 29, 30 }, { 30, 29 }, { 30, 29 }, { 30, 29 }, { 30, 30 }, { 30, 30 },
    { 30, 30 }, { 30, 31 }, { 30, 31 }, { 31, 30 }, { 31, 30 }, { 31, 30 }, { 31, 31 }, { 31, 31 },
 };
-static const unsigned char stb__OMatch6[256][2] = {
+
+alignas(64) static const unsigned char stb__OMatch6[256][2] = {
    {  0,  0 }, {  0,  1 }, {  1,  0 }, {  1,  1 }, {  1,  1 }, {  1,  2 }, {  2,  1 }, {  2,  2 },
    {  2,  2 }, {  2,  3 }, {  3,  2 }, {  3,  3 }, {  3,  3 }, {  3,  4 }, {  4,  3 }, {  4,  4 },
    {  4,  4 }, {  4,  5 }, {  5,  4 }, {  5,  5 }, {  5,  5 }, {  5,  6 }, {  6,  5 }, {  6,  6 },
@@ -346,12 +347,12 @@ static void stb__OptimizeColorsBlock(unsigned char* __restrict block, unsigned s
    *pmin16 = stb__As16Bit(minp[0],minp[1],minp[2]);
 }
 
-static const float stb__midpoints5[32] = {
+alignas(64) static const float stb__midpoints5[32] = {
    0.015686f, 0.047059f, 0.078431f, 0.111765f, 0.145098f, 0.176471f, 0.207843f, 0.241176f, 0.274510f, 0.305882f, 0.337255f, 0.370588f, 0.403922f, 0.435294f, 0.466667f, 0.5f,
    0.533333f, 0.564706f, 0.596078f, 0.629412f, 0.662745f, 0.694118f, 0.725490f, 0.758824f, 0.792157f, 0.823529f, 0.854902f, 0.888235f, 0.921569f, 0.952941f, 0.984314f, 1.0f
 };
 
-static const float stb__midpoints6[64] = {
+alignas(64) static const float stb__midpoints6[64] = {
    0.007843f, 0.023529f, 0.039216f, 0.054902f, 0.070588f, 0.086275f, 0.101961f, 0.117647f, 0.133333f, 0.149020f, 0.164706f, 0.180392f, 0.196078f, 0.211765f, 0.227451f, 0.245098f,
    0.262745f, 0.278431f, 0.294118f, 0.309804f, 0.325490f, 0.341176f, 0.356863f, 0.372549f, 0.388235f, 0.403922f, 0.419608f, 0.435294f, 0.450980f, 0.466667f, 0.482353f, 0.500000f,
    0.517647f, 0.533333f, 0.549020f, 0.564706f, 0.580392f, 0.596078f, 0.611765f, 0.627451f, 0.643137f, 0.658824f, 0.674510f, 0.690196f, 0.705882f, 0.721569f, 0.737255f, 0.754902f,
@@ -464,7 +465,8 @@ static void stb__CompressColorBlock(unsigned char* __restrict dest, unsigned cha
    unsigned short max16, min16;
    unsigned char color[4*4];
 
-   refinecount = (mode & STB_DXT_HIGHQUAL) ? 2 : 1;
+   refinecount = 2; //(mode & STB_DXT_HIGHQUAL) ? 2 : 1;
+   assert(mode & STB_DXT_HIGHQUAL);
 
 #if defined(_M_X64) || defined(__x86_64__) || defined(_M_ARM64) || defined(__aarch64__)
 
