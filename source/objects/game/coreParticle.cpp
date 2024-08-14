@@ -11,7 +11,7 @@
 
 // ****************************************************************
 /* default particle animation function */
-static coreParticle::coreAnim DefaultAnimateFunc(const coreParticle& oParticle)
+static coreParticle::coreAnim DefaultAnimateFunc(const coreParticle& oParticle, void* pData)
 {
     coreParticle::coreAnim oAnim;
 
@@ -37,6 +37,7 @@ coreParticleSystem::coreParticleSystem(const coreUint32 iStartSize)noexcept
 , m_pDefaultEffect     (NULL)
 , m_aiVertexArray      {}
 , m_aInstanceBuffer    {}
+, m_pAnimateData       (NULL)
 , m_nAnimateFunc       (DefaultAnimateFunc)
 , m_bUpdate            (false)
 {
@@ -118,7 +119,7 @@ void coreParticleSystem::Render()
                     const coreObject3D* pOrigin   = pParticle->GetEffect()->GetOrigin();
 
                     // animate particle
-                    const coreParticle::coreAnim oAnim = m_nAnimateFunc(*pParticle);
+                    const coreParticle::coreAnim oAnim = m_nAnimateFunc(*pParticle, m_pAnimateData);
 
                     // compress data
                     const coreVector3 vPosition = pOrigin ? (pOrigin->GetPosition() + oAnim.vPosition) : oAnim.vPosition;
@@ -148,7 +149,7 @@ void coreParticleSystem::Render()
                     const coreObject3D* pOrigin   = pParticle->GetEffect()->GetOrigin();
 
                     // animate particle
-                    const coreParticle::coreAnim oAnim = m_nAnimateFunc(*pParticle);
+                    const coreParticle::coreAnim oAnim = m_nAnimateFunc(*pParticle, m_pAnimateData);
 
                     // compress data
                     const coreVector3 vPosition = pOrigin ? (pOrigin->GetPosition() + oAnim.vPosition) : oAnim.vPosition;
@@ -193,7 +194,7 @@ void coreParticleSystem::Render()
             const coreObject3D* pOrigin   = pParticle->GetEffect()->GetOrigin();
 
             // animate particle
-            const coreParticle::coreAnim oAnim = m_nAnimateFunc(*pParticle);
+            const coreParticle::coreAnim oAnim = m_nAnimateFunc(*pParticle, m_pAnimateData);
 
             // update all particle uniforms
             pProgram->SendUniform(CORE_SHADER_UNIFORM_DIV_POSITION, pOrigin ? (pOrigin->GetPosition() + oAnim.vPosition) : oAnim.vPosition);

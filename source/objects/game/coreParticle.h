@@ -121,7 +121,7 @@ class coreParticleSystem final : public coreResourceRelation
 {
 public:
     /* internal types */
-    using coreAnimate = coreParticle::coreAnim (*) (const coreParticle&);
+    using coreAnimate = coreParticle::coreAnim (*) (const coreParticle&, void*);
 
 
 private:
@@ -138,6 +138,7 @@ private:
     coreRing<GLuint,           CORE_PARTICLE_INSTANCE_BUFFERS> m_aiVertexArray;     // vertex array objects
     coreRing<coreVertexBuffer, CORE_PARTICLE_INSTANCE_BUFFERS> m_aInstanceBuffer;   // instance data buffers
 
+    void*       m_pAnimateData;                                                     // partical animation custom data
     coreAnimate m_nAnimateFunc;                                                     // particle animation function
 
     coreBool m_bUpdate;                                                             // buffer update status (dirty flag)
@@ -180,7 +181,7 @@ public:
     template <typename F> void ForEachParticleAll(F&& nUpdateFunc);                                      // [](coreParticle* OUTPUT pParticle, const coreUintW i) -> void
 
     /* override particle animation function */
-    template <typename F> inline void SetAnimateFunc(F&& nAnimateFunc) {m_nAnimateFunc = std::forward<F>(nAnimateFunc);}   // [](const coreParticle& oParticle) -> coreParticle::coreAnim
+    template <typename F> inline void SetAnimateFunc(void* pAnimateData, F&& nAnimateFunc) {m_pAnimateData = pAnimateData; m_nAnimateFunc = std::forward<F>(nAnimateFunc);}   // [](const coreParticle& oParticle, void* pData) -> coreParticle::coreAnim
 
     /* get object properties */
     inline const coreTexturePtr& GetTexture           (const coreUintW iUnit)const {ASSERT(iUnit < CORE_TEXTURE_UNITS) return m_apTexture[iUnit];}
