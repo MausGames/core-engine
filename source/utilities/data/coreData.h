@@ -53,6 +53,10 @@ STATIC_ASSERT(CORE_DATA_STRING_LEN >= CORE_DATA_MAX_PATH)
     #define strtok_r strtok_s
 #endif
 
+#if defined(_CORE_MACOS_)
+    #define mbrtoc32(a,b,c,d) mbrtowc(r_cast<coreWchar*>(a), b, c, d)   // __STDC_ISO_10646__
+#endif
+
 enum coreCpuType : coreUint8
 {
     CORE_CPU_AMD     = 1u,

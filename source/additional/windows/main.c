@@ -194,6 +194,9 @@ extern int WINAPI wWinMain(_In_ HINSTANCE pInstance, _In_opt_ HINSTANCE pPrevIns
 
 #endif
 
+    // enable UTF-8 locale
+    setlocale(LC_ALL, ".UTF-8");
+
     // improve hardware utilization on NUMA systems
     ImproveNuma();
 

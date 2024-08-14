@@ -18,7 +18,7 @@ extern int coreMain(int argc, char** argv);
 int main(int argc, char** argv)
 {
     // enable UTF-8 locale
-    setlocale(LC_ALL, "C.UTF-8");
+    setlocale(LC_CTYPE, "UTF-8");
 
     // run the application
     return coreMain(argc, argv);
