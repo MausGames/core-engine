@@ -12,11 +12,13 @@
 // ****************************************************************
 /* constructor */
 coreFont::coreFont(const coreUint8 iHinting, const coreBool bKerning)noexcept
-: coreResource ()
-, m_aapFont    {}
-, m_pFile      (NULL)
-, m_iHinting   (iHinting)
-, m_bKerning   (bKerning)
+: coreResource   ()
+, m_aapFont      {}
+, m_pFile        (NULL)
+, m_iHinting     (iHinting)
+, m_bKerning     (bKerning)
+, m_iLastHeight  (0u)
+, m_iLastOutline (0u)
 {
 }
 
@@ -49,7 +51,7 @@ coreStatus coreFont::Load(coreFile* pFile)
         return CORE_INVALID_DATA;
     }
 
-    Core::Log->Info("Font (%s, %s, %s) loaded", m_sName.c_str(), this->RetrieveFamilyName(), this->RetrieveStyleName());
+    Core::Log->Info("Font (%s, %s, %s, %d faces) loaded", m_sName.c_str(), this->RetrieveFamilyName(), this->RetrieveStyleName(), TTF_FontFaces(m_aapFont.front().front()));
     return CORE_OK;
 }
 
@@ -68,6 +70,10 @@ coreStatus coreFont::Unload()
     coreFile::InternalDelete(&m_pFile);
     if(!m_sName.empty()) Core::Log->Info("Font (%s) unloaded", m_sName.c_str());
 
+    // reset properties
+    m_iLastHeight  = 0u;
+    m_iLastOutline = 0u;
+
     return CORE_OK;
 }
 
@@ -80,10 +86,10 @@ SDL_Surface* coreFont::CreateText(const coreChar* pcText, const coreUint16 iHeig
     return this->CreateTextOutline(pcText, iHeight, 0u);
 }
 
-SDL_Surface* coreFont::CreateGlyph(const coreChar32 iGlyph, const coreUint16 iHeight)
+SDL_Surface* coreFont::CreateGlyph(const coreChar32 cGlyph, const coreUint16 iHeight)
 {
     // render and return the text surface
-    return this->CreateGlyphOutline(iGlyph, iHeight, 0u);
+    return this->CreateGlyphOutline(cGlyph, iHeight, 0u);
 }
 
 
@@ -100,13 +106,13 @@ SDL_Surface* coreFont::CreateTextOutline(const coreChar* pcText, const coreUint1
     return TTF_RenderUTF8_Shaded(m_aapFont.at(iHeight).at(iOutline), (pcText[0] == '\0') ? " " : pcText, CORE_FONT_COLOR_FRONT, CORE_FONT_COLOR_BACK);
 }
 
-SDL_Surface* coreFont::CreateGlyphOutline(const coreChar32 iGlyph, const coreUint16 iHeight, const coreUint8 iOutline)
+SDL_Surface* coreFont::CreateGlyphOutline(const coreChar32 cGlyph, const coreUint16 iHeight, const coreUint8 iOutline)
 {
     // check for requested height and outline
     this->__EnsureHeight(iHeight, iOutline);
 
     // render and return the text surface
-    return TTF_RenderGlyph32_Shaded(m_aapFont.at(iHeight).at(iOutline), iGlyph, CORE_FONT_COLOR_FRONT, CORE_FONT_COLOR_BACK);
+    return TTF_RenderGlyph32_Shaded(m_aapFont.at(iHeight).at(iOutline), cGlyph, CORE_FONT_COLOR_FRONT, CORE_FONT_COLOR_BACK);
 }
 
 
@@ -141,67 +147,137 @@ coreInt8 coreFont::RetrieveTextShift(const coreChar* pcText, const coreUint16 iH
     while(*pcCursor)
     {
         // convert multibyte UTF-8 character to UTF-32 glyph
-        coreChar32 iGlyph;
-        pcCursor += coreFont::__ConvertToGlyph(pcCursor, &iGlyph);
+        coreChar32 cGlyph;
+        pcCursor += coreFont::ConvertToGlyph(pcCursor, &cGlyph);
 
         // retrieve vertical bounds
         coreInt32 iMinY, iMaxY;
-        TTF_GlyphMetrics32(pFont, iGlyph, NULL, NULL, &iMinY, &iMaxY, NULL);
+        TTF_GlyphMetrics32(pFont, cGlyph, NULL, NULL, &iMinY, &iMaxY, NULL);
 
         iTotalMinY = MIN(iTotalMinY, iMinY);
         iTotalMaxY = MAX(iTotalMaxY, iMaxY);
     }
 
     // retrieve baseline offsets
-    const coreInt32 iAscent  = TTF_FontAscent (pFont);
-    const coreInt32 iDescent = TTF_FontDescent(pFont);
+    const coreInt32 iAscent     = TTF_FontAscent (pFont);
+    const coreInt32 iDescent    = TTF_FontDescent(pFont);
+    const coreInt32 iRealHeight = TTF_FontHeight (pFont);
 
     // calculate final shift
-    return coreInt8(MIN(iAscent - iTotalMaxY, 0) + MAX(iDescent - iTotalMinY, 0));
+    return coreInt8(MIN(iAscent - iTotalMaxY, 0) + MAX(iDescent - iTotalMinY, 0) + (coreInt32(iHeight) - iRealHeight));
 }
 
 
 // ****************************************************************
 /* check if a glyph if provided by the font */
-coreBool coreFont::IsGlyphProvided(const coreChar32 iGlyph)
+coreBool coreFont::IsGlyphProvided(const coreChar32 cGlyph)
 {
     ASSERT(!m_aapFont.empty())
 
     // check for the glyph with first available sub-font
-    return (TTF_GlyphIsProvided32(m_aapFont.front().front(), iGlyph) != 0);
+    return (TTF_GlyphIsProvided32(m_aapFont.front().front(), cGlyph) != 0);
 }
 
 coreBool coreFont::IsGlyphProvided(const coreChar* pcMultiByte)
 {
     // convert multibyte UTF-8 character to UTF-32 glyph
-    coreChar32 iGlyph;
-    coreFont::__ConvertToGlyph(pcMultiByte, &iGlyph);
+    coreChar32 cGlyph;
+    coreFont::ConvertToGlyph(pcMultiByte, &cGlyph);
 
     // check for the glyph
-    return this->IsGlyphProvided(iGlyph);
+    return this->IsGlyphProvided(cGlyph);
 }
 
 
 // ****************************************************************
 /* retrieve dimensions of a glyph */
-void coreFont::RetrieveGlyphMetrics(const coreChar32 iGlyph, const coreUint16 iHeight, const coreUint8 iOutline, coreInt32* OUTPUT piMinX, coreInt32* OUTPUT piMaxX, coreInt32* OUTPUT piMinY, coreInt32* OUTPUT piMaxY, coreInt32* OUTPUT piAdvance)
+void coreFont::RetrieveGlyphMetrics(const coreChar32 cGlyph, const coreUint16 iHeight, const coreUint8 iOutline, coreInt32* OUTPUT piMinX, coreInt32* OUTPUT piMaxX, coreInt32* OUTPUT piMinY, coreInt32* OUTPUT piMaxY, coreInt32* OUTPUT piAdvance, coreInt32* OUTPUT piShift)
+{
+    // check for requested height and outline
+    this->__EnsureHeight(iHeight, iOutline);
+    TTF_Font* pFont = m_aapFont.at(iHeight).at(iOutline);
+
+    // retrieve dimensions
+    coreInt32 iMinY, iMaxY;
+    TTF_GlyphMetrics32(pFont, cGlyph, piMinX, piMaxX, &iMinY, &iMaxY, piAdvance);
+
+    // return vertical bounds
+    if(piMinY) (*piMinY) = iMinY;
+    if(piMaxY) (*piMaxY) = iMaxY;
+
+    if(piShift)
+    {
+        // retrieve baseline offsets
+        const coreInt32 iAscent     = TTF_FontAscent (pFont);
+        const coreInt32 iDescent    = TTF_FontDescent(pFont);
+        const coreInt32 iRealHeight = TTF_FontHeight (pFont);
+
+        // calculate final shift
+        (*piShift) = MIN(iAscent - iMaxY, 0) + MAX(iDescent - iMinY, 0) + (coreInt32(iHeight) - iRealHeight);
+    }
+}
+
+coreUint8 coreFont::RetrieveGlyphMetrics(const coreChar* pcMultiByte, const coreUint16 iHeight, const coreUint8 iOutline, coreInt32* OUTPUT piMinX, coreInt32* OUTPUT piMaxX, coreInt32* OUTPUT piMinY, coreInt32* OUTPUT piMaxY, coreInt32* OUTPUT piAdvance, coreInt32* OUTPUT piShift)
+{
+    // convert multibyte UTF-8 character to UTF-32 glyph
+    coreChar32 cGlyph;
+    const coreUint8 iBytes = coreFont::ConvertToGlyph(pcMultiByte, &cGlyph);
+
+    // retrieve dimensions and return number of bytes
+    this->RetrieveGlyphMetrics(cGlyph, iHeight, iOutline, piMinX, piMaxX, piMinY, piMaxY, piAdvance, piShift);
+    return iBytes;
+}
+
+
+// ****************************************************************
+/* retrieve kerning between two glyphs */
+coreInt32 coreFont::RetrieveGlyphKerning(const coreChar32 cGlyph1, const coreChar32 cGlyph2, const coreUint16 iHeight, const coreUint8 iOutline)
 {
     // check for requested height and outline
     this->__EnsureHeight(iHeight, iOutline);
 
-    // retrieve dimensions
-    TTF_GlyphMetrics32(m_aapFont.at(iHeight).at(iOutline), iGlyph, piMinX, piMaxX, piMinY, piMaxY, piAdvance);
+    // retrieve kerning
+    return TTF_GetFontKerningSizeGlyphs32(m_aapFont.at(iHeight).at(iOutline), cGlyph1, cGlyph2);
 }
 
-coreUint8 coreFont::RetrieveGlyphMetrics(const coreChar* pcMultiByte, const coreUint16 iHeight, const coreUint8 iOutline, coreInt32* OUTPUT piMinX, coreInt32* OUTPUT piMaxX, coreInt32* OUTPUT piMinY, coreInt32* OUTPUT piMaxY, coreInt32* OUTPUT piAdvance)
+coreInt32 coreFont::RetrieveGlyphKerning(const coreChar* pcMultiByte1, const coreChar* pcMultiByte2, const coreUint16 iHeight, const coreUint8 iOutline)
 {
     // convert multibyte UTF-8 character to UTF-32 glyph
-    coreChar32 iGlyph;
-    const coreUint8 iBytes = coreFont::__ConvertToGlyph(pcMultiByte, &iGlyph);
+    coreChar32 cGlyph1, cGlyph2;
+    coreFont::ConvertToGlyph(pcMultiByte1, &cGlyph1);
+    coreFont::ConvertToGlyph(pcMultiByte2, &cGlyph2);
 
-    // retrieve dimensions and return number of bytes
-    this->RetrieveGlyphMetrics(iGlyph, iHeight, iOutline, piMinX, piMaxX, piMinY, piMaxY, piAdvance);
-    return iBytes;
+    // retrieve kerning
+    return this->RetrieveGlyphKerning(cGlyph1, cGlyph2, iHeight, iOutline);
+}
+
+
+// ****************************************************************
+/* convert multibyte UTF-8 character to UTF-32 glyph */
+coreUint8 coreFont::ConvertToGlyph(const coreChar* pcMultiByte, coreChar32* OUTPUT pcGlyph)
+{
+    ASSERT(pcMultiByte && pcGlyph)
+
+    // handle UTF-8 encoding
+    if(HAS_FLAG((*pcMultiByte), 0x80u))
+    {
+        std::mbstate_t oState = {};
+
+        // count number of bytes
+        const coreUint8 iBytes = 2u + HAS_FLAG((*pcMultiByte), 0xE0u) + HAS_FLAG((*pcMultiByte), 0xF0u);
+        ASSERT(iBytes <= 4u)
+
+        // convert character
+        const coreUintW iResult = std::mbrtoc32(pcGlyph, pcMultiByte, iBytes, &oState);
+        ASSERT(iResult == iBytes)
+
+        return iBytes;
+    }
+
+    // just forward the character
+    (*pcGlyph) = (*pcMultiByte);
+
+    return 1u;
 }
 
 
@@ -212,7 +288,7 @@ coreBool coreFont::__InitHeight(const coreUint16 iHeight, const coreUint8 iOutli
     ASSERT(!m_aapFont.count(iHeight) || !m_aapFont.at(iHeight).count(iOutline))
 
     // create new sub-font
-    TTF_Font* pNewFont = TTF_OpenFontRW(m_pFile->CreateReadStream(), 1, iHeight);
+    TTF_Font* pNewFont = TTF_OpenFontIndexDPIRW(m_pFile->CreateReadStream(), 1, iHeight, 0, 0u, 0u);
     if(!pNewFont)
     {
         Core::Log->Warning("Sub-Font (%s, %u height, %u outline) could not be loaded", m_sName.c_str(), iHeight, iOutline);
@@ -238,38 +314,16 @@ coreBool coreFont::__InitHeight(const coreUint16 iHeight, const coreUint8 iOutli
 /* ensure font with specific properties */
 coreBool coreFont::__EnsureHeight(const coreUint16 iHeight, const coreUint8 iOutline)
 {
+    if((m_iLastHeight == iHeight) && (m_iLastOutline == iOutline)) return true;
+
     // check for requested height and outline
     if(!m_aapFont.count(iHeight) || !m_aapFont.at(iHeight).count(iOutline))
-        return this->__InitHeight(iHeight, iOutline);
-
-    return true;
-}
-
-
-// ****************************************************************
-/* convert multibyte UTF-8 character to UTF-32 glyph */
-coreUint8 coreFont::__ConvertToGlyph(const coreChar* pcMultiByte, coreChar32* OUTPUT piGlyph)
-{
-    ASSERT(pcMultiByte && piGlyph)
-
-    // handle UTF-8 encoding
-    if(HAS_FLAG((*pcMultiByte), 0x80u))
     {
-        std::mbstate_t oState = {};
-
-        // count number of bytes
-        const coreUint8 iBytes = 2u + HAS_FLAG((*pcMultiByte), 0xE0u) + HAS_FLAG((*pcMultiByte), 0xF0u);
-        ASSERT(iBytes <= 4u)
-
-        // convert character
-        const coreUintW iResult = std::mbrtoc32(piGlyph, pcMultiByte, iBytes, &oState);
-        ASSERT(iResult < coreUintW(-3))
-
-        return iBytes;
+        if(!this->__InitHeight(iHeight, iOutline)) return false;
     }
 
-    // just forward the character
-    (*piGlyph) = (*pcMultiByte);
-
-    return 1u;
+    // cache last request
+    m_iLastHeight  = iHeight;
+    m_iLastOutline = iOutline;
+    return true;
 }
