@@ -90,6 +90,7 @@ public:
     inline const coreUint8&   GetOutline   ()const {return m_iOutline;}
     inline const coreVector2& GetResolution()const {return m_vResolution;}
     inline const coreChar*    GetText      ()const {return m_sText.c_str();}
+    inline       coreUintW    GetTextLen   ()const {return m_sText.length();}
     inline const coreVector2& GetScale     ()const {return m_vScale;}
     inline const coreUint8&   GetRectify   ()const {return m_iRectify;}
 
@@ -102,7 +103,7 @@ private:
     void __Reshape()final;
 
     /* update object after modification */
-    inline void __UpdateTranslate()final {ADD_FLAG(m_eRefresh, CORE_LABEL_REFRESH_ALL)}
+    inline void __UpdateTranslate()final {this->RegenerateTexture();}
 
     /* generate the texture */
     void __GenerateTexture(const coreChar* pcText);

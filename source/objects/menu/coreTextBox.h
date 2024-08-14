@@ -62,6 +62,7 @@ public:
 
     /* get object properties */
     inline const coreChar* GetText   ()const {return m_sText.c_str();}
+    inline       coreUintW GetTextLen()const {return m_sText.length();}
     inline const coreChar& GetCursor ()const {return m_cCursor;}
     inline const coreChar& GetReplace()const {return m_cReplace;}
     inline const coreBool& GetInput  ()const {return m_bInput;}

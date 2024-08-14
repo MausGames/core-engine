@@ -82,10 +82,12 @@ public:
     void        Previous   ();
 
     /* access entries */
-    inline const coreChar* GetText    (const coreUintW iIndex)const {ASSERT(iIndex      < m_aEntry.size()) return m_aEntry[iIndex]     .psText->c_str();}
-    inline const T&        GetValue   (const coreUintW iIndex)const {ASSERT(iIndex      < m_aEntry.size()) return m_aEntry[iIndex]     .tValue;}
-    inline const coreChar* GetCurText ()const                       {ASSERT(m_iCurIndex < m_aEntry.size()) return m_aEntry[m_iCurIndex].psText->c_str();}
-    inline const T&        GetCurValue()const                       {ASSERT(m_iCurIndex < m_aEntry.size()) return m_aEntry[m_iCurIndex].tValue;}
+    inline const coreChar* GetText      (const coreUintW iIndex)const {ASSERT(iIndex      < m_aEntry.size()) return m_aEntry[iIndex]     .psText->c_str();}
+    inline       coreUintW GetTextLen   (const coreUintW iIndex)const {ASSERT(iIndex      < m_aEntry.size()) return m_aEntry[iIndex]     .psText->length();}
+    inline const T&        GetValue     (const coreUintW iIndex)const {ASSERT(iIndex      < m_aEntry.size()) return m_aEntry[iIndex]     .tValue;}
+    inline const coreChar* GetCurText   ()const                       {ASSERT(m_iCurIndex < m_aEntry.size()) return m_aEntry[m_iCurIndex].psText->c_str();}
+    inline       coreUintW GetCurTextLen()const                       {ASSERT(m_iCurIndex < m_aEntry.size()) return m_aEntry[m_iCurIndex].psText->length();}
+    inline const T&        GetCurValue  ()const                       {ASSERT(m_iCurIndex < m_aEntry.size()) return m_aEntry[m_iCurIndex].tValue;}
 
     /* set object properties */
     inline void SetEndless  (const coreBool  bEndless)  {m_bEndless  = bEndless;}

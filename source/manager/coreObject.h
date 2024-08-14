@@ -89,14 +89,15 @@ public:
     inline void SetStatus   (const coreInt32        iStatus)    {m_iStatus    = iStatus;}
 
     /* get object properties */
-    inline const coreTexturePtr& GetTexture  (const coreUintW iUnit)const {ASSERT(iUnit < CORE_TEXTURE_UNITS) return m_apTexture[iUnit];}
-    inline const coreProgramPtr& GetProgram  ()const                      {return m_pProgram;}
-    inline const coreVector4&    GetColor4   ()const                      {return m_vColor;}
-    inline       coreVector3     GetColor3   ()const                      {return m_vColor.xyz();}
-    inline const coreFloat&      GetAlpha    ()const                      {return m_vColor.w;}
-    inline const coreVector2&    GetTexSize  ()const                      {return m_vTexSize;}
-    inline const coreVector2&    GetTexOffset()const                      {return m_vTexOffset;}
-    inline const coreInt32&      GetStatus   ()const                      {return m_iStatus;}
+    inline const coreTexturePtr&   GetTexture  (const coreUintW iUnit)const {ASSERT(iUnit < CORE_TEXTURE_UNITS) return m_apTexture[iUnit];}
+    inline const coreProgramPtr&   GetProgram  ()const                      {return m_pProgram;}
+    inline const coreVector4&      GetColor4   ()const                      {return m_vColor;}
+    inline       coreVector3       GetColor3   ()const                      {return m_vColor.xyz();}
+    inline const coreFloat&        GetAlpha    ()const                      {return m_vColor.w;}
+    inline const coreVector2&      GetTexSize  ()const                      {return m_vTexSize;}
+    inline const coreVector2&      GetTexOffset()const                      {return m_vTexOffset;}
+    inline const coreObjectEnable& GetEnabled  ()const                      {return m_eEnabled;}
+    inline const coreInt32&        GetStatus   ()const                      {return m_iStatus;}
 };
 
 

@@ -128,7 +128,7 @@ private:
 
 private:
     coreSet<coreObject3D*> m_apObjectList;                                            // list with pointers to similar 3d-objects
-    coreUint32 m_iNumInstaces;                                                        // current instance-capacity of all buffers
+    coreUint32 m_iNumInstances;                                                       // current instance-capacity of all buffers
     coreUint32 m_iNumEnabled;                                                         // current number of render-enabled 3d-objects (render-count)
 
     coreProgramPtr m_pProgram;                                                        // shader-program object
@@ -233,7 +233,7 @@ template <typename F, typename G, typename H> void coreBatchList::CreateCustom(c
             glBindVertexArray(m_aiVertexArray[i]);
 
             // create custom attribute buffer
-            oBuffer.Create(m_iNumInstaces, m_iCustomSize, NULL, CORE_DATABUFFER_STORAGE_DYNAMIC);
+            oBuffer.Create(m_iNumInstances, m_iCustomSize, NULL, CORE_DATABUFFER_STORAGE_DYNAMIC);
             m_nDefineBufferFunc(&oBuffer);
 
             // set vertex data (custom only)

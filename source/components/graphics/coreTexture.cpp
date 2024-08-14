@@ -513,14 +513,14 @@ void coreTexture::Clear(const coreUint8 iLevel)
 {
     ASSERT(m_iIdentifier && (iLevel < m_iLevels))
 
-   if(CORE_GL_SUPPORT(ARB_clear_texture))
-   {
-       // clear the whole texture
-       glClearTexImage(m_iIdentifier, iLevel, m_Spec.iFormat, m_Spec.iType, NULL);
-   }
-   else
+    if(CORE_GL_SUPPORT(ARB_clear_texture))
     {
-        coreByte* pEmpty = ZERO_NEW(coreByte, F_TO_UI(m_vResolution.x) * F_TO_UI(m_vResolution.y) * 4u);
+        // clear the whole texture
+        glClearTexImage(m_iIdentifier, iLevel, m_Spec.iFormat, m_Spec.iType, NULL);
+    }
+    else
+    {
+        coreByte* pEmpty = ZERO_NEW(coreByte, F_TO_UI(m_vResolution.x) * F_TO_UI(m_vResolution.y) * (m_Spec.iBytes ? m_Spec.iBytes : 4u));
 
         if(CORE_GL_SUPPORT(ARB_direct_state_access))
         {

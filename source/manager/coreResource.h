@@ -108,11 +108,11 @@ public:
     DISABLE_COPY(coreResourceHandle)
 
     /* access resource object and status */
-    inline coreResource*   GetRawResource()const {return m_pResource;}
-    inline const coreBool& IsAutomatic   ()const {return m_bAutomatic;}
-    inline       coreBool  IsSuccessful  ()const {return (m_eStatus == CORE_OK);}
-    inline       coreBool  IsLoaded      ()const {return (m_eStatus != CORE_BUSY);}
-    inline       coreBool  IsLoading     ()const {return (!this->IsLoaded() && m_iRefCount);}
+    inline coreResource* GetRawResource()const {return m_pResource;}
+    inline coreBool      IsAutomatic   ()const {return m_bAutomatic;}
+    inline coreBool      IsSuccessful  ()const {return (m_eStatus == CORE_OK);}
+    inline coreBool      IsLoaded      ()const {return (m_eStatus != CORE_BUSY);}
+    inline coreBool      IsLoading     ()const {return (!this->IsLoaded() && m_iRefCount);}
 
     /* control the reference-counter */
     inline void RefIncrease() {m_iRefCount.FetchAdd(1u); ASSERT(m_iRefCount)}

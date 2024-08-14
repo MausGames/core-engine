@@ -115,8 +115,7 @@ CoreSystem::CoreSystem()noexcept
         {
             for(coreUintW i = 0u; i < iNumDisplays; ++i)
             {
-                m_aDisplayData.emplace_back();
-                coreDisplay& oDisplayData = m_aDisplayData.back();
+                coreDisplay& oDisplayData = m_aDisplayData.emplace_back();
 
                 // retrieve desktop resolution
                 SDL_DisplayMode oDesktop = {};
