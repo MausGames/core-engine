@@ -10,7 +10,6 @@ set_target_properties(
     C_STANDARD 17
     CXX_STANDARD 23
     DEBUG_POSTFIX _debug
-    UNITY_BUILD ON
 )
 
 target_sources(
