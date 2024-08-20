@@ -602,19 +602,20 @@ void coreBatchList::__RenderDefault(const coreProgramPtr& pProgramInstanced, con
                     if(pObject->IsEnabled(CORE_OBJECT_ENABLE_RENDER))
                     {
                         // compress data
-                        const coreUint64 iSize      = coreVector4(pObject->GetSize(), 0.0f)                      .PackFloat4x16();
-                        const coreUint64 iRotation  = pObject->GetRotation()                                     .PackSnorm4x16();
-                        const coreUint32 iColor     = pObject->GetColor4  ()                                     .PackUnorm4x8 ();
-                        const coreUint64 iTexParams = coreVector4(pObject->GetTexSize(), pObject->GetTexOffset()).PackFloat4x16();
+                        const coreVector3 vPosition  = pObject->GetPosition();
+                        const coreUint64  iSize      = coreVector4(pObject->GetSize(), 0.0f)                      .PackFloat4x16();
+                        const coreUint64  iRotation  = pObject->GetRotation()                                     .PackSnorm4x16();
+                        const coreUint32  iColor     = pObject->GetColor4  ()                                     .PackUnorm4x8 ();
+                        const coreUint64  iTexParams = coreVector4(pObject->GetTexSize(), pObject->GetTexOffset()).PackFloat4x16();
                         ASSERT((pObject->GetColor4   ().Min() >=  0.0f) && (pObject->GetColor4   ().Max() <= 1.0f))
                         ASSERT((pObject->GetTexOffset().Min() >= -4.0f) && (pObject->GetTexOffset().Max() <= 4.0f))
 
                         // write data to the buffer
-                        std::memcpy(pCursor,       &pObject->GetPosition(), sizeof(coreVector3));
-                        std::memcpy(pCursor + 12u, &iSize,                  sizeof(coreUint64));
-                        std::memcpy(pCursor + 20u, &iRotation,              sizeof(coreUint64));
-                        std::memcpy(pCursor + 28u, &iColor,                 sizeof(coreUint32));
-                        std::memcpy(pCursor + 32u, &iTexParams,             sizeof(coreUint64));
+                        std::memcpy(pCursor,       &vPosition,  sizeof(coreVector3));
+                        std::memcpy(pCursor + 12u, &iSize,      sizeof(coreUint64));
+                        std::memcpy(pCursor + 20u, &iRotation,  sizeof(coreUint64));
+                        std::memcpy(pCursor + 28u, &iColor,     sizeof(coreUint32));
+                        std::memcpy(pCursor + 32u, &iTexParams, sizeof(coreUint64));
                         pCursor += CORE_BATCHLIST_INSTANCE_SIZE_HIGH;
                     }
                 }
@@ -635,6 +636,8 @@ void coreBatchList::__RenderDefault(const coreProgramPtr& pProgramInstanced, con
                     if(pObject->IsEnabled(CORE_OBJECT_ENABLE_RENDER))
                     {
                         // compress data
+                        const coreVector3 vPosition  = pObject->GetPosition();
+                        const coreVector3 vSize      = pObject->GetSize    ();
                         const coreUint64  iRotation  = pObject->GetRotation().PackSnorm4x16();
                         const coreUint32  iColor     = pObject->GetColor4  ().PackUnorm4x8 ();
                         const coreVector4 vTexParams = coreVector4(pObject->GetTexSize(), pObject->GetTexOffset());
@@ -642,11 +645,11 @@ void coreBatchList::__RenderDefault(const coreProgramPtr& pProgramInstanced, con
                         ASSERT((pObject->GetTexOffset().Min() >= -4.0f) && (pObject->GetTexOffset().Max() <= 4.0f))
 
                         // write data to the buffer
-                        std::memcpy(pCursor,       &pObject->GetPosition(), sizeof(coreVector3));
-                        std::memcpy(pCursor + 12u, &pObject->GetSize(),     sizeof(coreVector3));
-                        std::memcpy(pCursor + 24u, &iRotation,              sizeof(coreUint64));
-                        std::memcpy(pCursor + 32u, &iColor,                 sizeof(coreUint32));
-                        std::memcpy(pCursor + 36u, &vTexParams,             sizeof(coreVector4));
+                        std::memcpy(pCursor,       &vPosition,  sizeof(coreVector3));
+                        std::memcpy(pCursor + 12u, &vSize,      sizeof(coreVector3));
+                        std::memcpy(pCursor + 24u, &iRotation,  sizeof(coreUint64));
+                        std::memcpy(pCursor + 32u, &iColor,     sizeof(coreUint32));
+                        std::memcpy(pCursor + 36u, &vTexParams, sizeof(coreVector4));
                         pCursor += CORE_BATCHLIST_INSTANCE_SIZE_LOW;
                     }
                 }

@@ -138,7 +138,7 @@ private:
     coreRing<GLuint,           CORE_PARTICLE_INSTANCE_BUFFERS> m_aiVertexArray;     // vertex array objects
     coreRing<coreVertexBuffer, CORE_PARTICLE_INSTANCE_BUFFERS> m_aInstanceBuffer;   // instance data buffers
 
-    void*       m_pAnimateData;                                                     // partical animation custom data
+    void*       m_pAnimateData;                                                     // particle animation custom data
     coreAnimate m_nAnimateFunc;                                                     // particle animation function
 
     coreBool m_bUpdate;                                                             // buffer update status (dirty flag)

@@ -236,9 +236,10 @@ public:
     inline coreBool CheckCache(const coreInt8 iLocation, const coreVector4 vVector) {if(m_avCache.count(iLocation)) {if(m_avCache.at(iLocation) == vVector) return false;} m_avCache[iLocation] = vVector; return true;}
 
     /* get object properties */
-    inline const GLuint& GetIdentifier()const                       {return m_iIdentifier;}
-    inline coreShader*   GetShader    (const coreUintW iIndex)const {ASSERT(iIndex < m_apShaderHandle.size()) return d_cast<coreShader*>(m_apShaderHandle[iIndex]->GetRawResource());}
-    inline coreUintW     GetNumShaders()const                       {return m_apShaderHandle.size();}
+    inline const GLuint&       GetIdentifier  ()const                       {return m_iIdentifier;}
+    inline coreShader*         GetShader      (const coreUintW iIndex)const {ASSERT(iIndex < m_apShaderHandle.size()) return d_cast<coreShader*>(m_apShaderHandle[iIndex]->GetRawResource());}
+    inline coreResourceHandle* GetShaderHandle(const coreUintW iIndex)const {ASSERT(iIndex < m_apShaderHandle.size()) return m_apShaderHandle[iIndex];}
+    inline coreUintW           GetNumShaders  ()const                       {return m_apShaderHandle.size();}
 
     /* load and save shader-cache */
     static coreBool LoadShaderCache();

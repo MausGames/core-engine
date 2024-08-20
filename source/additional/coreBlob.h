@@ -17,6 +17,12 @@
 
 // ****************************************************************
 /* blob-cache definitions */
+#if defined(_CORE_WINDOWS_)
+    #define CORE_BLOB_LIBRARY_NAME "libEGL.dll"
+#elif defined(_CORE_LINUX_)
+    #define CORE_BLOB_LIBRARY_NAME "libEGL.so"
+#endif
+
 #define CORE_BLOB_CACHE_NAME    (DEFINED(_CORE_DEBUG_) ? "blob_debug.cache" : "blob.cache")   // file name of the blob-cache
 #define CORE_BLOB_CACHE_MAGIC   (UINT_LITERAL("CBC0"))                                        // magic number of the blob-cache
 #define CORE_BLOB_CACHE_VERSION (0x00000001u)                                                 // current file version of the blob-cache
@@ -249,7 +255,7 @@ inline void coreInitBlobCache()
     #define __LOAD_FUNCTION(x,y) decltype(x)* __ ## x = r_cast<decltype(x)*>(coreData::GetAddress(y, #x));
     {
         // open EGL library
-        void* pLibrary = coreData::OpenLibrary("libEGL.so");
+        void* pLibrary = coreData::OpenLibrary(CORE_BLOB_LIBRARY_NAME);
         if(pLibrary)
         {
             __LOAD_FUNCTION(eglGetCurrentDisplay, pLibrary)

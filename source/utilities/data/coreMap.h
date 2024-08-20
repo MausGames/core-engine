@@ -73,9 +73,9 @@ public:
     inline coreUintW index_bs(const I& tKey)const {if(this->_cache_try(tKey)) return m_iCacheIndex; return m_atKeyList.index(this->_retrieve_bs(tKey));}
 
     /* control memory allocation */
-    inline void      reserve(const coreUintW iCapacity) {m_atValueList.reserve(iCapacity); m_atKeyList.reserve(iCapacity);}
-    inline void      shrink_to_fit()                    {m_atValueList.shrink_to_fit();    m_atKeyList.shrink_to_fit();}
-    inline coreUintW capacity()const                    {return m_atValueList.capacity();}
+    inline void      reserve      (const coreUintW iCapacity) {m_atValueList.reserve(iCapacity); m_atKeyList.reserve(iCapacity);}
+    inline void      shrink_to_fit()                          {m_atValueList.shrink_to_fit();    m_atKeyList.shrink_to_fit();}
+    inline coreUintW capacity     ()const                     {return m_atValueList.capacity();}
 
     /* manage container ordering */
     inline void sort_asc  () {this->_cache_clear(); if(!this->empty()) this->_sort([](const K& a, const K& b) {return (a < b);});}
@@ -130,9 +130,9 @@ protected:
     inline coreBool _check(const coreKeyConstIterator& it)const {return (it != m_atKeyList.end());}
 
     /* cache last requested entry */
-    inline void     _cache_set(const coreUintW iIndex) {m_iCacheIndex = iIndex;}
-    inline void     _cache_clear()                     {m_iCacheIndex = CORE_MAP_INVALID;}
-    inline coreBool _cache_try(const I& tKey)const     {return ((m_iCacheIndex != CORE_MAP_INVALID) && (m_atKeyList[m_iCacheIndex] == tKey));}
+    inline void     _cache_set  (const coreUintW iIndex) {m_iCacheIndex = iIndex;}
+    inline void     _cache_clear()                       {m_iCacheIndex = CORE_MAP_INVALID;}
+    inline coreBool _cache_try  (const I& tKey)const     {return ((m_iCacheIndex != CORE_MAP_INVALID) && (m_atKeyList[m_iCacheIndex] == tKey));}
 
     /* lookup entry by key */
     coreKeyIterator      _retrieve(const I& tKey);

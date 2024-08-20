@@ -22,6 +22,7 @@
 #include <crtdbg.h>
 #include <stdlib.h>
 #include <malloc.h>
+#include <locale.h>
 
 typedef BOOL (WINAPI *uMiniDumpWriteDump) (HANDLE, DWORD, HANDLE, MINIDUMP_TYPE, PMINIDUMP_EXCEPTION_INFORMATION, PMINIDUMP_USER_STREAM_INFORMATION, PMINIDUMP_CALLBACK_INFORMATION);
 

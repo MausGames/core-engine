@@ -196,10 +196,15 @@ void coreParticleSystem::Render()
             // animate particle
             const coreParticle::coreAnim oAnim = m_nAnimateFunc(*pParticle, m_pAnimateData);
 
+            // prepare data
+            const coreVector3 vPosition = pOrigin ? (pOrigin->GetPosition() + oAnim.vPosition) : oAnim.vPosition;
+            const coreVector3 vData     = coreVector3(oAnim.fScale, oAnim.fAngle, pParticle->GetValue());
+            const coreVector4 vColor    = oAnim.vColor;
+
             // update all particle uniforms
-            pProgram->SendUniform(CORE_SHADER_UNIFORM_DIV_POSITION, pOrigin ? (pOrigin->GetPosition() + oAnim.vPosition) : oAnim.vPosition);
-            pProgram->SendUniform(CORE_SHADER_UNIFORM_DIV_DATA,     coreVector3(oAnim.fScale, oAnim.fAngle, pParticle->GetValue()));
-            pProgram->SendUniform(CORE_SHADER_UNIFORM_COLOR,        oAnim.vColor);
+            pProgram->SendUniform(CORE_SHADER_UNIFORM_DIV_POSITION, vPosition);
+            pProgram->SendUniform(CORE_SHADER_UNIFORM_DIV_DATA,     vData);
+            pProgram->SendUniform(CORE_SHADER_UNIFORM_COLOR,        vColor);
 
             // draw the model
             pModel->Enable();
