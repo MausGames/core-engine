@@ -18,7 +18,7 @@ It is **designed to be supportive, versatile and powerful**, and to dynamically 
 > - Compile-Time Hashing, Random Numbers, Specialized Containers (List, Set, Map), General Utilities (String, Time, OS, etc.)
 > - Vectors (2d, 3d, 4d/Quaternions, Colors), Matrices (2x2, 3x3, 4x4, other), Splines
 > - Game Objects (2d, 3d), Particle System, Batching, Precise Collision Detection
-> - Menu Objects (Labels, Buttons, Check Boxes, Selection Boxes, Text Boxes, View/Scroll Boxes)
+> - Menu Objects (Labels (simple, rich), Buttons, Check Boxes, Selection Boxes, Text Boxes, View/Scroll Boxes)
 > - Tools (Blender Export, Shader Validation, Texture Optimization), Project Template, Launcher (Windows, Linux, Browser)
 
 *Please understand that pull requests are currently not accepted, as this is mainly a personal project and learning experience.*

@@ -150,6 +150,9 @@
     <ClCompile Include="..\..\..\source\objects\menu\coreLabel.cpp">
       <Filter>objects\menu</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\..\source\objects\menu\coreRichText.cpp">
+      <Filter>objects\menu</Filter>
+    </ClCompile>
     <ClCompile Include="..\..\..\source\components\graphics\coreFont.cpp">
       <Filter>components\graphics</Filter>
     </ClCompile>
@@ -310,6 +313,9 @@
       <Filter>utilities\data</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\source\objects\menu\coreLabel.h">
+      <Filter>objects\menu</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\source\objects\menu\coreRichText.h">
       <Filter>objects\menu</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\source\components\graphics\coreFont.h">

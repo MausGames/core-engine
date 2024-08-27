@@ -12,7 +12,9 @@
 
 // TODO 5: <old comment style>
 // TODO 3: coreResourceRelation in coreLabel is spamming the resource-manager
-// TODO 2: right and bottom side bleeds on non-aligned text, maybe add dummy lines/row, or clear instead of invalidate on non-aligned
+// TODO 3: there is empty space over and under text in the texture and render-output (not on every font! default.ttf has it), adjust to reduce overhead (only render or also texture?)
+// TODO 3: remove pitch to the right, similar to coreRichText
+// TODO 3: optional mipmapping to allow proper rendering in 3d space
 
 
 // ****************************************************************

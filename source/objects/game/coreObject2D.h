@@ -18,7 +18,8 @@
 
 // ****************************************************************
 /* 2d-object definitions */
-#define CORE_OBJECT2D_ORDER_DEFAULT (100u)
+#define CORE_OBJECT2D_DEPTH_DEFAULT (100u)
+#define CORE_OBJECT2D_DEPTH_MAX     (255u)
 
 enum coreObject2DStyle : coreUint8
 {
@@ -47,7 +48,7 @@ protected:
     coreVector2 m_vScreenDirection;   // transformed direction
 
     coreObject2DStyle m_eStyle;       // style overrides
-    coreUint8         m_iOrder;       // depth order (higher = farther away)
+    coreUint8         m_iDepth;       // depth order (higher = farther away)
 
     coreUint8   m_iFocused;           // interaction status (0 = hold, 1 = enter, 2 = leave)
     coreBool    m_bFocusable;         // enabled interaction handling
@@ -99,7 +100,7 @@ public:
     inline void SetCenter       (const coreVector2       vCenter)        {if(m_vCenter    != vCenter)    {ADD_FLAG(m_eUpdate, CORE_OBJECT_UPDATE_TRANSFORM) m_vCenter    = vCenter;}}
     inline void SetAlignment    (const coreVector2       vAlignment)     {if(m_vAlignment != vAlignment) {ADD_FLAG(m_eUpdate, CORE_OBJECT_UPDATE_TRANSFORM) m_vAlignment = vAlignment;}}
     inline void SetStyle        (const coreObject2DStyle eStyle)         {if(m_eStyle     != eStyle)     {ADD_FLAG(m_eUpdate, CORE_OBJECT_UPDATE_TRANSFORM) m_eStyle     = eStyle;}}
-    inline void SetOrder        (const coreUint8         iOrder)         {m_iOrder         = iOrder;}
+    inline void SetDepth        (const coreUint8         iDepth)         {m_iDepth         = iDepth;}
     inline void SetFocused      (const coreBool          bFocused)       {SET_BIT(m_iFocused, 0u, bFocused)}
     inline void SetFocusable    (const coreBool          bFocusable)     {m_bFocusable     = bFocusable;}
     inline void SetFocusModifier(const coreVector2       vFocusModifier) {m_vFocusModifier = vFocusModifier;}
@@ -111,7 +112,7 @@ public:
     inline const coreVector2&       GetCenter   ()const {return m_vCenter;}
     inline const coreVector2&       GetAlignment()const {return m_vAlignment;}
     inline const coreObject2DStyle& GetStyle    ()const {return m_eStyle;}
-    inline const coreUint8&         GetOrder    ()const {return m_iOrder;}
+    inline const coreUint8&         GetDepth    ()const {return m_iDepth;}
 };
 
 

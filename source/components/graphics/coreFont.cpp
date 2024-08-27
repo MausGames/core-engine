@@ -159,12 +159,11 @@ coreInt8 coreFont::RetrieveTextShift(const coreChar* pcText, const coreUint16 iH
     }
 
     // retrieve baseline offsets
-    const coreInt32 iAscent     = TTF_FontAscent (pFont);
-    const coreInt32 iDescent    = TTF_FontDescent(pFont);
-    const coreInt32 iRealHeight = TTF_FontHeight (pFont);
+    const coreInt32 iAscent  = TTF_FontAscent (pFont);
+    const coreInt32 iDescent = TTF_FontDescent(pFont);
 
     // calculate final shift
-    return coreInt8(MIN(iAscent - iTotalMaxY, 0) + MAX(iDescent - iTotalMinY, 0) + (coreInt32(iHeight) - iRealHeight));
+    return coreInt8(MIN(iAscent - iTotalMaxY, 0) + MAX(iDescent - iTotalMinY, 0));
 }
 
 
@@ -208,12 +207,11 @@ void coreFont::RetrieveGlyphMetrics(const coreChar32 cGlyph, const coreUint16 iH
     if(piShift)
     {
         // retrieve baseline offsets
-        const coreInt32 iAscent     = TTF_FontAscent (pFont);
-        const coreInt32 iDescent    = TTF_FontDescent(pFont);
-        const coreInt32 iRealHeight = TTF_FontHeight (pFont);
+        const coreInt32 iAscent  = TTF_FontAscent (pFont);
+        const coreInt32 iDescent = TTF_FontDescent(pFont);
 
         // calculate final shift
-        (*piShift) = MIN(iAscent - iMaxY, 0) + MAX(iDescent - iMinY, 0) + (coreInt32(iHeight) - iRealHeight);
+        (*piShift) = MIN(iAscent - iMaxY, 0) + MAX(iDescent - iMinY, 0);
     }
 }
 

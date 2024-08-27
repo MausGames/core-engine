@@ -382,12 +382,15 @@ coreStatus coreProgram::Load(coreFile* pFile)
             // bind instancing attribute locations
             if(CORE_GL_SUPPORT(ARB_instanced_arrays) && CORE_GL_SUPPORT(ARB_vertex_array_object))
             {
-                glBindAttribLocation(m_iIdentifier, CORE_SHADER_ATTRIBUTE_DIV_POSITION_NUM, CORE_SHADER_ATTRIBUTE_DIV_POSITION);
-                glBindAttribLocation(m_iIdentifier, CORE_SHADER_ATTRIBUTE_DIV_SIZE_NUM,     CORE_SHADER_ATTRIBUTE_DIV_SIZE);
-                glBindAttribLocation(m_iIdentifier, CORE_SHADER_ATTRIBUTE_DIV_ROTATION_NUM, CORE_SHADER_ATTRIBUTE_DIV_ROTATION);
-                glBindAttribLocation(m_iIdentifier, CORE_SHADER_ATTRIBUTE_DIV_DATA_NUM,     CORE_SHADER_ATTRIBUTE_DIV_DATA);
-                glBindAttribLocation(m_iIdentifier, CORE_SHADER_ATTRIBUTE_DIV_COLOR_NUM,    CORE_SHADER_ATTRIBUTE_DIV_COLOR);
-                glBindAttribLocation(m_iIdentifier, CORE_SHADER_ATTRIBUTE_DIV_TEXPARAM_NUM, CORE_SHADER_ATTRIBUTE_DIV_TEXPARAM);
+                glBindAttribLocation(m_iIdentifier, CORE_SHADER_ATTRIBUTE_DIV_POSITION_NUM,    CORE_SHADER_ATTRIBUTE_DIV_POSITION);
+                glBindAttribLocation(m_iIdentifier, CORE_SHADER_ATTRIBUTE_DIV_SIZE_NUM,        CORE_SHADER_ATTRIBUTE_DIV_SIZE);
+                glBindAttribLocation(m_iIdentifier, CORE_SHADER_ATTRIBUTE_DIV_ROTATION_NUM,    CORE_SHADER_ATTRIBUTE_DIV_ROTATION);
+                glBindAttribLocation(m_iIdentifier, CORE_SHADER_ATTRIBUTE_DIV_2D_POSITION_NUM, CORE_SHADER_ATTRIBUTE_DIV_2D_POSITION);
+                glBindAttribLocation(m_iIdentifier, CORE_SHADER_ATTRIBUTE_DIV_2D_SIZE_NUM,     CORE_SHADER_ATTRIBUTE_DIV_2D_SIZE);
+                glBindAttribLocation(m_iIdentifier, CORE_SHADER_ATTRIBUTE_DIV_2D_ROTATION_NUM, CORE_SHADER_ATTRIBUTE_DIV_2D_ROTATION);
+                glBindAttribLocation(m_iIdentifier, CORE_SHADER_ATTRIBUTE_DIV_DATA_NUM,        CORE_SHADER_ATTRIBUTE_DIV_DATA);
+                glBindAttribLocation(m_iIdentifier, CORE_SHADER_ATTRIBUTE_DIV_COLOR_NUM,       CORE_SHADER_ATTRIBUTE_DIV_COLOR);
+                glBindAttribLocation(m_iIdentifier, CORE_SHADER_ATTRIBUTE_DIV_TEXPARAM_NUM,    CORE_SHADER_ATTRIBUTE_DIV_TEXPARAM);
             }
 
             // bind custom attribute locations

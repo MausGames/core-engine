@@ -22,7 +22,7 @@ coreObject2D::coreObject2D()noexcept
 , m_vScreenSize      (coreVector2(0.0f,0.0f))
 , m_vScreenDirection (coreVector2(0.0f,1.0f))
 , m_eStyle           (CORE_OBJECT2D_STYLE_NOTHING)
-, m_iOrder           (CORE_OBJECT2D_ORDER_DEFAULT)
+, m_iDepth           (CORE_OBJECT2D_DEPTH_DEFAULT)
 , m_iFocused         (0u)
 , m_bFocusable       (false)
 , m_vFocusModifier   (coreVector2(1.0f,1.0f))
@@ -45,7 +45,7 @@ coreObject2D::coreObject2D(const coreObject2D& c)noexcept
 , m_vScreenSize      (c.m_vScreenSize)
 , m_vScreenDirection (c.m_vScreenDirection)
 , m_eStyle           (c.m_eStyle)
-, m_iOrder           (c.m_iOrder)
+, m_iDepth           (c.m_iDepth)
 , m_iFocused         (c.m_iFocused)
 , m_bFocusable       (c.m_bFocusable)
 , m_vFocusModifier   (c.m_vFocusModifier)
@@ -68,7 +68,7 @@ coreObject2D::coreObject2D(coreObject2D&& m)noexcept
 , m_vScreenSize      (m.m_vScreenSize)
 , m_vScreenDirection (m.m_vScreenDirection)
 , m_eStyle           (m.m_eStyle)
-, m_iOrder           (m.m_iOrder)
+, m_iDepth           (m.m_iDepth)
 , m_iFocused         (m.m_iFocused)
 , m_bFocusable       (m.m_bFocusable)
 , m_vFocusModifier   (m.m_vFocusModifier)
@@ -105,7 +105,7 @@ coreObject2D& coreObject2D::operator = (const coreObject2D& c)noexcept
     m_vScreenSize      = c.m_vScreenSize;
     m_vScreenDirection = c.m_vScreenDirection;
     m_eStyle           = c.m_eStyle;
-    m_iOrder           = c.m_iOrder;
+    m_iDepth           = c.m_iDepth;
     m_iFocused         = c.m_iFocused;
     m_bFocusable       = c.m_bFocusable;
     m_vFocusModifier   = c.m_vFocusModifier;
@@ -129,7 +129,7 @@ coreObject2D& coreObject2D::operator = (coreObject2D&& m)noexcept
     m_vScreenSize      = m.m_vScreenSize;
     m_vScreenDirection = m.m_vScreenDirection;
     m_eStyle           = m.m_eStyle;
-    m_iOrder           = m.m_iOrder;
+    m_iDepth           = m.m_iDepth;
     m_iFocused         = m.m_iFocused;
     m_bFocusable       = m.m_bFocusable;
     m_vFocusModifier   = m.m_vFocusModifier;
@@ -164,7 +164,7 @@ coreBool coreObject2D::Prepare(const coreProgramPtr& pProgram)
 
     // update all object uniforms
     coreProgram* pLocal = pProgram.GetResource();
-    pLocal->SendUniform(CORE_SHADER_UNIFORM_2D_POSITION, coreVector3(m_vScreenPosition, I_TO_F(m_iOrder) / 255.0f));
+    pLocal->SendUniform(CORE_SHADER_UNIFORM_2D_POSITION, coreVector3(m_vScreenPosition, I_TO_F(m_iDepth) / I_TO_F(CORE_OBJECT2D_DEPTH_MAX)));
     pLocal->SendUniform(CORE_SHADER_UNIFORM_2D_SIZE,     m_vScreenSize);
     pLocal->SendUniform(CORE_SHADER_UNIFORM_2D_ROTATION, m_vScreenDirection);
     pLocal->SendUniform(CORE_SHADER_UNIFORM_COLOR,       m_vColor);

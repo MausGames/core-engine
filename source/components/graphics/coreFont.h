@@ -20,6 +20,10 @@
 #define CORE_FONT_COLOR_FRONT (SDL_Color {0xFFu, 0xFFu, 0xFFu, 0xFFu})
 #define CORE_FONT_COLOR_BACK  (SDL_Color {0x00u, 0x00u, 0x00u, 0xFFu})
 
+#define CORE_FONT_GLYPH_NBSP  (U'\u00A0')   // no-break space
+#define CORE_FONT_GLYPH_NNBSP (U'\u202F')   // narrow no-break space
+#define CORE_FONT_GLYPH_WJ    (U'\u2060')   // word joiner
+
 
 // ****************************************************************
 /* font class */

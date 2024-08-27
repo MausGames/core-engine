@@ -78,7 +78,6 @@ void coreLabel::Render()
 {
     if(!this->IsEnabled(CORE_OBJECT_ENABLE_RENDER)) return;
 
-    ASSERT(m_pProgram)
     if(m_sText.empty()) return;
 
     if(m_eRefresh)
@@ -113,7 +112,6 @@ void coreLabel::Move()
 {
     if(!this->IsEnabled(CORE_OBJECT_ENABLE_MOVE)) return;
 
-    ASSERT(m_pProgram)
     if(m_sText.empty()) return;
 
     // check if requested font is loaded
@@ -297,7 +295,8 @@ void coreLabel::__GenerateTexture(const coreChar* pcText)
     }
 
     // update only required texture area
-    m_apTexture[CORE_LABEL_TEXTURE]->Invalidate(0u);
+    if(HAS_FLAG(m_iRectify, 0x03u)) m_apTexture[CORE_LABEL_TEXTURE]->Invalidate(0u);
+                               else m_apTexture[CORE_LABEL_TEXTURE]->Clear     (0u);
     m_apTexture[CORE_LABEL_TEXTURE]->Modify(0u, 0u, iPitch, iHeight, iSize, pData);
 
     // display only visible texture area

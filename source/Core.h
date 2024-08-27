@@ -871,6 +871,7 @@ private:
 #include "objects/menu/coreTextBox.h"
 #include "objects/menu/coreSwitchBox.h"
 #include "objects/menu/coreViewBox.h"
+#include "objects/menu/coreRichText.h"
 #include "objects/menu/coreMenu.h"
 #include "components/platform/CorePlatform.h"
 #include "components/debug/CoreDebug.h"

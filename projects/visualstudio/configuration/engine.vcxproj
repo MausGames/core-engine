@@ -304,6 +304,7 @@
     <ClCompile Include="..\..\..\source\objects\menu\coreCheckBox.cpp" />
     <ClCompile Include="..\..\..\source\objects\menu\coreLabel.cpp" />
     <ClCompile Include="..\..\..\source\objects\menu\coreMenu.cpp" />
+    <ClCompile Include="..\..\..\source\objects\menu\coreRichText.cpp" />
     <ClCompile Include="..\..\..\source\objects\menu\coreTextBox.cpp" />
     <ClCompile Include="..\..\..\source\objects\menu\coreViewBox.cpp" />
     <ClCompile Include="..\..\..\source\utilities\data\coreData.cpp" />
@@ -362,6 +363,7 @@
     <ClInclude Include="..\..\..\source\objects\menu\coreCheckBox.h" />
     <ClInclude Include="..\..\..\source\objects\menu\coreLabel.h" />
     <ClInclude Include="..\..\..\source\objects\menu\coreMenu.h" />
+    <ClInclude Include="..\..\..\source\objects\menu\coreRichText.h" />
     <ClInclude Include="..\..\..\source\objects\menu\coreSwitchBox.h" />
     <ClInclude Include="..\..\..\source\objects\menu\coreTextBox.h" />
     <ClInclude Include="..\..\..\source\objects\menu\coreViewBox.h" />

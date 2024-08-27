@@ -44,6 +44,7 @@ target_sources(
     ${BASE_DIRECTORY}/source/objects/menu/coreCheckBox.cpp
     ${BASE_DIRECTORY}/source/objects/menu/coreLabel.cpp
     ${BASE_DIRECTORY}/source/objects/menu/coreMenu.cpp
+    ${BASE_DIRECTORY}/source/objects/menu/coreRichText.cpp
     ${BASE_DIRECTORY}/source/objects/menu/coreTextBox.cpp
     ${BASE_DIRECTORY}/source/objects/menu/coreViewBox.cpp
     ${BASE_DIRECTORY}/source/utilities/data/hash/XXH.cpp

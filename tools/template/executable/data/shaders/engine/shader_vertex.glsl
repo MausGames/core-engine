@@ -20,6 +20,9 @@
     attribute vec3 a_v3DivPosition;
     attribute vec3 a_v3DivSize;
     attribute vec4 a_v4DivRotation;
+    attribute vec3 a_v3DivTwoPosition;
+    attribute vec2 a_v2DivTwoSize;
+    attribute vec2 a_v2DivTwoRotation;
     attribute vec3 a_v3DivData;
     attribute vec4 a_v4DivColor;
     attribute vec4 a_v4DivTexParam;
@@ -62,6 +65,9 @@
         #define u_v3Position    (a_v3DivPosition)
         #define u_v3Size        (a_v3DivSize)
         #define u_v4Rotation    (a_v4DivRotation)
+        #define u_v3TwoPosition (a_v3DivTwoPosition)
+        #define u_v2TwoSize     (a_v2DivTwoSize)
+        #define u_v2TwoRotation (a_v2DivTwoRotation)
         #define u_v4Color       (a_v4DivColor)
         #define u_v2TexSize     (a_v4DivTexParam.xy)
         #define u_v2TexOffset   (a_v4DivTexParam.zw)

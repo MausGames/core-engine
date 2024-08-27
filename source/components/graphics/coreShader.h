@@ -19,73 +19,79 @@
 
 // ****************************************************************
 /* shader definitions */
-#define CORE_SHADER_CACHE_NAME                  "shader.cache"           // file name of the shader-cache
-#define CORE_SHADER_CACHE_MAGIC                 (UINT_LITERAL("CSC0"))   // magic number of the shader-cache
-#define CORE_SHADER_CACHE_VERSION               (0x00000001u)            // current file version of the shader-cache
+#define CORE_SHADER_CACHE_NAME                    "shader.cache"           // file name of the shader-cache
+#define CORE_SHADER_CACHE_MAGIC                   (UINT_LITERAL("CSC0"))   // magic number of the shader-cache
+#define CORE_SHADER_CACHE_VERSION                 (0x00000001u)            // current file version of the shader-cache
 
-#define CORE_SHADER_BUFFER_TRANSFORM3D          "b_Transform3D"
-#define CORE_SHADER_BUFFER_TRANSFORM2D          "b_Transform2D"
-#define CORE_SHADER_BUFFER_AMBIENT              "b_Ambient"
-#define CORE_SHADER_BUFFER_TRANSFORM3D_NUM      (0u)
-#define CORE_SHADER_BUFFER_TRANSFORM2D_NUM      (1u)
-#define CORE_SHADER_BUFFER_AMBIENT_NUM          (2u)
+#define CORE_SHADER_BUFFER_TRANSFORM3D            "b_Transform3D"
+#define CORE_SHADER_BUFFER_TRANSFORM2D            "b_Transform2D"
+#define CORE_SHADER_BUFFER_AMBIENT                "b_Ambient"
+#define CORE_SHADER_BUFFER_TRANSFORM3D_NUM        (0u)
+#define CORE_SHADER_BUFFER_TRANSFORM2D_NUM        (1u)
+#define CORE_SHADER_BUFFER_AMBIENT_NUM            (2u)
 
-#define CORE_SHADER_UNIFORM_VIEWPROJ            "u_m4ViewProj"
-#define CORE_SHADER_UNIFORM_CAMERA              "u_m4Camera"
-#define CORE_SHADER_UNIFORM_PERSPECTIVE         "u_m4Perspective"
-#define CORE_SHADER_UNIFORM_ORTHO               "u_m4Ortho"
-#define CORE_SHADER_UNIFORM_RESOLUTION          "u_v4Resolution"
-#define CORE_SHADER_UNIFORM_CAMPOSITION         "u_v3CamPosition"
+#define CORE_SHADER_UNIFORM_VIEWPROJ              "u_m4ViewProj"
+#define CORE_SHADER_UNIFORM_CAMERA                "u_m4Camera"
+#define CORE_SHADER_UNIFORM_PERSPECTIVE           "u_m4Perspective"
+#define CORE_SHADER_UNIFORM_ORTHO                 "u_m4Ortho"
+#define CORE_SHADER_UNIFORM_RESOLUTION            "u_v4Resolution"
+#define CORE_SHADER_UNIFORM_CAMPOSITION           "u_v3CamPosition"
 
-#define CORE_SHADER_UNIFORM_LIGHT_POSITION      "u_av4LightPos[%zu]"
-#define CORE_SHADER_UNIFORM_LIGHT_DIRECTION     "u_av4LightDir[%zu]"
-#define CORE_SHADER_UNIFORM_LIGHT_VALUE         "u_av4LightValue[%zu]"
+#define CORE_SHADER_UNIFORM_LIGHT_POSITION        "u_av4LightPos[%zu]"
+#define CORE_SHADER_UNIFORM_LIGHT_DIRECTION       "u_av4LightDir[%zu]"
+#define CORE_SHADER_UNIFORM_LIGHT_VALUE           "u_av4LightValue[%zu]"
 
-#define CORE_SHADER_UNIFORM_3D_POSITION         "u_v3Position"
-#define CORE_SHADER_UNIFORM_3D_SIZE             "u_v3Size"
-#define CORE_SHADER_UNIFORM_3D_ROTATION         "u_v4Rotation"
-#define CORE_SHADER_UNIFORM_2D_POSITION         "u_v3TwoPosition"
-#define CORE_SHADER_UNIFORM_2D_SIZE             "u_v2TwoSize"
-#define CORE_SHADER_UNIFORM_2D_ROTATION         "u_v2TwoRotation"
-#define CORE_SHADER_UNIFORM_COLOR               "u_v4Color"
-#define CORE_SHADER_UNIFORM_TEXPARAM            "u_v4TexParam"
-#define CORE_SHADER_UNIFORM_TEXTURE_2D          "u_as2Texture2D[%zu]"
-#define CORE_SHADER_UNIFORM_TEXTURE_SHADOW      "u_as2TextureShadow[%zu]"
+#define CORE_SHADER_UNIFORM_3D_POSITION           "u_v3Position"
+#define CORE_SHADER_UNIFORM_3D_SIZE               "u_v3Size"
+#define CORE_SHADER_UNIFORM_3D_ROTATION           "u_v4Rotation"
+#define CORE_SHADER_UNIFORM_2D_POSITION           "u_v3TwoPosition"
+#define CORE_SHADER_UNIFORM_2D_SIZE               "u_v2TwoSize"
+#define CORE_SHADER_UNIFORM_2D_ROTATION           "u_v2TwoRotation"
+#define CORE_SHADER_UNIFORM_COLOR                 "u_v4Color"
+#define CORE_SHADER_UNIFORM_TEXPARAM              "u_v4TexParam"
+#define CORE_SHADER_UNIFORM_TEXTURE_2D            "u_as2Texture2D[%zu]"
+#define CORE_SHADER_UNIFORM_TEXTURE_SHADOW        "u_as2TextureShadow[%zu]"
 
-#define CORE_SHADER_UNIFORM_DIV_POSITION        "u_v3DivPosition"
-#define CORE_SHADER_UNIFORM_DIV_DATA            "u_v3DivData"
+#define CORE_SHADER_UNIFORM_DIV_POSITION          "u_v3DivPosition"
+#define CORE_SHADER_UNIFORM_DIV_DATA              "u_v3DivData"
 
-#define CORE_SHADER_ATTRIBUTE_POSITION          "a_v3RawPosition"
-#define CORE_SHADER_ATTRIBUTE_TEXCOORD          "a_v2RawTexCoord"
-#define CORE_SHADER_ATTRIBUTE_NORMAL            "a_v3RawNormal"
-#define CORE_SHADER_ATTRIBUTE_TANGENT           "a_v4RawTangent"
-#define CORE_SHADER_ATTRIBUTE_POSITION_NUM      (0u)
-#define CORE_SHADER_ATTRIBUTE_TEXCOORD_NUM      (1u)
-#define CORE_SHADER_ATTRIBUTE_NORMAL_NUM        (2u)
-#define CORE_SHADER_ATTRIBUTE_TANGENT_NUM       (3u)
+#define CORE_SHADER_ATTRIBUTE_POSITION            "a_v3RawPosition"
+#define CORE_SHADER_ATTRIBUTE_TEXCOORD            "a_v2RawTexCoord"
+#define CORE_SHADER_ATTRIBUTE_NORMAL              "a_v3RawNormal"
+#define CORE_SHADER_ATTRIBUTE_TANGENT             "a_v4RawTangent"
+#define CORE_SHADER_ATTRIBUTE_POSITION_NUM        (0u)
+#define CORE_SHADER_ATTRIBUTE_TEXCOORD_NUM        (1u)
+#define CORE_SHADER_ATTRIBUTE_NORMAL_NUM          (2u)
+#define CORE_SHADER_ATTRIBUTE_TANGENT_NUM         (3u)
 
-#define CORE_SHADER_ATTRIBUTE_DIV_POSITION      "a_v3DivPosition"
-#define CORE_SHADER_ATTRIBUTE_DIV_SIZE          "a_v3DivSize"
-#define CORE_SHADER_ATTRIBUTE_DIV_ROTATION      "a_v4DivRotation"
-#define CORE_SHADER_ATTRIBUTE_DIV_DATA          "a_v3DivData"
-#define CORE_SHADER_ATTRIBUTE_DIV_COLOR         "a_v4DivColor"
-#define CORE_SHADER_ATTRIBUTE_DIV_TEXPARAM      "a_v4DivTexParam"
-#define CORE_SHADER_ATTRIBUTE_DIV_POSITION_NUM  (4u)
-#define CORE_SHADER_ATTRIBUTE_DIV_SIZE_NUM      (5u)
-#define CORE_SHADER_ATTRIBUTE_DIV_ROTATION_NUM  (6u)
-#define CORE_SHADER_ATTRIBUTE_DIV_DATA_NUM      (DEFINED(_CORE_GLES_) ? 9u : 5u)
-#define CORE_SHADER_ATTRIBUTE_DIV_COLOR_NUM     (7u)
-#define CORE_SHADER_ATTRIBUTE_DIV_TEXPARAM_NUM  (8u)
+#define CORE_SHADER_ATTRIBUTE_DIV_POSITION        "a_v3DivPosition"
+#define CORE_SHADER_ATTRIBUTE_DIV_SIZE            "a_v3DivSize"
+#define CORE_SHADER_ATTRIBUTE_DIV_ROTATION        "a_v4DivRotation"
+#define CORE_SHADER_ATTRIBUTE_DIV_2D_POSITION     "a_v3DivTwoPosition"
+#define CORE_SHADER_ATTRIBUTE_DIV_2D_SIZE         "a_v2DivTwoSize"
+#define CORE_SHADER_ATTRIBUTE_DIV_2D_ROTATION     "a_v2DivTwoRotation"
+#define CORE_SHADER_ATTRIBUTE_DIV_DATA            "a_v3DivData"
+#define CORE_SHADER_ATTRIBUTE_DIV_COLOR           "a_v4DivColor"
+#define CORE_SHADER_ATTRIBUTE_DIV_TEXPARAM        "a_v4DivTexParam"
+#define CORE_SHADER_ATTRIBUTE_DIV_POSITION_NUM    (4u)
+#define CORE_SHADER_ATTRIBUTE_DIV_SIZE_NUM        (5u)
+#define CORE_SHADER_ATTRIBUTE_DIV_ROTATION_NUM    (6u)
+#define CORE_SHADER_ATTRIBUTE_DIV_2D_POSITION_NUM (DEFINED(_CORE_GLES_) ?  9u : 4u)
+#define CORE_SHADER_ATTRIBUTE_DIV_2D_SIZE_NUM     (DEFINED(_CORE_GLES_) ? 10u : 5u)
+#define CORE_SHADER_ATTRIBUTE_DIV_2D_ROTATION_NUM (DEFINED(_CORE_GLES_) ? 11u : 6u)
+#define CORE_SHADER_ATTRIBUTE_DIV_DATA_NUM        (DEFINED(_CORE_GLES_) ? 12u : 5u)
+#define CORE_SHADER_ATTRIBUTE_DIV_COLOR_NUM       (7u)
+#define CORE_SHADER_ATTRIBUTE_DIV_TEXPARAM_NUM    (8u)
 
-#define CORE_SHADER_OUTPUT_COLOR                "o_av4OutColor[%zu]"
-#define CORE_SHADER_OUTPUT_COLORS               (2u)
+#define CORE_SHADER_OUTPUT_COLOR                  "o_av4OutColor[%zu]"
+#define CORE_SHADER_OUTPUT_COLORS                 (3u)
 
-#define CORE_SHADER_BUFFER_USER_NUM             (3u)
-#define CORE_SHADER_ATTRIBUTE_USER_NUM          (DEFINED(_CORE_GLES_) ? 10u : 9u)
+#define CORE_SHADER_BUFFER_USER_NUM               (3u)
+#define CORE_SHADER_ATTRIBUTE_USER_NUM            (DEFINED(_CORE_GLES_) ? 13u : 9u)
 
-#define CORE_SHADER_OPTION_INSTANCING           "#define _CORE_OPTION_INSTANCING_"     " (1) \n"
-#define CORE_SHADER_OPTION_NO_ROTATION          "#define _CORE_OPTION_NO_ROTATION_"    " (1) \n"
-#define CORE_SHADER_OPTION_NO_EARLY_DEPTH       "#define _CORE_OPTION_NO_EARLY_DEPTH_" " (1) \n"
+#define CORE_SHADER_OPTION_INSTANCING             "#define _CORE_OPTION_INSTANCING_"     " (1) \n"
+#define CORE_SHADER_OPTION_NO_ROTATION            "#define _CORE_OPTION_NO_ROTATION_"    " (1) \n"
+#define CORE_SHADER_OPTION_NO_EARLY_DEPTH         "#define _CORE_OPTION_NO_EARLY_DEPTH_" " (1) \n"
 
 enum coreProgramStatus : coreUint8
 {
