@@ -96,12 +96,13 @@ void coreButton::Move()
 
     // override focus status
     if(m_iOverride < 0) this->SetFocused(false);
+    this->SetFocusable(m_iOverride >= 0);
 
     // set current background texture
     const coreBool bStatus = (m_iOverride > 0) ? true : ((m_iOverride < 0) ? false : this->IsFocused());
     if(m_bBusy != bStatus)
     {
-        m_bBusy = bStatus;
+        m_bBusy        = bStatus;
         m_apTexture[0] = m_apBackground[m_bBusy ? 1u : 0u];
     }
 

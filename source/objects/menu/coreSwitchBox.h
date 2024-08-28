@@ -115,7 +115,7 @@ private:
 template <typename T> coreSwitchBox<T>::coreSwitchBox()noexcept
 : coreObject2D  ()
 , coreTranslate ()
-, m_aArrow      ()
+, m_aArrow      {}
 , m_Caption     ()
 , m_aEntry      {}
 , m_iCurIndex   (0u)
@@ -205,6 +205,7 @@ template <typename T> void coreSwitchBox<T>::Move()
 
     // override focus status
     if(m_iOverride < 0) this->SetFocused(false);
+    this->SetFocusable(m_iOverride >= 0);
 
     // forward transparency
     m_aArrow[0].SetAlpha(this->GetAlpha());
@@ -416,7 +417,9 @@ template <typename T> void coreSwitchBox<T>::Next()
 
     // increase current index
     if(++m_iCurIndex >= m_aEntry.size())
+    {
         m_iCurIndex = m_bEndless ? 0u : (m_aEntry.size() - 1u);
+    }
 
     // update text
     this->__UpdateTranslate();
@@ -431,7 +434,9 @@ template <typename T> void coreSwitchBox<T>::Previous()
 
     // decrease current index
     if(--m_iCurIndex >= m_aEntry.size())
+    {
         m_iCurIndex = m_bEndless ? (m_aEntry.size() - 1u) : 0u;
+    }
 
     // update text
     this->__UpdateTranslate();

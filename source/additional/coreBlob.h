@@ -10,7 +10,7 @@
 #ifndef _CORE_GUARD_BLOB_H_
 #define _CORE_GUARD_BLOB_H_
 
-#if __has_include(<EGL/egl.h>)
+#if __has_include(<EGL/egl.h>) && !defined(_CORE_EMSCRIPTEN_)
 
 #include <EGL/egl.h>
 

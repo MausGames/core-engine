@@ -56,7 +56,7 @@ protected:
 
     coreObjectUpdate m_eUpdate;                       // update status (dirty flag)
     coreObjectEnable m_eEnabled;                      // enabled object routines
-    coreInt32 m_iStatus;                              // numeric status-value for individual use
+    coreInt32        m_iStatus;                       // numeric status-value for individual use
 
 
 protected:
@@ -78,6 +78,11 @@ public:
 
     /* check for enabled object routines */
     inline coreBool IsEnabled(const coreObjectEnable eEnabled)const {ASSERT(eEnabled) return HAS_FLAG(m_eEnabled, eEnabled);}
+
+    /* handle status-value */
+    inline void     AddStatus   (const coreInt32 iStatus)      {ADD_FLAG       (m_iStatus, iStatus)}
+    inline void     RemoveStatus(const coreInt32 iStatus)      {REMOVE_FLAG    (m_iStatus, iStatus)}
+    inline coreBool HasStatus   (const coreInt32 iStatus)const {return HAS_FLAG(m_iStatus, iStatus);}
 
     /* set object properties */
     inline void SetColor4   (const coreVector4      vColor)     {m_vColor     = vColor;}

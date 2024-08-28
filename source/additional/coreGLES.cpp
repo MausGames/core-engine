@@ -304,7 +304,7 @@ void __coreInitOpenGLES()
     __CORE_GLES_CHECK(GL_WEBGL_color_buffer_float, false);   // not used
 
     // fetch data buffer read function
-    __CORE_GLES_FUNC_FETCH(glGetBufferSubData, -, false)
+    __CORE_GLES_FUNC_FETCH(glGetBufferSubData, , false)
     if(!g_CoreContext.__glGetBufferSubData) g_CoreContext.__glGetBufferSubData = [](GLenum, GLintptr, GLsizeiptr, void*){};   // not available in OpenGL ES
 
     // map various extensions to GL_CORE_texture_float (# only for half-float)

@@ -861,6 +861,8 @@ void coreData::LogEnvironment()
     extern coreChar** environ;
 #endif
 
+    WARN_IF(!environ) return;
+
     Core::Log->ListStartInfo("Environment Variables");
     {
         for(coreChar** ppcEnviron = environ; (*ppcEnviron); ++ppcEnviron)

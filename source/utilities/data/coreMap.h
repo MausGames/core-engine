@@ -16,6 +16,7 @@
 // TODO 3: erase and clear strings in coreMapStrFull ?
 // TODO 3: reserve and shrink_to_fit strings in coreMapStrFull ?
 // TODO 3: "deducing this" in C++23, to get rid of the const and non-const variants for at and at_bs (maybe somewhere else too)
+// TODO 3: change m_asStringList to regular list
 
 
 // ****************************************************************
@@ -189,8 +190,6 @@ public:
     /* return original string */
     inline const coreChar* get_string(const typename coreMapStrBase<T>::coreValueIterator&      it)      {return m_asStringList.at_bs(*this->get_key(it)).c_str();}
     inline const coreChar* get_string(const typename coreMapStrBase<T>::coreValueConstIterator& it)const {return m_asStringList.at_bs(*this->get_key(it)).c_str();}
-    inline const coreChar* get_string(const typename coreMapStrBase<T>::coreKeyIterator&        it)      {return m_asStringList.at_bs(*it).c_str();}
-    inline const coreChar* get_string(const typename coreMapStrBase<T>::coreKeyConstIterator&   it)const {return m_asStringList.at_bs(*it).c_str();}
 
 
 private:
