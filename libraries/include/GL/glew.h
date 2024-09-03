@@ -218,7 +218,7 @@ typedef _W64 int ptrdiff_t;
  * (mem, 2004-01-04)
  */
 
-#if defined(__APPLE__) || defined(__linux__)
+#if defined(__linux__) || defined(__APPLE__)
 #  if defined(__cplusplus)
 #    include <cstddef>
 #    include <cstdint>
@@ -280,6 +280,10 @@ typedef _W64 int ptrdiff_t;
 
 #define GLEW_VAR_EXPORT GLEWAPI
 #define GLEW_FUN_EXPORT GLEWAPI
+
+#if defined(__linux__) || defined(__APPLE__)
+#define GLEW_STATIC_MINIMUM
+#endif
 
 #ifdef __cplusplus
 extern "C" {
@@ -1274,10 +1278,21 @@ typedef void (GLAPIENTRY * PFNGLDRAWRANGEELEMENTSPROC) (GLenum mode, GLuint star
 typedef void (GLAPIENTRY * PFNGLTEXIMAGE3DPROC) (GLenum target, GLint level, GLint internalFormat, GLsizei width, GLsizei height, GLsizei depth, GLint border, GLenum format, GLenum type, const void *pixels);
 typedef void (GLAPIENTRY * PFNGLTEXSUBIMAGE3DPROC) (GLenum target, GLint level, GLint xoffset, GLint yoffset, GLint zoffset, GLsizei width, GLsizei height, GLsizei depth, GLenum format, GLenum type, const void *pixels);
 
-#define glCopyTexSubImage3D GLEW_GET_FUN(__glewCopyTexSubImage3D)
-#define glDrawRangeElements GLEW_GET_FUN(__glewDrawRangeElements)
-#define glTexImage3D GLEW_GET_FUN(__glewTexImage3D)
-#define glTexSubImage3D GLEW_GET_FUN(__glewTexSubImage3D)
+#if defined(GLEW_STATIC_MINIMUM)
+
+    GLAPI void GLAPIENTRY glCopyTexSubImage3D (GLenum target, GLint level, GLint xoffset, GLint yoffset, GLint zoffset, GLint x, GLint y, GLsizei width, GLsizei height);
+    GLAPI void GLAPIENTRY glDrawRangeElements (GLenum mode, GLuint start, GLuint end, GLsizei count, GLenum type, const void *indices);
+    GLAPI void GLAPIENTRY glTexImage3D (GLenum target, GLint level, GLint internalFormat, GLsizei width, GLsizei height, GLsizei depth, GLint border, GLenum format, GLenum type, const void *pixels);
+    GLAPI void GLAPIENTRY glTexSubImage3D (GLenum target, GLint level, GLint xoffset, GLint yoffset, GLint zoffset, GLsizei width, GLsizei height, GLsizei depth, GLenum format, GLenum type, const void *pixels);
+
+#else
+
+    #define glCopyTexSubImage3D GLEW_GET_FUN(__glewCopyTexSubImage3D)
+    #define glDrawRangeElements GLEW_GET_FUN(__glewDrawRangeElements)
+    #define glTexImage3D GLEW_GET_FUN(__glewTexImage3D)
+    #define glTexSubImage3D GLEW_GET_FUN(__glewTexSubImage3D)
+
+#endif
 
 #define GLEW_VERSION_1_2 GLEW_GET_VAR(__GLEW_VERSION_1_2)
 
@@ -1441,52 +1456,68 @@ typedef void (GLAPIENTRY * PFNGLMULTITEXCOORD4SPROC) (GLenum target, GLshort s, 
 typedef void (GLAPIENTRY * PFNGLMULTITEXCOORD4SVPROC) (GLenum target, const GLshort *v);
 typedef void (GLAPIENTRY * PFNGLSAMPLECOVERAGEPROC) (GLclampf value, GLboolean invert);
 
-#define glActiveTexture GLEW_GET_FUN(__glewActiveTexture)
-#define glClientActiveTexture GLEW_GET_FUN(__glewClientActiveTexture)
-#define glCompressedTexImage1D GLEW_GET_FUN(__glewCompressedTexImage1D)
-#define glCompressedTexImage2D GLEW_GET_FUN(__glewCompressedTexImage2D)
-#define glCompressedTexImage3D GLEW_GET_FUN(__glewCompressedTexImage3D)
-#define glCompressedTexSubImage1D GLEW_GET_FUN(__glewCompressedTexSubImage1D)
-#define glCompressedTexSubImage2D GLEW_GET_FUN(__glewCompressedTexSubImage2D)
-#define glCompressedTexSubImage3D GLEW_GET_FUN(__glewCompressedTexSubImage3D)
-#define glGetCompressedTexImage GLEW_GET_FUN(__glewGetCompressedTexImage)
-#define glLoadTransposeMatrixd GLEW_GET_FUN(__glewLoadTransposeMatrixd)
-#define glLoadTransposeMatrixf GLEW_GET_FUN(__glewLoadTransposeMatrixf)
-#define glMultTransposeMatrixd GLEW_GET_FUN(__glewMultTransposeMatrixd)
-#define glMultTransposeMatrixf GLEW_GET_FUN(__glewMultTransposeMatrixf)
-#define glMultiTexCoord1d GLEW_GET_FUN(__glewMultiTexCoord1d)
-#define glMultiTexCoord1dv GLEW_GET_FUN(__glewMultiTexCoord1dv)
-#define glMultiTexCoord1f GLEW_GET_FUN(__glewMultiTexCoord1f)
-#define glMultiTexCoord1fv GLEW_GET_FUN(__glewMultiTexCoord1fv)
-#define glMultiTexCoord1i GLEW_GET_FUN(__glewMultiTexCoord1i)
-#define glMultiTexCoord1iv GLEW_GET_FUN(__glewMultiTexCoord1iv)
-#define glMultiTexCoord1s GLEW_GET_FUN(__glewMultiTexCoord1s)
-#define glMultiTexCoord1sv GLEW_GET_FUN(__glewMultiTexCoord1sv)
-#define glMultiTexCoord2d GLEW_GET_FUN(__glewMultiTexCoord2d)
-#define glMultiTexCoord2dv GLEW_GET_FUN(__glewMultiTexCoord2dv)
-#define glMultiTexCoord2f GLEW_GET_FUN(__glewMultiTexCoord2f)
-#define glMultiTexCoord2fv GLEW_GET_FUN(__glewMultiTexCoord2fv)
-#define glMultiTexCoord2i GLEW_GET_FUN(__glewMultiTexCoord2i)
-#define glMultiTexCoord2iv GLEW_GET_FUN(__glewMultiTexCoord2iv)
-#define glMultiTexCoord2s GLEW_GET_FUN(__glewMultiTexCoord2s)
-#define glMultiTexCoord2sv GLEW_GET_FUN(__glewMultiTexCoord2sv)
-#define glMultiTexCoord3d GLEW_GET_FUN(__glewMultiTexCoord3d)
-#define glMultiTexCoord3dv GLEW_GET_FUN(__glewMultiTexCoord3dv)
-#define glMultiTexCoord3f GLEW_GET_FUN(__glewMultiTexCoord3f)
-#define glMultiTexCoord3fv GLEW_GET_FUN(__glewMultiTexCoord3fv)
-#define glMultiTexCoord3i GLEW_GET_FUN(__glewMultiTexCoord3i)
-#define glMultiTexCoord3iv GLEW_GET_FUN(__glewMultiTexCoord3iv)
-#define glMultiTexCoord3s GLEW_GET_FUN(__glewMultiTexCoord3s)
-#define glMultiTexCoord3sv GLEW_GET_FUN(__glewMultiTexCoord3sv)
-#define glMultiTexCoord4d GLEW_GET_FUN(__glewMultiTexCoord4d)
-#define glMultiTexCoord4dv GLEW_GET_FUN(__glewMultiTexCoord4dv)
-#define glMultiTexCoord4f GLEW_GET_FUN(__glewMultiTexCoord4f)
-#define glMultiTexCoord4fv GLEW_GET_FUN(__glewMultiTexCoord4fv)
-#define glMultiTexCoord4i GLEW_GET_FUN(__glewMultiTexCoord4i)
-#define glMultiTexCoord4iv GLEW_GET_FUN(__glewMultiTexCoord4iv)
-#define glMultiTexCoord4s GLEW_GET_FUN(__glewMultiTexCoord4s)
-#define glMultiTexCoord4sv GLEW_GET_FUN(__glewMultiTexCoord4sv)
-#define glSampleCoverage GLEW_GET_FUN(__glewSampleCoverage)
+#if defined(GLEW_STATIC_MINIMUM)
+
+    GLAPI void GLAPIENTRY glActiveTexture (GLenum texture);
+    GLAPI void GLAPIENTRY glCompressedTexImage1D (GLenum target, GLint level, GLenum internalformat, GLsizei width, GLint border, GLsizei imageSize, const void *data);
+    GLAPI void GLAPIENTRY glCompressedTexImage2D (GLenum target, GLint level, GLenum internalformat, GLsizei width, GLsizei height, GLint border, GLsizei imageSize, const void *data);
+    GLAPI void GLAPIENTRY glCompressedTexImage3D (GLenum target, GLint level, GLenum internalformat, GLsizei width, GLsizei height, GLsizei depth, GLint border, GLsizei imageSize, const void *data);
+    GLAPI void GLAPIENTRY glCompressedTexSubImage1D (GLenum target, GLint level, GLint xoffset, GLsizei width, GLenum format, GLsizei imageSize, const void *data);
+    GLAPI void GLAPIENTRY glCompressedTexSubImage2D (GLenum target, GLint level, GLint xoffset, GLint yoffset, GLsizei width, GLsizei height, GLenum format, GLsizei imageSize, const void *data);
+    GLAPI void GLAPIENTRY glCompressedTexSubImage3D (GLenum target, GLint level, GLint xoffset, GLint yoffset, GLint zoffset, GLsizei width, GLsizei height, GLsizei depth, GLenum format, GLsizei imageSize, const void *data);
+    GLAPI void GLAPIENTRY glGetCompressedTexImage (GLenum target, GLint lod, void *img);
+    GLAPI void GLAPIENTRY glSampleCoverage (GLclampf value, GLboolean invert);
+
+#else
+
+    #define glActiveTexture GLEW_GET_FUN(__glewActiveTexture)
+    #define glClientActiveTexture GLEW_GET_FUN(__glewClientActiveTexture)
+    #define glCompressedTexImage1D GLEW_GET_FUN(__glewCompressedTexImage1D)
+    #define glCompressedTexImage2D GLEW_GET_FUN(__glewCompressedTexImage2D)
+    #define glCompressedTexImage3D GLEW_GET_FUN(__glewCompressedTexImage3D)
+    #define glCompressedTexSubImage1D GLEW_GET_FUN(__glewCompressedTexSubImage1D)
+    #define glCompressedTexSubImage2D GLEW_GET_FUN(__glewCompressedTexSubImage2D)
+    #define glCompressedTexSubImage3D GLEW_GET_FUN(__glewCompressedTexSubImage3D)
+    #define glGetCompressedTexImage GLEW_GET_FUN(__glewGetCompressedTexImage)
+    #define glLoadTransposeMatrixd GLEW_GET_FUN(__glewLoadTransposeMatrixd)
+    #define glLoadTransposeMatrixf GLEW_GET_FUN(__glewLoadTransposeMatrixf)
+    #define glMultTransposeMatrixd GLEW_GET_FUN(__glewMultTransposeMatrixd)
+    #define glMultTransposeMatrixf GLEW_GET_FUN(__glewMultTransposeMatrixf)
+    #define glMultiTexCoord1d GLEW_GET_FUN(__glewMultiTexCoord1d)
+    #define glMultiTexCoord1dv GLEW_GET_FUN(__glewMultiTexCoord1dv)
+    #define glMultiTexCoord1f GLEW_GET_FUN(__glewMultiTexCoord1f)
+    #define glMultiTexCoord1fv GLEW_GET_FUN(__glewMultiTexCoord1fv)
+    #define glMultiTexCoord1i GLEW_GET_FUN(__glewMultiTexCoord1i)
+    #define glMultiTexCoord1iv GLEW_GET_FUN(__glewMultiTexCoord1iv)
+    #define glMultiTexCoord1s GLEW_GET_FUN(__glewMultiTexCoord1s)
+    #define glMultiTexCoord1sv GLEW_GET_FUN(__glewMultiTexCoord1sv)
+    #define glMultiTexCoord2d GLEW_GET_FUN(__glewMultiTexCoord2d)
+    #define glMultiTexCoord2dv GLEW_GET_FUN(__glewMultiTexCoord2dv)
+    #define glMultiTexCoord2f GLEW_GET_FUN(__glewMultiTexCoord2f)
+    #define glMultiTexCoord2fv GLEW_GET_FUN(__glewMultiTexCoord2fv)
+    #define glMultiTexCoord2i GLEW_GET_FUN(__glewMultiTexCoord2i)
+    #define glMultiTexCoord2iv GLEW_GET_FUN(__glewMultiTexCoord2iv)
+    #define glMultiTexCoord2s GLEW_GET_FUN(__glewMultiTexCoord2s)
+    #define glMultiTexCoord2sv GLEW_GET_FUN(__glewMultiTexCoord2sv)
+    #define glMultiTexCoord3d GLEW_GET_FUN(__glewMultiTexCoord3d)
+    #define glMultiTexCoord3dv GLEW_GET_FUN(__glewMultiTexCoord3dv)
+    #define glMultiTexCoord3f GLEW_GET_FUN(__glewMultiTexCoord3f)
+    #define glMultiTexCoord3fv GLEW_GET_FUN(__glewMultiTexCoord3fv)
+    #define glMultiTexCoord3i GLEW_GET_FUN(__glewMultiTexCoord3i)
+    #define glMultiTexCoord3iv GLEW_GET_FUN(__glewMultiTexCoord3iv)
+    #define glMultiTexCoord3s GLEW_GET_FUN(__glewMultiTexCoord3s)
+    #define glMultiTexCoord3sv GLEW_GET_FUN(__glewMultiTexCoord3sv)
+    #define glMultiTexCoord4d GLEW_GET_FUN(__glewMultiTexCoord4d)
+    #define glMultiTexCoord4dv GLEW_GET_FUN(__glewMultiTexCoord4dv)
+    #define glMultiTexCoord4f GLEW_GET_FUN(__glewMultiTexCoord4f)
+    #define glMultiTexCoord4fv GLEW_GET_FUN(__glewMultiTexCoord4fv)
+    #define glMultiTexCoord4i GLEW_GET_FUN(__glewMultiTexCoord4i)
+    #define glMultiTexCoord4iv GLEW_GET_FUN(__glewMultiTexCoord4iv)
+    #define glMultiTexCoord4s GLEW_GET_FUN(__glewMultiTexCoord4s)
+    #define glMultiTexCoord4sv GLEW_GET_FUN(__glewMultiTexCoord4sv)
+    #define glSampleCoverage GLEW_GET_FUN(__glewSampleCoverage)
+
+#endif
 
 #define GLEW_VERSION_1_3 GLEW_GET_VAR(__GLEW_VERSION_1_3)
 
@@ -1585,53 +1616,69 @@ typedef void (GLAPIENTRY * PFNGLWINDOWPOS3IVPROC) (const GLint *p);
 typedef void (GLAPIENTRY * PFNGLWINDOWPOS3SPROC) (GLshort x, GLshort y, GLshort z);
 typedef void (GLAPIENTRY * PFNGLWINDOWPOS3SVPROC) (const GLshort *p);
 
-#define glBlendColor GLEW_GET_FUN(__glewBlendColor)
-#define glBlendEquation GLEW_GET_FUN(__glewBlendEquation)
-#define glBlendFuncSeparate GLEW_GET_FUN(__glewBlendFuncSeparate)
-#define glFogCoordPointer GLEW_GET_FUN(__glewFogCoordPointer)
-#define glFogCoordd GLEW_GET_FUN(__glewFogCoordd)
-#define glFogCoorddv GLEW_GET_FUN(__glewFogCoorddv)
-#define glFogCoordf GLEW_GET_FUN(__glewFogCoordf)
-#define glFogCoordfv GLEW_GET_FUN(__glewFogCoordfv)
-#define glMultiDrawArrays GLEW_GET_FUN(__glewMultiDrawArrays)
-#define glMultiDrawElements GLEW_GET_FUN(__glewMultiDrawElements)
-#define glPointParameterf GLEW_GET_FUN(__glewPointParameterf)
-#define glPointParameterfv GLEW_GET_FUN(__glewPointParameterfv)
-#define glPointParameteri GLEW_GET_FUN(__glewPointParameteri)
-#define glPointParameteriv GLEW_GET_FUN(__glewPointParameteriv)
-#define glSecondaryColor3b GLEW_GET_FUN(__glewSecondaryColor3b)
-#define glSecondaryColor3bv GLEW_GET_FUN(__glewSecondaryColor3bv)
-#define glSecondaryColor3d GLEW_GET_FUN(__glewSecondaryColor3d)
-#define glSecondaryColor3dv GLEW_GET_FUN(__glewSecondaryColor3dv)
-#define glSecondaryColor3f GLEW_GET_FUN(__glewSecondaryColor3f)
-#define glSecondaryColor3fv GLEW_GET_FUN(__glewSecondaryColor3fv)
-#define glSecondaryColor3i GLEW_GET_FUN(__glewSecondaryColor3i)
-#define glSecondaryColor3iv GLEW_GET_FUN(__glewSecondaryColor3iv)
-#define glSecondaryColor3s GLEW_GET_FUN(__glewSecondaryColor3s)
-#define glSecondaryColor3sv GLEW_GET_FUN(__glewSecondaryColor3sv)
-#define glSecondaryColor3ub GLEW_GET_FUN(__glewSecondaryColor3ub)
-#define glSecondaryColor3ubv GLEW_GET_FUN(__glewSecondaryColor3ubv)
-#define glSecondaryColor3ui GLEW_GET_FUN(__glewSecondaryColor3ui)
-#define glSecondaryColor3uiv GLEW_GET_FUN(__glewSecondaryColor3uiv)
-#define glSecondaryColor3us GLEW_GET_FUN(__glewSecondaryColor3us)
-#define glSecondaryColor3usv GLEW_GET_FUN(__glewSecondaryColor3usv)
-#define glSecondaryColorPointer GLEW_GET_FUN(__glewSecondaryColorPointer)
-#define glWindowPos2d GLEW_GET_FUN(__glewWindowPos2d)
-#define glWindowPos2dv GLEW_GET_FUN(__glewWindowPos2dv)
-#define glWindowPos2f GLEW_GET_FUN(__glewWindowPos2f)
-#define glWindowPos2fv GLEW_GET_FUN(__glewWindowPos2fv)
-#define glWindowPos2i GLEW_GET_FUN(__glewWindowPos2i)
-#define glWindowPos2iv GLEW_GET_FUN(__glewWindowPos2iv)
-#define glWindowPos2s GLEW_GET_FUN(__glewWindowPos2s)
-#define glWindowPos2sv GLEW_GET_FUN(__glewWindowPos2sv)
-#define glWindowPos3d GLEW_GET_FUN(__glewWindowPos3d)
-#define glWindowPos3dv GLEW_GET_FUN(__glewWindowPos3dv)
-#define glWindowPos3f GLEW_GET_FUN(__glewWindowPos3f)
-#define glWindowPos3fv GLEW_GET_FUN(__glewWindowPos3fv)
-#define glWindowPos3i GLEW_GET_FUN(__glewWindowPos3i)
-#define glWindowPos3iv GLEW_GET_FUN(__glewWindowPos3iv)
-#define glWindowPos3s GLEW_GET_FUN(__glewWindowPos3s)
-#define glWindowPos3sv GLEW_GET_FUN(__glewWindowPos3sv)
+#if defined(GLEW_STATIC_MINIMUM)
+
+    GLAPI void GLAPIENTRY glBlendColor (GLclampf red, GLclampf green, GLclampf blue, GLclampf alpha);
+    GLAPI void GLAPIENTRY glBlendEquation (GLenum mode);
+    GLAPI void GLAPIENTRY glBlendFuncSeparate (GLenum sfactorRGB, GLenum dfactorRGB, GLenum sfactorAlpha, GLenum dfactorAlpha);
+    GLAPI void GLAPIENTRY glMultiDrawArrays (GLenum mode, const GLint *first, const GLsizei *count, GLsizei drawcount);
+    GLAPI void GLAPIENTRY glMultiDrawElements (GLenum mode, const GLsizei *count, GLenum type, const void *const* indices, GLsizei drawcount);
+    GLAPI void GLAPIENTRY glPointParameterf (GLenum pname, GLfloat param);
+    GLAPI void GLAPIENTRY glPointParameterfv (GLenum pname, const GLfloat *params);
+    GLAPI void GLAPIENTRY glPointParameteri (GLenum pname, GLint param);
+    GLAPI void GLAPIENTRY glPointParameteriv (GLenum pname, const GLint *params);
+
+#else
+
+    #define glBlendColor GLEW_GET_FUN(__glewBlendColor)
+    #define glBlendEquation GLEW_GET_FUN(__glewBlendEquation)
+    #define glBlendFuncSeparate GLEW_GET_FUN(__glewBlendFuncSeparate)
+    #define glFogCoordPointer GLEW_GET_FUN(__glewFogCoordPointer)
+    #define glFogCoordd GLEW_GET_FUN(__glewFogCoordd)
+    #define glFogCoorddv GLEW_GET_FUN(__glewFogCoorddv)
+    #define glFogCoordf GLEW_GET_FUN(__glewFogCoordf)
+    #define glFogCoordfv GLEW_GET_FUN(__glewFogCoordfv)
+    #define glMultiDrawArrays GLEW_GET_FUN(__glewMultiDrawArrays)
+    #define glMultiDrawElements GLEW_GET_FUN(__glewMultiDrawElements)
+    #define glPointParameterf GLEW_GET_FUN(__glewPointParameterf)
+    #define glPointParameterfv GLEW_GET_FUN(__glewPointParameterfv)
+    #define glPointParameteri GLEW_GET_FUN(__glewPointParameteri)
+    #define glPointParameteriv GLEW_GET_FUN(__glewPointParameteriv)
+    #define glSecondaryColor3b GLEW_GET_FUN(__glewSecondaryColor3b)
+    #define glSecondaryColor3bv GLEW_GET_FUN(__glewSecondaryColor3bv)
+    #define glSecondaryColor3d GLEW_GET_FUN(__glewSecondaryColor3d)
+    #define glSecondaryColor3dv GLEW_GET_FUN(__glewSecondaryColor3dv)
+    #define glSecondaryColor3f GLEW_GET_FUN(__glewSecondaryColor3f)
+    #define glSecondaryColor3fv GLEW_GET_FUN(__glewSecondaryColor3fv)
+    #define glSecondaryColor3i GLEW_GET_FUN(__glewSecondaryColor3i)
+    #define glSecondaryColor3iv GLEW_GET_FUN(__glewSecondaryColor3iv)
+    #define glSecondaryColor3s GLEW_GET_FUN(__glewSecondaryColor3s)
+    #define glSecondaryColor3sv GLEW_GET_FUN(__glewSecondaryColor3sv)
+    #define glSecondaryColor3ub GLEW_GET_FUN(__glewSecondaryColor3ub)
+    #define glSecondaryColor3ubv GLEW_GET_FUN(__glewSecondaryColor3ubv)
+    #define glSecondaryColor3ui GLEW_GET_FUN(__glewSecondaryColor3ui)
+    #define glSecondaryColor3uiv GLEW_GET_FUN(__glewSecondaryColor3uiv)
+    #define glSecondaryColor3us GLEW_GET_FUN(__glewSecondaryColor3us)
+    #define glSecondaryColor3usv GLEW_GET_FUN(__glewSecondaryColor3usv)
+    #define glSecondaryColorPointer GLEW_GET_FUN(__glewSecondaryColorPointer)
+    #define glWindowPos2d GLEW_GET_FUN(__glewWindowPos2d)
+    #define glWindowPos2dv GLEW_GET_FUN(__glewWindowPos2dv)
+    #define glWindowPos2f GLEW_GET_FUN(__glewWindowPos2f)
+    #define glWindowPos2fv GLEW_GET_FUN(__glewWindowPos2fv)
+    #define glWindowPos2i GLEW_GET_FUN(__glewWindowPos2i)
+    #define glWindowPos2iv GLEW_GET_FUN(__glewWindowPos2iv)
+    #define glWindowPos2s GLEW_GET_FUN(__glewWindowPos2s)
+    #define glWindowPos2sv GLEW_GET_FUN(__glewWindowPos2sv)
+    #define glWindowPos3d GLEW_GET_FUN(__glewWindowPos3d)
+    #define glWindowPos3dv GLEW_GET_FUN(__glewWindowPos3dv)
+    #define glWindowPos3f GLEW_GET_FUN(__glewWindowPos3f)
+    #define glWindowPos3fv GLEW_GET_FUN(__glewWindowPos3fv)
+    #define glWindowPos3i GLEW_GET_FUN(__glewWindowPos3i)
+    #define glWindowPos3iv GLEW_GET_FUN(__glewWindowPos3iv)
+    #define glWindowPos3s GLEW_GET_FUN(__glewWindowPos3s)
+    #define glWindowPos3sv GLEW_GET_FUN(__glewWindowPos3sv)
+
+#endif
 
 #define GLEW_VERSION_1_4 GLEW_GET_VAR(__GLEW_VERSION_1_4)
 
@@ -1716,25 +1763,51 @@ typedef GLboolean (GLAPIENTRY * PFNGLISQUERYPROC) (GLuint id);
 typedef void* (GLAPIENTRY * PFNGLMAPBUFFERPROC) (GLenum target, GLenum access);
 typedef GLboolean (GLAPIENTRY * PFNGLUNMAPBUFFERPROC) (GLenum target);
 
-#define glBeginQuery GLEW_GET_FUN(__glewBeginQuery)
-#define glBindBuffer GLEW_GET_FUN(__glewBindBuffer)
-#define glBufferData GLEW_GET_FUN(__glewBufferData)
-#define glBufferSubData GLEW_GET_FUN(__glewBufferSubData)
-#define glDeleteBuffers GLEW_GET_FUN(__glewDeleteBuffers)
-#define glDeleteQueries GLEW_GET_FUN(__glewDeleteQueries)
-#define glEndQuery GLEW_GET_FUN(__glewEndQuery)
-#define glGenBuffers GLEW_GET_FUN(__glewGenBuffers)
-#define glGenQueries GLEW_GET_FUN(__glewGenQueries)
-#define glGetBufferParameteriv GLEW_GET_FUN(__glewGetBufferParameteriv)
-#define glGetBufferPointerv GLEW_GET_FUN(__glewGetBufferPointerv)
-#define glGetBufferSubData GLEW_GET_FUN(__glewGetBufferSubData)
-#define glGetQueryObjectiv GLEW_GET_FUN(__glewGetQueryObjectiv)
-#define glGetQueryObjectuiv GLEW_GET_FUN(__glewGetQueryObjectuiv)
-#define glGetQueryiv GLEW_GET_FUN(__glewGetQueryiv)
-#define glIsBuffer GLEW_GET_FUN(__glewIsBuffer)
-#define glIsQuery GLEW_GET_FUN(__glewIsQuery)
-#define glMapBuffer GLEW_GET_FUN(__glewMapBuffer)
-#define glUnmapBuffer GLEW_GET_FUN(__glewUnmapBuffer)
+#if defined(GLEW_STATIC_MINIMUM)
+
+    GLAPI void GLAPIENTRY glBeginQuery (GLenum target, GLuint id);
+    GLAPI void GLAPIENTRY glBindBuffer (GLenum target, GLuint buffer);
+    GLAPI void GLAPIENTRY glBufferData (GLenum target, GLsizeiptr size, const void* data, GLenum usage);
+    GLAPI void GLAPIENTRY glBufferSubData (GLenum target, GLintptr offset, GLsizeiptr size, const void* data);
+    GLAPI void GLAPIENTRY glDeleteBuffers (GLsizei n, const GLuint* buffers);
+    GLAPI void GLAPIENTRY glDeleteQueries (GLsizei n, const GLuint* ids);
+    GLAPI void GLAPIENTRY glEndQuery (GLenum target);
+    GLAPI void GLAPIENTRY glGenBuffers (GLsizei n, GLuint* buffers);
+    GLAPI void GLAPIENTRY glGenQueries (GLsizei n, GLuint* ids);
+    GLAPI void GLAPIENTRY glGetBufferParameteriv (GLenum target, GLenum pname, GLint* params);
+    GLAPI void GLAPIENTRY glGetBufferPointerv (GLenum target, GLenum pname, void** params);
+    GLAPI void GLAPIENTRY glGetBufferSubData (GLenum target, GLintptr offset, GLsizeiptr size, void* data);
+    GLAPI void GLAPIENTRY glGetQueryObjectiv (GLuint id, GLenum pname, GLint* params);
+    GLAPI void GLAPIENTRY glGetQueryObjectuiv (GLuint id, GLenum pname, GLuint* params);
+    GLAPI void GLAPIENTRY glGetQueryiv (GLenum target, GLenum pname, GLint* params);
+    GLAPI GLboolean GLAPIENTRY glIsBuffer (GLuint buffer);
+    GLAPI GLboolean GLAPIENTRY glIsQuery (GLuint id);
+    GLAPI void* GLAPIENTRY glMapBuffer (GLenum target, GLenum access);
+    GLAPI GLboolean GLAPIENTRY glUnmapBuffer (GLenum target);
+
+#else
+
+    #define glBeginQuery GLEW_GET_FUN(__glewBeginQuery)
+    #define glBindBuffer GLEW_GET_FUN(__glewBindBuffer)
+    #define glBufferData GLEW_GET_FUN(__glewBufferData)
+    #define glBufferSubData GLEW_GET_FUN(__glewBufferSubData)
+    #define glDeleteBuffers GLEW_GET_FUN(__glewDeleteBuffers)
+    #define glDeleteQueries GLEW_GET_FUN(__glewDeleteQueries)
+    #define glEndQuery GLEW_GET_FUN(__glewEndQuery)
+    #define glGenBuffers GLEW_GET_FUN(__glewGenBuffers)
+    #define glGenQueries GLEW_GET_FUN(__glewGenQueries)
+    #define glGetBufferParameteriv GLEW_GET_FUN(__glewGetBufferParameteriv)
+    #define glGetBufferPointerv GLEW_GET_FUN(__glewGetBufferPointerv)
+    #define glGetBufferSubData GLEW_GET_FUN(__glewGetBufferSubData)
+    #define glGetQueryObjectiv GLEW_GET_FUN(__glewGetQueryObjectiv)
+    #define glGetQueryObjectuiv GLEW_GET_FUN(__glewGetQueryObjectuiv)
+    #define glGetQueryiv GLEW_GET_FUN(__glewGetQueryiv)
+    #define glIsBuffer GLEW_GET_FUN(__glewIsBuffer)
+    #define glIsQuery GLEW_GET_FUN(__glewIsQuery)
+    #define glMapBuffer GLEW_GET_FUN(__glewMapBuffer)
+    #define glUnmapBuffer GLEW_GET_FUN(__glewUnmapBuffer)
+
+#endif
 
 #define GLEW_VERSION_1_5 GLEW_GET_VAR(__GLEW_VERSION_1_5)
 
@@ -1924,99 +1997,199 @@ typedef void (GLAPIENTRY * PFNGLVERTEXATTRIB4UIVPROC) (GLuint index, const GLuin
 typedef void (GLAPIENTRY * PFNGLVERTEXATTRIB4USVPROC) (GLuint index, const GLushort* v);
 typedef void (GLAPIENTRY * PFNGLVERTEXATTRIBPOINTERPROC) (GLuint index, GLint size, GLenum type, GLboolean normalized, GLsizei stride, const void* pointer);
 
-#define glAttachShader GLEW_GET_FUN(__glewAttachShader)
-#define glBindAttribLocation GLEW_GET_FUN(__glewBindAttribLocation)
-#define glBlendEquationSeparate GLEW_GET_FUN(__glewBlendEquationSeparate)
-#define glCompileShader GLEW_GET_FUN(__glewCompileShader)
-#define glCreateProgram GLEW_GET_FUN(__glewCreateProgram)
-#define glCreateShader GLEW_GET_FUN(__glewCreateShader)
-#define glDeleteProgram GLEW_GET_FUN(__glewDeleteProgram)
-#define glDeleteShader GLEW_GET_FUN(__glewDeleteShader)
-#define glDetachShader GLEW_GET_FUN(__glewDetachShader)
-#define glDisableVertexAttribArray GLEW_GET_FUN(__glewDisableVertexAttribArray)
-#define glDrawBuffers GLEW_GET_FUN(__glewDrawBuffers)
-#define glEnableVertexAttribArray GLEW_GET_FUN(__glewEnableVertexAttribArray)
-#define glGetActiveAttrib GLEW_GET_FUN(__glewGetActiveAttrib)
-#define glGetActiveUniform GLEW_GET_FUN(__glewGetActiveUniform)
-#define glGetAttachedShaders GLEW_GET_FUN(__glewGetAttachedShaders)
-#define glGetAttribLocation GLEW_GET_FUN(__glewGetAttribLocation)
-#define glGetProgramInfoLog GLEW_GET_FUN(__glewGetProgramInfoLog)
-#define glGetProgramiv GLEW_GET_FUN(__glewGetProgramiv)
-#define glGetShaderInfoLog GLEW_GET_FUN(__glewGetShaderInfoLog)
-#define glGetShaderSource GLEW_GET_FUN(__glewGetShaderSource)
-#define glGetShaderiv GLEW_GET_FUN(__glewGetShaderiv)
-#define glGetUniformLocation GLEW_GET_FUN(__glewGetUniformLocation)
-#define glGetUniformfv GLEW_GET_FUN(__glewGetUniformfv)
-#define glGetUniformiv GLEW_GET_FUN(__glewGetUniformiv)
-#define glGetVertexAttribPointerv GLEW_GET_FUN(__glewGetVertexAttribPointerv)
-#define glGetVertexAttribdv GLEW_GET_FUN(__glewGetVertexAttribdv)
-#define glGetVertexAttribfv GLEW_GET_FUN(__glewGetVertexAttribfv)
-#define glGetVertexAttribiv GLEW_GET_FUN(__glewGetVertexAttribiv)
-#define glIsProgram GLEW_GET_FUN(__glewIsProgram)
-#define glIsShader GLEW_GET_FUN(__glewIsShader)
-#define glLinkProgram GLEW_GET_FUN(__glewLinkProgram)
-#define glShaderSource GLEW_GET_FUN(__glewShaderSource)
-#define glStencilFuncSeparate GLEW_GET_FUN(__glewStencilFuncSeparate)
-#define glStencilMaskSeparate GLEW_GET_FUN(__glewStencilMaskSeparate)
-#define glStencilOpSeparate GLEW_GET_FUN(__glewStencilOpSeparate)
-#define glUniform1f GLEW_GET_FUN(__glewUniform1f)
-#define glUniform1fv GLEW_GET_FUN(__glewUniform1fv)
-#define glUniform1i GLEW_GET_FUN(__glewUniform1i)
-#define glUniform1iv GLEW_GET_FUN(__glewUniform1iv)
-#define glUniform2f GLEW_GET_FUN(__glewUniform2f)
-#define glUniform2fv GLEW_GET_FUN(__glewUniform2fv)
-#define glUniform2i GLEW_GET_FUN(__glewUniform2i)
-#define glUniform2iv GLEW_GET_FUN(__glewUniform2iv)
-#define glUniform3f GLEW_GET_FUN(__glewUniform3f)
-#define glUniform3fv GLEW_GET_FUN(__glewUniform3fv)
-#define glUniform3i GLEW_GET_FUN(__glewUniform3i)
-#define glUniform3iv GLEW_GET_FUN(__glewUniform3iv)
-#define glUniform4f GLEW_GET_FUN(__glewUniform4f)
-#define glUniform4fv GLEW_GET_FUN(__glewUniform4fv)
-#define glUniform4i GLEW_GET_FUN(__glewUniform4i)
-#define glUniform4iv GLEW_GET_FUN(__glewUniform4iv)
-#define glUniformMatrix2fv GLEW_GET_FUN(__glewUniformMatrix2fv)
-#define glUniformMatrix3fv GLEW_GET_FUN(__glewUniformMatrix3fv)
-#define glUniformMatrix4fv GLEW_GET_FUN(__glewUniformMatrix4fv)
-#define glUseProgram GLEW_GET_FUN(__glewUseProgram)
-#define glValidateProgram GLEW_GET_FUN(__glewValidateProgram)
-#define glVertexAttrib1d GLEW_GET_FUN(__glewVertexAttrib1d)
-#define glVertexAttrib1dv GLEW_GET_FUN(__glewVertexAttrib1dv)
-#define glVertexAttrib1f GLEW_GET_FUN(__glewVertexAttrib1f)
-#define glVertexAttrib1fv GLEW_GET_FUN(__glewVertexAttrib1fv)
-#define glVertexAttrib1s GLEW_GET_FUN(__glewVertexAttrib1s)
-#define glVertexAttrib1sv GLEW_GET_FUN(__glewVertexAttrib1sv)
-#define glVertexAttrib2d GLEW_GET_FUN(__glewVertexAttrib2d)
-#define glVertexAttrib2dv GLEW_GET_FUN(__glewVertexAttrib2dv)
-#define glVertexAttrib2f GLEW_GET_FUN(__glewVertexAttrib2f)
-#define glVertexAttrib2fv GLEW_GET_FUN(__glewVertexAttrib2fv)
-#define glVertexAttrib2s GLEW_GET_FUN(__glewVertexAttrib2s)
-#define glVertexAttrib2sv GLEW_GET_FUN(__glewVertexAttrib2sv)
-#define glVertexAttrib3d GLEW_GET_FUN(__glewVertexAttrib3d)
-#define glVertexAttrib3dv GLEW_GET_FUN(__glewVertexAttrib3dv)
-#define glVertexAttrib3f GLEW_GET_FUN(__glewVertexAttrib3f)
-#define glVertexAttrib3fv GLEW_GET_FUN(__glewVertexAttrib3fv)
-#define glVertexAttrib3s GLEW_GET_FUN(__glewVertexAttrib3s)
-#define glVertexAttrib3sv GLEW_GET_FUN(__glewVertexAttrib3sv)
-#define glVertexAttrib4Nbv GLEW_GET_FUN(__glewVertexAttrib4Nbv)
-#define glVertexAttrib4Niv GLEW_GET_FUN(__glewVertexAttrib4Niv)
-#define glVertexAttrib4Nsv GLEW_GET_FUN(__glewVertexAttrib4Nsv)
-#define glVertexAttrib4Nub GLEW_GET_FUN(__glewVertexAttrib4Nub)
-#define glVertexAttrib4Nubv GLEW_GET_FUN(__glewVertexAttrib4Nubv)
-#define glVertexAttrib4Nuiv GLEW_GET_FUN(__glewVertexAttrib4Nuiv)
-#define glVertexAttrib4Nusv GLEW_GET_FUN(__glewVertexAttrib4Nusv)
-#define glVertexAttrib4bv GLEW_GET_FUN(__glewVertexAttrib4bv)
-#define glVertexAttrib4d GLEW_GET_FUN(__glewVertexAttrib4d)
-#define glVertexAttrib4dv GLEW_GET_FUN(__glewVertexAttrib4dv)
-#define glVertexAttrib4f GLEW_GET_FUN(__glewVertexAttrib4f)
-#define glVertexAttrib4fv GLEW_GET_FUN(__glewVertexAttrib4fv)
-#define glVertexAttrib4iv GLEW_GET_FUN(__glewVertexAttrib4iv)
-#define glVertexAttrib4s GLEW_GET_FUN(__glewVertexAttrib4s)
-#define glVertexAttrib4sv GLEW_GET_FUN(__glewVertexAttrib4sv)
-#define glVertexAttrib4ubv GLEW_GET_FUN(__glewVertexAttrib4ubv)
-#define glVertexAttrib4uiv GLEW_GET_FUN(__glewVertexAttrib4uiv)
-#define glVertexAttrib4usv GLEW_GET_FUN(__glewVertexAttrib4usv)
-#define glVertexAttribPointer GLEW_GET_FUN(__glewVertexAttribPointer)
+#if defined(GLEW_STATIC_MINIMUM)
+
+    GLAPI void GLAPIENTRY glAttachShader (GLuint program, GLuint shader);
+    GLAPI void GLAPIENTRY glBindAttribLocation (GLuint program, GLuint index, const GLchar* name);
+    GLAPI void GLAPIENTRY glBlendEquationSeparate (GLenum modeRGB, GLenum modeAlpha);
+    GLAPI void GLAPIENTRY glCompileShader (GLuint shader);
+    GLAPI GLuint GLAPIENTRY glCreateProgram (void);
+    GLAPI GLuint GLAPIENTRY glCreateShader (GLenum type);
+    GLAPI void GLAPIENTRY glDeleteProgram (GLuint program);
+    GLAPI void GLAPIENTRY glDeleteShader (GLuint shader);
+    GLAPI void GLAPIENTRY glDetachShader (GLuint program, GLuint shader);
+    GLAPI void GLAPIENTRY glDisableVertexAttribArray (GLuint index);
+    GLAPI void GLAPIENTRY glDrawBuffers (GLsizei n, const GLenum* bufs);
+    GLAPI void GLAPIENTRY glEnableVertexAttribArray (GLuint index);
+    GLAPI void GLAPIENTRY glGetActiveAttrib (GLuint program, GLuint index, GLsizei maxLength, GLsizei* length, GLint* size, GLenum* type, GLchar* name);
+    GLAPI void GLAPIENTRY glGetActiveUniform (GLuint program, GLuint index, GLsizei maxLength, GLsizei* length, GLint* size, GLenum* type, GLchar* name);
+    GLAPI void GLAPIENTRY glGetAttachedShaders (GLuint program, GLsizei maxCount, GLsizei* count, GLuint* shaders);
+    GLAPI GLint GLAPIENTRY glGetAttribLocation (GLuint program, const GLchar* name);
+    GLAPI void GLAPIENTRY glGetProgramInfoLog (GLuint program, GLsizei bufSize, GLsizei* length, GLchar* infoLog);
+    GLAPI void GLAPIENTRY glGetProgramiv (GLuint program, GLenum pname, GLint* param);
+    GLAPI void GLAPIENTRY glGetShaderInfoLog (GLuint shader, GLsizei bufSize, GLsizei* length, GLchar* infoLog);
+    GLAPI void GLAPIENTRY glGetShaderSource (GLuint obj, GLsizei maxLength, GLsizei* length, GLchar* source);
+    GLAPI void GLAPIENTRY glGetShaderiv (GLuint shader, GLenum pname, GLint* param);
+    GLAPI GLint GLAPIENTRY glGetUniformLocation (GLuint program, const GLchar* name);
+    GLAPI void GLAPIENTRY glGetUniformfv (GLuint program, GLint location, GLfloat* params);
+    GLAPI void GLAPIENTRY glGetUniformiv (GLuint program, GLint location, GLint* params);
+    GLAPI void GLAPIENTRY glGetVertexAttribPointerv (GLuint index, GLenum pname, void** pointer);
+    GLAPI void GLAPIENTRY glGetVertexAttribdv (GLuint index, GLenum pname, GLdouble* params);
+    GLAPI void GLAPIENTRY glGetVertexAttribfv (GLuint index, GLenum pname, GLfloat* params);
+    GLAPI void GLAPIENTRY glGetVertexAttribiv (GLuint index, GLenum pname, GLint* params);
+    GLAPI GLboolean GLAPIENTRY glIsProgram (GLuint program);
+    GLAPI GLboolean GLAPIENTRY glIsShader (GLuint shader);
+    GLAPI void GLAPIENTRY glLinkProgram (GLuint program);
+    GLAPI void GLAPIENTRY glShaderSource (GLuint shader, GLsizei count, const GLchar *const* string, const GLint* length);
+    GLAPI void GLAPIENTRY glStencilFuncSeparate (GLenum face, GLenum func, GLint ref, GLuint mask);
+    GLAPI void GLAPIENTRY glStencilMaskSeparate (GLenum face, GLuint mask);
+    GLAPI void GLAPIENTRY glStencilOpSeparate (GLenum face, GLenum sfail, GLenum dpfail, GLenum dppass);
+    GLAPI void GLAPIENTRY glUniform1f (GLint location, GLfloat v0);
+    GLAPI void GLAPIENTRY glUniform1fv (GLint location, GLsizei count, const GLfloat* value);
+    GLAPI void GLAPIENTRY glUniform1i (GLint location, GLint v0);
+    GLAPI void GLAPIENTRY glUniform1iv (GLint location, GLsizei count, const GLint* value);
+    GLAPI void GLAPIENTRY glUniform2f (GLint location, GLfloat v0, GLfloat v1);
+    GLAPI void GLAPIENTRY glUniform2fv (GLint location, GLsizei count, const GLfloat* value);
+    GLAPI void GLAPIENTRY glUniform2i (GLint location, GLint v0, GLint v1);
+    GLAPI void GLAPIENTRY glUniform2iv (GLint location, GLsizei count, const GLint* value);
+    GLAPI void GLAPIENTRY glUniform3f (GLint location, GLfloat v0, GLfloat v1, GLfloat v2);
+    GLAPI void GLAPIENTRY glUniform3fv (GLint location, GLsizei count, const GLfloat* value);
+    GLAPI void GLAPIENTRY glUniform3i (GLint location, GLint v0, GLint v1, GLint v2);
+    GLAPI void GLAPIENTRY glUniform3iv (GLint location, GLsizei count, const GLint* value);
+    GLAPI void GLAPIENTRY glUniform4f (GLint location, GLfloat v0, GLfloat v1, GLfloat v2, GLfloat v3);
+    GLAPI void GLAPIENTRY glUniform4fv (GLint location, GLsizei count, const GLfloat* value);
+    GLAPI void GLAPIENTRY glUniform4i (GLint location, GLint v0, GLint v1, GLint v2, GLint v3);
+    GLAPI void GLAPIENTRY glUniform4iv (GLint location, GLsizei count, const GLint* value);
+    GLAPI void GLAPIENTRY glUniformMatrix2fv (GLint location, GLsizei count, GLboolean transpose, const GLfloat* value);
+    GLAPI void GLAPIENTRY glUniformMatrix3fv (GLint location, GLsizei count, GLboolean transpose, const GLfloat* value);
+    GLAPI void GLAPIENTRY glUniformMatrix4fv (GLint location, GLsizei count, GLboolean transpose, const GLfloat* value);
+    GLAPI void GLAPIENTRY glUseProgram (GLuint program);
+    GLAPI void GLAPIENTRY glValidateProgram (GLuint program);
+    GLAPI void GLAPIENTRY glVertexAttrib1d (GLuint index, GLdouble x);
+    GLAPI void GLAPIENTRY glVertexAttrib1dv (GLuint index, const GLdouble* v);
+    GLAPI void GLAPIENTRY glVertexAttrib1f (GLuint index, GLfloat x);
+    GLAPI void GLAPIENTRY glVertexAttrib1fv (GLuint index, const GLfloat* v);
+    GLAPI void GLAPIENTRY glVertexAttrib1s (GLuint index, GLshort x);
+    GLAPI void GLAPIENTRY glVertexAttrib1sv (GLuint index, const GLshort* v);
+    GLAPI void GLAPIENTRY glVertexAttrib2d (GLuint index, GLdouble x, GLdouble y);
+    GLAPI void GLAPIENTRY glVertexAttrib2dv (GLuint index, const GLdouble* v);
+    GLAPI void GLAPIENTRY glVertexAttrib2f (GLuint index, GLfloat x, GLfloat y);
+    GLAPI void GLAPIENTRY glVertexAttrib2fv (GLuint index, const GLfloat* v);
+    GLAPI void GLAPIENTRY glVertexAttrib2s (GLuint index, GLshort x, GLshort y);
+    GLAPI void GLAPIENTRY glVertexAttrib2sv (GLuint index, const GLshort* v);
+    GLAPI void GLAPIENTRY glVertexAttrib3d (GLuint index, GLdouble x, GLdouble y, GLdouble z);
+    GLAPI void GLAPIENTRY glVertexAttrib3dv (GLuint index, const GLdouble* v);
+    GLAPI void GLAPIENTRY glVertexAttrib3f (GLuint index, GLfloat x, GLfloat y, GLfloat z);
+    GLAPI void GLAPIENTRY glVertexAttrib3fv (GLuint index, const GLfloat* v);
+    GLAPI void GLAPIENTRY glVertexAttrib3s (GLuint index, GLshort x, GLshort y, GLshort z);
+    GLAPI void GLAPIENTRY glVertexAttrib3sv (GLuint index, const GLshort* v);
+    GLAPI void GLAPIENTRY glVertexAttrib4Nbv (GLuint index, const GLbyte* v);
+    GLAPI void GLAPIENTRY glVertexAttrib4Niv (GLuint index, const GLint* v);
+    GLAPI void GLAPIENTRY glVertexAttrib4Nsv (GLuint index, const GLshort* v);
+    GLAPI void GLAPIENTRY glVertexAttrib4Nub (GLuint index, GLubyte x, GLubyte y, GLubyte z, GLubyte w);
+    GLAPI void GLAPIENTRY glVertexAttrib4Nubv (GLuint index, const GLubyte* v);
+    GLAPI void GLAPIENTRY glVertexAttrib4Nuiv (GLuint index, const GLuint* v);
+    GLAPI void GLAPIENTRY glVertexAttrib4Nusv (GLuint index, const GLushort* v);
+    GLAPI void GLAPIENTRY glVertexAttrib4bv (GLuint index, const GLbyte* v);
+    GLAPI void GLAPIENTRY glVertexAttrib4d (GLuint index, GLdouble x, GLdouble y, GLdouble z, GLdouble w);
+    GLAPI void GLAPIENTRY glVertexAttrib4dv (GLuint index, const GLdouble* v);
+    GLAPI void GLAPIENTRY glVertexAttrib4f (GLuint index, GLfloat x, GLfloat y, GLfloat z, GLfloat w);
+    GLAPI void GLAPIENTRY glVertexAttrib4fv (GLuint index, const GLfloat* v);
+    GLAPI void GLAPIENTRY glVertexAttrib4iv (GLuint index, const GLint* v);
+    GLAPI void GLAPIENTRY glVertexAttrib4s (GLuint index, GLshort x, GLshort y, GLshort z, GLshort w);
+    GLAPI void GLAPIENTRY glVertexAttrib4sv (GLuint index, const GLshort* v);
+    GLAPI void GLAPIENTRY glVertexAttrib4ubv (GLuint index, const GLubyte* v);
+    GLAPI void GLAPIENTRY glVertexAttrib4uiv (GLuint index, const GLuint* v);
+    GLAPI void GLAPIENTRY glVertexAttrib4usv (GLuint index, const GLushort* v);
+    GLAPI void GLAPIENTRY glVertexAttribPointer (GLuint index, GLint size, GLenum type, GLboolean normalized, GLsizei stride, const void* pointer);
+
+#else
+
+    #define glAttachShader GLEW_GET_FUN(__glewAttachShader)
+    #define glBindAttribLocation GLEW_GET_FUN(__glewBindAttribLocation)
+    #define glBlendEquationSeparate GLEW_GET_FUN(__glewBlendEquationSeparate)
+    #define glCompileShader GLEW_GET_FUN(__glewCompileShader)
+    #define glCreateProgram GLEW_GET_FUN(__glewCreateProgram)
+    #define glCreateShader GLEW_GET_FUN(__glewCreateShader)
+    #define glDeleteProgram GLEW_GET_FUN(__glewDeleteProgram)
+    #define glDeleteShader GLEW_GET_FUN(__glewDeleteShader)
+    #define glDetachShader GLEW_GET_FUN(__glewDetachShader)
+    #define glDisableVertexAttribArray GLEW_GET_FUN(__glewDisableVertexAttribArray)
+    #define glDrawBuffers GLEW_GET_FUN(__glewDrawBuffers)
+    #define glEnableVertexAttribArray GLEW_GET_FUN(__glewEnableVertexAttribArray)
+    #define glGetActiveAttrib GLEW_GET_FUN(__glewGetActiveAttrib)
+    #define glGetActiveUniform GLEW_GET_FUN(__glewGetActiveUniform)
+    #define glGetAttachedShaders GLEW_GET_FUN(__glewGetAttachedShaders)
+    #define glGetAttribLocation GLEW_GET_FUN(__glewGetAttribLocation)
+    #define glGetProgramInfoLog GLEW_GET_FUN(__glewGetProgramInfoLog)
+    #define glGetProgramiv GLEW_GET_FUN(__glewGetProgramiv)
+    #define glGetShaderInfoLog GLEW_GET_FUN(__glewGetShaderInfoLog)
+    #define glGetShaderSource GLEW_GET_FUN(__glewGetShaderSource)
+    #define glGetShaderiv GLEW_GET_FUN(__glewGetShaderiv)
+    #define glGetUniformLocation GLEW_GET_FUN(__glewGetUniformLocation)
+    #define glGetUniformfv GLEW_GET_FUN(__glewGetUniformfv)
+    #define glGetUniformiv GLEW_GET_FUN(__glewGetUniformiv)
+    #define glGetVertexAttribPointerv GLEW_GET_FUN(__glewGetVertexAttribPointerv)
+    #define glGetVertexAttribdv GLEW_GET_FUN(__glewGetVertexAttribdv)
+    #define glGetVertexAttribfv GLEW_GET_FUN(__glewGetVertexAttribfv)
+    #define glGetVertexAttribiv GLEW_GET_FUN(__glewGetVertexAttribiv)
+    #define glIsProgram GLEW_GET_FUN(__glewIsProgram)
+    #define glIsShader GLEW_GET_FUN(__glewIsShader)
+    #define glLinkProgram GLEW_GET_FUN(__glewLinkProgram)
+    #define glShaderSource GLEW_GET_FUN(__glewShaderSource)
+    #define glStencilFuncSeparate GLEW_GET_FUN(__glewStencilFuncSeparate)
+    #define glStencilMaskSeparate GLEW_GET_FUN(__glewStencilMaskSeparate)
+    #define glStencilOpSeparate GLEW_GET_FUN(__glewStencilOpSeparate)
+    #define glUniform1f GLEW_GET_FUN(__glewUniform1f)
+    #define glUniform1fv GLEW_GET_FUN(__glewUniform1fv)
+    #define glUniform1i GLEW_GET_FUN(__glewUniform1i)
+    #define glUniform1iv GLEW_GET_FUN(__glewUniform1iv)
+    #define glUniform2f GLEW_GET_FUN(__glewUniform2f)
+    #define glUniform2fv GLEW_GET_FUN(__glewUniform2fv)
+    #define glUniform2i GLEW_GET_FUN(__glewUniform2i)
+    #define glUniform2iv GLEW_GET_FUN(__glewUniform2iv)
+    #define glUniform3f GLEW_GET_FUN(__glewUniform3f)
+    #define glUniform3fv GLEW_GET_FUN(__glewUniform3fv)
+    #define glUniform3i GLEW_GET_FUN(__glewUniform3i)
+    #define glUniform3iv GLEW_GET_FUN(__glewUniform3iv)
+    #define glUniform4f GLEW_GET_FUN(__glewUniform4f)
+    #define glUniform4fv GLEW_GET_FUN(__glewUniform4fv)
+    #define glUniform4i GLEW_GET_FUN(__glewUniform4i)
+    #define glUniform4iv GLEW_GET_FUN(__glewUniform4iv)
+    #define glUniformMatrix2fv GLEW_GET_FUN(__glewUniformMatrix2fv)
+    #define glUniformMatrix3fv GLEW_GET_FUN(__glewUniformMatrix3fv)
+    #define glUniformMatrix4fv GLEW_GET_FUN(__glewUniformMatrix4fv)
+    #define glUseProgram GLEW_GET_FUN(__glewUseProgram)
+    #define glValidateProgram GLEW_GET_FUN(__glewValidateProgram)
+    #define glVertexAttrib1d GLEW_GET_FUN(__glewVertexAttrib1d)
+    #define glVertexAttrib1dv GLEW_GET_FUN(__glewVertexAttrib1dv)
+    #define glVertexAttrib1f GLEW_GET_FUN(__glewVertexAttrib1f)
+    #define glVertexAttrib1fv GLEW_GET_FUN(__glewVertexAttrib1fv)
+    #define glVertexAttrib1s GLEW_GET_FUN(__glewVertexAttrib1s)
+    #define glVertexAttrib1sv GLEW_GET_FUN(__glewVertexAttrib1sv)
+    #define glVertexAttrib2d GLEW_GET_FUN(__glewVertexAttrib2d)
+    #define glVertexAttrib2dv GLEW_GET_FUN(__glewVertexAttrib2dv)
+    #define glVertexAttrib2f GLEW_GET_FUN(__glewVertexAttrib2f)
+    #define glVertexAttrib2fv GLEW_GET_FUN(__glewVertexAttrib2fv)
+    #define glVertexAttrib2s GLEW_GET_FUN(__glewVertexAttrib2s)
+    #define glVertexAttrib2sv GLEW_GET_FUN(__glewVertexAttrib2sv)
+    #define glVertexAttrib3d GLEW_GET_FUN(__glewVertexAttrib3d)
+    #define glVertexAttrib3dv GLEW_GET_FUN(__glewVertexAttrib3dv)
+    #define glVertexAttrib3f GLEW_GET_FUN(__glewVertexAttrib3f)
+    #define glVertexAttrib3fv GLEW_GET_FUN(__glewVertexAttrib3fv)
+    #define glVertexAttrib3s GLEW_GET_FUN(__glewVertexAttrib3s)
+    #define glVertexAttrib3sv GLEW_GET_FUN(__glewVertexAttrib3sv)
+    #define glVertexAttrib4Nbv GLEW_GET_FUN(__glewVertexAttrib4Nbv)
+    #define glVertexAttrib4Niv GLEW_GET_FUN(__glewVertexAttrib4Niv)
+    #define glVertexAttrib4Nsv GLEW_GET_FUN(__glewVertexAttrib4Nsv)
+    #define glVertexAttrib4Nub GLEW_GET_FUN(__glewVertexAttrib4Nub)
+    #define glVertexAttrib4Nubv GLEW_GET_FUN(__glewVertexAttrib4Nubv)
+    #define glVertexAttrib4Nuiv GLEW_GET_FUN(__glewVertexAttrib4Nuiv)
+    #define glVertexAttrib4Nusv GLEW_GET_FUN(__glewVertexAttrib4Nusv)
+    #define glVertexAttrib4bv GLEW_GET_FUN(__glewVertexAttrib4bv)
+    #define glVertexAttrib4d GLEW_GET_FUN(__glewVertexAttrib4d)
+    #define glVertexAttrib4dv GLEW_GET_FUN(__glewVertexAttrib4dv)
+    #define glVertexAttrib4f GLEW_GET_FUN(__glewVertexAttrib4f)
+    #define glVertexAttrib4fv GLEW_GET_FUN(__glewVertexAttrib4fv)
+    #define glVertexAttrib4iv GLEW_GET_FUN(__glewVertexAttrib4iv)
+    #define glVertexAttrib4s GLEW_GET_FUN(__glewVertexAttrib4s)
+    #define glVertexAttrib4sv GLEW_GET_FUN(__glewVertexAttrib4sv)
+    #define glVertexAttrib4ubv GLEW_GET_FUN(__glewVertexAttrib4ubv)
+    #define glVertexAttrib4uiv GLEW_GET_FUN(__glewVertexAttrib4uiv)
+    #define glVertexAttrib4usv GLEW_GET_FUN(__glewVertexAttrib4usv)
+    #define glVertexAttribPointer GLEW_GET_FUN(__glewVertexAttribPointer)
+
+#endif
 
 #define GLEW_VERSION_2_0 GLEW_GET_VAR(__GLEW_VERSION_2_0)
 

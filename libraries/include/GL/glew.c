@@ -2040,10 +2040,14 @@ static GLboolean _glewInit_GL_VERSION_1_2 (void)
 {
   GLboolean r = GL_FALSE;
 
+#if !defined(GLEW_STATIC_MINIMUM)
+
   r = ((glCopyTexSubImage3D = (PFNGLCOPYTEXSUBIMAGE3DPROC)glewGetProcAddress((const GLubyte*)"glCopyTexSubImage3D")) == NULL) || r;
   r = ((glDrawRangeElements = (PFNGLDRAWRANGEELEMENTSPROC)glewGetProcAddress((const GLubyte*)"glDrawRangeElements")) == NULL) || r;
   r = ((glTexImage3D = (PFNGLTEXIMAGE3DPROC)glewGetProcAddress((const GLubyte*)"glTexImage3D")) == NULL) || r;
   r = ((glTexSubImage3D = (PFNGLTEXSUBIMAGE3DPROC)glewGetProcAddress((const GLubyte*)"glTexSubImage3D")) == NULL) || r;
+
+#endif
 
   return r;
 }
@@ -2055,6 +2059,8 @@ static GLboolean _glewInit_GL_VERSION_1_2 (void)
 static GLboolean _glewInit_GL_VERSION_1_3 (void)
 {
   GLboolean r = GL_FALSE;
+
+#if !defined(GLEW_STATIC_MINIMUM)
 
   r = ((glActiveTexture = (PFNGLACTIVETEXTUREPROC)glewGetProcAddress((const GLubyte*)"glActiveTexture")) == NULL) || r;
   r = ((glClientActiveTexture = (PFNGLCLIENTACTIVETEXTUREPROC)glewGetProcAddress((const GLubyte*)"glClientActiveTexture")) == NULL) || r;
@@ -2103,6 +2109,8 @@ static GLboolean _glewInit_GL_VERSION_1_3 (void)
   r = ((glMultiTexCoord4sv = (PFNGLMULTITEXCOORD4SVPROC)glewGetProcAddress((const GLubyte*)"glMultiTexCoord4sv")) == NULL) || r;
   r = ((glSampleCoverage = (PFNGLSAMPLECOVERAGEPROC)glewGetProcAddress((const GLubyte*)"glSampleCoverage")) == NULL) || r;
 
+#endif
+
   return r;
 }
 
@@ -2113,6 +2121,8 @@ static GLboolean _glewInit_GL_VERSION_1_3 (void)
 static GLboolean _glewInit_GL_VERSION_1_4 (void)
 {
   GLboolean r = GL_FALSE;
+
+#if !defined(GLEW_STATIC_MINIMUM)
 
   r = ((glBlendColor = (PFNGLBLENDCOLORPROC)glewGetProcAddress((const GLubyte*)"glBlendColor")) == NULL) || r;
   r = ((glBlendEquation = (PFNGLBLENDEQUATIONPROC)glewGetProcAddress((const GLubyte*)"glBlendEquation")) == NULL) || r;
@@ -2162,6 +2172,8 @@ static GLboolean _glewInit_GL_VERSION_1_4 (void)
   r = ((glWindowPos3s = (PFNGLWINDOWPOS3SPROC)glewGetProcAddress((const GLubyte*)"glWindowPos3s")) == NULL) || r;
   r = ((glWindowPos3sv = (PFNGLWINDOWPOS3SVPROC)glewGetProcAddress((const GLubyte*)"glWindowPos3sv")) == NULL) || r;
 
+#endif
+
   return r;
 }
 
@@ -2172,6 +2184,8 @@ static GLboolean _glewInit_GL_VERSION_1_4 (void)
 static GLboolean _glewInit_GL_VERSION_1_5 (void)
 {
   GLboolean r = GL_FALSE;
+
+#if !defined(GLEW_STATIC_MINIMUM)
 
   r = ((glBeginQuery = (PFNGLBEGINQUERYPROC)glewGetProcAddress((const GLubyte*)"glBeginQuery")) == NULL) || r;
   r = ((glBindBuffer = (PFNGLBINDBUFFERPROC)glewGetProcAddress((const GLubyte*)"glBindBuffer")) == NULL) || r;
@@ -2193,6 +2207,8 @@ static GLboolean _glewInit_GL_VERSION_1_5 (void)
   r = ((glMapBuffer = (PFNGLMAPBUFFERPROC)glewGetProcAddress((const GLubyte*)"glMapBuffer")) == NULL) || r;
   r = ((glUnmapBuffer = (PFNGLUNMAPBUFFERPROC)glewGetProcAddress((const GLubyte*)"glUnmapBuffer")) == NULL) || r;
 
+#endif
+
   return r;
 }
 
@@ -2203,6 +2219,8 @@ static GLboolean _glewInit_GL_VERSION_1_5 (void)
 static GLboolean _glewInit_GL_VERSION_2_0 (void)
 {
   GLboolean r = GL_FALSE;
+
+#if !defined(GLEW_STATIC_MINIMUM)
 
   r = ((glAttachShader = (PFNGLATTACHSHADERPROC)glewGetProcAddress((const GLubyte*)"glAttachShader")) == NULL) || r;
   r = ((glBindAttribLocation = (PFNGLBINDATTRIBLOCATIONPROC)glewGetProcAddress((const GLubyte*)"glBindAttribLocation")) == NULL) || r;
@@ -2297,6 +2315,8 @@ static GLboolean _glewInit_GL_VERSION_2_0 (void)
   r = ((glVertexAttrib4uiv = (PFNGLVERTEXATTRIB4UIVPROC)glewGetProcAddress((const GLubyte*)"glVertexAttrib4uiv")) == NULL) || r;
   r = ((glVertexAttrib4usv = (PFNGLVERTEXATTRIB4USVPROC)glewGetProcAddress((const GLubyte*)"glVertexAttrib4usv")) == NULL) || r;
   r = ((glVertexAttribPointer = (PFNGLVERTEXATTRIBPOINTERPROC)glewGetProcAddress((const GLubyte*)"glVertexAttribPointer")) == NULL) || r;
+
+#endif
 
   return r;
 }
@@ -2875,7 +2895,6 @@ static GLboolean _glewInit_GL_ARB_imaging (void)
 {
   GLboolean r = GL_FALSE;
 
-  r = ((glBlendEquation = (PFNGLBLENDEQUATIONPROC)glewGetProcAddress((const GLubyte*)"glBlendEquation")) == NULL) || r;
   r = ((glColorSubTable = (PFNGLCOLORSUBTABLEPROC)glewGetProcAddress((const GLubyte*)"glColorSubTable")) == NULL) || r;
   r = ((glColorTable = (PFNGLCOLORTABLEPROC)glewGetProcAddress((const GLubyte*)"glColorTable")) == NULL) || r;
   r = ((glColorTableParameterfv = (PFNGLCOLORTABLEPARAMETERFVPROC)glewGetProcAddress((const GLubyte*)"glColorTableParameterfv")) == NULL) || r;
