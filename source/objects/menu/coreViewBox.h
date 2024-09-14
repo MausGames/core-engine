@@ -44,6 +44,9 @@ public:
     /* check if view-object belongs to the view-box */
     inline coreBool ContainsObject(coreObject2D* pObject)const {return m_apObject.count(pObject);}
 
+    /* access view-object list directly */
+    inline const coreSet<coreObject2D*>* List()const {return &m_apObject;}
+
     /* set object properties */
     void SetOffset (const coreVector2 vOffset)  {m_vOffset  = vOffset;}
     void SetScissor(const coreBool    bScissor) {m_bScissor = bScissor;}

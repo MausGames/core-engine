@@ -354,11 +354,15 @@ CoreSystem::CoreSystem()noexcept
             SDL_free(pLocaleList);
         }
 
+        coreInt32 iSeconds, iPercent;
+        const SDL_PowerState ePowerState = SDL_GetPowerInfo(&iSeconds, &iPercent);
+
         Core::Log->ListAdd(CORE_LOG_BOLD("Operating System:")  " %s",                                             coreData::SystemOsName());
         Core::Log->ListAdd(CORE_LOG_BOLD("Processor:")         " %s (%s, %d logical cores, %d bytes cache line)", coreData::SystemCpuBrand(), coreData::SystemCpuVendor(), SDL_GetCPUCount(), SDL_GetCPUCacheLineSize());
         Core::Log->ListAdd(CORE_LOG_BOLD("System Memory:")     " %llu/%llu MB (%.1f%%)",                          iMemoryUsed / (1024u * 1024u), iMemoryTotal / (1024u * 1024u), dMemoryPct);
         Core::Log->ListAdd(CORE_LOG_BOLD("Disk Space:")        " %llu MB available",                              iSpaceAvailable / (1024u * 1024u));
         Core::Log->ListAdd(CORE_LOG_BOLD("Preferred Locales:") " %s",                                             sLocaleStr.c_str());
+        Core::Log->ListAdd(CORE_LOG_BOLD("Battery Status:")    " %d (%d%%, %d minutes)",                          ePowerState, MAX0(iPercent), iSeconds / 60);
     }
     Core::Log->ListEnd();
 

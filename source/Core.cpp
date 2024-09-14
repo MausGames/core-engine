@@ -192,7 +192,7 @@ void Core::Reshape()
 /* restart application */
 void Core::Restart()
 {
-    // deferr actual restart
+    // defer actual restart
     s_bRestart = true;
 }
 

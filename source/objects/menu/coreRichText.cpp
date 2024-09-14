@@ -437,7 +437,7 @@ void coreRichText::__Reshape()
 /* parse and arrange characters */
 void coreRichText::__ParseText()
 {
-    ASSERT(!m_aStyle.empty() && !m_avColor.empty() && m_fLineSkip)
+    ASSERT(!m_aStyle.empty() && !m_avColor.empty() && (m_fLineSkip || (m_fMaxWidth >= CORE_RICHTEXT_MAX_WIDTH)))
 
     coreVector2 vCurPos    = coreVector2(0.0f,0.0f);
     coreVector2 vCurSize   = coreVector2(0.0f,0.0f);
@@ -565,7 +565,7 @@ void coreRichText::__ParseText()
                 const coreInt32 iKerning = pFont->RetrieveGlyphKerning(cTestPrevGlyph, cGlyph, iRelHeight, iRelOutline);
 
                 // apply advance and kerning
-                fTestWidth += I_TO_F(iAdvance - iKerning);
+                fTestWidth += I_TO_F(iAdvance + iKerning);
 
                 // check limit
                 if(fTestWidth >= fFullMaxWidth)
@@ -674,7 +674,7 @@ void coreRichText::__ParseText()
             }
 
             // apply kerning value
-            vCurPos.x -= I_TO_F(iKerning);
+            vCurPos.x += I_TO_F(iKerning);
 
             // check limit and start new text line
             if(vCurPos.x + I_TO_F(iAdvance) >= fFullMaxWidth)
@@ -708,7 +708,7 @@ void coreRichText::__ParseText()
         else
         {
             // apply advance and kerning
-            vCurPos.x += I_TO_F(iAdvance - iKerning);
+            vCurPos.x += I_TO_F(iAdvance + iKerning);
         }
 
         // save previous glyph (for kerning)
