@@ -718,3 +718,252 @@ void coreTexture::__BindTexture(const coreUintW iUnit, coreTexture* pTexture)
         glBindTexture(GL_TEXTURE_2D, pTexture ? pTexture->GetIdentifier() : 0u);
     }
 }
+
+
+// ****************************************************************
+/* constructor */
+coreTextureVolume::coreTextureVolume()noexcept
+: m_iIdentifier (0u)
+, m_vResolution (coreVector3(0.0f,0.0f,0.0f))
+, m_eMode       (CORE_TEXTURE_MODE_DEFAULT)
+, m_Spec        (coreTextureSpec(0u, 0u, 0u, 0u, 0u))
+{
+}
+
+
+// ****************************************************************
+/* destructor */
+coreTextureVolume::~coreTextureVolume()
+{
+    this->Delete();
+}
+
+
+// ****************************************************************
+/* create texture memory */
+coreStatus coreTextureVolume::Create(const coreUint32 iWidth, const coreUint32 iHeight, const coreUint32 iDepth, const coreTextureSpec& oSpec, const coreTextureMode eMode)
+{
+    WARN_IF(m_iIdentifier) this->Delete();
+    ASSERT(iWidth && iHeight && iDepth)
+
+    // check for OpenGL extensions
+    if(!CORE_GL_SUPPORT(EXT_texture3D)) return CORE_ERROR_SUPPORT;
+
+    // save properties
+    m_vResolution = coreVector3(I_TO_F(iWidth), I_TO_F(iHeight), I_TO_F(iDepth));
+    m_eMode       = eMode;
+    m_Spec        = oSpec;
+
+    // set filter mode
+    const GLenum iMagFilter = HAS_FLAG(eMode, CORE_TEXTURE_MODE_NEAREST) ? GL_NEAREST : GL_LINEAR;
+    const GLenum iMinFilter = HAS_FLAG(eMode, CORE_TEXTURE_MODE_NEAREST) ? GL_NEAREST : GL_LINEAR;
+
+    // set wrap mode
+    const GLenum iWrapMode = HAS_FLAG(eMode, CORE_TEXTURE_MODE_REPEAT) ? GL_REPEAT : GL_CLAMP_TO_EDGE;
+
+    // generate texture
+    glGenTextures(1u, &m_iIdentifier);
+    glBindTexture(GL_TEXTURE_3D, m_iIdentifier);
+
+    // set sampling parameters
+    glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_MAG_FILTER, iMagFilter);
+    glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_MIN_FILTER, iMinFilter);
+    glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_WRAP_S,     iWrapMode);
+    glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_WRAP_T,     iWrapMode);
+    glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_BASE_LEVEL, 0);
+    glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_MAX_LEVEL,  0);
+
+    if(CORE_GL_SUPPORT(ARB_texture_storage))
+    {
+        // allocate immutable texture memory
+        glTexStorage3D(GL_TEXTURE_3D, 1, m_Spec.iInternal, iWidth, iHeight, iDepth);
+    }
+    else
+    {
+        // allocate mutable texture memory
+        glTexImage3D(GL_TEXTURE_3D, 0, CORE_GL_SUPPORT(CORE_es2_restriction) ? m_Spec.iFormat : m_Spec.iInternal, iWidth, iHeight, iDepth, 0, m_Spec.iFormat, m_Spec.iType, NULL);
+    }
+
+    return CORE_OK;
+}
+
+
+// ****************************************************************
+/* modify texture memory */
+void coreTextureVolume::Modify(const coreUint32 iOffsetX, const coreUint32 iOffsetY, const coreUint32 iOffsetZ, const coreUint32 iWidth, const coreUint32 iHeight, const coreUint32 iDepth, const coreUint32 iDataSize, const coreByte* pData)
+{
+    WARN_IF(!m_iIdentifier) return;
+    ASSERT(iWidth && iHeight && iDepth && (iOffsetX + iWidth <= F_TO_UI(m_vResolution.x)) && (iOffsetY + iHeight <= F_TO_UI(m_vResolution.y)) && (iOffsetZ + iDepth <= F_TO_UI(m_vResolution.z)))
+
+    // check for OpenGL extensions
+    const coreBool bPixelBuffer = CORE_GL_SUPPORT(ARB_pixel_buffer_object) && coreMath::IsAligned(iDataSize / iHeight / iDepth, 4u) && iDataSize && pData;
+
+    coreDataBuffer oBuffer;
+    if(bPixelBuffer)
+    {
+        // create pixel buffer object for asynchronous texture loading
+        oBuffer.Create(GL_PIXEL_UNPACK_BUFFER, iDataSize, pData, CORE_DATABUFFER_STORAGE_STREAM);
+
+        // use PBO instead of client memory
+        pData = NULL;
+    }
+
+    if(CORE_GL_SUPPORT(ARB_direct_state_access))
+    {
+        // update texture data directly (new)
+        glTextureSubImage3D(m_iIdentifier, 0, iOffsetX, iOffsetY, iOffsetZ, iWidth, iHeight, iDepth, m_Spec.iFormat, m_Spec.iType, pData);
+    }
+    else if(CORE_GL_SUPPORT(EXT_direct_state_access))
+    {
+        // update texture data directly (old)
+        glTextureSubImage3DEXT(m_iIdentifier, GL_TEXTURE_3D, 0, iOffsetX, iOffsetY, iOffsetZ, iWidth, iHeight, iDepth, m_Spec.iFormat, m_Spec.iType, pData);
+    }
+    else
+    {
+        // bind texture (simple)
+        glBindTexture(GL_TEXTURE_3D, m_iIdentifier);
+
+        // update texture data
+        glTexSubImage3D(GL_TEXTURE_3D, 0, iOffsetX, iOffsetY, iOffsetZ, iWidth, iHeight, iDepth, m_Spec.iFormat, m_Spec.iType, pData);
+    }
+}
+
+
+// ****************************************************************
+/* delete texture memory */
+void coreTextureVolume::Delete()
+{
+    if(!m_iIdentifier) return;
+
+    // delete texture
+    glDeleteTextures(1u, &m_iIdentifier);
+
+    // reset properties
+    m_iIdentifier = 0u;
+    m_vResolution = coreVector3(0.0f,0.0f,0.0f);
+    m_eMode       = CORE_TEXTURE_MODE_DEFAULT;
+    m_Spec        = coreTextureSpec(0u, 0u, 0u, 0u, 0u);
+}
+
+
+// ****************************************************************
+/* constructor */
+coreTextureCube::coreTextureCube()noexcept
+: m_iIdentifier (0u)
+, m_vResolution (coreVector2(0.0f,0.0f))
+, m_eMode       (CORE_TEXTURE_MODE_DEFAULT)
+, m_Spec        (coreTextureSpec(0u, 0u, 0u, 0u, 0u))
+{
+}
+
+
+// ****************************************************************
+/* destructor */
+coreTextureCube::~coreTextureCube()
+{
+    this->Delete();
+}
+
+
+// ****************************************************************
+/* create texture memory */
+coreStatus coreTextureCube::Create(const coreUint32 iWidth, const coreUint32 iHeight, const coreTextureSpec& oSpec, const coreTextureMode eMode)
+{
+    WARN_IF(m_iIdentifier) this->Delete();
+    ASSERT(iWidth && iHeight)
+
+    // save properties
+    m_vResolution = coreVector2(I_TO_F(iWidth), I_TO_F(iHeight));
+    m_eMode       = eMode;
+    m_Spec        = oSpec;
+
+    // set filter mode
+    const GLenum iMagFilter = HAS_FLAG(eMode, CORE_TEXTURE_MODE_NEAREST) ? GL_NEAREST : GL_LINEAR;
+    const GLenum iMinFilter = HAS_FLAG(eMode, CORE_TEXTURE_MODE_NEAREST) ? GL_NEAREST : GL_LINEAR;
+
+    // set wrap mode
+    const GLenum iWrapMode = HAS_FLAG(eMode, CORE_TEXTURE_MODE_REPEAT) ? GL_REPEAT : GL_CLAMP_TO_EDGE;
+
+    // generate texture
+    glGenTextures(1u, &m_iIdentifier);
+    glBindTexture(GL_TEXTURE_CUBE_MAP, m_iIdentifier);
+
+    // set sampling parameters
+    glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MAG_FILTER, iMagFilter);
+    glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MIN_FILTER, iMinFilter);
+    glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_S,     iWrapMode);
+    glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_T,     iWrapMode);
+    glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_BASE_LEVEL, 0);
+    glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MAX_LEVEL,  0);
+
+    if(CORE_GL_SUPPORT(ARB_texture_storage))
+    {
+        // allocate immutable texture memory
+        glTexStorage2D(GL_TEXTURE_CUBE_MAP, 1, m_Spec.iInternal, iWidth, iHeight);
+    }
+    else
+    {
+        // allocate mutable texture memory
+        glTexImage2D(GL_TEXTURE_CUBE_MAP, 0, CORE_GL_SUPPORT(CORE_es2_restriction) ? m_Spec.iFormat : m_Spec.iInternal, iWidth, iHeight, 0, m_Spec.iFormat, m_Spec.iType, NULL);
+    }
+
+    return CORE_OK;
+}
+
+
+// ****************************************************************
+/* modify texture memory */
+void coreTextureCube::Modify(const coreUint32 iOffsetX, const coreUint32 iOffsetY, const coreUint32 iWidth, const coreUint32 iHeight, const coreUint8 iFace, const coreUint32 iDataSize, const coreByte* pData)
+{
+    WARN_IF(!m_iIdentifier) return;
+    ASSERT(iWidth && iHeight && (iOffsetX + iWidth <= F_TO_UI(m_vResolution.x)) && (iOffsetY + iHeight <= F_TO_UI(m_vResolution.y)) && (iFace < 6u))
+
+    // check for OpenGL extensions
+    const coreBool bPixelBuffer = CORE_GL_SUPPORT(ARB_pixel_buffer_object) && coreMath::IsAligned(iDataSize / iHeight, 4u) && iDataSize && pData;
+
+    coreDataBuffer oBuffer;
+    if(bPixelBuffer)
+    {
+        // create pixel buffer object for asynchronous texture loading
+        oBuffer.Create(GL_PIXEL_UNPACK_BUFFER, iDataSize, pData, CORE_DATABUFFER_STORAGE_STREAM);
+
+        // use PBO instead of client memory
+        pData = NULL;
+    }
+
+    if(CORE_GL_SUPPORT(ARB_direct_state_access))
+    {
+        // update texture data directly (new)
+        glTextureSubImage3D(m_iIdentifier, 0, iOffsetX, iOffsetY, iFace, iWidth, iHeight, 1, m_Spec.iFormat, m_Spec.iType, pData);
+    }
+    else if(CORE_GL_SUPPORT(EXT_direct_state_access))
+    {
+        // update texture data directly (old)
+        glTextureSubImage2DEXT(m_iIdentifier, GL_TEXTURE_CUBE_MAP_POSITIVE_X + iFace, 0, iOffsetX, iOffsetY, iWidth, iHeight, m_Spec.iFormat, m_Spec.iType, pData);
+    }
+    else
+    {
+        // bind texture (simple)
+        glBindTexture(GL_TEXTURE_CUBE_MAP, m_iIdentifier);
+
+        // update texture data
+        glTexSubImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + iFace, 0, iOffsetX, iOffsetY, iWidth, iHeight, m_Spec.iFormat, m_Spec.iType, pData);
+    }
+}
+
+
+// ****************************************************************
+/* delete texture memory */
+void coreTextureCube::Delete()
+{
+    if(!m_iIdentifier) return;
+
+    // delete texture
+    glDeleteTextures(1u, &m_iIdentifier);
+
+    // reset properties
+    m_iIdentifier = 0u;
+    m_vResolution = coreVector2(0.0f,0.0f);
+    m_eMode       = CORE_TEXTURE_MODE_DEFAULT;
+    m_Spec        = coreTextureSpec(0u, 0u, 0u, 0u, 0u);
+}

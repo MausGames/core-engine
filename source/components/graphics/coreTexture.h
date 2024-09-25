@@ -19,6 +19,9 @@
 // TODO 5: check out AMD compressonator, BPTC (BC6 (HDR), BC7 (HQ)), ASTC (4x4, 6x6, 8x8) or even ETC1 (RGB) and ETC2 (RGB, RGBA)
 // TODO 5: <old comment style>
 // TODO 3: fill remaining mip-maps on compressed textures
+// TODO 3: distribute texture-loading across multiple iterations (maybe only decompression<>processing)
+// TODO 3: allow updating of all cube-map faces at once (native for direct-state, fallback for old function)
+// TODO 3: upload mipmaps with a single PBO (offset?)
 
 
 // ****************************************************************
@@ -180,6 +183,70 @@ private:
 // ****************************************************************
 /* texture resource access type */
 using coreTexturePtr = coreResourcePtr<coreTexture>;
+
+
+// ****************************************************************
+/* volume texture class */
+class coreTextureVolume final
+{
+private:
+    GLuint m_iIdentifier;        // texture identifier
+
+    coreVector3 m_vResolution;   // resolution of the base level
+
+    coreTextureMode m_eMode;     // texture mode (sampling)
+    coreTextureSpec m_Spec;      // texture specification (format)
+
+
+public:
+    coreTextureVolume()noexcept;
+    ~coreTextureVolume();
+
+    DISABLE_COPY(coreTextureVolume)
+
+    /* handle texture memory */
+    coreStatus Create(const coreUint32 iWidth, const coreUint32 iHeight, const coreUint32 iDepth, const coreTextureSpec& oSpec, const coreTextureMode eMode);
+    void       Modify(const coreUint32 iOffsetX, const coreUint32 iOffsetY, const coreUint32 iOffsetZ, const coreUint32 iWidth, const coreUint32 iHeight, const coreUint32 iDepth, const coreUint32 iDataSize, const coreByte* pData);
+    void       Delete();
+
+    /* get object properties */
+    inline const GLuint&          GetIdentifier()const {return m_iIdentifier;}
+    inline const coreVector3&     GetResolution()const {return m_vResolution;}
+    inline const coreTextureMode& GetMode      ()const {return m_eMode;}
+    inline const coreTextureSpec& GetSpec      ()const {return m_Spec;}
+};
+
+
+// ****************************************************************
+/* cube texture class */
+class coreTextureCube final
+{
+private:
+    GLuint m_iIdentifier;        // texture identifier
+
+    coreVector2 m_vResolution;   // resolution of the base level
+
+    coreTextureMode m_eMode;     // texture mode (sampling)
+    coreTextureSpec m_Spec;      // texture specification (format)
+
+
+public:
+    coreTextureCube()noexcept;
+    ~coreTextureCube();
+
+    DISABLE_COPY(coreTextureCube)
+
+    /* handle texture memory */
+    coreStatus Create(const coreUint32 iWidth, const coreUint32 iHeight, const coreTextureSpec& oSpec, const coreTextureMode eMode);
+    void       Modify(const coreUint32 iOffsetX, const coreUint32 iOffsetY, const coreUint32 iWidth, const coreUint32 iHeight, const coreUint8 iFace, const coreUint32 iDataSize, const coreByte* pData);
+    void       Delete();
+
+    /* get object properties */
+    inline const GLuint&          GetIdentifier()const {return m_iIdentifier;}
+    inline const coreVector2&     GetResolution()const {return m_vResolution;}
+    inline const coreTextureMode& GetMode      ()const {return m_eMode;}
+    inline const coreTextureSpec& GetSpec      ()const {return m_Spec;}
+};
 
 
 // ****************************************************************
