@@ -338,24 +338,21 @@ const coreChar* coreData::SystemOsName()
     // check for Wine compatibility layer
     const coreChar* pcWineName = "native";
     {
-        // open system library
-        void* pLibrary = coreData::OpenLibrary("ntdll.dll");
+        // get system library
+        const HMODULE pLibrary = GetModuleHandleW(L"ntdll.dll");
         if(pLibrary)
         {
             using coreGetString = const coreChar* (__cdecl *)();
 
             // load Wine specific functions
-            const coreGetString nWineGetVersion = r_cast<coreGetString>(coreData::GetAddress(pLibrary, "wine_get_version"));
-            const coreGetString nWineGetBuildId = r_cast<coreGetString>(coreData::GetAddress(pLibrary, "wine_get_build_id"));
+            const coreGetString nWineGetVersion = r_cast<coreGetString>(GetProcAddress(pLibrary, "wine_get_version"));
+            const coreGetString nWineGetBuildId = r_cast<coreGetString>(GetProcAddress(pLibrary, "wine_get_build_id"));
 
             // get Wine version and build ID
             if(nWineGetVersion && nWineGetBuildId)
             {
                 pcWineName = PRINT("Wine %s (%s)", nWineGetVersion(), nWineGetBuildId());
             }
-
-            // close system library
-            coreData::CloseLibrary(pLibrary);
         }
     }
 
@@ -720,6 +717,118 @@ const coreChar* coreData::BuildLibraryCpp()
 #elif defined(_CORE_LIBCPP_)
 
     return "libc++ " STRING(_LIBCPP_VERSION) " (ABI " STRING(_LIBCPP_ABI_VERSION) ")";
+
+#endif
+}
+
+
+// ****************************************************************
+/* detect attached debugger or tracer */
+coreBool coreData::DetectDebugger()
+{
+#if defined(_CORE_WINDOWS_)
+
+    return IsDebuggerPresent();
+
+#elif defined(_CORE_LINUX_)
+
+    // open status pseudo-file
+    std::FILE* pFile = coreData::FileOpen("/proc/self/status", "rb");
+    if(pFile)
+    {
+        coreChar acBuffer[0x1000];
+
+        // read all data
+        const coreUintW iResult = std::fread(acBuffer, 1u, ARRAY_SIZE(acBuffer) - 1u, pFile);
+        acBuffer[iResult] = '\0';
+
+        // close file
+        std::fclose(pFile);
+
+        // search tracing entry
+        const coreChar* pcCursor = std::strstr(acBuffer, "TracerPid:");
+        if(pcCursor)
+        {
+            // check for valid process identifier
+            pcCursor += coreStrLenConst("TracerPid:");
+            for(; (*pcCursor) != '\0'; ++pcCursor)
+            {
+                if(!std::isspace(*pcCursor))
+                {
+                    return ((*pcCursor) >= '1') && ((*pcCursor) <= '9');
+                }
+            }
+        }
+    }
+
+#elif defined(_CORE_MACOS_)
+
+    // set management information base
+    coreInt32 aiBase[] = {CTL_KERN, KERN_PROC, KERN_PROC_PID, getpid()};
+
+    // retrieve process information
+    kinfo_proc oInfo = {};
+    coreUintW  iLen  = sizeof(oInfo);
+    if(!sysctl(aiBase, ARRAY_SIZE(aiBase), &oInfo, &iLen, NULL, 0u))
+    {
+        return HAS_FLAG(oInfo.kp_proc.p_flag, P_TRACED);
+    }
+
+#endif
+
+    return false;
+}
+
+
+// ****************************************************************
+/* detect attached RenderDoc */
+coreBool coreData::DetectRenderDoc()
+{
+#if defined(_CORE_WINDOWS_)
+
+    return coreData::TestLibrary("renderdoc.dll");
+
+#elif defined(_CORE_LINUX_)
+
+    return coreData::TestLibrary("librenderdoc.so");
+
+#else
+
+    return false;
+
+#endif
+}
+
+
+// ****************************************************************
+/* detect Steam Deck hardware */
+coreBool coreData::DetectSteamDeck()
+{
+    const coreChar* pcVariable = coreData::GetEnvironment("SteamDeck");
+    return (pcVariable && !std::strcmp(pcVariable, "1"));
+}
+
+
+// ****************************************************************
+/* detect Gamescope compositor */
+coreBool coreData::DetectGamescope()
+{
+    const coreChar* pcVariable = coreData::GetEnvironment("XDG_CURRENT_DESKTOP");
+    return (pcVariable && !std::strcmp(pcVariable, "gamescope"));
+}
+
+
+// ****************************************************************
+/* detect Wine or Proton layer */
+coreBool coreData::DetectWine()
+{
+#if defined(_CORE_WINDOWS_)
+
+    return (GetProcAddress(GetModuleHandleW(L"ntdll.dll"), "wine_get_version") != NULL);
+
+#else
+
+    return false;
 
 #endif
 }

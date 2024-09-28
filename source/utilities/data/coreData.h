@@ -139,6 +139,13 @@ public:
     static const coreChar* BuildLibraryC  ();
     static const coreChar* BuildLibraryCpp();
 
+    /* detect special conditions */
+    static coreBool DetectDebugger ();
+    static coreBool DetectRenderDoc();
+    static coreBool DetectSteamDeck();
+    static coreBool DetectGamescope();
+    static coreBool DetectWine     ();
+
     /* control current working directory */
     static       coreStatus SetCurDir(const coreChar* pcPath);
     static const coreChar*  GetCurDir();
