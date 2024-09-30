@@ -13,7 +13,7 @@
 // TODO 3: add name-pooling to OpenGL ES (but not for WebGL, as there are no multi-gen functions)
 // TODO 3: always disable extensions which are only available in either GLES or WebGL in their specific mode, to improve dead-code removal
 // TODO 2: extensions should only be enabled, when all related functions are successfully retrieved
-// TODO 5: GL_EXT_copy_image, GL_OES_copy_image, GL_EXT_gpu_shader5(?), GL_NV_packed_float, GL_NV_copy_buffer, GL_EXT_map_buffer_range
+// TODO 5: GL_EXT_copy_image, GL_OES_copy_image, GL_NV_packed_float, GL_NV_copy_buffer, GL_EXT_map_buffer_range
 // TODO 5: GL_ANGLE_program_cache_control (just for query, needs the EGL extension), GL_AMD_framebuffer_multisample_advanced
 // TODO 5: GL_EXT_disjoint_timer_query_webgl2
 // TODO 5: GL_EXT_texture_storage_compression, GL_IMG_texture_filter_cubic
