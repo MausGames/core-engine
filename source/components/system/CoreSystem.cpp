@@ -41,6 +41,7 @@ CoreSystem::CoreSystem()noexcept
     SDL_SetHint(SDL_HINT_MOUSE_AUTO_CAPTURE,                 "0");
     SDL_SetHint(SDL_HINT_MOUSE_RELATIVE_MODE_CENTER,         "0");
     SDL_SetHint(SDL_HINT_OPENGL_ES_DRIVER,                   "1");
+    SDL_SetHint(SDL_HINT_VIDEO_DOUBLE_BUFFER,                "1");
     SDL_SetHint(SDL_HINT_VIDEO_X11_NET_WM_BYPASS_COMPOSITOR, "0");
     SDL_SetHint(SDL_HINT_WINDOWS_DISABLE_THREAD_NAMING,      DEFINED(_CORE_DEBUG_) ? "0" : "1");
 
@@ -82,10 +83,10 @@ CoreSystem::CoreSystem()noexcept
         }
         else
         {
-            Core::Log->Info("SDL initialized (%d.%d.%d %s, TTF %d.%d.%d, IMG %d.%d.%d)",
+            Core::Log->Info("SDL initialized (%d.%d.%d %s, TTF %d.%d.%d, IMG %d.%d.%d, %s)",
                             oVersionSDL .major, oVersionSDL .minor, oVersionSDL .patch, SDL_GetRevision(),
                             pVersionTTF->major, pVersionTTF->minor, pVersionTTF->patch,
-                            pVersionIMG->major, pVersionIMG->minor, pVersionIMG->patch);
+                            pVersionIMG->major, pVersionIMG->minor, pVersionIMG->patch, SDL_GetPlatform());
         }
 
         // execute main-thread with higher priority
@@ -362,7 +363,7 @@ CoreSystem::CoreSystem()noexcept
         Core::Log->ListAdd(CORE_LOG_BOLD("System Memory:")     " %llu/%llu MB (%.1f%%)",                          iMemoryUsed / (1024u * 1024u), iMemoryTotal / (1024u * 1024u), dMemoryPct);
         Core::Log->ListAdd(CORE_LOG_BOLD("Disk Space:")        " %llu MB available",                              iSpaceAvailable / (1024u * 1024u));
         Core::Log->ListAdd(CORE_LOG_BOLD("Preferred Locales:") " %s",                                             sLocaleStr.c_str());
-        Core::Log->ListAdd(CORE_LOG_BOLD("Battery Status:")    " %d (%d%%, %d minutes)",                          ePowerState, MAX0(iPercent), iSeconds / 60);
+        Core::Log->ListAdd(CORE_LOG_BOLD("Battery Status:")    " %d (%d%%, %d minutes)",                          ePowerState, MAX0(iPercent), MAX0(iSeconds) / 60);
     }
     Core::Log->ListEnd();
 

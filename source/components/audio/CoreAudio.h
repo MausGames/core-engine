@@ -20,10 +20,11 @@
 #define CORE_AUDIO_SOURCES       (CORE_AUDIO_SOURCES_MUSIC + CORE_AUDIO_SOURCES_SOUND)   // total number of audio sources
 #define CORE_AUDIO_TYPES         (8u)                                                    // number of sound types
 #define CORE_AUDIO_MUSIC_BUFFER  (0u)                                                    // sound buffer identifier for music
-#define CORE_AUDIO_MAX_GAIN      (4.0f)                                                  // maximum supported gain per audio source
+#define CORE_AUDIO_MAX_GAIN      (4.0f)                                                  // maximum supported gain per audio source (configurable)
+#define CORE_AUDIO_MAX_PITCH     (2.0f)                                                  // maximum supported pitch per audio source
 
 #define __CORE_AUDIO_CHECK_VOLUME(x) {ASSERT(((x) >= 0.0f) && ((x) <= CORE_AUDIO_MAX_GAIN))}
-#define __CORE_AUDIO_CHECK_PITCH(x)  {ASSERT(((x) >= 0.5f) && ((x) <= 2.0f))}
+#define __CORE_AUDIO_CHECK_PITCH(x)  {ASSERT(((x) >= 0.5f) && ((x) <= CORE_AUDIO_MAX_PITCH))}
 
 enum coreAudioMode : coreUint8
 {

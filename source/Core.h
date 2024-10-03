@@ -423,8 +423,8 @@
 #define DYN_REMOVE(i,c)             {__CHECK_ITERATOR(i ## __e, c); i = (c).erase(i); i ## __e = (c).end();}
 
 #define __CHECK_BIT(o,n)            ([&]() {ASSERT(coreUint64(n) <         (sizeof(o) * 8u))}())
-#define __CHECK_FLAG(o,n)           ([&]() {ASSERT(coreUint64(n) <= BITLINE(sizeof(o) * 8u))}())
-#define __CHECK_BITVALUE(n,v)       ([&]() {ASSERT(coreUint64(v) <= BITLINE(n))}())
+#define __CHECK_FLAG(o,n)           ([&]() {ASSERT(coreUint64(n) <= BITLINE(sizeof(o) * 8u) && ((n) != 0u))}())
+#define __CHECK_BITVALUE(n,v)       ([&]() {ASSERT(coreUint64(v) <= BITLINE(n)              && ((n) != 0u))}())
 #define __CHECK_ITERATOR(e,c)       ([&]() {ASSERT((e) == (c).end ())}())
 #define __CHECK_ITERATOR_REV(e,c)   ([&]() {ASSERT((e) == (c).rend())}())
 

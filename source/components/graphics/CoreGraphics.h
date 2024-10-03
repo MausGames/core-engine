@@ -64,7 +64,7 @@ private:
     coreUniformBuffer m_Transform3DBuffer;      // uniform buffer object for 3d-transformation data
     coreUniformBuffer m_Transform2DBuffer;      // uniform buffer object for 2d-transformation data
     coreUniformBuffer m_AmbientBuffer;          // uniform buffer object for ambient data
-    coreUint8 m_iUniformUpdate;                 // update status for the UBOs (dirty flag)
+    coreUint8         m_iUniformUpdate;         // update status for the UBOs (dirty flag)
 
     coreUint32 m_aiScissorData[4];              // current scissor test properties
 

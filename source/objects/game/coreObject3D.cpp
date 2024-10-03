@@ -162,6 +162,7 @@ coreBool coreObject3D::Prepare(const coreProgramPtr& pProgram)
     pLocal->SendUniform(CORE_SHADER_UNIFORM_3D_ROTATION, m_vRotation);
     pLocal->SendUniform(CORE_SHADER_UNIFORM_COLOR,       m_vColor);
     pLocal->SendUniform(CORE_SHADER_UNIFORM_TEXPARAM,    coreVector4(m_vTexSize, m_vTexOffset));
+    ASSERT(pLocal->RetrieveUniform(CORE_SHADER_UNIFORM_3D_POSITION) >= 0)
 
     // enable all active textures
     coreTexture::EnableAll(m_apTexture);

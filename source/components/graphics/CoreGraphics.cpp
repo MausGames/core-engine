@@ -737,6 +737,14 @@ void CoreGraphics::__UpdateScene()
     coreTexture::DisableAll();
     coreProgram::Disable(true);
 
+#if defined(_CORE_ANGLE_)
+
+    // # Steam hotfix: overlay injection invalidates UBO content
+    ADD_BIT(m_iUniformUpdate, 0u)
+    ADD_BIT(m_iUniformUpdate, 1u)
+
+#endif
+
     // explicitly invalidate depth and stencil buffer
     if(CORE_GL_SUPPORT(ARB_invalidate_subdata))
     {
