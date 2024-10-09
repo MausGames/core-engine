@@ -108,31 +108,31 @@ public:
     DISABLE_CONSTRUCTION(coreMath)
 
     /* special operations */
-    template <typename T, typename... A> static constexpr T Min         (const T& x, const t_ident<T>& y, A&&... vArgs)                {return MIN(x, MIN(y, std::forward<A>(vArgs)...));}
-    template <typename T, typename... A> static constexpr T Max         (const T& x, const t_ident<T>& y, A&&... vArgs)                {return MAX(x, MAX(y, std::forward<A>(vArgs)...));}
-    template <typename T>                static constexpr T Min         (const T& x, const t_ident<T>& y)                              {return (x < y) ? T(x) : T(y);}
-    template <typename T>                static constexpr T Max         (const T& x, const t_ident<T>& y)                              {return (x > y) ? T(x) : T(y);}
-    template <typename T>                static constexpr T Med         (const T& x, const t_ident<T>& y, const t_ident<T>& z)         {return MAX(MIN(MAX(x, y), z), MIN(x, y));}
-    template <typename T>                static constexpr T Clamp       (const T& x, const t_ident<T>& a, const t_ident<T>& b)         {return MIN(MAX(x, a), b);}
-    template <typename T>                static constexpr T Sign        (const T& x)                                                   {return (x < T(0)) ? T(-1) : T(1);}          // never return 0
-    template <typename T>                static constexpr T Signum      (const T& x)                                                   {return (x) ? SIGN(x) : T(0);}
-    template <typename T>                static inline    T Abs         (const T& x)                                                   {return std::abs(x);}
-    template <typename T>                static constexpr T Pow2        (const T& x)                                                   {return x * x;}
-    template <typename T>                static constexpr T Pow3        (const T& x)                                                   {return x * x * x;}
-    template <typename T>                static constexpr T Lerp        (const T& x, const T& y, const coreFloat s)                    {return x * (1.0f - s) + y * s;}             // better precision than (x + (y - x) * s)
-    template <typename T>                static inline    T LerpSmooth  (const T& x, const T& y, const coreFloat s)                    {return LERP(x, y, 0.5f - 0.5f * COS(s * PI));}
-    template <typename T>                static inline    T LerpBreak   (const T& x, const T& y, const coreFloat s)                    {return LERP(x, y, SIN(s * (PI * 0.5f)));}
-    template <typename T>                static inline    T LerpBreakRev(const T& x, const T& y, const coreFloat s)                    {return LERP(y, x, COS(s * (PI * 0.5f)));}   // (y, x)
-    template <typename T>                static constexpr T LerpHermite3(const T& x, const T& y, const coreFloat s)                    {return LERP(x, y, (3.0f - 2.0f * s) * s * s);}
-    template <typename T>                static constexpr T LerpHermite5(const T& x, const T& y, const coreFloat s)                    {return LERP(x, y, (10.0f + (-15.0f + 6.0f * s) * s) * s * s * s);}
-    template <typename T>                static inline    T LerpExp     (const T& x, const T& y, const coreFloat s)                    {return POW(x, 1.0f - s) * POW(y, s);}
-    template <typename T>                static inline    T LerpPow     (const T& x, const T& y, const coreFloat s, const coreFloat k) {return LERP(x, y, POW(s, k));}              // inverted curve with (k < 1)
-    static constexpr coreFloat                              Step        (const coreFloat a, const coreFloat b, const coreFloat x)      {return CLAMP01((x - a) * RCP(b - a));}      // linearstep
-    static inline    coreFloat                              StepSmooth  (const coreFloat a, const coreFloat b, const coreFloat x)      {return BLENDS (STEP(a, b, x));}
-    static inline    coreFloat                              StepBreak   (const coreFloat a, const coreFloat b, const coreFloat x)      {return BLENDB (STEP(a, b, x));}
-    static inline    coreFloat                              StepBreakRev(const coreFloat a, const coreFloat b, const coreFloat x)      {return BLENDBR(STEP(a, b, x));}
-    static constexpr coreFloat                              StepHermite3(const coreFloat a, const coreFloat b, const coreFloat x)      {return BLENDH3(STEP(a, b, x));}             // smoothstep
-    static constexpr coreFloat                              StepHermite5(const coreFloat a, const coreFloat b, const coreFloat x)      {return BLENDH5(STEP(a, b, x));}             // smootherstep
+    template <typename T, typename... A> static constexpr T Min         (const T& x, const t_ident<T>& y, const t_ident<T>& z, A&&... vArgs) {return MIN(x, MIN(y, z, std::forward<A>(vArgs)...));}
+    template <typename T, typename... A> static constexpr T Max         (const T& x, const t_ident<T>& y, const t_ident<T>& z, A&&... vArgs) {return MAX(x, MAX(y, z, std::forward<A>(vArgs)...));}
+    template <typename T>                static constexpr T Min         (const T& x, const t_ident<T>& y)                                    {return (x < y) ? x : y;}
+    template <typename T>                static constexpr T Max         (const T& x, const t_ident<T>& y)                                    {return (x > y) ? x : y;}
+    template <typename T>                static constexpr T Med         (const T& x, const t_ident<T>& y, const t_ident<T>& z)               {return MAX(MIN(MAX(x, y), z), MIN(x, y));}
+    template <typename T>                static constexpr T Clamp       (const T& x, const t_ident<T>& a, const t_ident<T>& b)               {return MIN(MAX(x, a), b);}
+    template <typename T>                static constexpr T Sign        (const T& x)                                                         {return (x < T(0)) ? T(-1) : T(1);}          // never return 0
+    template <typename T>                static constexpr T Signum      (const T& x)                                                         {return (x) ? SIGN(x) : T(0);}
+    template <typename T>                static inline    T Abs         (const T& x)                                                         {return std::abs(x);}
+    template <typename T>                static constexpr T Pow2        (const T& x)                                                         {return x * x;}
+    template <typename T>                static constexpr T Pow3        (const T& x)                                                         {return x * x * x;}
+    template <typename T>                static constexpr T Lerp        (const T& x, const T& y, const coreFloat s)                          {return x * (1.0f - s) + y * s;}             // better precision than (x + (y - x) * s)
+    template <typename T>                static inline    T LerpSmooth  (const T& x, const T& y, const coreFloat s)                          {return LERP(x, y, 0.5f - 0.5f * COS(s * PI));}
+    template <typename T>                static inline    T LerpBreak   (const T& x, const T& y, const coreFloat s)                          {return LERP(x, y, SIN(s * (PI * 0.5f)));}
+    template <typename T>                static inline    T LerpBreakRev(const T& x, const T& y, const coreFloat s)                          {return LERP(y, x, COS(s * (PI * 0.5f)));}   // (y, x)
+    template <typename T>                static constexpr T LerpHermite3(const T& x, const T& y, const coreFloat s)                          {return LERP(x, y, (3.0f - 2.0f * s) * s * s);}
+    template <typename T>                static constexpr T LerpHermite5(const T& x, const T& y, const coreFloat s)                          {return LERP(x, y, (10.0f + (-15.0f + 6.0f * s) * s) * s * s * s);}
+    template <typename T>                static inline    T LerpExp     (const T& x, const T& y, const coreFloat s)                          {return POW(x, 1.0f - s) * POW(y, s);}
+    template <typename T>                static inline    T LerpPow     (const T& x, const T& y, const coreFloat s, const coreFloat k)       {return LERP(x, y, POW(s, k));}              // inverted curve with (k < 1)
+    static constexpr coreFloat                              Step        (const coreFloat a, const coreFloat b, const coreFloat x)            {return CLAMP01((x - a) * RCP(b - a));}      // linearstep
+    static inline    coreFloat                              StepSmooth  (const coreFloat a, const coreFloat b, const coreFloat x)            {return BLENDS (STEP(a, b, x));}
+    static inline    coreFloat                              StepBreak   (const coreFloat a, const coreFloat b, const coreFloat x)            {return BLENDB (STEP(a, b, x));}
+    static inline    coreFloat                              StepBreakRev(const coreFloat a, const coreFloat b, const coreFloat x)            {return BLENDBR(STEP(a, b, x));}
+    static constexpr coreFloat                              StepHermite3(const coreFloat a, const coreFloat b, const coreFloat x)            {return BLENDH3(STEP(a, b, x));}             // smoothstep
+    static constexpr coreFloat                              StepHermite5(const coreFloat a, const coreFloat b, const coreFloat x)            {return BLENDH5(STEP(a, b, x));}             // smootherstep
 
     /* base operations */
     template <std::floating_point T> static inline    T FmodRange(const T& tNum, const t_ident<T>& tFrom, const t_ident<T>& tTo);
