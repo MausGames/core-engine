@@ -123,6 +123,9 @@ public:
     inline coreBool Reload () {if(!m_bProxy) {const coreSpinLocker oLocker(&m_UpdateLock); m_pResource->Unload(); if(this->IsLoaded()) {m_eStatus = m_pResource->Load(m_pFile);                      return true;}} return false;}
     inline coreBool Nullify() {if(!m_bProxy) {const coreSpinLocker oLocker(&m_UpdateLock); m_pResource->Unload(); if(this->IsLoaded()) {m_eStatus = (m_pFile || m_bAutomatic) ? CORE_BUSY : CORE_OK; return true;}} return false;}
 
+    /* lock direct resource object access */
+    template <typename F> inline void LockResource(F&& nFunction) {const coreSpinLocker oLocker(&m_UpdateLock); nFunction(d_cast<typename TRAIT_ARG_TYPE(F, 0u)>(m_pResource));}   // [](coreResource* OUTPUT pResource) -> void
+
     /* attach asynchronous callbacks */
     template <typename F> coreUint32 OnLoadedOnce(F&& nFunction)const;   // [](void) -> void
 

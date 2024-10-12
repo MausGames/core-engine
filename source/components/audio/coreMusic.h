@@ -166,6 +166,9 @@ public:
     inline coreMusic* GetMusic    (const coreUintW       iIndex)const {return (iIndex < m_apMusic.size()) ? m_apMusic[iIndex] : NULL;}
     inline coreMusic* GetMusicName(const coreHashString& sName)const  {return this->GetMusic(m_apMusic.index(sName));}
 
+    /* lock direct music-player access */
+    template <typename F> inline void Lock(F&& nFunction) {__CORE_MUSIC_LOCKER nFunction(this);}   // [](coreMusicPlayer* OUTPUT pMusicPlayer) -> void
+
     /* set object properties */
     inline void SetRepeat(const coreMusicRepeat eRepeat) {__CORE_MUSIC_LOCKER m_eRepeat = eRepeat;}
 
