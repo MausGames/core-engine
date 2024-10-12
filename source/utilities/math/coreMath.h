@@ -14,6 +14,8 @@
 // TODO 5: FUNC_CONST and FORCEINLINE on every function in this class (beware of errno changes, maybe not const) ?
 // TODO 5: add integer-log (macro)
 // TODO 5: use std::common_type for return values
+// TODO 4: should HashCombine be moved to coreData? hashes are all defined in data-category
+// TODO 3: std::byteswap (e.g. for MSVC constexpr)
 
 // NOTE: {(x < y) ? x : y} -> int: cmp,cmovl -> float: _mm_min_ss
 
@@ -116,7 +118,8 @@ public:
     template <typename T>                static constexpr T Clamp       (const T& x, const t_ident<T>& a, const t_ident<T>& b)               {return MIN(MAX(x, a), b);}
     template <typename T>                static constexpr T Sign        (const T& x)                                                         {return (x < T(0)) ? T(-1) : T(1);}          // never return 0
     template <typename T>                static constexpr T Signum      (const T& x)                                                         {return (x) ? SIGN(x) : T(0);}
-    template <typename T>                static inline    T Abs         (const T& x)                                                         {return std::abs(x);}
+    template <std::floating_point  T>    static inline    T Abs         (const T& x)                                                         {return std::abs(x);}
+    template <std::signed_integral T>    static inline    T Abs         (const T& x)                                                         {return std::abs(MAX(x, -std::numeric_limits<T>::max()));}
     template <typename T>                static constexpr T Pow2        (const T& x)                                                         {return x * x;}
     template <typename T>                static constexpr T Pow3        (const T& x)                                                         {return x * x * x;}
     template <typename T>                static constexpr T Lerp        (const T& x, const T& y, const coreFloat s)                          {return x * (1.0f - s) + y * s;}             // better precision than (x + (y - x) * s)
@@ -173,17 +176,17 @@ public:
     template <std::floating_point T> static inline    T  CeilFactor   (const T& tInput, const T& tFactor)        {return CEIL (tInput * RCP(tFactor)) * tFactor;}
     template <std::floating_point T> static inline    T  FloorFactor  (const T& tInput, const T& tFactor)        {return FLOOR(tInput * RCP(tFactor)) * tFactor;}
     template <std::floating_point T> static inline    T  RoundFactor  (const T& tInput, const T& tFactor)        {return ROUND(tInput * RCP(tFactor)) * tFactor;}
-    template <std::integral       T> static constexpr T  CeilPot      (const T& tInput)                          {return std::bit_ceil (tInput);}
-    template <std::integral       T> static constexpr T  FloorPot     (const T& tInput)                          {return std::bit_floor(tInput);}
-    template <std::integral       T> static constexpr T  CeilAlign    (const T& tInput,  const coreUintW iAlign) {const T k = tInput + iAlign - 1u; return k - (k % iAlign);}
-    template <std::integral       T> static constexpr T  FloorAlign   (const T& tInput,  const coreUintW iAlign) {const T k = tInput;               return k - (k % iAlign);}
+    template <std::integral       T> static constexpr T  CeilPot      (const T& tInput)                          {ASSERT(tInput >= T(0)) return std::bit_ceil (std::make_unsigned_t<T>(tInput));}
+    template <std::integral       T> static constexpr T  FloorPot     (const T& tInput)                          {ASSERT(tInput >= T(0)) return std::bit_floor(std::make_unsigned_t<T>(tInput));}
+    template <std::integral       T> static constexpr T  CeilAlign    (const T& tInput,  const coreUintW iAlign) {ASSERT(tInput >= T(0)) const T k = tInput + iAlign - T(1); return k - (k % iAlign);}
+    template <std::integral       T> static constexpr T  FloorAlign   (const T& tInput,  const coreUintW iAlign) {ASSERT(tInput >= T(0)) const T k = tInput;                 return k - (k % iAlign);}
     template <typename            T> static constexpr T* CeilAlignPtr (const T* ptInput, const coreUintW iAlign) {ASSERT(coreMath::IsPot(iAlign)) const coreUintW k = iAlign - 1u; return s_cast<T*>(I_TO_P((P_TO_UI(ptInput) + k) & ~k));}
     template <typename            T> static constexpr T* FloorAlignPtr(const T* ptInput, const coreUintW iAlign) {ASSERT(coreMath::IsPot(iAlign)) const coreUintW k = iAlign - 1u; return s_cast<T*>(I_TO_P((P_TO_UI(ptInput))     & ~k));}
 
     /* analyzing operations */
-    template <typename T> static constexpr coreBool IsPot    (const T& tInput)                                                           {return (tInput && !(tInput & (tInput - T(1))));}
-    template <typename T> static constexpr coreBool IsAligned(const T& tInput,  const coreUintW iAlign)                                  {return ((coreUintW(tInput) % iAlign) == 0u);}
-    template <typename T> static constexpr coreBool IsNear   (const T& tValue1, const T& tValue2, const T& tRange = CORE_MATH_PRECISION) {return (POW2(tValue1 - tValue2) <= POW2(tRange));}
+    template <std::integral       T> static constexpr coreBool IsPot    (const T& tInput)                                                           {ASSERT(tInput >= T(0)) return (tInput && !(tInput & (tInput - T(1))));}
+    template <std::integral       T> static constexpr coreBool IsAligned(const T& tInput,  const coreUintW iAlign)                                  {ASSERT(tInput >= T(0)) return ((coreUintW(tInput) % iAlign) == 0u);}
+    template <std::floating_point T> static constexpr coreBool IsNear   (const T& tValue1, const T& tValue2, const T& tRange = CORE_MATH_PRECISION) {ASSERT(tRange >  T(0)) return (POW2(tValue1 - tValue2) <= POW2(tRange));}
 
     /* bit operations */
     static constexpr coreUint32 PopCount      (const coreUint64 iInput);

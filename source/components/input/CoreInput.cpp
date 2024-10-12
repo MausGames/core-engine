@@ -175,7 +175,7 @@ coreBool CoreInput::ProcessEvent(const SDL_Event& oEvent)
     case SDL_CONTROLLERAXISMOTION:
         {
             const coreUintW iIndex = this->__GetJoystickIndex(oEvent.jaxis.which);
-            const coreBool  bNew   = (ABS(coreInt32(oEvent.jaxis.value)) > Core::Config->GetInt(CORE_CONFIG_INPUT_JOYSTICKDEAD));
+            const coreBool  bNew   = (ABS(oEvent.jaxis.value) > Core::Config->GetInt(CORE_CONFIG_INPUT_JOYSTICKDEAD));
             const coreBool  bOld   = (this->GetJoystickAxis(iIndex, oEvent.jaxis.axis) != 0.0f);
 
             if(bNew != bOld)
