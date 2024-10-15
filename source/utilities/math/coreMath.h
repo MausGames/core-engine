@@ -16,6 +16,7 @@
 // TODO 5: use std::common_type for return values
 // TODO 4: should HashCombine be moved to coreData? hashes are all defined in data-category
 // TODO 3: std::byteswap (e.g. for MSVC constexpr)
+// TODO 3: [CORE2] IsNear: (ABS(tValue1 - tValue2) <= tRange) ?
 
 // NOTE: {(x < y) ? x : y} -> int: cmp,cmovl -> float: _mm_min_ss
 
@@ -184,9 +185,9 @@ public:
     template <typename            T> static constexpr T* FloorAlignPtr(const T* ptInput, const coreUintW iAlign) {ASSERT(coreMath::IsPot(iAlign)) const coreUintW k = iAlign - 1u; return s_cast<T*>(I_TO_P((P_TO_UI(ptInput))     & ~k));}
 
     /* analyzing operations */
-    template <std::integral       T> static constexpr coreBool IsPot    (const T& tInput)                                                           {ASSERT(tInput >= T(0)) return (tInput && !(tInput & (tInput - T(1))));}
-    template <std::integral       T> static constexpr coreBool IsAligned(const T& tInput,  const coreUintW iAlign)                                  {ASSERT(tInput >= T(0)) return ((coreUintW(tInput) % iAlign) == 0u);}
-    template <std::floating_point T> static constexpr coreBool IsNear   (const T& tValue1, const T& tValue2, const T& tRange = CORE_MATH_PRECISION) {ASSERT(tRange >  T(0)) return (POW2(tValue1 - tValue2) <= POW2(tRange));}
+    template <std::integral T> static constexpr coreBool IsPot    (const T& tInput)                                                           {ASSERT(tInput >= T(0)) return (tInput && !(tInput & (tInput - T(1))));}
+    template <std::integral T> static constexpr coreBool IsAligned(const T& tInput,  const coreUintW iAlign)                                  {ASSERT(tInput >= T(0)) return ((coreUintW(tInput) % iAlign) == 0u);}
+    template <typename      T> static constexpr coreBool IsNear   (const T& tValue1, const T& tValue2, const T& tRange = CORE_MATH_PRECISION) {ASSERT(tRange >  T(0)) return (POW2(tValue1 - tValue2) <= POW2(tRange));}
 
     /* bit operations */
     static constexpr coreUint32 PopCount      (const coreUint64 iInput);

@@ -556,6 +556,8 @@ void coreBatchList::__Reset(const coreResourceReset eInit)
 /* render without inheritance or additional attributes */
 void coreBatchList::__RenderDefault(const coreProgramPtr& pProgramInstanced, const coreProgramPtr& pProgramSingle, const coreUint32 iRenderCount)
 {
+    ASSERT(iRenderCount)
+
     if(this->IsInstanced())
     {
         // get first object from list
@@ -713,7 +715,7 @@ void coreBatchList::__RenderDefault(const coreProgramPtr& pProgramInstanced, con
 /* render with custom vertex attributes per active object */
 void coreBatchList::__RenderCustom(const coreProgramPtr& pProgramInstanced, const coreProgramPtr& pProgramSingle, const coreUint32 iRenderCount)
 {
-    ASSERT(this->IsCustom())
+    ASSERT(iRenderCount && this->IsCustom())
 
     if(this->IsInstanced())
     {
@@ -758,6 +760,11 @@ void coreBatchList::__RenderCustom(const coreProgramPtr& pProgramInstanced, cons
     }
     else
     {
+        // enable the shader-program
+        ASSERT(pProgramSingle)
+        if(!pProgramSingle.IsUsable()) return;
+        if(!pProgramSingle->Enable())  return;
+
         FOR_EACH(it, m_apObjectList)
         {
             coreObject3D* pObject = (*it);

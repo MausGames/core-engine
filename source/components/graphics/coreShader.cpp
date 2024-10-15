@@ -178,7 +178,7 @@ void coreShader::__LoadGlobalCode()
     if(!s_asGlobalCode[0].empty()) return;
 
     // determine best shader version
-    const coreUint16 iVersion = (Core::Config->GetBool(CORE_CONFIG_BASE_FALLBACKMODE)) ? (DEFINED(_CORE_GLES_) ? 100u : 110u) : F_TO_UI(Core::Graphics->GetVersionGLSL() * 100.0f);
+    const coreUint16 iVersion = F_TO_UI(Core::Graphics->GetVersionGLSL() * 100.0f);
     const coreChar*  pcType   = (DEFINED(_CORE_GLES_) && (iVersion >= 300u)) ? "es" : "";
 
     // set global shader definitions

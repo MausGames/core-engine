@@ -218,7 +218,7 @@ public:
     coreStatus DispatchCompute(const coreUint32 iGroupsX, const coreUint32 iGroupsY, const coreUint32 iGroupsZ)const;
 
     /* define shader objects and attribute locations */
-    inline coreProgram* AttachShader (const coreShaderPtr&  pShader)                          {WARN_IF(m_eStatus) return this; m_apShaderHandle.push_back(pShader.GetHandle());                                   return this;}
+    inline coreProgram* AttachShader (coreResourceHandle*   pShader)                          {WARN_IF(m_eStatus) return this; m_apShaderHandle.push_back(pShader);                                               return this;}
     inline coreProgram* AttachShader (const coreHashString& sName)                            {WARN_IF(m_eStatus) return this; m_apShaderHandle.push_back(Core::Manager::Resource->Get<coreShader>(sName));       return this;}
     inline coreProgram* BindAttribute(const coreHashString& sName, const coreUint8 iLocation) {WARN_IF(m_eStatus) return this; m_aiAttribute[sName] = iLocation; ASSERT(iLocation < CORE_VERTEXBUFFER_ATTRIBUTES) return this;}
     inline void Finish ()                                                                     {WARN_IF(m_eStatus) return;      m_apShader.reserve(m_apShaderHandle.size()); m_apShaderHandle.shrink_to_fit(); m_aiAttribute.shrink_to_fit(); m_eStatus = CORE_PROGRAM_DEFINED;}
