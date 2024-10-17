@@ -2215,12 +2215,12 @@ const coreChar* coreData::StrExtension(const coreChar* pcInput)
 
 // ****************************************************************
 /* safely get version number (with single digits) */
-coreFloat coreData::StrVersion(const coreChar* pcInput)
+corePoint2U8 coreData::StrVersion(const coreChar* pcInput)
 {
-    WARN_IF(!pcInput) return 0.0f;
+    WARN_IF(!pcInput) return corePoint2U8(0u, 0u);
 
     const coreChar* pcDot = std::strchr(pcInput, '.');
-    return (P_TO_UI(pcDot) > P_TO_UI(pcInput)) ? (I_TO_F((pcDot - 1u)[0] - '0') + 0.1f * I_TO_F((pcDot + 1u)[0] - '0')) : 0.0f;
+    return (P_TO_UI(pcDot) > P_TO_UI(pcInput)) ? corePoint2U8((pcDot - 1u)[0] - '0', (pcDot + 1u)[0] - '0') : corePoint2U8(0u, 0u);
 }
 
 

@@ -446,10 +446,10 @@ using PFNGLGETBUFFERSUBDATAPROC = void (GL_APIENTRY *) (GLenum target, GLintptr 
 /* context structure */
 struct coreContext final
 {
-    coreFloat __fVersion;
-    coreBool  __bES30;
-    coreBool  __bES31;
-    coreBool  __bES32;
+    corePoint2U8 __Version;
+    coreBool     __bES30;
+    coreBool     __bES31;
+    coreBool     __bES32;
 
     coreBool __GL_ANDROID_extension_pack_es31a;
     coreBool __GL_ANGLE_texture_usage;

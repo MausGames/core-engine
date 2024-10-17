@@ -814,6 +814,7 @@ private:
 
 // ****************************************************************
 /* engine header files */
+#include "utilities/math/corePoint.h"
 #if defined(_CORE_GLES_)
     #include "additional/coreGLES.h"
 #else

@@ -256,14 +256,14 @@ CoreSystem::CoreSystem()noexcept
             if(pContext)
             {
                 // get highest OpenGL version
-                const coreFloat fVersion = coreData::StrVersion(r_cast<const coreChar*>(glGetString(GL_VERSION)));
+                const corePoint2U8 oVersion = coreData::StrVersion(r_cast<const coreChar*>(glGetString(GL_VERSION)));
                 SDL_GL_DeleteContext(pContext);
 
                 // set version and request core profile
-                if((fVersion >= 3.0f) || DEFINED(_CORE_MACOS_))
+                if((oVersion >= corePoint2U8(3u, 0u)) || DEFINED(_CORE_MACOS_))
                 {
-                    SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, F_TO_SI(fVersion));
-                    SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, F_TO_SI(fVersion*10.0f) % 10);
+                    SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, oVersion[0]);
+                    SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, oVersion[1]);
                     SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK,  SDL_GL_CONTEXT_PROFILE_CORE);
                     SDL_GL_SetAttribute(SDL_GL_CONTEXT_FLAGS,         SDL_GL_CONTEXT_FORWARD_COMPATIBLE_FLAG);   // overwritten by debug context
                 }

@@ -51,8 +51,8 @@ CoreGraphics::CoreGraphics()noexcept
     this->DebugOpenGL();
 
     // save version numbers
-    m_fVersionOpenGL = coreData::StrVersion(r_cast<const coreChar*>(glGetString(GL_VERSION)));
-    m_fVersionGLSL   = coreData::StrVersion(r_cast<const coreChar*>(glGetString(GL_SHADING_LANGUAGE_VERSION)));
+    m_VersionOpenGL = coreData::StrVersion(r_cast<const coreChar*>(glGetString(GL_VERSION)));
+    m_VersionGLSL   = coreData::StrVersion(r_cast<const coreChar*>(glGetString(GL_SHADING_LANGUAGE_VERSION)));
 
     // get max anti aliasing level
     if(CORE_GL_SUPPORT(EXT_framebuffer_multisample))

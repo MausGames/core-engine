@@ -68,12 +68,12 @@ private:
 
     coreUint32 m_aiScissorData[4];              // current scissor test properties
 
-    coreUint64 m_iMemoryStart;                  // available graphics memory at the start of the application (in bytes)
-    coreUint8  m_iMaxSamples;                   // max multisample anti aliasing level
-    coreUint8  m_iMaxAnisotropy;                // max anisotropic texture filter level
-    coreUint8  m_iMaxTextures;                  // max number of texture units (only for fragment shader)
-    coreFloat  m_fVersionOpenGL;                // available OpenGL version
-    coreFloat  m_fVersionGLSL;                  // available GLSL version
+    coreUint64   m_iMemoryStart;                // available graphics memory at the start of the application (in bytes)
+    coreUint8    m_iMaxSamples;                 // max multisample anti aliasing level
+    coreUint8    m_iMaxAnisotropy;              // max anisotropic texture filter level
+    coreUint8    m_iMaxTextures;                // max number of texture units (only for fragment shader)
+    corePoint2U8 m_VersionOpenGL;               // available OpenGL version
+    corePoint2U8 m_VersionGLSL;                 // available GLSL version
 
 
 private:
@@ -142,11 +142,11 @@ public:
     inline const coreLight&     GetLight          (const coreUintW iIndex)const {ASSERT(iIndex < CORE_GRAPHICS_LIGHTS) return m_aLight[iIndex];}
 
     /* check OpenGL properties */
-    inline const coreUint8& GetMaxSamples   ()const {return m_iMaxSamples;}
-    inline const coreUint8& GetMaxAnisotropy()const {return m_iMaxAnisotropy;}
-    inline const coreUint8& GetMaxTextures  ()const {return m_iMaxTextures;}
-    inline const coreFloat& GetVersionOpenGL()const {return m_fVersionOpenGL;}
-    inline const coreFloat& GetVersionGLSL  ()const {return m_fVersionGLSL;}
+    inline const coreUint8&    GetMaxSamples   ()const {return m_iMaxSamples;}
+    inline const coreUint8&    GetMaxAnisotropy()const {return m_iMaxAnisotropy;}
+    inline const coreUint8&    GetMaxTextures  ()const {return m_iMaxTextures;}
+    inline const corePoint2U8& GetVersionOpenGL()const {return m_VersionOpenGL;}
+    inline const corePoint2U8& GetVersionGLSL  ()const {return m_VersionGLSL;}
 
 
 private:
