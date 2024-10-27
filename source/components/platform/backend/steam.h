@@ -59,6 +59,9 @@ __STEAM_DEFINE_FUNCTION(SteamAPI_RestartAppIfNecessary)
 __STEAM_DEFINE_FUNCTION(SteamAPI_Shutdown)
 __STEAM_DEFINE_FUNCTION(SteamClient)
 
+S_API ISteamTimeline* SteamAPI_SteamTimeline_v001();
+__STEAM_DEFINE_FUNCTION(SteamAPI_SteamTimeline_v001)
+
 static coreBool InitSteamLibrary()
 {
     ASSERT(!s_pSteamLibrary)
@@ -80,6 +83,8 @@ static coreBool InitSteamLibrary()
         __STEAM_LOAD_FUNCTION(SteamAPI_RestartAppIfNecessary)
         __STEAM_LOAD_FUNCTION(SteamAPI_Shutdown)
         __STEAM_LOAD_FUNCTION(SteamClient)
+
+        nSteamAPI_SteamTimeline_v001 = r_cast<decltype(SteamAPI_SteamTimeline_v001)*>(coreData::GetAddress(s_pSteamLibrary, "SteamAPI_SteamTimeline_v001"));
 
         return true;
     }
@@ -125,6 +130,7 @@ private:
     ISteamApps*          m_pApps;            // application interface
     ISteamFriends*       m_pFriends;         // friends interface
     ISteamRemoteStorage* m_pRemoteStorage;   // remote storage interface
+    ISteamTimeline*      m_pTimeline;        // timeline interface
     ISteamUser*          m_pUser;            // user interface
     ISteamUserStats*     m_pUserStats;       // achievement, stats and leaderboard interface
     ISteamUtils*         m_pUtils;           // utility interface
@@ -165,6 +171,11 @@ public:
     void     DownloadFile(const corePlatformFileHandle iFileHandle,                                  const corePlatformFileDownloadCallback nCallback)final;
     coreBool ProgressFile(const corePlatformFileHandle iFileHandle, coreUint32* OUTPUT piCurrent, coreUint32* OUTPUT piTotal)const final;
 
+    /* process presence */
+    void     SetGameState   (const corePlatformState eState)final;
+    coreBool SetRichPresence(const corePlatformPresence& oPresence)final;
+    void     MarkEvent      (const coreChar* pcIcon, const coreChar* pcTitle)final;
+
     /* process connection state */
     coreBool HasConnection()const final;
 
@@ -204,6 +215,7 @@ inline coreBackendSteam::coreBackendSteam()noexcept
 , m_pApps          (NULL)
 , m_pFriends       (NULL)
 , m_pRemoteStorage (NULL)
+, m_pTimeline      (NULL)
 , m_pUser          (NULL)
 , m_pUserStats     (NULL)
 , m_pUtils         (NULL)
@@ -221,7 +233,7 @@ inline coreBackendSteam::coreBackendSteam()noexcept
 /* destructor */
 inline coreBackendSteam::~coreBackendSteam()
 {
-    // 
+    // delete callback result memory
     DYNAMIC_DELETE(m_pAsyncResult)
 }
 
@@ -270,6 +282,7 @@ inline coreBool coreBackendSteam::Init()
     m_pApps          = m_pClient->GetISteamApps         (m_iUser, m_iPipe, STEAMAPPS_INTERFACE_VERSION);
     m_pFriends       = m_pClient->GetISteamFriends      (m_iUser, m_iPipe, STEAMFRIENDS_INTERFACE_VERSION);
     m_pRemoteStorage = m_pClient->GetISteamRemoteStorage(m_iUser, m_iPipe, STEAMREMOTESTORAGE_INTERFACE_VERSION);
+    m_pTimeline      = nSteamAPI_SteamTimeline_v001 ? nSteamAPI_SteamTimeline_v001() : NULL;   // TODO 1: when final, add NULL check below, and remove checks in functions
     m_pUser          = m_pClient->GetISteamUser         (m_iUser, m_iPipe, STEAMUSER_INTERFACE_VERSION);
     m_pUserStats     = m_pClient->GetISteamUserStats    (m_iUser, m_iPipe, STEAMUSERSTATS_INTERFACE_VERSION);
     m_pUtils         = m_pClient->GetISteamUtils        (m_iPipe,          STEAMUTILS_INTERFACE_VERSION);
@@ -626,7 +639,7 @@ inline void coreBackendSteam::DownloadFile(const corePlatformFileHandle iFileHan
                     while(iOffset < pStruct->m_nSizeInBytes);
 
                     // return results
-                    nCallback(pStruct->m_hFile, pBuffer, pStruct->m_nSizeInBytes, pResult);
+                    nCallback(pStruct->m_hFile, pBuffer, MIN(iOffset, pStruct->m_nSizeInBytes), pResult);
                     SAFE_DELETE_ARRAY(pBuffer)
                 }
                 else
@@ -665,6 +678,70 @@ inline coreBool coreBackendSteam::ProgressFile(const corePlatformFileHandle iFil
     }
 
     return this->coreBackend::ProgressFile(iFileHandle, piCurrent, piTotal);
+}
+
+
+// ****************************************************************
+/* set game state */
+inline void coreBackendSteam::SetGameState(const corePlatformState eState)
+{
+    if(m_pClient && m_pTimeline)
+    {
+        // map game state to timeline game mode
+        ETimelineGameMode eMode;
+        switch(eState)
+        {
+        default: UNREACHABLE
+        case CORE_PLATFORM_STATE_MENU:     eMode = k_ETimelineGameMode_Menus;   break;
+        case CORE_PLATFORM_STATE_ACTIVE:   eMode = k_ETimelineGameMode_Playing; break;
+        case CORE_PLATFORM_STATE_INACTIVE: eMode = k_ETimelineGameMode_Staging; break;
+        }
+
+        // set timeline game mode
+        m_pTimeline->SetTimelineGameMode(eMode);
+    }
+}
+
+
+// ****************************************************************
+/* set full rich presence */
+inline coreBool coreBackendSteam::SetRichPresence(const corePlatformPresence& oPresence)
+{
+    if(m_pClient)
+    {
+        ASSERT(oPresence.asValue.size() <= k_cchMaxRichPresenceKeys)
+
+        FOR_EACH(it, oPresence.asValue)
+        {
+            const coreChar* pcKey   = oPresence.asValue.get_string(it);
+            const coreChar* pcValue = it->c_str();
+
+            ASSERT(std::strlen(pcKey)   < k_cchMaxRichPresenceKeyLength)
+            ASSERT(std::strlen(pcValue) < k_cchMaxRichPresenceValueLength)
+
+            // set rich presence values
+            m_pFriends->SetRichPresence(pcKey, pcValue);
+        }
+
+        ASSERT(oPresence.sSteamText.length() < k_cchMaxRichPresenceValueLength)
+
+        // change rich presence (localization token)
+        return m_pFriends->SetRichPresence("steam_display", oPresence.sSteamText.c_str());
+    }
+
+    return false;
+}
+
+
+// ****************************************************************
+/* mark specific event */
+inline void coreBackendSteam::MarkEvent(const coreChar* pcIcon, const coreChar* pcTitle)
+{
+    if(m_pClient && m_pTimeline)
+    {
+        // add new timeline event
+        m_pTimeline->AddTimelineEvent(pcIcon, pcTitle, "", 0u, 0.0f, 0.0f, k_ETimelineEventClipPriority_None);
+    }
 }
 
 

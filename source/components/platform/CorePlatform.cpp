@@ -31,6 +31,7 @@ CorePlatform::CorePlatform()noexcept
 , m_aAchievement {}
 , m_aStat        {}
 , m_aLeaderboard {}
+, m_Presence     {}
 {
     Core::Log->Header("Platform Interface");
 
@@ -189,7 +190,7 @@ void CorePlatform::UploadFile(const coreByte* pData, const coreUint32 iDataSize,
     ASSERT(pData && iDataSize && pcName)
 
     m_pBackend->UploadFile(pData, iDataSize, pcName, std::move(nCallback));
-    Core::Log->Info("File (%s, %u) uploaded", pcName, iDataSize);
+    Core::Log->Info("File (%s, %u bytes) uploaded", pcName, iDataSize);
 }
 
 
@@ -211,6 +212,60 @@ coreBool CorePlatform::ProgressFile(const corePlatformFileHandle iFileHandle, co
     ASSERT(iFileHandle)
 
     return m_pBackend->ProgressFile(iFileHandle, piCurrent, piTotal);
+}
+
+
+// ****************************************************************
+/* set game state */
+void CorePlatform::SetGameState(const corePlatformState eState)
+{
+    if(m_Presence.eState == eState) return;
+    m_Presence.eState = eState;
+
+    // just forward new game state
+    m_pBackend->SetGameState(eState);
+}
+
+
+// ****************************************************************
+/* set rich presence value */
+void CorePlatform::SetRichValue(const coreHashString& sKey, const coreChar* pcValue)
+{
+    if(m_Presence.asValue.count(sKey))
+    {
+        if(!std::strcmp(m_Presence.asValue.at(sKey).c_str(), pcValue)) return;
+    }
+    else
+    {
+        m_Presence.asValue.emplace(sKey);
+    }
+
+    // update rich presence
+    m_Presence.asValue.at(sKey) = pcValue;
+    m_Presence.bDirty           = true;
+}
+
+
+// ****************************************************************
+/* set rich presence text */
+void CorePlatform::SetRichText(const coreChar* pcDefaultText, const coreChar* pcSteamText)
+{
+    if(!std::strcmp(m_Presence.sDefaultText.c_str(), pcDefaultText) &&
+       !std::strcmp(m_Presence.sSteamText  .c_str(), pcSteamText)) return;
+
+    // update rich presence
+    m_Presence.sDefaultText = pcDefaultText;
+    m_Presence.sSteamText   = pcSteamText;
+    m_Presence.bDirty       = true;
+}
+
+
+// ****************************************************************
+/* mark specific event */
+void CorePlatform::MarkEvent(const coreChar* pcIcon, const coreChar* pcTitle)
+{
+    m_pBackend->MarkEvent(pcIcon, pcTitle);
+    Core::Log->Info("Event (%s, %s) marked", pcIcon, pcTitle);
 }
 
 
@@ -304,6 +359,12 @@ void CorePlatform::__UpdateBackend()
                  DYN_REMOVE(et, it->aQueueDownload)
             else DYN_KEEP  (et, it->aQueueDownload)
         }
+    }
+
+    // set full rich presence
+    if(m_Presence.bDirty && m_pBackend->SetRichPresence(m_Presence))
+    {
+        m_Presence.bDirty = false;
     }
 
     // update the backend (actually)

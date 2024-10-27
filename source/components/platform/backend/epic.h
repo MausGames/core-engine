@@ -18,12 +18,12 @@
 #include <epic/eos_userinfo.h>
 #include <epic/eos_achievements.h>
 #include <epic/eos_stats.h>
+#include <epic/eos_presence.h>
 #include <epic/eos_ui.h>
 #include <epic/eos_logging.h>
 #include <epic/eos_version.h>
 
 // TODO 3: Ukrainian language is currently not supported on the Epic store
-// TODO 3: EOS_Platform_SetApplicationStatus and EOS_Platform_SetNetworkStatus
 
 
 // ****************************************************************
@@ -74,11 +74,18 @@ __EPIC_DEFINE_FUNCTION(EOS_Platform_GetAchievementsInterface)
 __EPIC_DEFINE_FUNCTION(EOS_Platform_GetActiveLocaleCode)
 __EPIC_DEFINE_FUNCTION(EOS_Platform_GetAuthInterface)
 __EPIC_DEFINE_FUNCTION(EOS_Platform_GetConnectInterface)
+__EPIC_DEFINE_FUNCTION(EOS_Platform_GetPresenceInterface)
 __EPIC_DEFINE_FUNCTION(EOS_Platform_GetStatsInterface)
 __EPIC_DEFINE_FUNCTION(EOS_Platform_GetUIInterface)
 __EPIC_DEFINE_FUNCTION(EOS_Platform_GetUserInfoInterface)
 __EPIC_DEFINE_FUNCTION(EOS_Platform_Release)
 __EPIC_DEFINE_FUNCTION(EOS_Platform_Tick)
+__EPIC_DEFINE_FUNCTION(EOS_Presence_CreatePresenceModification)
+__EPIC_DEFINE_FUNCTION(EOS_Presence_SetPresence)
+__EPIC_DEFINE_FUNCTION(EOS_PresenceModification_Release)
+__EPIC_DEFINE_FUNCTION(EOS_PresenceModification_SetData)
+__EPIC_DEFINE_FUNCTION(EOS_PresenceModification_SetRawRichText)
+__EPIC_DEFINE_FUNCTION(EOS_PresenceModification_SetStatus)
 __EPIC_DEFINE_FUNCTION(EOS_Shutdown)
 __EPIC_DEFINE_FUNCTION(EOS_Stats_IngestStat)
 __EPIC_DEFINE_FUNCTION(EOS_UI_AddNotifyDisplaySettingsUpdated)
@@ -115,11 +122,18 @@ static coreBool InitEpicLibrary()
         __EPIC_LOAD_FUNCTION(EOS_Platform_GetActiveLocaleCode,         16)
         __EPIC_LOAD_FUNCTION(EOS_Platform_GetAuthInterface,            4)
         __EPIC_LOAD_FUNCTION(EOS_Platform_GetConnectInterface,         4)
+        __EPIC_LOAD_FUNCTION(EOS_Platform_GetPresenceInterface,        4)
         __EPIC_LOAD_FUNCTION(EOS_Platform_GetStatsInterface,           4)
         __EPIC_LOAD_FUNCTION(EOS_Platform_GetUIInterface,              4)
         __EPIC_LOAD_FUNCTION(EOS_Platform_GetUserInfoInterface,        4)
         __EPIC_LOAD_FUNCTION(EOS_Platform_Release,                     4)
         __EPIC_LOAD_FUNCTION(EOS_Platform_Tick,                        4)
+        __EPIC_LOAD_FUNCTION(EOS_Presence_CreatePresenceModification,  12)
+        __EPIC_LOAD_FUNCTION(EOS_Presence_SetPresence,                 16)
+        __EPIC_LOAD_FUNCTION(EOS_PresenceModification_Release,         4)
+        __EPIC_LOAD_FUNCTION(EOS_PresenceModification_SetData,         8)
+        __EPIC_LOAD_FUNCTION(EOS_PresenceModification_SetRawRichText,  8)
+        __EPIC_LOAD_FUNCTION(EOS_PresenceModification_SetStatus,       8)
         __EPIC_LOAD_FUNCTION(EOS_Shutdown,                             0)
         __EPIC_LOAD_FUNCTION(EOS_Stats_IngestStat,                     16)
         __EPIC_LOAD_FUNCTION(EOS_UI_AddNotifyDisplaySettingsUpdated,   16)
@@ -164,6 +178,7 @@ private:
     EOS_HUserInfo     m_pUserInfo;       // user-info interface
     EOS_HAchievements m_pAchievements;   // achievements interface
     EOS_HStats        m_pStats;          // stats interface
+    EOS_HPresence     m_pPresence;       // presence interface
     EOS_HUI           m_pUI;             // UI interface
 
     EOS_EpicAccountId m_pAccountId;      // Epic account identifier (authentication)
@@ -187,6 +202,9 @@ public:
 
     /* process stats */
     coreBool ModifyStat(const corePlatformStat& oEntry, const coreInt32 iValue)final;
+
+    /* process presence */
+    coreBool SetRichPresence(const corePlatformPresence& oPresence)final;
 
     /* process general features */
     const coreChar* GetUserID  ()const final;
@@ -215,6 +233,7 @@ private:
     static void EOS_CALL __OnAchievementsQueryPlayerAchievements(const EOS_Achievements_OnQueryPlayerAchievementsCompleteCallbackInfo* pData);
     static void EOS_CALL __OnAchievementsUnlockAchievements     (const EOS_Achievements_OnUnlockAchievementsCompleteCallbackInfo*      pData);
     static void EOS_CALL __OnStatsIngestStat                    (const EOS_Stats_IngestStatCompleteCallbackInfo*                       pData);
+    static void EOS_CALL __OnPresenceSetPresence                (const EOS_Presence_SetPresenceCallbackInfo*                           pData);
     static void EOS_CALL __OnUIAddNotifyDisplaySettingsUpdated  (const EOS_UI_OnDisplaySettingsUpdatedCallbackInfo*                    pData);
 };
 
@@ -229,6 +248,7 @@ inline coreBackendEpic::coreBackendEpic()noexcept
 , m_pUserInfo     (NULL)
 , m_pAchievements (NULL)
 , m_pStats        (NULL)
+, m_pPresence     (NULL)
 , m_pUI           (NULL)
 , m_pAccountId    (NULL)
 , m_pUserId       (NULL)
@@ -311,10 +331,11 @@ inline coreBool coreBackendEpic::Init()
     m_pUserInfo     = nEOS_Platform_GetUserInfoInterface    (m_pPlatform);
     m_pAchievements = nEOS_Platform_GetAchievementsInterface(m_pPlatform);
     m_pStats        = nEOS_Platform_GetStatsInterface       (m_pPlatform);
+    m_pPresence     = nEOS_Platform_GetPresenceInterface    (m_pPlatform);
     m_pUI           = nEOS_Platform_GetUIInterface          (m_pPlatform);
 
     // check for interface errors
-    WARN_IF(!m_pPlatform || !m_pAuth || !m_pConnect || !m_pUserInfo || !m_pAchievements || !m_pStats || !m_pUI)
+    WARN_IF(!m_pPlatform || !m_pAuth || !m_pConnect || !m_pUserInfo || !m_pAchievements || !m_pStats || !m_pPresence || !m_pUI)
     {
         this->__ExitBase();
 
@@ -472,6 +493,78 @@ inline coreBool coreBackendEpic::ModifyStat(const corePlatformStat& oEntry, cons
 
             // modify stat in Epic
             nEOS_Stats_IngestStat(m_pStats, &oOptions, this, coreBackendEpic::__OnStatsIngestStat);
+            return true;
+        }
+    }
+
+    return false;
+}
+
+
+// ****************************************************************
+/* set full rich presence */
+inline coreBool coreBackendEpic::SetRichPresence(const corePlatformPresence& oPresence)
+{
+    if(m_pPlatform)
+    {
+        // set change options
+        EOS_Presence_CreatePresenceModificationOptions oModificationOptions = {};
+        oModificationOptions.ApiVersion  = EOS_PRESENCE_CREATEPRESENCEMODIFICATION_API_LATEST;
+        oModificationOptions.LocalUserId = m_pAccountId;
+
+        // create rich presence change handle
+        EOS_HPresenceModification pHandle;
+        if(nEOS_Presence_CreatePresenceModification(m_pPresence, &oModificationOptions, &pHandle) == EOS_EResult::EOS_Success)
+        {
+            // set text options
+            EOS_PresenceModification_SetRawRichTextOptions oTextOptions = {};
+            oTextOptions.ApiVersion = EOS_PRESENCEMODIFICATION_SETRAWRICHTEXT_API_LATEST;
+            oTextOptions.RichText   = oPresence.sDefaultText.c_str();
+
+            // add rich presence text
+            nEOS_PresenceModification_SetRawRichText(pHandle, &oTextOptions);
+
+            // set status options
+            EOS_PresenceModification_SetStatusOptions oStatusOptions = {};
+            oStatusOptions.ApiVersion = EOS_PRESENCEMODIFICATION_SETSTATUS_API_LATEST;
+            oStatusOptions.Status     = EOS_Presence_EStatus::EOS_PS_Online;
+
+            // add rich presence status
+            nEOS_PresenceModification_SetStatus(pHandle, &oStatusOptions);
+
+            if(!oPresence.asValue.empty())
+            {
+                coreList<EOS_Presence_DataRecord> aRecord;
+                aRecord.resize(oPresence.asValue.size());
+
+                FOR_EACH(it, oPresence.asValue)
+                {
+                    // set data records
+                    EOS_Presence_DataRecord& oRecord = aRecord[oPresence.asValue.index(it)];
+                    oRecord.ApiVersion = EOS_PRESENCE_DATARECORD_API_LATEST;
+                    oRecord.Key        = oPresence.asValue.get_string(it);
+                    oRecord.Value      = it->c_str();
+                }
+
+                // set data options
+                EOS_PresenceModification_SetDataOptions oDataOptions = {};
+                oDataOptions.ApiVersion   = EOS_PRESENCEMODIFICATION_SETDATA_API_LATEST;
+                oDataOptions.RecordsCount = aRecord.size();
+                oDataOptions.Records      = aRecord.data();
+
+                // add rich presence values
+                nEOS_PresenceModification_SetData(pHandle, &oDataOptions);
+            }
+
+            // set presence options
+            EOS_Presence_SetPresenceOptions oSetOptions = {};
+            oSetOptions.ApiVersion                 = EOS_PRESENCE_SETPRESENCE_API_LATEST;
+            oSetOptions.LocalUserId                = m_pAccountId;
+            oSetOptions.PresenceModificationHandle = pHandle;
+
+            // change rich presence
+            nEOS_Presence_SetPresence(m_pPresence, &oSetOptions, this, coreBackendEpic::__OnPresenceSetPresence);
+            nEOS_PresenceModification_Release(pHandle);
             return true;
         }
     }
@@ -749,6 +842,11 @@ inline void EOS_CALL coreBackendEpic::__OnAchievementsUnlockAchievements(const E
 }
 
 inline void EOS_CALL coreBackendEpic::__OnStatsIngestStat(const EOS_Stats_IngestStatCompleteCallbackInfo* pData)
+{
+    ASSERT(pData->ResultCode == EOS_EResult::EOS_Success)
+}
+
+inline void EOS_CALL coreBackendEpic::__OnPresenceSetPresence(const EOS_Presence_SetPresenceCallbackInfo* pData)
 {
     ASSERT(pData->ResultCode == EOS_EResult::EOS_Success)
 }

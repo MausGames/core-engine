@@ -10,7 +10,9 @@
 #ifndef _CORE_GUARD_PLATFORM_H_
 #define _CORE_GUARD_PLATFORM_H_
 
-// TODO 3: rich presence
+// TODO 3: automatically replace parameters in the default rich-text with rich-values (when dirty) (what delimiters? $, %%, {})
+// TODO 3: expose more Steam timeline features (e.g. set default rich-text as description) (event priority, durations)
+// TODO 3: add a game state for minimized/out-of-focus
 
 
 // ****************************************************************
@@ -93,6 +95,26 @@ struct corePlatformLeaderboard final
 
 
 // ****************************************************************
+/* platform presence definitions */
+enum corePlatformState : coreUint8
+{
+    CORE_PLATFORM_STATE_UNDEFINED = 0u,   // initial state
+    CORE_PLATFORM_STATE_MENU      = 1u,   // still in main menu
+    CORE_PLATFORM_STATE_ACTIVE    = 2u,   // playing actively
+    CORE_PLATFORM_STATE_INACTIVE  = 3u    // playing inactively (e.g. pause)
+};
+
+struct corePlatformPresence final
+{
+    corePlatformState          eState;         // current game state
+    coreMapStrFull<coreString> asValue;        // rich presence values
+    coreString                 sDefaultText;   // rich presence text (default)
+    coreString                 sSteamText;     // rich presence text (Steam)
+    coreBool                   bDirty;         // current modification status
+};
+
+
+// ****************************************************************
 /* backend interface */
 class INTERFACE coreBackend
 {
@@ -129,6 +151,11 @@ public:
     virtual void     DownloadFile(const corePlatformFileHandle iFileHandle,                                  const corePlatformFileDownloadCallback nCallback) {nCallback(0u, NULL, 0u, NULL);}
     virtual coreBool ProgressFile(const corePlatformFileHandle iFileHandle, coreUint32* OUTPUT piCurrent, coreUint32* OUTPUT piTotal)const                     {if(piCurrent) (*piCurrent) = 0u; if(piTotal) (*piTotal) = 0u; return false;}
 
+    /* process presence */
+    virtual void     SetGameState   (const corePlatformState eState)                  {}
+    virtual coreBool SetRichPresence(const corePlatformPresence& oPresence)           {return true;}
+    virtual void     MarkEvent      (const coreChar* pcIcon, const coreChar* pcTitle) {}
+
     /* process connection state */
     virtual coreBool HasConnection   ()const {return true;}
     virtual coreBool EnsureConnection()      {return true;}
@@ -157,6 +184,8 @@ private:
     coreMapStr<corePlatformStat>        m_aStat;          // stat data
     coreMapStr<corePlatformLeaderboard> m_aLeaderboard;   // leaderboard data
 
+    corePlatformPresence m_Presence;                      // presence data
+
 
 private:
     CorePlatform()noexcept;
@@ -184,6 +213,12 @@ public:
     void     UploadFile  (const coreByte* pData, const coreUint32 iDataSize, const coreChar* pcName, corePlatformFileUploadCallback   nCallback);
     void     DownloadFile(const corePlatformFileHandle iFileHandle,                                  corePlatformFileDownloadCallback nCallback);
     coreBool ProgressFile(const corePlatformFileHandle iFileHandle, coreUint32* OUTPUT piCurrent, coreUint32* OUTPUT piTotal)const;
+
+    /* handle presence */
+    void SetGameState(const corePlatformState eState);
+    void SetRichValue(const coreHashString& sKey, const coreChar* pcValue);
+    void SetRichText (const coreChar* pcDefaultText, const coreChar* pcSteamText);
+    void MarkEvent   (const coreChar* pcIcon, const coreChar* pcTitle);
 
     /* handle connection state */
     coreBool HasConnection   ()const;
