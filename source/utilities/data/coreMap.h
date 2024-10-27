@@ -47,11 +47,11 @@ protected:
 
 public:
     coreMapGen()noexcept;
-    coreMapGen(const coreMapGen<K, I, T>& c)noexcept;
-    coreMapGen(coreMapGen<K, I, T>&&      m)noexcept;
+    coreMapGen(const coreMapGen& c)noexcept;
+    coreMapGen(coreMapGen&&      m)noexcept;
 
     /* assignment operations */
-    coreMapGen<K, I, T>& operator = (coreMapGen<K, I, T> o)noexcept;
+    coreMapGen& operator = (coreMapGen o)noexcept;
 
     /* access specific entry */
     T& operator []   (const I& tKey);
@@ -70,8 +70,10 @@ public:
     inline coreBool  empty   ()const              {return m_atValueList.empty();}
 
     /* get internal index */
-    inline coreUintW index   (const I& tKey)const {if(this->_cache_try(tKey)) return m_iCacheIndex; return m_atKeyList.index(this->_retrieve   (tKey));}
-    inline coreUintW index_bs(const I& tKey)const {if(this->_cache_try(tKey)) return m_iCacheIndex; return m_atKeyList.index(this->_retrieve_bs(tKey));}
+    inline coreUintW index   (const I& tKey)const                    {if(this->_cache_try(tKey)) return m_iCacheIndex; return m_atKeyList.index(this->_retrieve   (tKey));}
+    inline coreUintW index_bs(const I& tKey)const                    {if(this->_cache_try(tKey)) return m_iCacheIndex; return m_atKeyList.index(this->_retrieve_bs(tKey));}
+    inline coreUintW index   (const coreValueIterator&      it)const {return m_atValueList.index(it);}
+    inline coreUintW index   (const coreValueConstIterator& it)const {return m_atValueList.index(it);}
 
     /* control memory allocation */
     inline void      reserve      (const coreUintW iCapacity) {m_atValueList.reserve(iCapacity); m_atKeyList.reserve(iCapacity);}
@@ -178,6 +180,10 @@ public:
     inline       T& operator [] (const coreHashString& sKey)        {this->__save_string(sKey); return this->coreMapStrBase<T>::operator [] (sKey);}
     inline       T&          bs (const coreHashString& sKey)        {this->__save_string(sKey); return this->coreMapStrBase<T>::         bs (sKey);}
 
+    /* control memory allocation */
+    inline void reserve      (const coreUintW iCapacity) {m_asStringList.reserve(iCapacity); this->coreMapStrBase<T>::reserve(iCapacity);}
+    inline void shrink_to_fit()                          {m_asStringList.shrink_to_fit();    this->coreMapStrBase<T>::shrink_to_fit();}
+
     /* create new entry */
     template <typename... A> inline void emplace   (const coreHashString& sKey,                                                          A&&... vArgs) {this->__save_string(sKey); this->coreMapStrBase<T>::emplace   (sKey,     std::forward<A>(vArgs)...);}
     template <typename... A> inline void emplace_bs(const coreHashString& sKey,                                                          A&&... vArgs) {this->__save_string(sKey); this->coreMapStrBase<T>::emplace_bs(sKey,     std::forward<A>(vArgs)...);}
@@ -186,6 +192,7 @@ public:
     /* remove existing entry */
     using coreMapStrBase<T>::erase;
     inline typename coreMapStrBase<T>::coreValueIterator erase(const coreUintW iIndex) {this->_cache_clear(); this->m_atKeyList.erase(this->m_atKeyList.begin() + iIndex); return this->m_atValueList.erase(this->m_atValueList.begin() + iIndex);}
+    inline void                                          clear()                       {m_asStringList.clear(); this->coreMapStrBase<T>::clear();}
 
     /* return original string */
     inline const coreChar* get_string(const typename coreMapStrBase<T>::coreValueIterator&      it)      {return m_asStringList.at_bs(*this->get_key(it)).c_str();}
@@ -236,14 +243,14 @@ template <typename K, typename I, typename T> coreMapGen<K, I, T>::coreMapGen()n
 {
 }
 
-template <typename K, typename I, typename T> coreMapGen<K, I, T>::coreMapGen(const coreMapGen<K, I, T>& c)noexcept
+template <typename K, typename I, typename T> coreMapGen<K, I, T>::coreMapGen(const coreMapGen& c)noexcept
 : m_atValueList (c.m_atValueList)
 , m_atKeyList   (c.m_atKeyList)
 , m_iCacheIndex (c.m_iCacheIndex)
 {
 }
 
-template <typename K, typename I, typename T> coreMapGen<K, I, T>::coreMapGen(coreMapGen<K, I, T>&& m)noexcept
+template <typename K, typename I, typename T> coreMapGen<K, I, T>::coreMapGen(coreMapGen&& m)noexcept
 : m_atValueList (std::move(m.m_atValueList))
 , m_atKeyList   (std::move(m.m_atKeyList))
 , m_iCacheIndex (m.m_iCacheIndex)
@@ -253,7 +260,7 @@ template <typename K, typename I, typename T> coreMapGen<K, I, T>::coreMapGen(co
 
 // ****************************************************************
 /* assignment operations */
-template <typename K, typename I, typename T> coreMapGen<K, I, T>& coreMapGen<K, I, T>::operator = (coreMapGen<K, I, T> o)noexcept
+template <typename K, typename I, typename T> coreMapGen<K, I, T>& coreMapGen<K, I, T>::operator = (coreMapGen o)noexcept
 {
     // swap properties
     std::swap(m_atValueList, o.m_atValueList);

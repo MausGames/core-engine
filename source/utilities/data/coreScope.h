@@ -36,7 +36,7 @@ protected:
 
 protected:
     constexpr coreScope(T* ptObject)noexcept;
-    coreScope(coreScope<T>&& m)noexcept;
+    coreScope(coreScope&& m)noexcept;
     ~coreScope() = default;
 
 
@@ -44,7 +44,7 @@ public:
     DISABLE_HEAP
 
     /* assignment operations */
-    coreScope<T>& operator = (coreScope<T>&& m)noexcept;
+    coreScope& operator = (coreScope&& m)noexcept;
 
     /* access associated object */
     constexpr T*                      Get()const {ASSERT(m_ptObject) return m_ptObject;}
@@ -63,7 +63,7 @@ template <typename T> constexpr coreScope<T>::coreScope(T* ptObject)noexcept
 {
 }
 
-template <typename T> coreScope<T>::coreScope(coreScope<T>&& m)noexcept
+template <typename T> coreScope<T>::coreScope(coreScope&& m)noexcept
 : m_ptObject (m.m_ptObject)
 {
     m.m_ptObject = NULL;
@@ -72,7 +72,7 @@ template <typename T> coreScope<T>::coreScope(coreScope<T>&& m)noexcept
 
 // ****************************************************************
 /* assignment operations */
-template <typename T> coreScope<T>& coreScope<T>::operator = (coreScope<T>&& m)noexcept
+template <typename T> coreScope<T>& coreScope<T>::operator = (coreScope&& m)noexcept
 {
     // swap properties
     std::swap(m_ptObject, m.m_ptObject);

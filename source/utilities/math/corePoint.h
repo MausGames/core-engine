@@ -10,9 +10,8 @@
 #ifndef _CORE_GUARD_POINT_H_
 #define _CORE_GUARD_POINT_H_
 
-// TODO 3: resolutions (default res should stay vector, for calculations)
+// TODO 3: resolutions (monitor, textures, framebuffers, etc.) (default res should stay vector, for calculations ?)
 // TODO 3: colors (? + conversion functions)
-// TODO 3: using coreUint128 = corePoint<coreUint64, 2u>;
 
 
 // ****************************************************************
@@ -52,6 +51,7 @@ using corePoint2U8  = corePoint<coreUint8,  2u>;
 using corePoint2U16 = corePoint<coreUint16, 2u>;
 using corePoint3U8  = corePoint<coreUint8,  3u>;
 using corePoint3U16 = corePoint<coreUint16, 3u>;
+using coreUint128   = corePoint<coreUint64, 2u>;
 
 
 // ****************************************************************

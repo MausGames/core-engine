@@ -271,12 +271,12 @@ private:
 public:
     constexpr coreResourcePtr(std::nullptr_t p = NULL)noexcept;
     coreResourcePtr(coreResourceHandle* pHandle)noexcept;
-    coreResourcePtr(const coreResourcePtr<T>& c)noexcept;
-    coreResourcePtr(coreResourcePtr<T>&&      m)noexcept;
+    coreResourcePtr(const coreResourcePtr& c)noexcept;
+    coreResourcePtr(coreResourcePtr&&      m)noexcept;
     ~coreResourcePtr();
 
     /* assignment operations */
-    coreResourcePtr<T>& operator = (coreResourcePtr<T> o)noexcept;
+    coreResourcePtr& operator = (coreResourcePtr o)noexcept;
 
     /* access resource object and resource handle */
     inline T*                  GetResource()const {return d_cast<T*>(coreResourceManager::FetchResource(m_iIndex));}
@@ -442,13 +442,13 @@ template <typename T> coreResourcePtr<T>::coreResourcePtr(coreResourceHandle* pH
     if(m_iIndex) pHandle->RefIncrease();
 }
 
-template <typename T> coreResourcePtr<T>::coreResourcePtr(const coreResourcePtr<T>& c)noexcept
+template <typename T> coreResourcePtr<T>::coreResourcePtr(const coreResourcePtr& c)noexcept
 : m_iIndex (c.m_iIndex)
 {
     if(m_iIndex) this->GetHandle()->RefIncrease();
 }
 
-template <typename T> coreResourcePtr<T>::coreResourcePtr(coreResourcePtr<T>&& m)noexcept
+template <typename T> coreResourcePtr<T>::coreResourcePtr(coreResourcePtr&& m)noexcept
 : m_iIndex (m.m_iIndex)
 {
     m.m_iIndex = 0u;
@@ -465,7 +465,7 @@ template <typename T> coreResourcePtr<T>::~coreResourcePtr()
 
 // ****************************************************************
 /* assignment operations */
-template <typename T> coreResourcePtr<T>& coreResourcePtr<T>::operator = (coreResourcePtr<T> o)noexcept
+template <typename T> coreResourcePtr<T>& coreResourcePtr<T>::operator = (coreResourcePtr o)noexcept
 {
     // swap properties
     std::swap(m_iIndex, o.m_iIndex);

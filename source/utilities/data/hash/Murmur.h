@@ -217,7 +217,7 @@ inline FUNC_LOCAL coreUint128 coreHashMurmur128(const coreByte* pData, const cor
     h1 += h2;
     h2 += h1;
 
-    return {h1, h2};
+    return coreUint128(h1, h2);
 }
 
 inline FUNC_LOCAL coreUint128 coreHashMurmur128(const coreChar* pcString, const coreUint32 iSeed = 0u)

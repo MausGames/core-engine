@@ -466,7 +466,7 @@
 #endif
 
 #if defined(_CORE_DEBUG_)
-    #define ASSUME_ALIGNED(p,a)     ([](auto* pPointer, const coreUintW iAlign) {ASSERT(coreMath::IsAligned(pPointer, iAlign)) return pPointer;}(p, a))
+    #define ASSUME_ALIGNED(p,a)     ([](auto* pPointer, const coreUintW iAlign) {ASSERT(coreMath::IsAligned(P_TO_UI(pPointer), iAlign)) return pPointer;}(p, a))
 #else
     #if defined(_CORE_MSVC_)
         #define ASSUME_ALIGNED(p,a) (std::assume_aligned<a>(p))
@@ -580,11 +580,6 @@ STATIC_ASSERT(sizeof(coreUint32) == 4u)
 STATIC_ASSERT(sizeof(coreUint64) == 8u)
 STATIC_ASSERT(sizeof(coreByte)   == 1u)
 
-struct coreUint128 final
-{
-    coreUint64 iLow;
-    coreUint64 iHigh;
-};
 
 // retrieve compile-time string properties
 constexpr coreUintW coreStrLenConst(const coreChar* s)                    {ASSERT(s)      if(std::is_constant_evaluated()) {coreUintW i = 0u; while(s[i]) ++i; return i;}                return std::strlen(s);}

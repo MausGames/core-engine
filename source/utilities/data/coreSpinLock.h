@@ -109,7 +109,7 @@ public:
     DISABLE_COPY(coreAtomic)
 
     /* assignment operations */
-    FORCE_INLINE coreAtomic<T>& operator = (const T& tValue)noexcept;
+    FORCE_INLINE coreAtomic& operator = (const T& tValue)noexcept;
 
     /* access atomic value */
     FORCE_INLINE operator T ()const;
