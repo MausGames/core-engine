@@ -114,6 +114,8 @@ void coreRichText::Render()
         {
             corePass& oPass = (*et);
 
+            if(oPass.aCharacter.empty()) continue;
+
             // enable render pass texture
             oPass.pTexture->Enable(CORE_LABEL_TEXTURE);
 
@@ -348,6 +350,7 @@ void coreRichText::RegenerateTexture()
     {
         // clear texture entries
         it->aEntry.clear();
+        it->iPassIndex  = 0u;
         it->iEntryCount = 0u;
 
         FOR_EACH(et, it->aPass)
@@ -371,6 +374,7 @@ void coreRichText::RegenerateTexture(const coreHashString& sStyleName)
 
     // clear texture entries
     oStyle.aEntry.clear();
+    oStyle.iPassIndex  = 0u;
     oStyle.iEntryCount = 0u;
 
     FOR_EACH(et, oStyle.aPass)
@@ -630,7 +634,7 @@ void coreRichText::__ParseText()
 
                 do
                 {
-                    corePass& oPass = pStyle->aPass.back();
+                    corePass& oPass = pStyle->aPass[pStyle->iPassIndex];
 
                     // calculate texture parameters
                     const coreVector4 vPrevParams = oPass.avTexParams.empty() ? coreVector4(0.0f,0.0f,0.0f,0.0f) : oPass.avTexParams.back();
@@ -650,7 +654,7 @@ void coreRichText::__ParseText()
                     // check height and switch to next render pass
                     if(oPass.fHeightTo >= 1.0f)
                     {
-                        this->__InitPass(&pStyle->aPass.emplace_back());
+                        if(++pStyle->iPassIndex == pStyle->aPass.size()) this->__InitPass(&pStyle->aPass.emplace_back());
                         continue;
                     }
 
@@ -665,7 +669,7 @@ void coreRichText::__ParseText()
                     // create new texture entry
                     coreEntry oNewEntry;
                     oNewEntry.bGenerated = false;
-                    oNewEntry.iPass      = pStyle->aPass    .size() - 1u;
+                    oNewEntry.iPass      = pStyle->iPassIndex;
                     oNewEntry.iIndex     = oPass.avTexParams.size() - 1u;
 
                     // add entry to list
@@ -742,6 +746,8 @@ void coreRichText::__GenerateTexture()
 
         FOR_EACH(et, oStyle.aPass)
         {
+            if(et->aCharacter.empty()) continue;
+
             if(!et->pTexture->GetIdentifier())
             {
                 // create render pass texture

@@ -103,6 +103,7 @@ private:
         coreUint8                      iOutline;       // create very sharp outlined text
         coreList<corePass>             aPass;          // render passes
         coreMap<coreChar32, coreEntry> aEntry;         // texture entries across all render passes
+        coreUint8                      iPassIndex;     // current pass for adding new texture entries
         coreUint16                     iEntryCount;    // number of generated texture entries
         coreProgramPtr                 pProgram;       // shader-program object (regular)
         coreProgramPtr                 pProgramInst;   // shader-program object (instancing)
