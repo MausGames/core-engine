@@ -14,6 +14,7 @@
 // TODO 5: <old comment style>
 // TODO 5: check for GL_ARB_map_buffer_alignment and ASSUME_ALIGNED
 // TODO 4: why do I need CORE_VERTEXBUFFER_ATTRIBUTES ? was this an OpenGL hard limit ?
+// TODO 3: something like RGBA16F could handle all of {iComponents, iType, iSize, bInteger (UNORM, SNORM, not)}
 
 // NOTE: superior objects have to handle resource-resets, to refill the buffers
 

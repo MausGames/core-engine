@@ -140,8 +140,9 @@ public:
     void Move  ()final;
 
     /* handle definitions */
-    void AssignStyle(const coreHashString& sName, const coreHashString& sFont, const coreUint16 iHeight, const coreUint8 iOutline);
-    void AssignColor(const coreHashString& sName, const coreVector4 vColor);
+    void AssignStyle (const coreHashString& sName, const coreHashString& sFont, const coreUint16 iHeight, const coreUint8 iOutline);
+    void AssignColor4(const coreHashString& sName, const coreVector4 vColor);
+    void AssignColor3(const coreHashString& sName, const coreVector3 vColor);
 
     /* invoke texture generation */
     void RegenerateTexture();

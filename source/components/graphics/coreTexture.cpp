@@ -500,7 +500,7 @@ void coreTexture::DisableAll()
     }
     else
     {
-        // disable all separately
+        // disable all separately (end with first texture unit)
         for(coreUintW i = CORE_TEXTURE_UNITS; i--; )
             coreTexture::Disable(i);
     }

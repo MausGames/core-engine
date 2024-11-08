@@ -323,7 +323,7 @@ void coreRichText::AssignStyle(const coreHashString& sName, const coreHashString
 
 // ****************************************************************
 /* create or update color definition */
-void coreRichText::AssignColor(const coreHashString& sName, const coreVector4 vColor)
+void coreRichText::AssignColor4(const coreHashString& sName, const coreVector4 vColor)
 {
     // save color definition
     ASSERT((vColor.Min() >= 0.0f) && (vColor.Max() <= 1.0f))
@@ -331,6 +331,12 @@ void coreRichText::AssignColor(const coreHashString& sName, const coreVector4 vC
 
     // invoke buffer update
     ADD_FLAG(m_eRefresh, CORE_RICHTEXT_REFRESH_BUFFER)
+}
+
+void coreRichText::AssignColor3(const coreHashString& sName, const coreVector3 vColor)
+{
+    // set with default alpha
+    this->AssignColor4(sName, coreVector4(vColor, 1.0f));
 }
 
 

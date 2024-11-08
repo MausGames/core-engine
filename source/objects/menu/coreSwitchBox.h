@@ -411,7 +411,7 @@ template <typename T> coreBool coreSwitchBox<T>::SelectValue(const T& tValue)
     // loop through all entries
     for(coreUintW i = 0u, ie = m_aEntry.size(); i < ie; ++i)
     {
-        // search and select specific value
+        // search and select specific value (first found)
         if(m_aEntry[i].tValue == tValue)
         {
             this->SelectIndex(i);

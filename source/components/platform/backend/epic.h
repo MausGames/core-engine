@@ -374,7 +374,7 @@ inline coreBool coreBackendEpic::Init()
     EOS_Auth_LoginOptions oLoginOptions = {};
     oLoginOptions.ApiVersion  = EOS_AUTH_LOGIN_API_LATEST;
     oLoginOptions.Credentials = &oCredentials;
-    oLoginOptions.ScopeFlags  = EOS_EAuthScopeFlags::EOS_AS_BasicProfile;
+    oLoginOptions.ScopeFlags  = EOS_EAuthScopeFlags::EOS_AS_BasicProfile | EOS_EAuthScopeFlags::EOS_AS_Presence | EOS_EAuthScopeFlags::EOS_AS_FriendsList;
 
     // authenticate local user
     nEOS_Auth_Login(m_pAuth, &oLoginOptions, this, coreBackendEpic::__OnAuthLogin);
