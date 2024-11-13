@@ -189,7 +189,7 @@ coreMusicPlayer::coreMusicPlayer()noexcept
 , m_eRepeat   (CORE_MUSIC_ALL_REPEAT)
 , m_pCurMusic (NULL)
 , m_iCurIndex (0u)
-, m_Mutex     ()
+, m_Lock      ()
 {
     // configure music thread
     this->SetFrequency(60.0f);

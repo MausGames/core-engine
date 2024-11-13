@@ -11,7 +11,7 @@
 coreString                 coreShader ::s_asGlobalCode[8] = {};
 coreSpinLock               coreShader ::s_GlobalLock      = coreSpinLock();
 coreMapStr<coreString>     coreShader ::s_asIncludeCode   = {};
-std::recursive_mutex       coreShader ::s_IncludeLock     = std::recursive_mutex();
+coreRecursiveLock          coreShader ::s_IncludeLock     = coreRecursiveLock();
 coreProgram*               coreProgram::s_pCurrent        = NULL;
 coreProgram::coreBinaryMap coreProgram::s_aBinaryMap      = {};
 coreUint32                 coreProgram::s_iBinarySize     = 0u;
@@ -155,8 +155,8 @@ coreStatus coreShader::Unload()
 /* clear global shader code */
 void coreShader::ClearGlobalCode()
 {
-    const coreSpinLocker  oLocker1(&s_GlobalLock);
-    const std::lock_guard oLocker2(s_IncludeLock);
+    const coreSpinLocker oLocker1(&s_GlobalLock);
+    const coreSpinLocker oLocker2(&s_IncludeLock);
 
     // delete global shader code
     for(coreUintW i = 0u; i < ARRAY_SIZE(s_asGlobalCode); ++i)
@@ -247,7 +247,7 @@ void coreShader::__ReduceSize(coreString* OUTPUT psCode)
 /* resolve include directives */
 void coreShader::__ResolveIncludes(coreString* OUTPUT psCode, const coreFile* pFile)
 {
-    const std::lock_guard oLocker(s_IncludeLock);
+    const coreSpinLocker oLocker(&s_IncludeLock);
 
     constexpr coreChar  acText[] = "#include \"";
     constexpr coreUintW iTextLen = ARRAY_SIZE(acText) - 1u;

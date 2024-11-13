@@ -10,7 +10,8 @@
 #ifndef _CORE_GUARD_SPINLOCK_H_
 #define _CORE_GUARD_SPINLOCK_H_
 
-// TODO 3: what about read-write-locks, std::shared_mutex
+// TODO 3: implement read-write spinlock (std::shared_mutex)
+// TODO 3: get rid of the mutable mutex
 
 
 // ****************************************************************
@@ -76,16 +77,47 @@ public:
 
 
 // ****************************************************************
-/* spinlock helper class */
-class coreSpinLocker final
+/* recursive spinlock class */
+class coreRecursiveLock final
 {
 private:
-    coreSpinLock* m_pLock;   // associated spinlock
+#if defined(CORE_SPINLOCK_DISABLED)
+    coreBool m_State;                    // simple boolean (instead of spinlock, not used)
+#elif defined(CORE_SPINLOCK_MUTEX)
+    std::recursive_mutex m_State;        // regular recursive mutex (instead of spinlock)
+#else
+    std::atomic<SDL_threadID> m_State;   // atomic thread-ID of the current owner
+#endif
+
+    coreUint8 m_iCount;                  // current levels of ownership
 
 
 public:
-    explicit coreSpinLocker(coreSpinLock* pLock)noexcept : m_pLock (pLock) {m_pLock->Lock();}
-    ~coreSpinLocker()                                                      {m_pLock->Unlock();}
+    constexpr coreRecursiveLock()noexcept : m_State (), m_iCount (0u) {}
+
+    DISABLE_COPY(coreRecursiveLock)
+
+    /* acquire and release the recursive spinlock */
+    FORCE_INLINE void     Lock();
+    FORCE_INLINE void     Unlock();
+    FORCE_INLINE coreBool TryLock();
+
+    /* check for current lock state */
+    FORCE_INLINE coreBool IsLocked()const;
+};
+
+
+// ****************************************************************
+/* spinlock helper class */
+template <typename T> class coreSpinLocker final
+{
+private:
+    T* m_pLock;   // associated spinlock
+
+
+public:
+    explicit coreSpinLocker(T* pLock)noexcept : m_pLock (pLock) {m_pLock->Lock();}
+    ~coreSpinLocker()                                           {m_pLock->Unlock();}
 
     DISABLE_COPY(coreSpinLocker)
     DISABLE_HEAP
@@ -168,7 +200,7 @@ FORCE_INLINE void coreSpinLock::Unlock()
 FORCE_INLINE coreBool coreSpinLock::TryLock()
 {
 #if defined(CORE_SPINLOCK_DISABLED)
-    return [this]() {const coreBool A = m_State; m_State = true; return !A;}();
+    return m_State ? false : (m_State = true, true);
 #elif defined(CORE_SPINLOCK_MUTEX)
     return m_State.try_lock();
 #else
@@ -188,6 +220,67 @@ FORCE_INLINE coreBool coreSpinLock::IsLocked()const
 #else
     return m_State.test(std::memory_order::relaxed);
 #endif
+}
+
+
+// ****************************************************************
+/* acquire the recursive spinlock */
+FORCE_INLINE void coreRecursiveLock::Lock()
+{
+#if defined(CORE_SPINLOCK_DISABLED)
+    m_iCount++;
+#elif defined(CORE_SPINLOCK_MUTEX)
+    m_State.lock(); m_iCount++;
+#else
+    while(!this->TryLock()) CORE_SPINLOCK_YIELD
+#endif
+}
+
+
+// ****************************************************************
+/* release the recursive spinlock */
+FORCE_INLINE void coreRecursiveLock::Unlock()
+{
+#if defined(CORE_SPINLOCK_DISABLED)
+    m_iCount--;
+#elif defined(CORE_SPINLOCK_MUTEX)
+    m_iCount--; m_State.unlock();
+#else
+    if(!(--m_iCount)) m_State.store(0u, std::memory_order::release);
+#endif
+}
+
+
+// ****************************************************************
+/* try to acquire the recursive spinlock */
+FORCE_INLINE coreBool coreRecursiveLock::TryLock()
+{
+#if defined(CORE_SPINLOCK_DISABLED)
+    return (m_iCount++, true);
+#elif defined(CORE_SPINLOCK_MUTEX)
+    return m_State.try_lock() ? (m_iCount++, true) : false;
+#else
+
+    SDL_threadID       iExpected = 0u;
+    const SDL_threadID iDesired  = SDL_ThreadID();
+
+    if(m_State.compare_exchange_weak(iExpected, iDesired, std::memory_order::acquire, std::memory_order::relaxed) || (iExpected == iDesired))
+    {
+        m_iCount++;
+        return true;
+    }
+
+    return false;
+
+#endif
+}
+
+
+// ****************************************************************
+/* check for current lock state */
+FORCE_INLINE coreBool coreRecursiveLock::IsLocked()const
+{
+    return (m_iCount != 0u);
 }
 
 

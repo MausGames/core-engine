@@ -119,7 +119,7 @@ private:
     static coreSpinLock s_GlobalLock;                // spinlock to prevent concurrent initialization of global shader code
 
     static coreMapStr<coreString> s_asIncludeCode;   // include shader code
-    static std::recursive_mutex   s_IncludeLock;     // recursive mutex for asynchronous include shader code access
+    static coreRecursiveLock      s_IncludeLock;     // recursive spinlock for asynchronous include shader code access
 
 
 public:

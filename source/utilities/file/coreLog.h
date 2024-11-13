@@ -51,7 +51,8 @@ private:
 
     coreUint32   m_iLastTime;       // last time-value for duration approximations
     SDL_threadID m_iThisThread;     // thread-ID from the creator of this log
-    coreSpinLock m_Lock;            // spinlock to prevent concurrent log access
+
+    coreRecursiveLock m_Lock;       // recursive spinlock to prevent concurrent log access
 
     coreWorkString m_sWorkString;   // pre-allocated string for assembling messages
 
