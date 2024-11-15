@@ -13,10 +13,8 @@
 // TODO 3: add name-pooling to OpenGL ES (but not for WebGL, as there are no multi-gen functions)
 // TODO 3: always disable extensions which are only available in either GLES or WebGL in their specific mode, to improve dead-code removal
 // TODO 2: extensions should only be enabled, when all related functions are successfully retrieved
-// TODO 5: GL_EXT_copy_image, GL_OES_copy_image, GL_NV_packed_float, GL_NV_copy_buffer, GL_EXT_map_buffer_range
-// TODO 5: GL_ANGLE_program_cache_control (just for query, needs the EGL extension), GL_AMD_framebuffer_multisample_advanced
-// TODO 5: GL_EXT_disjoint_timer_query_webgl2
-// TODO 5: GL_EXT_texture_storage_compression, GL_IMG_texture_filter_cubic
+// TODO 5: GL_EXT_map_buffer_range
+// TODO 5: GL_AMD_framebuffer_multisample_advanced, GL_EXT_texture_storage_compression, GL_IMG_texture_filter_cubic
 // TODO 3: static functions for WebGL (removing GetProcAddress, extension-checks could be enough, how to merge extensions-functions?)
 // TODO 4: add all missing "shader extensions"
 // TODO 3: CORE_CONFIG_GRAPHICS_DISABLEEXTENSIONS does not work for static version-checked extensions
@@ -27,8 +25,6 @@
 #define CORE_GL_AMD_framebuffer_multisample_advanced false
 #define CORE_GL_ARB_clear_buffer_object              false
 #define CORE_GL_ARB_compute_shader                   __CORE_GLES_VAR(bES31)
-#define CORE_GL_ARB_copy_buffer                      __CORE_GLES_VAR(bES30)
-#define CORE_GL_ARB_copy_image                       false
 #define CORE_GL_ARB_depth_buffer_float               __CORE_GLES_VAR(bES30)
 #define CORE_GL_ARB_direct_state_access              false
 #define CORE_GL_ARB_multi_bind                       false
@@ -92,11 +88,6 @@ using PFNGLBUFFERSTORAGEPROC = void (GL_APIENTRY *) (GLenum target, GLsizeiptr s
 
 using PFNGLCLEARTEXIMAGEPROC = void (GL_APIENTRY *) (GLuint texture, GLint level, GLenum format, GLenum type, const void* data);
 #define glClearTexImage __CORE_GLES_FUNC(glClearTexImage)
-
-
-// ****************************************************************
-/* GL_EXT_color_buffer_float (mapped on GL_EXT_packed_float) */
-#define CORE_GL_EXT_packed_float __CORE_GLES_VAR(GL_EXT_color_buffer_float)
 
 
 // ****************************************************************
@@ -277,6 +268,14 @@ using PFNGLMAXSHADERCOMPILERTHREADSPROC = void (GL_APIENTRY *) (GLuint count);
 
 
 // ****************************************************************
+/* GL_NV_copy_buffer (mapped on GL_ARB_copy_buffer) */
+#define CORE_GL_ARB_copy_buffer __CORE_GLES_VAR(GL_NV_copy_buffer)
+
+using PFNGLCOPYBUFFERSUBDATAPROC = void (GL_APIENTRY *) (GLenum readtarget, GLenum writetarget, GLintptr readoffset, GLintptr writeoffset, GLsizeiptr size);
+#define glCopyBufferSubData __CORE_GLES_FUNC(glCopyBufferSubData)
+
+
+// ****************************************************************
 /* GL_NV_framebuffer_blit (mapped on GL_EXT_framebuffer_blit) */
 #define CORE_GL_EXT_framebuffer_blit __CORE_GLES_VAR(GL_NV_framebuffer_blit)
 
@@ -293,8 +292,21 @@ using PFNGLRENDERBUFFERSTORAGEMULTISAMPLEPROC = void (GL_APIENTRY *) (GLenum tar
 
 
 // ****************************************************************
+/* GL_NV_packed_float (mapped on GL_EXT_packed_float) */
+#define CORE_GL_EXT_packed_float __CORE_GLES_VAR(GL_NV_packed_float)
+
+
+// ****************************************************************
 /* GL_NV_pixel_buffer_object (mapped on GL_ARB_pixel_buffer_object) */
 #define CORE_GL_ARB_pixel_buffer_object __CORE_GLES_VAR(GL_NV_pixel_buffer_object)
+
+
+// ****************************************************************
+/* GL_OES_copy_image (mapped on GL_ARB_copy_image) */
+#define CORE_GL_ARB_copy_image __CORE_GLES_VAR(GL_OES_copy_image)
+
+using PFNGLCOPYIMAGESUBDATAPROC = void (GL_APIENTRY *) (GLuint srcName, GLenum srcTarget, GLint srcLevel, GLint srcX, GLint srcY, GLint srcZ, GLuint dstName, GLenum dstTarget, GLint dstLevel, GLint dstX, GLint dstY, GLint dstZ, GLsizei srcWidth, GLsizei srcHeight, GLsizei srcDepth);
+#define glCopyImageSubData __CORE_GLES_FUNC(glCopyImageSubData)
 
 
 // ****************************************************************
@@ -478,9 +490,12 @@ struct coreContext final
     coreBool __GL_KHR_debug;
     coreBool __GL_KHR_parallel_shader_compile;
     coreBool __GL_NV_conservative_raster;
+    coreBool __GL_NV_copy_buffer;
     coreBool __GL_NV_framebuffer_blit;
     coreBool __GL_NV_framebuffer_multisample;
+    coreBool __GL_NV_packed_float;
     coreBool __GL_NV_pixel_buffer_object;
+    coreBool __GL_OES_copy_image;
     coreBool __GL_OES_depth_texture;
     coreBool __GL_OES_geometry_shader;
     coreBool __GL_OES_get_program_binary;
@@ -518,8 +533,10 @@ struct coreContext final
     PFNGLDEBUGMESSAGECONTROLPROC            __glDebugMessageControl;
     PFNGLOBJECTLABELPROC                    __glObjectLabel;
     PFNGLMAXSHADERCOMPILERTHREADSPROC       __glMaxShaderCompilerThreads;
+    PFNGLCOPYBUFFERSUBDATAPROC              __glCopyBufferSubData;
     PFNGLBLITFRAMEBUFFERPROC                __glBlitFramebuffer;
     PFNGLRENDERBUFFERSTORAGEMULTISAMPLEPROC __glRenderbufferStorageMultisample;
+    PFNGLCOPYIMAGESUBDATAPROC               __glCopyImageSubData;
     PFNGLGETPROGRAMBINARYPROC               __glGetProgramBinary;
     PFNGLPROGRAMBINARYPROC                  __glProgramBinary;
     PFNGLMINSAMPLESHADINGPROC               __glMinSampleShading;
@@ -534,9 +551,9 @@ struct coreContext final
 extern coreString  g_sExtensions;   // full extension string
 extern coreContext g_CoreContext;   // context object
 
-#define __CORE_GLES_CHECK(x,b)        (g_CoreContext.__ ## x = (g_sExtensions.contains(#x " ") || b))
+#define __CORE_GLES_CHECK(x,b)        (g_CoreContext.__ ## x = ((b) || g_sExtensions.contains(#x " ")))
 #define __CORE_GLES_FUNC(f)           (g_CoreContext.__ ## f)
-#define __CORE_GLES_FUNC_FETCH(f,a,b) {g_CoreContext.__ ## f = r_cast<decltype(g_CoreContext.__ ## f)>(eglGetProcAddress(b ? #f : #f #a));}
+#define __CORE_GLES_FUNC_FETCH(f,a,b) {g_CoreContext.__ ## f = r_cast<decltype(g_CoreContext.__ ## f)>(eglGetProcAddress((b) ? #f : #f #a));}
 #define __CORE_GLES_VAR(v)            (g_CoreContext.__ ## v)
 
 template <typename... A> void __UNUSED_ARGS(A...) {}

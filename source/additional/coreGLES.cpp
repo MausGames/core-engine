@@ -63,7 +63,7 @@ void __coreInitOpenGLES()
     }
 
     // implement GL_EXT_color_buffer_float
-    __CORE_GLES_CHECK(GL_EXT_color_buffer_float, bES32);
+    __CORE_GLES_CHECK(GL_EXT_color_buffer_float, bES32);   // not used
 
     // implement GL_EXT_color_buffer_half_float
     __CORE_GLES_CHECK(GL_EXT_color_buffer_half_float, false);
@@ -72,14 +72,14 @@ void __coreInitOpenGLES()
     __CORE_GLES_CHECK(GL_EXT_depth_clamp, false);
 
     // implement GL_EXT_discard_framebuffer
-    if(__CORE_GLES_CHECK(GL_EXT_discard_framebuffer, false))
+    if(bES30)
+    {
+        g_CoreContext.__GL_EXT_discard_framebuffer = true;
+        g_CoreContext.__glDiscardFramebuffer = r_cast<PFNGLDISCARDFRAMEBUFFERPROC>(eglGetProcAddress("glInvalidateFramebuffer"));   // override function
+    }
+    else if(__CORE_GLES_CHECK(GL_EXT_discard_framebuffer, false))
     {
         __CORE_GLES_FUNC_FETCH(glDiscardFramebuffer, EXT, false)
-    }
-    else if(__CORE_GLES_CHECK(GL_EXT_discard_framebuffer, bES30))
-    {
-        // override function
-        g_CoreContext.__glDiscardFramebuffer = r_cast<decltype(g_CoreContext.__glDiscardFramebuffer)>(eglGetProcAddress("glInvalidateFramebuffer"));
     }
 
     // implement GL_EXT_disjoint_timer_query
@@ -90,13 +90,13 @@ void __coreInitOpenGLES()
         __CORE_GLES_FUNC_FETCH(glGetQueryObjectui64v, EXT, false)
         __CORE_GLES_FUNC_FETCH(glQueryCounter,        EXT, false)
     }
-    else if(g_sExtensions.contains("GL_ANGLE_timer_query "))
+    else if(g_sExtensions.contains("GL_EXT_disjoint_timer_query_webgl2 "))
     {
         g_CoreContext.__GL_EXT_disjoint_timer_query = true;
-        __CORE_GLES_FUNC_FETCH(glDeleteQueries,       ANGLE, false)
-        __CORE_GLES_FUNC_FETCH(glGenQueries,          ANGLE, false)
-        __CORE_GLES_FUNC_FETCH(glGetQueryObjectui64v, ANGLE, false)
-        __CORE_GLES_FUNC_FETCH(glQueryCounter,        ANGLE, false)
+        __CORE_GLES_FUNC_FETCH(glDeleteQueries,       EXT, false)
+        __CORE_GLES_FUNC_FETCH(glGenQueries,          EXT, false)
+        __CORE_GLES_FUNC_FETCH(glGetQueryObjectui64v, EXT, false)
+        __CORE_GLES_FUNC_FETCH(glQueryCounter,        EXT, false)
     }
 
     // implement GL_EXT_draw_buffers
@@ -212,6 +212,12 @@ void __coreInitOpenGLES()
     // implement GL_NV_conservative_raster
     __CORE_GLES_CHECK(GL_NV_conservative_raster, false);
 
+    // implement GL_NV_copy_buffer
+    if(__CORE_GLES_CHECK(GL_NV_copy_buffer, bES30))
+    {
+        __CORE_GLES_FUNC_FETCH(glCopyBufferSubData, NV, bES30)
+    }
+
     // implement GL_NV_framebuffer_blit
     if(__CORE_GLES_CHECK(GL_NV_framebuffer_blit, bES30))
     {
@@ -234,8 +240,23 @@ void __coreInitOpenGLES()
         __CORE_GLES_FUNC_FETCH(glRenderbufferStorageMultisample, ANGLE, false)
     }
 
+    // implement GL_NV_packed_float
+    __CORE_GLES_CHECK(GL_NV_packed_float, bES32);
+    if(g_sExtensions.contains("GL_EXT_color_buffer_float ")) g_CoreContext.__GL_NV_packed_float = true;
+
     // implement GL_NV_pixel_buffer_object
     __CORE_GLES_CHECK(GL_NV_pixel_buffer_object, bES30);
+
+    // implement GL_OES_copy_image
+    if(__CORE_GLES_CHECK(GL_OES_copy_image, bES32))
+    {
+        __CORE_GLES_FUNC_FETCH(glCopyImageSubData, OES, bES32)
+    }
+    else if(g_sExtensions.contains("GL_EXT_copy_image ") || bAndroidPack)
+    {
+        g_CoreContext.__GL_OES_copy_image = true;
+        __CORE_GLES_FUNC_FETCH(glCopyImageSubData, EXT, false)
+    }
 
     // implement GL_OES_depth_texture
     __CORE_GLES_CHECK(GL_OES_depth_texture, bES30);
@@ -247,10 +268,10 @@ void __coreInitOpenGLES()
     if(g_sExtensions.contains("GL_EXT_geometry_shader ")) g_CoreContext.__GL_OES_geometry_shader = true;
 
     // implement GL_OES_get_program_binary
-    if(__CORE_GLES_CHECK(GL_OES_get_program_binary, false))
+    if(__CORE_GLES_CHECK(GL_OES_get_program_binary, bES30))
     {
-        __CORE_GLES_FUNC_FETCH(glGetProgramBinary, OES, false)
-        __CORE_GLES_FUNC_FETCH(glProgramBinary,    OES, false)
+        __CORE_GLES_FUNC_FETCH(glGetProgramBinary, OES, bES30)
+        __CORE_GLES_FUNC_FETCH(glProgramBinary,    OES, bES30)
     }
 
     // implement GL_OES_packed_depth_stencil
