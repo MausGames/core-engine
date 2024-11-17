@@ -11,10 +11,9 @@
 #define _CORE_GUARD_GLES_H_
 
 // TODO 3: add name-pooling to OpenGL ES (but not for WebGL, as there are no multi-gen functions)
-// TODO 3: always disable extensions which are only available in either GLES or WebGL in their specific mode, to improve dead-code removal
 // TODO 2: extensions should only be enabled, when all related functions are successfully retrieved
 // TODO 5: GL_EXT_map_buffer_range
-// TODO 5: GL_AMD_framebuffer_multisample_advanced, GL_EXT_texture_storage_compression, GL_IMG_texture_filter_cubic
+// TODO 5: GL_EXT_texture_storage_compression, GL_IMG_texture_filter_cubic
 // TODO 3: static functions for WebGL (removing GetProcAddress, extension-checks could be enough, how to merge extensions-functions?)
 // TODO 4: add all missing "shader extensions"
 // TODO 3: CORE_CONFIG_GRAPHICS_DISABLEEXTENSIONS does not work for static version-checked extensions
@@ -22,57 +21,61 @@
 
 // ****************************************************************
 /* default extensions */
-#define CORE_GL_AMD_framebuffer_multisample_advanced false
-#define CORE_GL_ARB_clear_buffer_object              false
-#define CORE_GL_ARB_compute_shader                   __CORE_GLES_VAR(bES31)
-#define CORE_GL_ARB_depth_buffer_float               __CORE_GLES_VAR(bES30)
-#define CORE_GL_ARB_direct_state_access              false
-#define CORE_GL_ARB_multi_bind                       false
-#define CORE_GL_ARB_multisample                      false
-#define CORE_GL_ARB_pipeline_statistics_query        false
-#define CORE_GL_ARB_seamless_cube_map                false
-#define CORE_GL_ARB_shader_image_load_store          __CORE_GLES_VAR(bES31)
-#define CORE_GL_ARB_sync                             __CORE_GLES_VAR(bES30)
-#define CORE_GL_ARB_uniform_buffer_object            __CORE_GLES_VAR(bES30)
-#define CORE_GL_EXT_direct_state_access              false
-#define CORE_GL_EXT_framebuffer_object               true   // always available
-#define CORE_GL_EXT_gpu_shader4                      __CORE_GLES_VAR(bES30)
-#define CORE_GL_NVX_gpu_memory_info                  false
-#define CORE_GL_NV_framebuffer_multisample_coverage  false
-#define CORE_GL_NV_multisample_filter_hint           false
-
-#if defined(_CORE_EMSCRIPTEN_)
-    #define CORE_GL_ARB_map_buffer_range             false
-    #define CORE_GL_ARB_program_interface_query      false
-    #define CORE_GL_ARB_vertex_attrib_binding        false
-#else
-    #define CORE_GL_ARB_map_buffer_range             __CORE_GLES_VAR(bES30) && !DEFINED(_CORE_ANGLE_)
-    #define CORE_GL_ARB_program_interface_query      __CORE_GLES_VAR(bES31)
-    #define CORE_GL_ARB_vertex_attrib_binding        __CORE_GLES_VAR(bES31)
-#endif
+#define CORE_GL_ARB_clear_buffer_object             (false)
+#define CORE_GL_ARB_compute_shader                  (__CORE_GLES_VAR(bES31) && !DEFINED(_CORE_EMSCRIPTEN_))
+#define CORE_GL_ARB_depth_buffer_float              (__CORE_GLES_VAR(bES30))
+#define CORE_GL_ARB_direct_state_access             (false)
+#define CORE_GL_ARB_map_buffer_range                (__CORE_GLES_VAR(bES30) && !DEFINED(_CORE_EMSCRIPTEN_) && !DEFINED(_CORE_ANGLE_))
+#define CORE_GL_ARB_multi_bind                      (false)
+#define CORE_GL_ARB_multisample                     (false)
+#define CORE_GL_ARB_pipeline_statistics_query       (false)
+#define CORE_GL_ARB_program_interface_query         (__CORE_GLES_VAR(bES31) && !DEFINED(_CORE_EMSCRIPTEN_))
+#define CORE_GL_ARB_seamless_cube_map               (false)
+#define CORE_GL_ARB_shader_image_load_store         (__CORE_GLES_VAR(bES31) && !DEFINED(_CORE_EMSCRIPTEN_))
+#define CORE_GL_ARB_sync                            (__CORE_GLES_VAR(bES30))
+#define CORE_GL_ARB_uniform_buffer_object           (__CORE_GLES_VAR(bES30))
+#define CORE_GL_ARB_vertex_attrib_binding           (__CORE_GLES_VAR(bES31) && !DEFINED(_CORE_EMSCRIPTEN_))
+#define CORE_GL_EXT_direct_state_access             (false)
+#define CORE_GL_EXT_framebuffer_object              (true)   // always available
+#define CORE_GL_EXT_gpu_shader4                     (__CORE_GLES_VAR(bES30))
+#define CORE_GL_NVX_gpu_memory_info                 (false)
+#define CORE_GL_NV_framebuffer_multisample_coverage (false)
+#define CORE_GL_NV_multisample_filter_hint          (false)
 
 
 // ****************************************************************
 /* GL_ANGLE_texture_usage */
-#define CORE_GL_ANGLE_texture_usage __CORE_GLES_VAR(GL_ANGLE_texture_usage)
+#define CORE_GL_AMD_framebuffer_multisample_advanced (__CORE_GLES_VAR(GL_AMD_framebuffer_multisample_advanced) && !DEFINED(_CORE_EMSCRIPTEN_))
 
-#define GL_TEXTURE_USAGE_ANGLE          0x93A2
+#define GL_MAX_COLOR_FRAMEBUFFER_SAMPLES_AMD         0x91B3
+#define GL_MAX_COLOR_FRAMEBUFFER_STORAGE_SAMPLES_AMD 0x91B4
+#define GL_MAX_DEPTH_STENCIL_FRAMEBUFFER_SAMPLES_AMD 0x91B5
+
+using PFNGLRENDERBUFFERSTORAGEMULTISAMPLEADVANCEDAMDPROC = void (GL_APIENTRY *) (GLenum target, GLsizei samples, GLsizei storageSamples, GLenum internalformat, GLsizei width, GLsizei height);
+#define glRenderbufferStorageMultisampleAdvancedAMD __CORE_GLES_FUNC(glRenderbufferStorageMultisampleAdvanced)
+
+
+// ****************************************************************
+/* GL_ANGLE_texture_usage */
+#define CORE_GL_ANGLE_texture_usage (__CORE_GLES_VAR(GL_ANGLE_texture_usage) && !DEFINED(_CORE_EMSCRIPTEN_))
+
 #define GL_FRAMEBUFFER_ATTACHMENT_ANGLE 0x93A3
+#define GL_TEXTURE_USAGE_ANGLE          0x93A2
 
 
 // ****************************************************************
 /* GL_CORE_texture_float (mapped on GL_ARB_texture_float) */
-#define CORE_GL_ARB_texture_float __CORE_GLES_VAR(GL_CORE_texture_float)
+#define CORE_GL_ARB_texture_float (__CORE_GLES_VAR(GL_CORE_texture_float))
 
 
 // ****************************************************************
 /* GL_CORE_vertex_type_2_10_10_10_rev (mapped on GL_ARB_vertex_type_2_10_10_10_rev) */
-#define CORE_GL_ARB_vertex_type_2_10_10_10_rev __CORE_GLES_VAR(GL_CORE_vertex_type_2_10_10_10_rev)
+#define CORE_GL_ARB_vertex_type_2_10_10_10_rev (__CORE_GLES_VAR(GL_CORE_vertex_type_2_10_10_10_rev))
 
 
 // ****************************************************************
 /* GL_EXT_buffer_storage (mapped on GL_ARB_buffer_storage) */
-#define CORE_GL_ARB_buffer_storage __CORE_GLES_VAR(GL_EXT_buffer_storage)
+#define CORE_GL_ARB_buffer_storage (__CORE_GLES_VAR(GL_EXT_buffer_storage) && !DEFINED(_CORE_EMSCRIPTEN_))
 
 #define GL_CLIENT_STORAGE_BIT  0x0200
 #define GL_DYNAMIC_STORAGE_BIT 0x0100
@@ -84,7 +87,7 @@ using PFNGLBUFFERSTORAGEPROC = void (GL_APIENTRY *) (GLenum target, GLsizeiptr s
 
 // ****************************************************************
 /* GL_EXT_clear_texture (mapped on GL_ARB_clear_texture) */
-#define CORE_GL_ARB_clear_texture __CORE_GLES_VAR(GL_EXT_clear_texture)
+#define CORE_GL_ARB_clear_texture (__CORE_GLES_VAR(GL_EXT_clear_texture) && !DEFINED(_CORE_EMSCRIPTEN_))
 
 using PFNGLCLEARTEXIMAGEPROC = void (GL_APIENTRY *) (GLuint texture, GLint level, GLenum format, GLenum type, const void* data);
 #define glClearTexImage __CORE_GLES_FUNC(glClearTexImage)
@@ -92,14 +95,14 @@ using PFNGLCLEARTEXIMAGEPROC = void (GL_APIENTRY *) (GLuint texture, GLint level
 
 // ****************************************************************
 /* GL_EXT_depth_clamp (mapped on GL_ARB_depth_clamp) */
-#define CORE_GL_ARB_depth_clamp __CORE_GLES_VAR(GL_EXT_depth_clamp)
+#define CORE_GL_ARB_depth_clamp (__CORE_GLES_VAR(GL_EXT_depth_clamp))
 
 #define GL_DEPTH_CLAMP 0x864F
 
 
 // ****************************************************************
 /* GL_EXT_discard_framebuffer (mapped on GL_ARB_invalidate_subdata) */
-#define CORE_GL_ARB_invalidate_subdata __CORE_GLES_VAR(GL_EXT_discard_framebuffer)
+#define CORE_GL_ARB_invalidate_subdata (__CORE_GLES_VAR(GL_EXT_discard_framebuffer))
 
 using PFNGLDISCARDFRAMEBUFFERPROC = void (GL_APIENTRY *) (GLenum target, GLsizei numAttachments, const GLenum* attachments);
 #define glInvalidateBufferData(...)
@@ -112,7 +115,7 @@ using PFNGLDISCARDFRAMEBUFFERPROC = void (GL_APIENTRY *) (GLenum target, GLsizei
 
 // ****************************************************************
 /* GL_EXT_disjoint_timer_query (mapped on GL_ARB_timer_query) */
-#define CORE_GL_ARB_timer_query __CORE_GLES_VAR(GL_EXT_disjoint_timer_query)
+#define CORE_GL_ARB_timer_query (__CORE_GLES_VAR(GL_EXT_disjoint_timer_query))
 
 #define GL_TIMESTAMP 0x8E28
 
@@ -128,7 +131,7 @@ using PFNGLQUERYCOUNTERPROC        = void (GL_APIENTRY *) (GLuint id, GLenum tar
 
 // ****************************************************************
 /* GL_EXT_draw_buffers */
-#define CORE_GL_EXT_draw_buffers __CORE_GLES_VAR(GL_EXT_draw_buffers)
+#define CORE_GL_EXT_draw_buffers (__CORE_GLES_VAR(GL_EXT_draw_buffers))
 
 using PFNGLDRAWBUFFERSPROC = void (GL_APIENTRY *) (GLsizei n, const GLenum* bufs);
 #define glDrawBuffers __CORE_GLES_FUNC(glDrawBuffers)
@@ -136,7 +139,7 @@ using PFNGLDRAWBUFFERSPROC = void (GL_APIENTRY *) (GLsizei n, const GLenum* bufs
 
 // ****************************************************************
 /* GL_EXT_instanced_arrays (mapped on GL_ARB_instanced_arrays) */
-#define CORE_GL_ARB_instanced_arrays __CORE_GLES_VAR(GL_EXT_instanced_arrays)
+#define CORE_GL_ARB_instanced_arrays (__CORE_GLES_VAR(GL_EXT_instanced_arrays))
 
 using PFNGLDRAWARRAYSINSTANCEDARBPROC   = void (GL_APIENTRY *) (GLenum mode, GLint first, GLsizei count, GLsizei primcount);
 using PFNGLDRAWELEMENTSINSTANCEDARBPROC = void (GL_APIENTRY *) (GLenum mode, GLsizei count, GLenum type, const void* indices, GLsizei primcount);
@@ -148,7 +151,7 @@ using PFNGLVERTEXATTRIBDIVISORARBPROC   = void (GL_APIENTRY *) (GLuint index, GL
 
 // ****************************************************************
 /* GL_EXT_robustness (mapped on GL_ARB_robustness) */
-#define CORE_GL_ARB_robustness __CORE_GLES_VAR(GL_EXT_robustness)
+#define CORE_GL_ARB_robustness (__CORE_GLES_VAR(GL_EXT_robustness) && !DEFINED(_CORE_EMSCRIPTEN_))
 
 #define GL_GUILTY_CONTEXT_RESET   0x8253
 #define GL_INNOCENT_CONTEXT_RESET 0x8254
@@ -166,14 +169,14 @@ using PFNGLREADNPIXELSPROC            = void   (GL_APIENTRY *) (GLint x, GLint y
 
 // ****************************************************************
 /* GL_EXT_sRGB_write_control (mapped on GL_ARB_framebuffer_sRGB) */
-#define CORE_GL_ARB_framebuffer_sRGB __CORE_GLES_VAR(GL_EXT_sRGB_write_control)
+#define CORE_GL_ARB_framebuffer_sRGB (__CORE_GLES_VAR(GL_EXT_sRGB_write_control) && !DEFINED(_CORE_EMSCRIPTEN_))
 
 #define GL_FRAMEBUFFER_SRGB 0x8DB9
 
 
 // ****************************************************************
 /* GL_EXT_texture_compression_rgtc (mapped on GL_ARB_texture_compression_rgtc) */
-#define CORE_GL_ARB_texture_compression_rgtc __CORE_GLES_VAR(GL_EXT_texture_compression_rgtc)
+#define CORE_GL_ARB_texture_compression_rgtc (__CORE_GLES_VAR(GL_EXT_texture_compression_rgtc))
 
 #define GL_COMPRESSED_RED_RGTC1 0x8DBB
 #define GL_COMPRESSED_RG_RGTC2  0x8DBD
@@ -181,7 +184,7 @@ using PFNGLREADNPIXELSPROC            = void   (GL_APIENTRY *) (GLint x, GLint y
 
 // ****************************************************************
 /* GL_EXT_texture_compression_s3tc */
-#define CORE_GL_EXT_texture_compression_s3tc __CORE_GLES_VAR(GL_EXT_texture_compression_s3tc)
+#define CORE_GL_EXT_texture_compression_s3tc (__CORE_GLES_VAR(GL_EXT_texture_compression_s3tc))
 
 #define GL_COMPRESSED_RGB_S3TC_DXT1_EXT  0x83F0
 #define GL_COMPRESSED_RGBA_S3TC_DXT5_EXT 0x83F3
@@ -189,7 +192,7 @@ using PFNGLREADNPIXELSPROC            = void   (GL_APIENTRY *) (GLint x, GLint y
 
 // ****************************************************************
 /* GL_EXT_texture_filter_anisotropic (mapped on GL_ARB_texture_filter_anisotropic) */
-#define CORE_GL_ARB_texture_filter_anisotropic __CORE_GLES_VAR(GL_EXT_texture_filter_anisotropic)
+#define CORE_GL_ARB_texture_filter_anisotropic (__CORE_GLES_VAR(GL_EXT_texture_filter_anisotropic))
 
 #define GL_MAX_TEXTURE_MAX_ANISOTROPY 0x84FF
 #define GL_TEXTURE_MAX_ANISOTROPY     0x84FE
@@ -197,7 +200,7 @@ using PFNGLREADNPIXELSPROC            = void   (GL_APIENTRY *) (GLint x, GLint y
 
 // ****************************************************************
 /* GL_EXT_texture_norm16 */
-#define CORE_GL_EXT_texture_norm16 __CORE_GLES_VAR(GL_EXT_texture_norm16)
+#define CORE_GL_EXT_texture_norm16 (__CORE_GLES_VAR(GL_EXT_texture_norm16))
 
 #define GL_R16    0x822A
 #define GL_RG16   0x822C
@@ -207,12 +210,12 @@ using PFNGLREADNPIXELSPROC            = void   (GL_APIENTRY *) (GLint x, GLint y
 
 // ****************************************************************
 /* GL_EXT_texture_rg (mapped on GL_ARB_texture_rg) */
-#define CORE_GL_ARB_texture_rg __CORE_GLES_VAR(GL_EXT_texture_rg)
+#define CORE_GL_ARB_texture_rg (__CORE_GLES_VAR(GL_EXT_texture_rg))
 
 
 // ****************************************************************
 /* GL_EXT_texture_storage (mapped on GL_ARB_texture_storage)  */
-#define CORE_GL_ARB_texture_storage __CORE_GLES_VAR(GL_EXT_texture_storage)
+#define CORE_GL_ARB_texture_storage (__CORE_GLES_VAR(GL_EXT_texture_storage))
 
 using PFNGLTEXSTORAGE2DPROC = void (GL_APIENTRY *) (GLenum target, GLsizei levels, GLenum internalformat, GLsizei width, GLsizei height);
 #define glTexStorage2D __CORE_GLES_FUNC(glTexStorage2D)
@@ -220,19 +223,19 @@ using PFNGLTEXSTORAGE2DPROC = void (GL_APIENTRY *) (GLenum target, GLsizei level
 
 // ****************************************************************
 /* GL_EXT_texture_type_2_10_10_10_rev */
-#define CORE_GL_EXT_texture_type_2_10_10_10_rev __CORE_GLES_VAR(GL_EXT_texture_type_2_10_10_10_REV)
+#define CORE_GL_EXT_texture_type_2_10_10_10_rev (__CORE_GLES_VAR(GL_EXT_texture_type_2_10_10_10_REV))
 
 
 // ****************************************************************
 /* GL_INTEL_conservative_rasterization */
-#define CORE_GL_INTEL_conservative_rasterization __CORE_GLES_VAR(GL_INTEL_conservative_rasterization)
+#define CORE_GL_INTEL_conservative_rasterization (__CORE_GLES_VAR(GL_INTEL_conservative_rasterization) && !DEFINED(_CORE_EMSCRIPTEN_))
 
 #define GL_CONSERVATIVE_RASTERIZATION_INTEL 0x83FE
 
 
 // ****************************************************************
 /* GL_INTEL_framebuffer_CMAA */
-#define CORE_GL_INTEL_framebuffer_CMAA __CORE_GLES_VAR(GL_INTEL_framebuffer_CMAA)
+#define CORE_GL_INTEL_framebuffer_CMAA (__CORE_GLES_VAR(GL_INTEL_framebuffer_CMAA) && !DEFINED(_CORE_EMSCRIPTEN_))
 
 using PFNGLAPPLYFRAMEBUFFERATTACHMENTCMAAPROC = void (GL_APIENTRY *) (void);
 #define glApplyFramebufferAttachmentCMAAINTEL __CORE_GLES_FUNC(glApplyFramebufferAttachmentCMAA)
@@ -240,7 +243,7 @@ using PFNGLAPPLYFRAMEBUFFERATTACHMENTCMAAPROC = void (GL_APIENTRY *) (void);
 
 // ****************************************************************
 /* GL_KHR_debug */
-#define CORE_GL_KHR_debug __CORE_GLES_VAR(GL_KHR_debug)
+#define CORE_GL_KHR_debug (__CORE_GLES_VAR(GL_KHR_debug) && !DEFINED(_CORE_EMSCRIPTEN_))
 
 using PFNGLDEBUGMESSAGECALLBACKPROC = void (GL_APIENTRY *) (GLDEBUGPROC callback, const void* userParam);
 using PFNGLDEBUGMESSAGECONTROLPROC  = void (GL_APIENTRY *) (GLenum source, GLenum type, GLenum severity, GLsizei count, const GLuint* ids, GLboolean enabled);
@@ -252,7 +255,7 @@ using PFNGLOBJECTLABELPROC          = void (GL_APIENTRY *) (GLenum identifier, G
 
 // ****************************************************************
 /* GL_KHR_parallel_shader_compile (mapped on GL_ARB_parallel_shader_compile) */
-#define CORE_GL_ARB_parallel_shader_compile __CORE_GLES_VAR(GL_KHR_parallel_shader_compile)
+#define CORE_GL_ARB_parallel_shader_compile (__CORE_GLES_VAR(GL_KHR_parallel_shader_compile))
 
 #define GL_COMPLETION_STATUS_ARB 0x91B1
 
@@ -262,14 +265,14 @@ using PFNGLMAXSHADERCOMPILERTHREADSPROC = void (GL_APIENTRY *) (GLuint count);
 
 // ****************************************************************
 /* GL_NV_conservative_raster */
-#define CORE_GL_NV_conservative_raster __CORE_GLES_VAR(GL_NV_conservative_raster)
+#define CORE_GL_NV_conservative_raster (__CORE_GLES_VAR(GL_NV_conservative_raster) && !DEFINED(_CORE_EMSCRIPTEN_))
 
 #define GL_CONSERVATIVE_RASTERIZATION_NV 0x9346
 
 
 // ****************************************************************
 /* GL_NV_copy_buffer (mapped on GL_ARB_copy_buffer) */
-#define CORE_GL_ARB_copy_buffer __CORE_GLES_VAR(GL_NV_copy_buffer)
+#define CORE_GL_ARB_copy_buffer (__CORE_GLES_VAR(GL_NV_copy_buffer))
 
 using PFNGLCOPYBUFFERSUBDATAPROC = void (GL_APIENTRY *) (GLenum readtarget, GLenum writetarget, GLintptr readoffset, GLintptr writeoffset, GLsizeiptr size);
 #define glCopyBufferSubData __CORE_GLES_FUNC(glCopyBufferSubData)
@@ -277,7 +280,7 @@ using PFNGLCOPYBUFFERSUBDATAPROC = void (GL_APIENTRY *) (GLenum readtarget, GLen
 
 // ****************************************************************
 /* GL_NV_framebuffer_blit (mapped on GL_EXT_framebuffer_blit) */
-#define CORE_GL_EXT_framebuffer_blit __CORE_GLES_VAR(GL_NV_framebuffer_blit)
+#define CORE_GL_EXT_framebuffer_blit (__CORE_GLES_VAR(GL_NV_framebuffer_blit))
 
 using PFNGLBLITFRAMEBUFFERPROC = void (GL_APIENTRY *) (GLint srcX0, GLint srcY0, GLint srcX1, GLint srcY1, GLint dstX0, GLint dstY0, GLint dstX1, GLint dstY1, GLbitfield mask, GLenum filter);
 #define glBlitFramebuffer __CORE_GLES_FUNC(glBlitFramebuffer)
@@ -285,7 +288,7 @@ using PFNGLBLITFRAMEBUFFERPROC = void (GL_APIENTRY *) (GLint srcX0, GLint srcY0,
 
 // ****************************************************************
 /* GL_NV_framebuffer_multisample (mapped on GL_EXT_framebuffer_multisample) */
-#define CORE_GL_EXT_framebuffer_multisample __CORE_GLES_VAR(GL_NV_framebuffer_multisample)
+#define CORE_GL_EXT_framebuffer_multisample (__CORE_GLES_VAR(GL_NV_framebuffer_multisample))
 
 using PFNGLRENDERBUFFERSTORAGEMULTISAMPLEPROC = void (GL_APIENTRY *) (GLenum target, GLsizei samples, GLenum internalformat, GLsizei width, GLsizei height);
 #define glRenderbufferStorageMultisample __CORE_GLES_FUNC(glRenderbufferStorageMultisample)
@@ -293,17 +296,17 @@ using PFNGLRENDERBUFFERSTORAGEMULTISAMPLEPROC = void (GL_APIENTRY *) (GLenum tar
 
 // ****************************************************************
 /* GL_NV_packed_float (mapped on GL_EXT_packed_float) */
-#define CORE_GL_EXT_packed_float __CORE_GLES_VAR(GL_NV_packed_float)
+#define CORE_GL_EXT_packed_float (__CORE_GLES_VAR(GL_NV_packed_float))
 
 
 // ****************************************************************
 /* GL_NV_pixel_buffer_object (mapped on GL_ARB_pixel_buffer_object) */
-#define CORE_GL_ARB_pixel_buffer_object __CORE_GLES_VAR(GL_NV_pixel_buffer_object)
+#define CORE_GL_ARB_pixel_buffer_object (__CORE_GLES_VAR(GL_NV_pixel_buffer_object))
 
 
 // ****************************************************************
 /* GL_OES_copy_image (mapped on GL_ARB_copy_image) */
-#define CORE_GL_ARB_copy_image __CORE_GLES_VAR(GL_OES_copy_image)
+#define CORE_GL_ARB_copy_image (__CORE_GLES_VAR(GL_OES_copy_image) && !DEFINED(_CORE_EMSCRIPTEN_))
 
 using PFNGLCOPYIMAGESUBDATAPROC = void (GL_APIENTRY *) (GLuint srcName, GLenum srcTarget, GLint srcLevel, GLint srcX, GLint srcY, GLint srcZ, GLuint dstName, GLenum dstTarget, GLint dstLevel, GLint dstX, GLint dstY, GLint dstZ, GLsizei srcWidth, GLsizei srcHeight, GLsizei srcDepth);
 #define glCopyImageSubData __CORE_GLES_FUNC(glCopyImageSubData)
@@ -311,20 +314,20 @@ using PFNGLCOPYIMAGESUBDATAPROC = void (GL_APIENTRY *) (GLuint srcName, GLenum s
 
 // ****************************************************************
 /* GL_OES_depth_texture (mapped on GL_ARB_depth_texture) */
-#define CORE_GL_ARB_depth_texture __CORE_GLES_VAR(GL_OES_depth_texture)
+#define CORE_GL_ARB_depth_texture (__CORE_GLES_VAR(GL_OES_depth_texture))
 
 
 // ****************************************************************
 /* GL_OES_geometry_shader (mapped on GL_ARB_geometry_shader4) */
-#define CORE_GL_ARB_geometry_shader4 __CORE_GLES_VAR(GL_OES_geometry_shader)
+#define CORE_GL_ARB_geometry_shader4 (__CORE_GLES_VAR(GL_OES_geometry_shader) && !DEFINED(_CORE_EMSCRIPTEN_))
 
 
 // ****************************************************************
 /* GL_OES_get_program_binary (mapped on GL_ARB_get_program_binary) */
-#define CORE_GL_ARB_get_program_binary __CORE_GLES_VAR(GL_OES_get_program_binary)
+#define CORE_GL_ARB_get_program_binary (__CORE_GLES_VAR(GL_OES_get_program_binary) && !DEFINED(_CORE_EMSCRIPTEN_))
 
-#define GL_PROGRAM_BINARY_RETRIEVABLE_HINT 0x8257
 #define GL_PROGRAM_BINARY_LENGTH           0x8741
+#define GL_PROGRAM_BINARY_RETRIEVABLE_HINT 0x8257
 
 using PFNGLGETPROGRAMBINARYPROC = void (GL_APIENTRY *) (GLuint program, GLsizei bufSize, GLsizei* length, GLenum *binaryFormat, void* binary);
 using PFNGLPROGRAMBINARYPROC    = void (GL_APIENTRY *) (GLuint program, GLenum binaryFormat, const void* binary, GLsizei length);
@@ -335,12 +338,12 @@ using PFNGLPROGRAMBINARYPROC    = void (GL_APIENTRY *) (GLuint program, GLenum b
 
 // ****************************************************************
 /* GL_OES_packed_depth_stencil (mapped on GL_EXT_packed_depth_stencil) */
-#define CORE_GL_EXT_packed_depth_stencil __CORE_GLES_VAR(GL_OES_packed_depth_stencil)
+#define CORE_GL_EXT_packed_depth_stencil (__CORE_GLES_VAR(GL_OES_packed_depth_stencil))
 
 
 // ****************************************************************
 /* GL_OES_sample_shading (mapped on GL_ARB_sample_shading) */
-#define CORE_GL_ARB_sample_shading __CORE_GLES_VAR(GL_OES_sample_shading)
+#define CORE_GL_ARB_sample_shading (__CORE_GLES_VAR(GL_OES_sample_shading) && !DEFINED(_CORE_EMSCRIPTEN_))
 
 using PFNGLMINSAMPLESHADINGPROC = void (GL_APIENTRY *) (GLclampf value);
 #define glMinSampleShading __CORE_GLES_FUNC(glMinSampleShading)
@@ -348,12 +351,12 @@ using PFNGLMINSAMPLESHADINGPROC = void (GL_APIENTRY *) (GLclampf value);
 
 // ****************************************************************
 /* GL_OES_tessellation_shader (mapped on GL_ARB_tessellation_shader) */
-#define CORE_GL_ARB_tessellation_shader __CORE_GLES_VAR(GL_OES_tessellation_shader)
+#define CORE_GL_ARB_tessellation_shader (__CORE_GLES_VAR(GL_OES_tessellation_shader) && !DEFINED(_CORE_EMSCRIPTEN_))
 
 
 // ****************************************************************
 /* GL_OES_texture_3D (mapped on GL_EXT_texture3D) */
-#define CORE_GL_EXT_texture3D __CORE_GLES_VAR(GL_OES_texture_3D)
+#define CORE_GL_EXT_texture3D (__CORE_GLES_VAR(GL_OES_texture_3D))
 
 using PFNGLTEXIMAGE3DPROC    = void (GL_APIENTRY *) (GLenum target, GLint level, GLint internalFormat, GLsizei width, GLsizei height, GLsizei depth, GLint border, GLenum format, GLenum type, const void* pixels);
 using PFNGLTEXSUBIMAGE3DPROC = void (GL_APIENTRY *) (GLenum target, GLint level, GLint xoffset, GLint yoffset, GLint zoffset, GLsizei width, GLsizei height, GLsizei depth, GLenum format, GLenum type, const void* pixels);
@@ -363,12 +366,12 @@ using PFNGLTEXSUBIMAGE3DPROC = void (GL_APIENTRY *) (GLenum target, GLint level,
 
 // ****************************************************************
 /* GL_OES_texture_stencil8 (mapped on GL_ARB_texture_stencil8) */
-#define CORE_GL_ARB_texture_stencil8 __CORE_GLES_VAR(GL_OES_texture_stencil8)
+#define CORE_GL_ARB_texture_stencil8 (__CORE_GLES_VAR(GL_OES_texture_stencil8) && !DEFINED(_CORE_EMSCRIPTEN_))
 
 
 // ****************************************************************
 /* GL_OES_vertex_array_object (mapped on GL_ARB_vertex_array_object) */
-#define CORE_GL_ARB_vertex_array_object __CORE_GLES_VAR(GL_OES_vertex_array_object)
+#define CORE_GL_ARB_vertex_array_object (__CORE_GLES_VAR(GL_OES_vertex_array_object))
 
 using PFNGLBINDVERTEXARRAYPROC    = void (GL_APIENTRY *) (GLuint array);
 using PFNGLDELETEVERTEXARRAYSPROC = void (GL_APIENTRY *) (GLsizei n, const GLuint* arrays);
@@ -380,7 +383,7 @@ using PFNGLGENVERTEXARRAYSPROC    = void (GL_APIENTRY *) (GLsizei n, GLuint* arr
 
 // ****************************************************************
 /* GL_OES_vertex_half_float (mapped on GL_ARB_half_float_vertex) */
-#define CORE_GL_ARB_half_float_vertex __CORE_GLES_VAR(GL_OES_vertex_half_float)
+#define CORE_GL_ARB_half_float_vertex (__CORE_GLES_VAR(GL_OES_vertex_half_float))
 
 #undef  GL_HALF_FLOAT
 #define GL_HALF_FLOAT (__CORE_GLES_VAR(bES30) ? 0x140B : 0x8D61)
@@ -439,7 +442,6 @@ using PFNGLGETBUFFERSUBDATAPROC = void (GL_APIENTRY *) (GLenum target, GLintptr 
 #define glMapNamedBufferRange(...) (I_TO_P(-1))
 #define glMapNamedBufferRangeEXT(...) (I_TO_P(-1))
 #define glNamedCopyBufferSubDataEXT(...)
-#define glRenderbufferStorageMultisampleAdvancedAMD(...)
 #define glRenderbufferStorageMultisampleCoverageNV(...)
 #define glTextureSubImage2D(...)
 #define glTextureSubImage2DEXT(...)
@@ -463,6 +465,7 @@ struct coreContext final
     coreBool     __bES31;
     coreBool     __bES32;
 
+    coreBool __GL_AMD_framebuffer_multisample_advanced;
     coreBool __GL_ANDROID_extension_pack_es31a;
     coreBool __GL_ANGLE_texture_usage;
     coreBool __GL_CORE_texture_float;
@@ -512,40 +515,41 @@ struct coreContext final
     coreBool __GL_OES_vertex_half_float;
     coreBool __GL_WEBGL_color_buffer_float;
 
-    PFNGLBUFFERSTORAGEPROC                  __glBufferStorage;
-    PFNGLCLEARTEXIMAGEPROC                  __glClearTexImage;
-    PFNGLDISCARDFRAMEBUFFERPROC             __glDiscardFramebuffer;
-    PFNGLDELETEQUERIESPROC                  __glDeleteQueries;
-    PFNGLGENQUERIESPROC                     __glGenQueries;
-    PFNGLGETQUERYOBJECTUI64VPROC            __glGetQueryObjectui64v;
-    PFNGLQUERYCOUNTERPROC                   __glQueryCounter;
-    PFNGLDRAWBUFFERSPROC                    __glDrawBuffers;
-    PFNGLDRAWARRAYSINSTANCEDARBPROC         __glDrawArraysInstanced;
-    PFNGLDRAWELEMENTSINSTANCEDARBPROC       __glDrawElementsInstanced;
-    PFNGLVERTEXATTRIBDIVISORARBPROC         __glVertexAttribDivisor;
-    PFNGLGETGRAPHICSRESETSTATUSPROC         __glGetGraphicsResetStatus;
-    PFNGLGETNUNIFORMFVPROC                  __glGetnUniformfv;
-    PFNGLGETNUNIFORMIVPROC                  __glGetnUniformiv;
-    PFNGLREADNPIXELSPROC                    __glReadnPixels;
-    PFNGLTEXSTORAGE2DPROC                   __glTexStorage2D;
-    PFNGLAPPLYFRAMEBUFFERATTACHMENTCMAAPROC __glApplyFramebufferAttachmentCMAA;
-    PFNGLDEBUGMESSAGECALLBACKPROC           __glDebugMessageCallback;
-    PFNGLDEBUGMESSAGECONTROLPROC            __glDebugMessageControl;
-    PFNGLOBJECTLABELPROC                    __glObjectLabel;
-    PFNGLMAXSHADERCOMPILERTHREADSPROC       __glMaxShaderCompilerThreads;
-    PFNGLCOPYBUFFERSUBDATAPROC              __glCopyBufferSubData;
-    PFNGLBLITFRAMEBUFFERPROC                __glBlitFramebuffer;
-    PFNGLRENDERBUFFERSTORAGEMULTISAMPLEPROC __glRenderbufferStorageMultisample;
-    PFNGLCOPYIMAGESUBDATAPROC               __glCopyImageSubData;
-    PFNGLGETPROGRAMBINARYPROC               __glGetProgramBinary;
-    PFNGLPROGRAMBINARYPROC                  __glProgramBinary;
-    PFNGLMINSAMPLESHADINGPROC               __glMinSampleShading;
-    PFNGLTEXIMAGE3DPROC                     __glTexImage3D;
-    PFNGLTEXSUBIMAGE3DPROC                  __glTexSubImage3D;
-    PFNGLBINDVERTEXARRAYPROC                __glBindVertexArray;
-    PFNGLDELETEVERTEXARRAYSPROC             __glDeleteVertexArrays;
-    PFNGLGENVERTEXARRAYSPROC                __glGenVertexArrays;
-    PFNGLGETBUFFERSUBDATAPROC               __glGetBufferSubData;
+    PFNGLRENDERBUFFERSTORAGEMULTISAMPLEADVANCEDAMDPROC __glRenderbufferStorageMultisampleAdvanced;
+    PFNGLBUFFERSTORAGEPROC                             __glBufferStorage;
+    PFNGLCLEARTEXIMAGEPROC                             __glClearTexImage;
+    PFNGLDISCARDFRAMEBUFFERPROC                        __glDiscardFramebuffer;
+    PFNGLDELETEQUERIESPROC                             __glDeleteQueries;
+    PFNGLGENQUERIESPROC                                __glGenQueries;
+    PFNGLGETQUERYOBJECTUI64VPROC                       __glGetQueryObjectui64v;
+    PFNGLQUERYCOUNTERPROC                              __glQueryCounter;
+    PFNGLDRAWBUFFERSPROC                               __glDrawBuffers;
+    PFNGLDRAWARRAYSINSTANCEDARBPROC                    __glDrawArraysInstanced;
+    PFNGLDRAWELEMENTSINSTANCEDARBPROC                  __glDrawElementsInstanced;
+    PFNGLVERTEXATTRIBDIVISORARBPROC                    __glVertexAttribDivisor;
+    PFNGLGETGRAPHICSRESETSTATUSPROC                    __glGetGraphicsResetStatus;
+    PFNGLGETNUNIFORMFVPROC                             __glGetnUniformfv;
+    PFNGLGETNUNIFORMIVPROC                             __glGetnUniformiv;
+    PFNGLREADNPIXELSPROC                               __glReadnPixels;
+    PFNGLTEXSTORAGE2DPROC                              __glTexStorage2D;
+    PFNGLAPPLYFRAMEBUFFERATTACHMENTCMAAPROC            __glApplyFramebufferAttachmentCMAA;
+    PFNGLDEBUGMESSAGECALLBACKPROC                      __glDebugMessageCallback;
+    PFNGLDEBUGMESSAGECONTROLPROC                       __glDebugMessageControl;
+    PFNGLOBJECTLABELPROC                               __glObjectLabel;
+    PFNGLMAXSHADERCOMPILERTHREADSPROC                  __glMaxShaderCompilerThreads;
+    PFNGLCOPYBUFFERSUBDATAPROC                         __glCopyBufferSubData;
+    PFNGLBLITFRAMEBUFFERPROC                           __glBlitFramebuffer;
+    PFNGLRENDERBUFFERSTORAGEMULTISAMPLEPROC            __glRenderbufferStorageMultisample;
+    PFNGLCOPYIMAGESUBDATAPROC                          __glCopyImageSubData;
+    PFNGLGETPROGRAMBINARYPROC                          __glGetProgramBinary;
+    PFNGLPROGRAMBINARYPROC                             __glProgramBinary;
+    PFNGLMINSAMPLESHADINGPROC                          __glMinSampleShading;
+    PFNGLTEXIMAGE3DPROC                                __glTexImage3D;
+    PFNGLTEXSUBIMAGE3DPROC                             __glTexSubImage3D;
+    PFNGLBINDVERTEXARRAYPROC                           __glBindVertexArray;
+    PFNGLDELETEVERTEXARRAYSPROC                        __glDeleteVertexArrays;
+    PFNGLGENVERTEXARRAYSPROC                           __glGenVertexArrays;
+    PFNGLGETBUFFERSUBDATAPROC                          __glGetBufferSubData;
 };
 
 extern coreString  g_sExtensions;   // full extension string

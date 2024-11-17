@@ -40,6 +40,12 @@ void __coreInitOpenGLES()
     // handle support for certain limitations
     CORE_GL_CORE_es2_restriction = !bES30;
 
+    // implement GL_AMD_framebuffer_multisample_advanced
+    if(__CORE_GLES_CHECK(GL_AMD_framebuffer_multisample_advanced, false))
+    {
+        __CORE_GLES_FUNC_FETCH(glRenderbufferStorageMultisampleAdvanced, AMD, false)
+    }
+
     // implement GL_ANDROID_extension_pack_es31a
     __CORE_GLES_CHECK(GL_ANDROID_extension_pack_es31a, false);
     const coreBool bAndroidPack = g_CoreContext.__GL_ANDROID_extension_pack_es31a;
@@ -63,10 +69,10 @@ void __coreInitOpenGLES()
     }
 
     // implement GL_EXT_color_buffer_float
-    __CORE_GLES_CHECK(GL_EXT_color_buffer_float, bES32);   // not used
+    __CORE_GLES_CHECK(GL_EXT_color_buffer_float, bES32);   // internal
 
     // implement GL_EXT_color_buffer_half_float
-    __CORE_GLES_CHECK(GL_EXT_color_buffer_half_float, false);
+    __CORE_GLES_CHECK(GL_EXT_color_buffer_half_float, false);   // internal
 
     // implement GL_EXT_depth_clamp
     __CORE_GLES_CHECK(GL_EXT_depth_clamp, false);
@@ -302,10 +308,10 @@ void __coreInitOpenGLES()
     __CORE_GLES_CHECK(GL_OES_texture_float_linear, false);   // not used
 
     // implement GL_OES_texture_half_float
-    __CORE_GLES_CHECK(GL_OES_texture_half_float, bES30);
+    __CORE_GLES_CHECK(GL_OES_texture_half_float, bES30);   // internal
 
     // implement GL_OES_texture_half_float_linear
-    __CORE_GLES_CHECK(GL_OES_texture_half_float_linear, bES30);
+    __CORE_GLES_CHECK(GL_OES_texture_half_float_linear, bES30);   // internal
 
     // implement GL_OES_texture_stencil8
     __CORE_GLES_CHECK(GL_OES_texture_stencil8, bES32 || bAndroidPack);
