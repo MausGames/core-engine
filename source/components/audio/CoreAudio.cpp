@@ -12,25 +12,28 @@
 // ****************************************************************
 /* constructor */
 CoreAudio::CoreAudio()noexcept
-: m_pDevice         (NULL)
-, m_pContext        (NULL)
-, m_vPosition       (coreVector3(0.0f,0.0f,0.0f))
-, m_vVelocity       (coreVector3(0.0f,0.0f,0.0f))
-, m_avDirection     {coreVector3(0.0f,1.0f,0.0f), coreVector3(0.0f,0.0f,1.0f)}
-, m_afGlobalVolume  {-1.0f, -1.0f, -1.0f}
-, m_afMusicVolume   {-1.0f, -1.0f, -1.0f}
-, m_afSoundVolume   {-1.0f, -1.0f, -1.0f}
-, m_afTypeVolume    {}
-, m_aiSource        {}
-, m_aSourceData     {}
-, m_nDeferUpdates   (NULL)
-, m_nProcessUpdates (NULL)
-, m_nResetDevice    (NULL)
-, m_bSupportALAW    (false)
-, m_bSupportMULAW   (false)
-, m_bSupportFloat   (false)
-, m_bSupportQuery   (false)
-, m_aiAttributes    {}
+: m_pDevice               (NULL)
+, m_pContext              (NULL)
+, m_vPosition             (coreVector3(0.0f,0.0f,0.0f))
+, m_vVelocity             (coreVector3(0.0f,0.0f,0.0f))
+, m_avDirection           {coreVector3(0.0f,1.0f,0.0f), coreVector3(0.0f,0.0f,1.0f)}
+, m_afGlobalVolume        {-1.0f, -1.0f, -1.0f}
+, m_afMusicVolume         {-1.0f, -1.0f, -1.0f}
+, m_afSoundVolume         {-1.0f, -1.0f, -1.0f}
+, m_afTypeVolume          {}
+, m_aiSource              {}
+, m_aSourceData           {}
+, m_nDeferUpdates         (NULL)
+, m_nProcessUpdates       (NULL)
+, m_nResetDevice          (NULL)
+, m_nDebugMessageCallback (NULL)
+, m_nDebugMessageControl  (NULL)
+, m_nObjectLabel          (NULL)
+, m_bSupportALAW          (false)
+, m_bSupportMULAW         (false)
+, m_bSupportFloat         (false)
+, m_bSupportQuery         (false)
+, m_aiAttributes          {}
 {
     Core::Log->Header("Audio Interface");
 
@@ -59,6 +62,9 @@ CoreAudio::CoreAudio()noexcept
     if(!m_pDevice || !m_pContext || !alcMakeContextCurrent(m_pContext))
          Core::Log->Warning("OpenAL context could not be created (ALC Error Code: 0x%08X)", alcGetError(m_pDevice));
     else Core::Log->Info   ("OpenAL context created");
+
+    // enable OpenAL debug output
+    this->DebugOpenAL();
 
     // generate audio sources
     alGenSources(CORE_AUDIO_SOURCES, m_aiSource);
@@ -444,6 +450,78 @@ coreBool CoreAudio::CheckSource(const void* pRef, const ALuint iBuffer, const AL
 
 
 // ****************************************************************
+/* write OpenAL debug message */
+void AL_APIENTRY WriteOpenAL(const ALenum iSource, const ALenum iType, const ALuint iID, const ALenum iSeverity, const ALsizei iLength, const ALchar* pcMessage, const void* pUserParam)
+{
+    // write debug message
+    Core::Log->ListStartWarning("OpenAL Debug Message");
+    {
+        Core::Log->ListAdd(CORE_LOG_BOLD("ID:")           " %d", iID);
+        Core::Log->ListAdd(CORE_LOG_BOLD("Source:")   " 0x%04X", iSource);
+        Core::Log->ListAdd(CORE_LOG_BOLD("Type:")     " 0x%04X", iType);
+        Core::Log->ListAdd(CORE_LOG_BOLD("Severity:") " 0x%04X", iSeverity);
+        Core::Log->ListAdd(pcMessage);
+    }
+    Core::Log->ListEnd();
+
+    WARN_IF(true) {}
+}
+
+
+// ****************************************************************
+/* enable OpenAL debug output */
+void CoreAudio::DebugOpenAL()
+{
+    if(!Core::Debug->IsEnabled()) return;
+
+    if(alIsExtensionPresent("AL_EXT_debug"))
+    {
+        // init debug extension
+        m_nDebugMessageCallback = r_cast<LPALDEBUGMESSAGECALLBACKEXT>(alGetProcAddress("alDebugMessageCallbackEXT"));
+        m_nDebugMessageControl  = r_cast<LPALDEBUGMESSAGECONTROLEXT> (alGetProcAddress("alDebugMessageControlEXT"));
+        m_nObjectLabel          = r_cast<LPALOBJECTLABELEXT>         (alGetProcAddress("alObjectLabelEXT"));
+
+        if(m_nDebugMessageCallback && m_nDebugMessageControl)
+        {
+            // enable debug output
+            alEnable(AL_DEBUG_OUTPUT_EXT);
+
+            // set callback function and enable all messages
+            m_nDebugMessageCallback(&WriteOpenAL, NULL);
+            m_nDebugMessageControl(AL_DONT_CARE_EXT, AL_DONT_CARE_EXT, AL_DONT_CARE_EXT, 0, NULL, true);
+        }
+    }
+}
+
+
+// ****************************************************************
+/* manually check for OpenAL errors */
+void CoreAudio::CheckOpenAL()
+{
+    if(!Core::Debug->IsEnabled()) return;
+
+    // loop through all recent errors
+    ALenum iError;
+    while((iError = alGetError()) != AL_NO_ERROR)
+    {
+        Core::Log->Warning("OpenAL reported an error (AL Error Code: 0x%08X)", iError);
+        WARN_IF(true) {}
+    }
+}
+
+
+// ****************************************************************
+/* label OpenAL object for debug tooling */
+void CoreAudio::LabelOpenAL(const ALenum iType, const ALuint iIdentifier, const coreChar* pcLabel)
+{
+    if(!Core::Debug->IsEnabled()) return;
+
+    // assign string to identifier
+    if(m_nObjectLabel) m_nObjectLabel(iType, iIdentifier, -1, pcLabel);
+}
+
+
+// ****************************************************************
 /* reconfigure audio interface */
 void CoreAudio::Reconfigure()
 {
@@ -504,6 +582,9 @@ void CoreAudio::__UpdateSources()
         }
         this->ProcessUpdates();
     }
+
+    // check for OpenAL errors
+    this->CheckOpenAL();
 }
 
 
@@ -585,6 +666,12 @@ const ALint* CoreAudio::__RetrieveAttributes()
             const ALCint iIndex = MIN(Core::Config->GetInt(CORE_CONFIG_AUDIO_HRTFINDEX), iNum - 1);
             if(iIndex > -1) nAttributeFunc(ALC_HRTF_ID_SOFT, iIndex);
         }
+    }
+
+    if(alcIsExtensionPresent(m_pDevice, "ALC_EXT_debug") && Core::Debug->IsEnabled())
+    {
+        // create debug context
+        nAttributeFunc(ALC_CONTEXT_FLAGS_EXT, ALC_CONTEXT_DEBUG_BIT_EXT);
     }
 
     return m_aiAttributes;

@@ -354,6 +354,7 @@
 /* external libraries */
 #define GLEW_NO_GLU
 #define GLEW_STATIC
+#define AL_DISABLE_NOEXCEPT
 #define STB_VORBIS_HEADER_ONLY
 #define STB_VORBIS_NO_PUSHDATA_API
 #define STB_VORBIS_MAX_CHANNELS 2

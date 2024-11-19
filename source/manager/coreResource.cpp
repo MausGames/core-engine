@@ -516,6 +516,9 @@ coreStatus coreResourceManager::__RunThread()
     // check for OpenGL errors
     Core::Graphics->CheckOpenGL();
 
+    // check for OpenAL errors
+    Core::Audio->CheckOpenAL();
+
     return CORE_OK;
 }
 

@@ -183,6 +183,9 @@ coreStatus coreSound::Load(coreFile* pFile)
     coreFloat fLength = 0.0f;
     if(Core::Audio->GetSupportQuery()) alGetBufferf(m_iBuffer, AL_SEC_LENGTH_SOFT, &fLength);
 
+    // add debug label
+    Core::Audio->LabelOpenAL(AL_BUFFER_EXT, m_iBuffer, m_sName.c_str());
+
     Core::Log->Info("Sound (%s, format %u, %.2f seconds, %u channels, %u bits, %u rate) loaded", m_sName.c_str(), m_Format.iAudioFormat, fLength, m_Format.iNumChannels, m_Format.iBitsPerSample, m_Format.iSampleRate);
     return CORE_OK;
 }
@@ -232,6 +235,9 @@ void coreSound::PlayPosition(const void* pRef, const coreFloat fVolume, const co
     m_iCurSource = Core::Audio->NextSource(m_pCurRef, m_iBuffer, fVolume, iType);
     if(m_iCurSource)
     {
+        // add debug label
+        Core::Audio->LabelOpenAL(AL_SOURCE_EXT, m_iCurSource, m_sName.c_str());
+
         // save audio source
         if(m_pCurRef) m_aiSource[m_pCurRef] = m_iCurSource;
 
@@ -275,6 +281,9 @@ void coreSound::PlayRelative(const void* pRef, const coreFloat fVolume, const co
     m_iCurSource = Core::Audio->NextSource(m_pCurRef, m_iBuffer, fVolume, iType);
     if(m_iCurSource)
     {
+        // add debug label
+        Core::Audio->LabelOpenAL(AL_SOURCE_EXT, m_iCurSource, m_sName.c_str());
+
         // save audio source
         if(m_pCurRef) m_aiSource[m_pCurRef] = m_iCurSource;
 

@@ -235,6 +235,13 @@ coreStatus coreMusicPlayer::Play()
         // create sound buffers
         if(m_aiBuffer[0] == UINT32_MAX) alGenBuffers(CORE_MUSIC_BUFFERS, m_aiBuffer);
 
+        // add debug labels
+        Core::Audio->LabelOpenAL(AL_SOURCE_EXT, iSource, "music.source");
+        for(coreUintW i = 0u; i < CORE_MUSIC_BUFFERS; ++i)
+        {
+            Core::Audio->LabelOpenAL(AL_BUFFER_EXT, m_aiBuffer[i], "music.buffer");
+        }
+
         // prepare sound buffers
         const coreUintW iUpdated = this->__StreamList(m_aiBuffer, CORE_MUSIC_BUFFERS);
         WARN_IF(!iUpdated) return CORE_INVALID_DATA;
