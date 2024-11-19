@@ -16,6 +16,7 @@ coreLog::coreLog(const coreChar* pcPath)noexcept
 , m_sPath       (pcPath)
 , m_eLevel      (CORE_LOG_LEVEL_ALL)
 , m_iListStatus (0u)
+, m_iWarnLimit  (1000u)
 , m_iLastTime   (0u)
 , m_iThisThread (0u)
 , m_Lock        ()
