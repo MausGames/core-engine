@@ -135,7 +135,7 @@ public:
     inline    coreVector2 LowRatio    ()const {return ((*this) * RCP(this->Processed(ABS).Max()));}
     inline    coreVector2 HighRatio   ()const {return ((*this) * RCP(this->Processed(ABS).Min()));}
     constexpr coreFloat   AspectRatio ()const {return (x * RCP(y));}
-    inline    coreFloat   Angle       ()const {return (-std::atan2(x, y));}
+    inline    coreFloat   Angle       ()const {return (-std::atan2(x, y));}   // (x, y)
     constexpr coreBool    IsNormalized()const {return (coreMath::IsNear(this->LengthSq(), 1.0f));}
     constexpr coreBool    IsAligned   ()const {return (x*y == 0.0f);}
     constexpr coreBool    IsNull      ()const {return (this->LengthSq() == 0.0f);}

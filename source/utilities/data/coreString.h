@@ -101,6 +101,8 @@ public:
     /* create formatted string */
     template <typename... A> inline void print_assign(const coreChar* pcFormat, A&&... vArgs) {this->__print(0u,             pcFormat, std::forward<A>(vArgs)...);}
     template <typename... A> inline void print_append(const coreChar* pcFormat, A&&... vArgs) {this->__print(this->length(), pcFormat, std::forward<A>(vArgs)...);}
+    inline void                          print_assign(const coreChar* pcFormat)               {this->assign(pcFormat);}
+    inline void                          print_append(const coreChar* pcFormat)               {this->append(pcFormat);}
 
     /* get object properties */
     inline coreUintW capacity()const {return m_iCapacity;}

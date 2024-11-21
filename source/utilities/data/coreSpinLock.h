@@ -185,6 +185,8 @@ FORCE_INLINE void coreSpinLock::Lock()
 /* release the spinlock */
 FORCE_INLINE void coreSpinLock::Unlock()
 {
+    ASSERT(this->IsLocked())
+
 #if defined(CORE_SPINLOCK_DISABLED)
     m_State = false;
 #elif defined(CORE_SPINLOCK_MUTEX)
@@ -241,6 +243,8 @@ FORCE_INLINE void coreRecursiveLock::Lock()
 /* release the recursive spinlock */
 FORCE_INLINE void coreRecursiveLock::Unlock()
 {
+    ASSERT(this->IsLocked())
+
 #if defined(CORE_SPINLOCK_DISABLED)
     m_iCount--;
 #elif defined(CORE_SPINLOCK_MUTEX)

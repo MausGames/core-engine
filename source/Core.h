@@ -67,7 +67,7 @@
 #endif
 
 // standard library
-#if defined(_CPPLIB_VER) || __has_include(<yvals_core.h>)
+#if defined(_CPPLIB_VER) || __has_include(<yvals.h>)
     #define _CORE_STL_
 #endif
 #if defined(__GLIBCXX__) || __has_include(<bits/c++config.h>)
