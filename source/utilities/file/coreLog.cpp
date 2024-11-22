@@ -130,22 +130,24 @@ void coreLog::__WriteStandard(coreWorkString& sMessage)
 {
     ASSERT(m_Lock.IsLocked())
 
-    coreUintW iFrom = 0u;
+    coreUintW iFrom = SIZE_MAX;
 
-    // remove all HTML tags (without nesting)
+    // remove all HTML tags
     for(coreUintW i = 0u, ie = sMessage.length(); i < ie; ++i)
     {
         if(sMessage[i] == '<')
         {
             iFrom = i;
         }
-        else if(sMessage[i] == '>')
+        else if((sMessage[i] == '>') && (iFrom != SIZE_MAX))   // don't remove greater-than symbols in regular text
         {
             const coreUintW iLen = i - iFrom + 1u;
 
             sMessage.erase(iFrom, iLen);
             i  -= iLen;
             ie -= iLen;
+
+            iFrom = SIZE_MAX;
         }
     }
 

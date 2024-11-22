@@ -14,7 +14,7 @@
 // TODO 5: coreLog 2.0 with graphs, statistics, categories, interactivity/scripts
 // TODO 2: should it be possible to create many log files ? console output and file header then ?
 // TODO 3: escape special HTML characters as normal text, <, >, &
-// TODO 3: removing HTML tags also removes arrow symbols ->
+// TODO 3: log on start of an operation, not the end, to better locate crashes
 
 
 // ****************************************************************
