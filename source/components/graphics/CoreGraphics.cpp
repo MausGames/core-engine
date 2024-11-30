@@ -521,13 +521,13 @@ void GL_APIENTRY WriteOpenGL(const GLenum iSource, const GLenum iType, const GLu
     }
     Core::Log->ListEnd();
 
-#if defined(_CORE_DEBUG_)
+    // also display shader compiler message
+    if(iSource == GL_DEBUG_SOURCE_SHADER_COMPILER)
+    {
+        SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_ERROR, "Shader Compiler", pcMessage, NULL);
+    }
 
-    // also show message box
-    SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_ERROR, "OpenGL Error", pcMessage, NULL);
     WARN_IF(true) {}
-
-#endif
 }
 
 

@@ -451,8 +451,19 @@ using PFNGLGETBUFFERSUBDATAPROC = void (GL_APIENTRY *) (GLenum target, GLintptr 
 #define glUnmapNamedBufferEXT(...) (false)
 
 #if defined(_CORE_EMSCRIPTEN_)
+
+    #define glBindVertexBuffer(...)
+    #define glFlushMappedBufferRange(...)
+    #define glGetProgramInterfaceiv(...)
+    #define glGetProgramResourceiv(...) __CORE_GLES_UNUSED_ARGS(__VA_ARGS__)
+    #define glGetProgramResourceName(...) __CORE_GLES_UNUSED_ARGS(__VA_ARGS__)
     #define glMapBufferRange(...) (I_TO_P(-1))
     #define glUnmapBuffer(...) (false)
+    #define glVertexAttribBinding(...)
+    #define glVertexAttribFormat(...) __CORE_GLES_UNUSED_ARGS(__VA_ARGS__)
+    #define glVertexAttribIFormat(...)
+    #define glVertexBindingDivisor(...)
+
 #endif
 
 

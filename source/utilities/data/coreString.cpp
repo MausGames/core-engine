@@ -36,7 +36,7 @@ coreString& coreString::replace(const coreChar* pcOld, const coreChar* pcNew)
 /* trim string on both sides */
 coreString& coreString::trim(const coreChar* pcRemove)
 {
-    STATIC_ASSERT(coreString::npos == -1)
+    STATIC_ASSERT(coreString::npos == coreUintW(-1))
 
     // trim right
     const coreUintW iLast = this->find_last_not_of(pcRemove);

@@ -42,7 +42,7 @@ CoreSystem::CoreSystem()noexcept
     SDL_SetHint(SDL_HINT_MOUSE_RELATIVE_MODE_CENTER,         "0");
     SDL_SetHint(SDL_HINT_OPENGL_ES_DRIVER,                   "1");
     SDL_SetHint(SDL_HINT_VIDEO_DOUBLE_BUFFER,                "1");
-    SDL_SetHint(SDL_HINT_VIDEO_X11_NET_WM_BYPASS_COMPOSITOR, "0");
+    SDL_SetHint(SDL_HINT_VIDEO_X11_NET_WM_BYPASS_COMPOSITOR, DEFINED(_CORE_DEBUG_) ? "0" : "1");
     SDL_SetHint(SDL_HINT_WINDOWS_DISABLE_THREAD_NAMING,      DEFINED(_CORE_DEBUG_) ? "0" : "1");
 
     // load SDL only once (to improve reset performance, and prevent crashes)

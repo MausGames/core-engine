@@ -728,7 +728,7 @@ coreBool coreData::DetectDebugger()
 {
 #if defined(_CORE_WINDOWS_)
 
-    return IsDebuggerPresent();
+    if(IsDebuggerPresent()) return true;
 
 #elif defined(_CORE_LINUX_)
 
