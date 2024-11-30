@@ -12,7 +12,7 @@
 
 // TODO 3: textures could be made static and shared (clear on reset) (but are bound to style, also static?)
 // TODO 3: do not update buffer when just changing max length
-// TODO 3: make sure outlines of different characters don't interfere which each other
+// TODO 3: make sure outlines of different characters don't interfere which each other (if not wanted, could be fine for animation overlapping)
 // TODO 3: maybe handle width-based newline with back-tracking, so not every word/whitespace needs to be forward-checked
 // TODO 2: width-based newline check should be able to handle style changes which can affect text width
 // TODO 3: do not make newline checks on max-width text
@@ -77,7 +77,7 @@ private:
         coreList<coreCharacter> aCharacter;      // arranged characters
         coreTexturePtr          pTexture;        // render pass texture with unique glyphs
         coreList<coreVector4>   avTexParams;     // texture coordinates per glyph (size, offset)
-        coreList<coreFloat>     afTexShift;      // additional vertical shift per glyph (for texture generation)
+        coreList<coreVector2>   avTexShift;      // additional shift per glyph (for texture generation)
         coreFloat               fHeightFrom;     // top of the current generation line
         coreFloat               fHeightTo;       // bottom of the current generation line
         coreUint16              iNumInstances;   // current instance-capacity of all buffers

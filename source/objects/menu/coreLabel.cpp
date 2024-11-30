@@ -232,28 +232,27 @@ void coreLabel::__GenerateTexture(const coreChar* pcText)
 
     // set texture properties
     const coreUintW  iComponents = pOutline ? (CORE_GL_SUPPORT(ARB_texture_rg) ? 2u : 3u) : 1u;
-    const coreUint32 iWidth      = pOutline ? pOutline->w     : pSolid->w;
-    const coreUint32 iHeight     = pOutline ? pOutline->h     : pSolid->h;
-    const coreUint32 iPitch      = pOutline ? pOutline->pitch : pSolid->pitch;
+    const coreUint32 iWidth      = pOutline ? pOutline->w : pSolid->w;
+    const coreUint32 iHeight     = pOutline ? pOutline->h : pSolid->h;
+    const coreUint32 iPitch      = coreMath::CeilAlign(iWidth, 4u);
     const coreUintW  iSize       = iPitch * iHeight * iComponents;
-    ASSERT(coreMath::IsAligned(iPitch, 4u))
+
+    // allocate buffer to merge or transform pixels
+    pData = ZERO_NEW(coreByte, iSize);
 
     if(pOutline)
     {
-        const coreByte* pInput1 = s_cast<const coreByte*>(pSolid  ->pixels);
-        const coreByte* pInput2 = s_cast<const coreByte*>(pOutline->pixels);
-
-        // allocate buffer to merge solid and outlined pixels
-        pData = ZERO_NEW(coreByte, iSize);
+        const coreByte* pInput1 = ASSUME_ALIGNED(s_cast<const coreByte*>(pSolid  ->pixels), ALIGNMENT_NEW);
+        const coreByte* pInput2 = ASSUME_ALIGNED(s_cast<const coreByte*>(pOutline->pixels), ALIGNMENT_NEW);
 
         // insert solid pixels
-        const coreUintW iOffset = (pOutline->pitch + 1u) * iComponents * iRelOutline;
+        const coreUintW iOffset = (iPitch + 1u) * iComponents * iRelOutline;
         for(coreUintW j = 0u, je = LOOP_NONZERO(pSolid->h); j < je; ++j)
         {
-            const coreUintW b = j * pSolid  ->pitch;
-            const coreUintW a = j * pOutline->pitch * iComponents + iOffset;
+            const coreUintW b = j * pSolid->pitch;
+            const coreUintW a = j * iPitch * iComponents + iOffset;
 
-            for(coreUintW i = 0u, ie = LOOP_NONZERO(pSolid->pitch); i < ie; ++i)
+            for(coreUintW i = 0u, ie = LOOP_NONZERO(pSolid->w); i < ie; ++i)
             {
                 const coreUintW iIndex = a + i * iComponents;
 
@@ -266,9 +265,9 @@ void coreLabel::__GenerateTexture(const coreChar* pcText)
         for(coreUintW j = 0u, je = LOOP_NONZERO(pOutline->h); j < je; ++j)
         {
             const coreUintW b = j * pOutline->pitch;
-            const coreUintW a = j * pOutline->pitch * iComponents + 1u;
+            const coreUintW a = j * iPitch * iComponents + 1u;
 
-            for(coreUintW i = 0u, ie = LOOP_NONZERO(pOutline->pitch); i < ie; ++i)
+            for(coreUintW i = 0u, ie = LOOP_NONZERO(pOutline->w); i < ie; ++i)
             {
                 const coreUintW iIndex = a + i * iComponents;
 
@@ -277,7 +276,16 @@ void coreLabel::__GenerateTexture(const coreChar* pcText)
             }
         }
     }
-    else pData = s_cast<coreByte*>(pSolid->pixels);
+    else
+    {
+        const coreByte* pInput1 = ASSUME_ALIGNED(s_cast<const coreByte*>(pSolid->pixels), ALIGNMENT_NEW);
+
+        // transform solid pixels
+        for(coreUintW j = 0u, je = LOOP_NONZERO(pSolid->h); j < je; ++j)
+        {
+            std::memcpy(pData + (j * iPitch), pInput1 + (j * pSolid->pitch), iPitch);
+        }
+    }
 
     // check if new text fits into current texture
     if((iPitch  > F_TO_UI(m_vResolution.x)) ||
@@ -304,7 +312,7 @@ void coreLabel::__GenerateTexture(const coreChar* pcText)
     ASSERT((this->GetTexSize().x <= 1.0f) && (this->GetTexSize().y <= 1.0f))
 
     // delete merge buffer
-    if(pOutline) ZERO_DELETE(pData)
+    ZERO_DELETE(pData)
 }
 
 

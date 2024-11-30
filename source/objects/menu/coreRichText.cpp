@@ -357,7 +357,7 @@ void coreRichText::RegenerateTexture()
         {
             // clear render pass properties
             et->avTexParams.clear();
-            et->afTexShift .clear();
+            et->avTexShift .clear();
             et->fHeightFrom = 0.0f;
             et->fHeightTo   = 0.0f;
         }
@@ -381,7 +381,7 @@ void coreRichText::RegenerateTexture(const coreHashString& sStyleName)
     {
         // clear render pass properties
         et->avTexParams.clear();
-        et->afTexShift .clear();
+        et->avTexShift .clear();
         et->fHeightFrom = 0.0f;
         et->fHeightTo   = 0.0f;
     }
@@ -455,12 +455,13 @@ void coreRichText::__ParseText()
 
     // clear arranged characters
     FOR_EACH(it, m_aStyle) FOR_EACH(et, it->aPass) et->aCharacter.clear();
+    m_fTopHeight = 0.0f;
     m_iNumLines  = 1u;
     m_iNumOrders = 0u;
 
     // calculate line parameters
-    const coreFloat fFullMaxWidth = m_fMaxWidth * CORE_LABEL_DETAIL;
-    const coreFloat fFullLineSkip = m_fLineSkip * CORE_LABEL_DETAIL;
+    const coreFloat fFullMaxWidth =       m_fMaxWidth * CORE_LABEL_DETAIL;
+    const coreFloat fFullLineSkip = ROUND(m_fLineSkip * CORE_LABEL_DETAIL);   // always align
 
     // start with default definitions
     coreStyle* pStyle      = &m_aStyle.front();
@@ -623,6 +624,7 @@ void coreRichText::__ParseText()
         {
             const coreFloat fGlyphShift  = I_TO_F(iDescent - iMinY);
             const coreFloat fGlyphHeight = I_TO_F(MAX(iAscent, iMaxY) - MIN(iDescent, iMinY));
+            const coreFloat fGlyphPitch  = I_TO_F(coreMath::CeilAlign(iAdvance + 2u * iRelOutline, 4u));
 
             if(!pStyle->aEntry.count_bs(cGlyph))
             {
@@ -638,11 +640,12 @@ void coreRichText::__ParseText()
 
                     // calculate texture parameters
                     const coreVector4 vPrevParams = oPass.avTexParams.empty() ? coreVector4(0.0f,0.0f,0.0f,0.0f) : oPass.avTexParams.back();
-                    const coreVector2 vTexSize    = coreVector2(I_TO_F(coreMath::CeilAlign(iMaxX - MIN(iMinX, 0), 4u)), I_TO_F(iMaxY - iMinY)) / CORE_RICHTEXT_TEXTURE_SIZE;
-                    coreFloat         fTexOffset  = oPass.avTexParams.empty() ? 0.0f : (vPrevParams.x + vPrevParams.z + CORE_RICHTEXT_TEXTURE_MARGIN.x);
+                    const coreVector2 vPrevShift  = oPass.avTexShift .empty() ? coreVector2(0.0f,0.0f)           : oPass.avTexShift .back();
+                    const coreVector2 vTexSize    = coreVector2(I_TO_F(iMaxX - iMinX), I_TO_F(iMaxY - iMinY)) / CORE_RICHTEXT_TEXTURE_SIZE;
+                    coreFloat         fTexOffset  = oPass.avTexParams.empty() ? 0.0f : (vPrevParams.x + vPrevParams.z + vPrevShift.x + CORE_RICHTEXT_TEXTURE_MARGIN.x);
 
                     // check width and switch to next generation line
-                    if(fTexOffset + vTexSize.x >= 1.0f)
+                    if(fTexOffset + fGlyphPitch / CORE_RICHTEXT_TEXTURE_SIZE.x >= 1.0f)
                     {
                         oPass.fHeightFrom = oPass.fHeightTo + CORE_RICHTEXT_TEXTURE_MARGIN.y;
                         fTexOffset = 0.0f;
@@ -660,11 +663,11 @@ void coreRichText::__ParseText()
 
                     // create new render pass properties
                     const coreVector4 vNewParam = coreVector4(vTexSize, fTexOffset, oPass.fHeightFrom);
-                    const coreFloat   fNewShift = I_TO_F(MAX(iAscent - iMaxY, 0)) / CORE_RICHTEXT_TEXTURE_SIZE.y;
+                    const coreVector2 vNewShift = coreVector2(I_TO_F(iMinX), I_TO_F(MAX(iAscent - iMaxY, 0))) / CORE_RICHTEXT_TEXTURE_SIZE;
 
                     // add properties to list
-                    oPass.avTexParams.push_back(vNewParam + coreVector4(0.0f, 0.0f, 0.0f, fNewShift));
-                    oPass.afTexShift .push_back(fNewShift);
+                    oPass.avTexParams.push_back(vNewParam + coreVector4(0.0f, 0.0f, vNewShift));
+                    oPass.avTexShift .push_back(vNewShift);
 
                     // create new texture entry
                     coreEntry oNewEntry;
@@ -697,7 +700,7 @@ void coreRichText::__ParseText()
 
             // create new arranged character
             coreCharacter oCharacter;
-            oCharacter.iPosition       = ((vCurPos - coreVector2(0.0f, fGlyphShift)) * CORE_LABEL_SIZE_FACTOR).PackFloat2x16();
+            oCharacter.iPosition       = ((vCurPos + coreVector2(I_TO_F(iMinX), -fGlyphShift)) * CORE_LABEL_SIZE_FACTOR).PackFloat2x16();
             oCharacter.iColorIndex     = iColorIndex;
             oCharacter.iTexParamsIndex = oEntry.iIndex;
             oCharacter.iOrder          = m_iNumOrders++;
@@ -782,8 +785,6 @@ void coreRichText::__GenerateTexture()
             if(oEntry.bGenerated) continue;
             oEntry.bGenerated = true;
 
-            coreByte* pPointer = NULL;
-
             // create solid text surface data
             pSolid = pFont->CreateGlyph(cGlyph, iRelHeight);
             WARN_IF(!pSolid) break;
@@ -798,23 +799,24 @@ void coreRichText::__GenerateTexture()
             }
 
             // set texture properties
-            const coreUint32 iWidth  = (pOutline ? pOutline->w : pSolid->w);
-            const coreUint32 iHeight = (pOutline ? pOutline->h : pSolid->h);
+            const coreUint32 iWidth  = pOutline ? pOutline->w : pSolid->w;
+            const coreUint32 iHeight = pOutline ? pOutline->h : pSolid->h;
             const coreUint32 iPitch  = coreMath::CeilAlign(iWidth, 4u);
             const coreUintW  iSize   = iPitch * iHeight * iComponents;
 
+            // allocate buffer to merge or transform pixels
+            if(iDataSize < iSize)
+            {
+                DYNAMIC_RESIZE(pData, iSize)
+                iDataSize = iSize;
+            }
+
             if(pOutline)
             {
-                const coreByte* pInput1 = s_cast<const coreByte*>(pSolid  ->pixels);
-                const coreByte* pInput2 = s_cast<const coreByte*>(pOutline->pixels);
+                const coreByte* pInput1 = ASSUME_ALIGNED(s_cast<const coreByte*>(pSolid  ->pixels), ALIGNMENT_NEW);
+                const coreByte* pInput2 = ASSUME_ALIGNED(s_cast<const coreByte*>(pOutline->pixels), ALIGNMENT_NEW);
 
-                // allocate buffer to merge solid and outlined pixels
-                if(iDataSize < iSize)
-                {
-                    DYNAMIC_RESIZE(pData, iSize)
-                    iDataSize = iSize;
-                }
-                pPointer = pData; std::memset(pPointer, 0, iSize);
+                std::memset(pData, 0, iSize);
 
                 // insert solid pixels
                 const coreUintW iOffset = (iPitch + 1u) * iComponents * iRelOutline;
@@ -828,7 +830,7 @@ void coreRichText::__GenerateTexture()
                         const coreUintW iIndex = a + i * iComponents;
 
                         ASSERT(iIndex < iSize)
-                        pPointer[iIndex] = pInput1[b + i];
+                        pData[iIndex] = pInput1[b + i];
                     }
                 }
 
@@ -843,18 +845,27 @@ void coreRichText::__GenerateTexture()
                         const coreUintW iIndex = a + i * iComponents;
 
                         ASSERT(iIndex < iSize)
-                        pPointer[iIndex] = pInput2[b + i];
+                        pData[iIndex] = pInput2[b + i];
                     }
                 }
             }
-            else pPointer = s_cast<coreByte*>(pSolid->pixels);
+            else
+            {
+                const coreByte* pInput1 = ASSUME_ALIGNED(s_cast<const coreByte*>(pSolid->pixels), ALIGNMENT_NEW);
+
+                // transform solid pixels
+                for(coreUintW j = 0u, je = LOOP_NONZERO(pSolid->h); j < je; ++j)
+                {
+                    std::memcpy(pData + (j * iPitch), pInput1 + (j * pSolid->pitch), iPitch);
+                }
+            }
 
             // retrieve render pass properties
             const corePass&   oPass   = oStyle.aPass[oEntry.iPass];
-            const coreVector2 vOffset = (oPass.avTexParams[oEntry.iIndex].zw() - coreVector2(0.0f, oPass.afTexShift[oEntry.iIndex])) * CORE_RICHTEXT_TEXTURE_SIZE;
+            const coreVector2 vOffset = (oPass.avTexParams[oEntry.iIndex].zw() - oPass.avTexShift[oEntry.iIndex]) * CORE_RICHTEXT_TEXTURE_SIZE;
 
             // update only required texture area
-            oPass.pTexture->Modify(F_TO_UI(vOffset.x), F_TO_UI(vOffset.y), iPitch, iHeight, iSize, pPointer);
+            oPass.pTexture->Modify(F_TO_UI(vOffset.x), F_TO_UI(vOffset.y), iPitch, iHeight, iSize, pData);
         }
 
         // delete merge buffer
