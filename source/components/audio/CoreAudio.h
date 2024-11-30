@@ -11,7 +11,6 @@
 #define _CORE_GUARD_AUDIO_H_
 
 // TODO 5: <old comment style>
-// TODO 3: use SOFT_system_events to detect audio device changes
 // TODO 4: move all OpenAL extension bools and functions into a separate system
 
 
@@ -72,10 +71,14 @@ private:
     LPALDEFERUPDATESSOFT   m_nDeferUpdates;                // suspend immediate playback state changes
     LPALPROCESSUPDATESSOFT m_nProcessUpdates;              // catch-up and resume playback state changes
     LPALCRESETDEVICESOFT   m_nResetDevice;                 // reset audio device with different attributes
+    LPALCREOPENDEVICESOFT  m_nReopenDevice;                // reopen audio device after change or disconnect
 
     LPALDEBUGMESSAGECALLBACKEXT m_nDebugMessageCallback;   // set callback to receive debug messages
     LPALDEBUGMESSAGECONTROLEXT  m_nDebugMessageControl;    // filter debug messages
     LPALOBJECTLABELEXT          m_nObjectLabel;            // add labels to OpenAL objects
+
+    coreBool              m_bDeviceCheck;                  // periodically check for audio device disconnect
+    coreAtomic<coreUint8> m_iDeviceFix;                    // try to recover from audio device issues (1 = changed | 2 = disconnected)
 
     coreBool m_bSupportALAW;                               // support for A-law compression
     coreBool m_bSupportMULAW;                              // support for MU-law compression
@@ -144,6 +147,9 @@ public:
 private:
     /* update all audio sources */
     void __UpdateSources();
+
+    /* update the audio device */
+    void __UpdateDevice();
 
     /* change resampler of all audio sources */
     void __ChangeResampler(const ALint iResampler);

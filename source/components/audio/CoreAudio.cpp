@@ -26,9 +26,12 @@ CoreAudio::CoreAudio()noexcept
 , m_nDeferUpdates         (NULL)
 , m_nProcessUpdates       (NULL)
 , m_nResetDevice          (NULL)
+, m_nReopenDevice         (NULL)
 , m_nDebugMessageCallback (NULL)
 , m_nDebugMessageControl  (NULL)
 , m_nObjectLabel          (NULL)
+, m_bDeviceCheck          (false)
+, m_iDeviceFix            (0u)
 , m_bSupportALAW          (false)
 , m_bSupportMULAW         (false)
 , m_bSupportFloat         (false)
@@ -69,6 +72,25 @@ CoreAudio::CoreAudio()noexcept
     // generate audio sources
     alGenSources(CORE_AUDIO_SOURCES, m_aiSource);
 
+    // init enumeration extension
+    if(alcIsExtensionPresent(m_pDevice, "ALC_ENUMERATE_ALL_EXT"))
+    {
+        // log all available audio devices
+        const coreChar* pcDeviceList = alcGetString(NULL, ALC_ALL_DEVICES_SPECIFIER);
+        if(pcDeviceList)
+        {
+            Core::Log->ListStartInfo("Available Devices");
+            {
+                while(*pcDeviceList)
+                {
+                    Core::Log->ListAdd(pcDeviceList);
+                    pcDeviceList += std::strlen(pcDeviceList) + 1u;
+                }
+            }
+            Core::Log->ListEnd();
+        }
+    }
+
     // init HRTF extension
     if(alcIsExtensionPresent(m_pDevice, "ALC_SOFT_HRTF"))
     {
@@ -94,6 +116,41 @@ CoreAudio::CoreAudio()noexcept
             }
         }
     }
+
+    // init reopen-device extension
+    if(alcIsExtensionPresent(m_pDevice, "ALC_SOFT_reopen_device"))
+    {
+        // get function pointer to reopen audio device
+        m_nReopenDevice = r_cast<LPALCREOPENDEVICESOFT>(alcGetProcAddress(m_pDevice, "alcReopenDeviceSOFT"));
+    }
+
+    // init system-events extension
+    if(alcIsExtensionPresent(m_pDevice, "ALC_SOFT_system_events"))
+    {
+        const auto nEventCallback = r_cast<LPALCEVENTCALLBACKSOFT>(alcGetProcAddress(m_pDevice, "alcEventCallbackSOFT"));
+        const auto nEventControl  = r_cast<LPALCEVENTCONTROLSOFT> (alcGetProcAddress(m_pDevice, "alcEventControlSOFT"));
+        if(nEventCallback && nEventControl)
+        {
+            // set callback function
+            nEventCallback([](const ALCenum iEventType, const ALCenum iDeviceType, ALCdevice* pDevice, const ALCsizei iLength, const ALCchar* pcMessage, void* pUserParam)
+            {
+                Core::Log->Warning(CORE_LOG_BOLD("OpenAL:") " %s", pcMessage);
+
+                if((iEventType == ALC_EVENT_TYPE_DEFAULT_DEVICE_CHANGED_SOFT) && (iDeviceType == ALC_PLAYBACK_DEVICE_SOFT))
+                {
+                    s_cast<CoreAudio*>(pUserParam)->m_iDeviceFix.FetchMax(1u);
+                }
+            },
+            this);
+
+            // enable all events
+            constexpr ALCenum aiEvent[] = {ALC_EVENT_TYPE_DEFAULT_DEVICE_CHANGED_SOFT, ALC_EVENT_TYPE_DEVICE_ADDED_SOFT, ALC_EVENT_TYPE_DEVICE_REMOVED_SOFT};
+            nEventControl(ARRAY_SIZE(aiEvent), aiEvent, true);
+        }
+    }
+
+    // init diconnect extension
+    if(alcIsExtensionPresent(m_pDevice, "ALC_EXT_disconnect")) m_bDeviceCheck = true;
 
     // init deferred-updates extension
     if(alIsExtensionPresent("AL_SOFT_deferred_updates"))
@@ -158,7 +215,7 @@ CoreAudio::CoreAudio()noexcept
     if(alIsExtensionPresent("AL_EXT_MULAW"))   m_bSupportMULAW = true;
     if(alIsExtensionPresent("AL_EXT_FLOAT32")) m_bSupportFloat = true;
 
-    // init other extensions
+    // init length-query extension
     if(alIsExtensionPresent("AL_SOFT_buffer_length_query")) m_bSupportQuery = true;
 
     // reset listener
@@ -299,7 +356,7 @@ void CoreAudio::ResumeSound(const coreUint8 iType)
     {
         if(m_aSourceData[i].iBuffer && ((iType >= CORE_AUDIO_TYPES) || (m_aSourceData[i].iType == iType)))
         {
-            // check status
+            // retrieve current status
             ALint iStatus;
             alGetSourcei(m_aiSource[i], AL_SOURCE_STATE, &iStatus);
 
@@ -354,9 +411,10 @@ ALuint CoreAudio::NextSource(const void* pRef, const ALuint iBuffer, const coreF
     {
         const ALuint iSource = m_aiSource[i];
 
-        // check status
+        // retrieve current status
         ALint iStatus;
         alGetSourcei(iSource, AL_SOURCE_STATE, &iStatus);
+
         if((iStatus != AL_PLAYING) && (iStatus != AL_PAUSED))
         {
             // set current volume
@@ -582,9 +640,49 @@ void CoreAudio::__UpdateSources()
         }
         this->ProcessUpdates();
     }
+}
 
+
+// ****************************************************************
+/* update the audio device */
+void CoreAudio::__UpdateDevice()
+{
     // check for OpenAL errors
     this->CheckOpenAL();
+
+    // periodically check for audio device disconnect
+    if(m_bDeviceCheck)
+    {
+        // retrieve current status
+        ALCint iConnected = INT32_MAX;
+        alcGetIntegerv(m_pDevice, ALC_CONNECTED, 1, &iConnected);
+
+        // check for disconnect
+        WARN_IF(!iConnected)
+        {
+            Core::Log->Warning("Audio device disconnected");
+            m_iDeviceFix.FetchMax(2u);
+        }
+    }
+
+    // try to recover from audio device issues
+    if(m_iDeviceFix)
+    {
+        m_iDeviceFix = 0u;
+
+        if(m_nReopenDevice)
+        {
+            // reopen audio device
+            if(m_nReopenDevice(m_pDevice, NULL, this->__RetrieveAttributes()))
+            {
+                Core::Log->Warning("Audio device (%s) reopened", alcGetString(m_pDevice, ALC_ALL_DEVICES_SPECIFIER));
+            }
+            else
+            {
+                Core::Log->Warning("Audio device could not be reopened (AL Error Code: 0x%08X)", alGetError());
+            }
+        }
+    }
 }
 
 

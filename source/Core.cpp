@@ -278,6 +278,7 @@ coreStatus Core::Run()
 
         // update all remaining components
         Audio   ->__UpdateSources();
+        Audio   ->__UpdateDevice();
         Platform->__UpdateBackend();
         Debug   ->__UpdateOutput();
         Graphics->__UpdateScene();   // # contains frame terminator
