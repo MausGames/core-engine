@@ -391,12 +391,10 @@ using PFNGLGENVERTEXARRAYSPROC    = void (GL_APIENTRY *) (GLsizei n, GLuint* arr
 
 // ****************************************************************
 /* other remapped identifiers */
-inline decltype(glDrawRangeElements)* const __glDrawRangeElements = &glDrawRangeElements;
-
 #define glClearDepth                     glClearDepthf
 #define glDepthRange                     glDepthRangef
 #define glDrawBuffer(a)                  CALL(const GLenum A = (a); glDrawBuffers(1, &A);)
-#define glDrawRangeElements(a,b,c,d,e,f) CALL(if(__CORE_GLES_VAR(bES30)) __glDrawRangeElements(a, b, c, d, e, f); else glDrawElements(a, d, e, f);)
+#define glDrawRangeElements(a,b,c,d,e,f) CALL(if(__CORE_GLES_VAR(bES30)) glDrawRangeElements(a, b, c, d, e, f); else glDrawElements(a, d, e, f);)
 
 using PFNGLGETBUFFERSUBDATAPROC = void (GL_APIENTRY *) (GLenum target, GLintptr offset, GLsizeiptr size, void* data);
 #define glGetBufferSubData __CORE_GLES_FUNC(glGetBufferSubData)

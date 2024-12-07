@@ -810,13 +810,12 @@ void coreRichText::__GenerateTexture()
                 DYNAMIC_RESIZE(pData, iSize)
                 iDataSize = iSize;
             }
+            std::memset(pData, 0, iSize);
 
             if(pOutline)
             {
                 const coreByte* pInput1 = ASSUME_ALIGNED(s_cast<const coreByte*>(pSolid  ->pixels), ALIGNMENT_NEW);
                 const coreByte* pInput2 = ASSUME_ALIGNED(s_cast<const coreByte*>(pOutline->pixels), ALIGNMENT_NEW);
-
-                std::memset(pData, 0, iSize);
 
                 // insert solid pixels
                 const coreUintW iOffset = (iPitch + 1u) * iComponents * iRelOutline;
@@ -851,12 +850,14 @@ void coreRichText::__GenerateTexture()
             }
             else
             {
+                ASSERT(iComponents == 1u)
+
                 const coreByte* pInput1 = ASSUME_ALIGNED(s_cast<const coreByte*>(pSolid->pixels), ALIGNMENT_NEW);
 
                 // transform solid pixels
                 for(coreUintW j = 0u, je = LOOP_NONZERO(pSolid->h); j < je; ++j)
                 {
-                    std::memcpy(pData + (j * iPitch), pInput1 + (j * pSolid->pitch), iPitch);
+                    std::memcpy(pData + (j * iPitch), pInput1 + (j * pSolid->pitch), pSolid->w);
                 }
             }
 

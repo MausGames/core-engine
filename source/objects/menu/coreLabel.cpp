@@ -278,12 +278,14 @@ void coreLabel::__GenerateTexture(const coreChar* pcText)
     }
     else
     {
+        ASSERT(iComponents == 1u)
+
         const coreByte* pInput1 = ASSUME_ALIGNED(s_cast<const coreByte*>(pSolid->pixels), ALIGNMENT_NEW);
 
         // transform solid pixels
         for(coreUintW j = 0u, je = LOOP_NONZERO(pSolid->h); j < je; ++j)
         {
-            std::memcpy(pData + (j * iPitch), pInput1 + (j * pSolid->pitch), iPitch);
+            std::memcpy(pData + (j * iPitch), pInput1 + (j * pSolid->pitch), pSolid->w);
         }
     }
 

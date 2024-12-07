@@ -154,7 +154,6 @@ void coreTexture::Create(const coreUint32 iWidth, const coreUint32 iHeight, cons
     const GLenum iWrapMode = HAS_FLAG(eMode, CORE_TEXTURE_MODE_REPEAT) ? GL_REPEAT : GL_CLAMP_TO_EDGE;
 
     // set compression
-    coreUint32 iBlockSize = 0u;
     if(bCompress)
     {
         WARN_IF(!coreMath::IsPot(iWidth) || !coreMath::IsPot(iHeight) || (iWidth < 4u) || (iHeight < 4u)) {}
@@ -166,10 +165,10 @@ void coreTexture::Create(const coreUint32 iWidth, const coreUint32 iHeight, cons
             {
             default: UNREACHABLE
             case GL_LUMINANCE8:
-            case GL_R8:    if(CORE_GL_SUPPORT(ARB_texture_compression_rgtc)) {iNewSpec = CORE_TEXTURE_SPEC_COMPRESSED_RGTC1; iBlockSize = stb_dxt_blocksize(1);} break;
-            case GL_RG8:   if(CORE_GL_SUPPORT(ARB_texture_compression_rgtc)) {iNewSpec = CORE_TEXTURE_SPEC_COMPRESSED_RGTC2; iBlockSize = stb_dxt_blocksize(2);} break;
-            case GL_RGB8:  if(CORE_GL_SUPPORT(EXT_texture_compression_s3tc)) {iNewSpec = CORE_TEXTURE_SPEC_COMPRESSED_DXT1;  iBlockSize = stb_dxt_blocksize(3);} break;
-            case GL_RGBA8: if(CORE_GL_SUPPORT(EXT_texture_compression_s3tc)) {iNewSpec = CORE_TEXTURE_SPEC_COMPRESSED_DXT5;  iBlockSize = stb_dxt_blocksize(4);} break;
+            case GL_R8:    if(CORE_GL_SUPPORT(ARB_texture_compression_rgtc)) {iNewSpec = CORE_TEXTURE_SPEC_COMPRESSED_RGTC1;} break;
+            case GL_RG8:   if(CORE_GL_SUPPORT(ARB_texture_compression_rgtc)) {iNewSpec = CORE_TEXTURE_SPEC_COMPRESSED_RGTC2;} break;
+            case GL_RGB8:  if(CORE_GL_SUPPORT(EXT_texture_compression_s3tc)) {iNewSpec = CORE_TEXTURE_SPEC_COMPRESSED_DXT1;}  break;
+            case GL_RGBA8: if(CORE_GL_SUPPORT(EXT_texture_compression_s3tc)) {iNewSpec = CORE_TEXTURE_SPEC_COMPRESSED_DXT5;}  break;
             }
             if(iNewSpec.iInternal) {m_Spec = iNewSpec; m_bCompressed = true; if((bMipMap || bMipMapOld) && !CORE_GL_SUPPORT(CORE_es2_restriction)) m_iLevels = F_TO_UI(LOG2(m_vResolution.Min())) - 1u;}
         }
@@ -201,6 +200,8 @@ void coreTexture::Create(const coreUint32 iWidth, const coreUint32 iHeight, cons
         // allocate mutable texture memory
         if(m_bCompressed)
         {
+            const coreUint32 iBlockSize = stb_dxt_blocksize(m_Spec.iComponents);
+
             for(coreUintW i = 0u, ie = LOOP_NONZERO(m_iLevels); i < ie; ++i)
             {
                 const coreUint32 iCurWidth  = MAX(iWidth  >> i, 1u);
@@ -242,6 +243,7 @@ void coreTexture::Modify(const coreUint32 iOffsetX, const coreUint32 iOffsetY, c
         // calculate components and compressed size
         const coreUint32 iComponents = iDataSize / (iWidth * iHeight);
         const coreUint32 iPackedSize = iDataSize / stb_dxt_ratio(iComponents);
+        ASSERT(iComponents == m_Spec.iComponents)
 
         // allocate required image memory
         coreByte* pPackedData  = new coreByte[iPackedSize];
@@ -667,8 +669,8 @@ SDL_Surface* coreTexture::CreateReduction(const coreUintW iComponents, const SDL
     ASSERT((pOutput->w == pInput->w) && (pOutput->h == pInput->h) && (pOutput->format->BytesPerPixel == iTarget))
 
     // assume no memory aliasing
-    const coreByte*  pInputMem  = s_cast<const coreByte*>(pInput ->pixels);
-    coreByte* OUTPUT pOutputMem = s_cast<coreByte*>      (pOutput->pixels);
+    const coreByte*  pInputMem  = ASSUME_ALIGNED(s_cast<const coreByte*>(pInput ->pixels), ALIGNMENT_NEW);
+    coreByte* OUTPUT pOutputMem = ASSUME_ALIGNED(s_cast<coreByte*>      (pOutput->pixels), ALIGNMENT_NEW);
 
     // manually copy texels
     for(coreUintW i = 0u, ie = LOOP_NONZERO(pInput->h); i < ie; ++i)

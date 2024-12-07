@@ -45,7 +45,7 @@
 #define CORE_TEXTURE_SPEC_RGB10_A2         (coreTextureSpec(GL_RGB10_A2,                      GL_RGBA,                          GL_UNSIGNED_INT_2_10_10_10_REV,  4u, 4u))   // EXT_texture_type_2_10_10_10_rev
 #define CORE_TEXTURE_SPEC_R11F_G11F_B10F   (coreTextureSpec(GL_R11F_G11F_B10F,                GL_RGB,                           GL_UNSIGNED_INT_10F_11F_11F_REV, 3u, 4u))   // EXT_packed_float
 #define CORE_TEXTURE_SPEC_DEPTH16          (coreTextureSpec(GL_DEPTH_COMPONENT16,             GL_DEPTH_COMPONENT,               GL_UNSIGNED_SHORT,               1u, 2u))   // -
-#define CORE_TEXTURE_SPEC_DEPTH24          (coreTextureSpec(GL_DEPTH_COMPONENT24,             GL_DEPTH_COMPONENT,               GL_UNSIGNED_INT,                 1u, 3u))   // -
+#define CORE_TEXTURE_SPEC_DEPTH24          (coreTextureSpec(GL_DEPTH_COMPONENT24,             GL_DEPTH_COMPONENT,               GL_UNSIGNED_INT,                 1u, 4u))   // -
 #define CORE_TEXTURE_SPEC_DEPTH32F         (coreTextureSpec(GL_DEPTH_COMPONENT32F,            GL_DEPTH_COMPONENT,               GL_FLOAT,                        1u, 4u))   // ARB_depth_buffer_float
 #define CORE_TEXTURE_SPEC_STENCIL8         (coreTextureSpec(GL_STENCIL_INDEX8,                GL_STENCIL_INDEX,                 GL_UNSIGNED_BYTE,                1u, 1u))   // ARB_texture_stencil8 (as texture)
 #define CORE_TEXTURE_SPEC_DEPTH24_STENCIL8 (coreTextureSpec(GL_DEPTH24_STENCIL8,              GL_DEPTH_STENCIL,                 GL_UNSIGNED_INT_24_8,            2u, 4u))   // EXT_packed_depth_stencil
@@ -96,7 +96,7 @@ struct coreTextureSpec final
     GLenum    iFormat;       // pixel data format (e.g. GL_RGBA)
     GLenum    iType;         // pixel data type (e.g. GL_UNSIGNED_BYTE)
     coreUint8 iComponents;   // number of components
-    coreUint8 iBytes;        // size per texel
+    coreUint8 iBytes;        // size per texel (0 = nontrivial/compressed)
 
     coreTextureSpec() = default;
     constexpr coreTextureSpec(const GLenum iInternal, const GLenum iFormat, const GLenum iType, const coreUint8 iComponents, const coreUint8 iBytes)noexcept;

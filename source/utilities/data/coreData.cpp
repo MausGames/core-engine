@@ -51,7 +51,7 @@ extern "C" const coreChar* g_pcUserFolder = "";   // to allow access from C file
 
 // ****************************************************************
 /* create formatted string */
-coreInt32 coreData::PrintBase(coreChar* OUTPUT pcOutput, const coreInt32 iMaxLen, const coreChar* pcFormat, ...)
+coreInt32 coreData::PrintBase(coreChar* OUTPUT pcOutput, const coreInt32 iOutputSize, const coreChar* pcFormat, ...)
 {
     ASSERT(pcFormat)
 
@@ -60,18 +60,18 @@ coreInt32 coreData::PrintBase(coreChar* OUTPUT pcOutput, const coreInt32 iMaxLen
     va_start(oArgs, pcFormat);
 
     // assemble string
-    const coreInt32 iReturn = stbsp_vsnprintf(pcOutput, iMaxLen, pcFormat, oArgs);
+    const coreInt32 iReturn = stbsp_vsnprintf(pcOutput, iOutputSize, pcFormat, oArgs);
     va_end(oArgs);
 
     return iReturn;
 }
 
-coreInt32 coreData::PrintBaseV(coreChar* OUTPUT pcOutput, const coreInt32 iMaxLen, const coreChar* pcFormat, va_list oArgs)
+coreInt32 coreData::PrintBaseV(coreChar* OUTPUT pcOutput, const coreInt32 iOutputSize, const coreChar* pcFormat, va_list oArgs)
 {
     ASSERT(pcFormat)
 
     // assemble string
-    return stbsp_vsnprintf(pcOutput, iMaxLen, pcFormat, oArgs);
+    return stbsp_vsnprintf(pcOutput, iOutputSize, pcFormat, oArgs);
 }
 
 
@@ -2001,13 +2001,13 @@ coreStatus coreData::Compress(const coreByte* pInput, const coreUint32 iInputSiz
 
 coreStatus coreData::Compress(const coreByte* pInput, const coreUint32 iInputSize, coreByte* OUTPUT pOutput, coreUint32* OUTPUT piOutputSize, const coreInt32 iLevel)
 {
-    ASSERT(pInput && iInputSize && pOutput && piOutputSize && (iLevel >= ZSTD_minCLevel()) && (iLevel <= ZSTD_maxCLevel()))
+    ASSERT(pInput && iInputSize && piOutputSize && (iLevel >= ZSTD_minCLevel()) && (iLevel <= ZSTD_maxCLevel()))
 
     // retrieve required output size
     const coreUintW iBound = ZSTD_compressBound(iInputSize);
 
     // check for target buffer space
-    if((*piOutputSize) < iBound + sizeof(coreUint32))
+    if(((*piOutputSize) < iBound + sizeof(coreUint32)) || !pOutput)
     {
         (*piOutputSize) = iBound + sizeof(coreUint32);
         return CORE_INVALID_DATA;
@@ -2072,7 +2072,7 @@ coreStatus coreData::Decompress(const coreByte* pInput, const coreUint32 iInputS
 
 coreStatus coreData::Decompress(const coreByte* pInput, const coreUint32 iInputSize, coreByte* OUTPUT pOutput, coreUint32* OUTPUT piOutputSize)
 {
-    ASSERT(pInput && iInputSize && pOutput && piOutputSize)
+    ASSERT(pInput && iInputSize && piOutputSize)
 
     // check data integrity
     const coreUint64 iContentSize = ZSTD_getFrameContentSize(pInput + sizeof(coreUint32), iInputSize - sizeof(coreUint32));
@@ -2086,7 +2086,7 @@ coreStatus coreData::Decompress(const coreByte* pInput, const coreUint32 iInputS
     const coreUint32 iBound = (*r_cast<const coreUint32*>(pInput));
 
     // check for target buffer space
-    if((*piOutputSize) < iBound)
+    if(((*piOutputSize) < iBound) || !pOutput)
     {
         (*piOutputSize) = iBound;
         return CORE_INVALID_DATA;
