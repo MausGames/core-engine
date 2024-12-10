@@ -117,6 +117,33 @@ SDL_Surface* coreFont::CreateGlyphOutline(const coreChar32 cGlyph, const coreUin
 
 
 // ****************************************************************
+/* check if all glyphs are provided by the font */
+coreBool coreFont::AreGlyphsProvided(const coreChar* pcText)
+{
+    ASSERT(!m_aapFont.empty())
+
+    // use first available sub-font
+    TTF_Font* pFont = m_aapFont.front().front();
+
+    const coreChar* pcCursor = pcText;
+    while(*pcCursor)
+    {
+        // convert multibyte UTF-8 character to UTF-32 glyph
+        coreChar32 cGlyph;
+        pcCursor += coreFont::ConvertToGlyph(pcCursor, &cGlyph);
+
+        // check for the glyph
+        if(!TTF_GlyphIsProvided32(pFont, cGlyph))
+        {
+            return false;
+        }
+    }
+
+    return true;
+}
+
+
+// ****************************************************************
 /* retrieve the dimensions of a rendered string of text */
 coreVector2 coreFont::RetrieveTextDimensions(const coreChar* pcText, const coreUint16 iHeight, const coreUint8 iOutline)
 {

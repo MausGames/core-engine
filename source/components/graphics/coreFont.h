@@ -59,6 +59,7 @@ public:
     SDL_Surface* CreateGlyphOutline(const coreChar32 cGlyph, const coreUint16 iHeight, const coreUint8 iOutline);
 
     /* retrieve text-related attributes */
+    coreBool    AreGlyphsProvided     (const coreChar* pcText);
     coreVector2 RetrieveTextDimensions(const coreChar* pcText, const coreUint16 iHeight, const coreUint8 iOutline);
     coreInt8    RetrieveTextShift     (const coreChar* pcText, const coreUint16 iHeight, const coreUint8 iOutline);
 
