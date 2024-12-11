@@ -752,9 +752,17 @@ void CoreGraphics::__UpdateScene()
         glInvalidateFramebuffer(GL_FRAMEBUFFER, ARRAY_SIZE(aiAttachment), aiAttachment);
     }
 
+    // explicitly flush command buffers
+    if(!CoreApp::Settings::Graphics::DoubleBuffer)
+    {
+        coreSync::Flush();
+    }
+
     // swap color buffers
-    Core::Debug->MeasureEnd  (CORE_DEBUG_OVERALL_NAME);
     SDL_GL_SwapWindow(Core::System->GetWindow());
+
+    // measure overall performance
+    Core::Debug->MeasureEnd  (CORE_DEBUG_OVERALL_NAME);
     Core::Debug->MeasureStart(CORE_DEBUG_OVERALL_NAME);
 
     // reset engine on OpenGL context loss

@@ -209,12 +209,12 @@ void CoreDebug::MeasureStart(const coreHashString& sName)
 
     coreMeasure* pMeasure = m_apMeasure.at(sName);
 
-    // start pipeline statistics
-    if(pMeasure == m_pOverall) this->__StatStart();
-
     // fetch first CPU time value and start GPU performance measurement
     pMeasure->iPerfTime = SDL_GetPerformanceCounter();
     if(pMeasure->aaiQuery[0][0]) glQueryCounter(pMeasure->aaiQuery[0].current(), GL_TIMESTAMP);
+
+    // start pipeline statistics
+    if(pMeasure == m_pOverall) this->__StatStart();
 }
 
 
@@ -227,10 +227,6 @@ void CoreDebug::MeasureEnd(const coreHashString& sName)
     // get requested measure object
     WARN_IF(!m_apMeasure.count(sName)) return;
     coreMeasure* pMeasure = m_apMeasure.at(sName);
-
-    // fetch second CPU time value and update CPU performance value
-    const coreFloat fDifferenceCPU = coreFloat(coreDouble(SDL_GetPerformanceCounter() - pMeasure->iPerfTime) * Core::System->GetPerfFrequency() * 1.0e03);
-    pMeasure->fCurrentCPU = pMeasure->fCurrentCPU * CORE_DEBUG_SMOOTH_FACTOR + fDifferenceCPU * (1.0f-CORE_DEBUG_SMOOTH_FACTOR);
 
     if(pMeasure->aaiQuery[0][0])
     {
@@ -261,6 +257,10 @@ void CoreDebug::MeasureEnd(const coreHashString& sName)
         const coreFloat fTime = Core::System->GetTime();
         if(fTime) pcName = PRINT("%s %.1f FPS%s %.2f MB / %.2f MB", pcName, RCP(fTime), SDL_GL_GetSwapInterval() ? "*" : "", coreDouble(coreData::ProcessMemory()) / (1024.0*1024.0), coreDouble(Core::Graphics->ProcessGpuMemory()) / (1024.0*1024.0));
     }
+
+    // fetch second CPU time value and update CPU performance value
+    const coreFloat fDifferenceCPU = coreFloat(coreDouble(SDL_GetPerformanceCounter() - pMeasure->iPerfTime) * Core::System->GetPerfFrequency() * 1.0e03);
+    pMeasure->fCurrentCPU = pMeasure->fCurrentCPU * CORE_DEBUG_SMOOTH_FACTOR + fDifferenceCPU * (1.0f-CORE_DEBUG_SMOOTH_FACTOR);
 
     // write formatted values to output label
     pMeasure->oOutput.SetText(PRINT("%s (CPU %.2fms / GPU %.2fms)", pcName, pMeasure->fCurrentCPU, pMeasure->fCurrentGPU));

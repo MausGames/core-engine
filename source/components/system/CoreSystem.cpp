@@ -19,6 +19,7 @@ CoreSystem::CoreSystem()noexcept
 , m_eMode            (coreSystemMode(Core::Config->GetInt(CORE_CONFIG_SYSTEM_FULLSCREEN)))
 , m_dTotalTime       (0.0)
 , m_dTotalTimeBefore (0.0)
+, m_dLastTimeFull    (0.0)
 , m_fLastTime        (0.0f)
 , m_afTime           {}
 , m_afTimeSpeed      {}
@@ -615,23 +616,25 @@ void CoreSystem::__UpdateTime()
 {
     // measure and calculate last frame time
     const coreUint64 iNewPerfTime = SDL_GetPerformanceCounter();
-    const coreFloat  fNewLastTime = coreFloat(coreDouble(iNewPerfTime - m_iPerfTime) * m_dPerfFrequency);
+    const coreDouble dNewLastTime = coreDouble(iNewPerfTime - m_iPerfTime) * m_dPerfFrequency;
     m_iPerfTime                   = iNewPerfTime;
 
     if(m_iSkipFrame)
     {
         // skip frame
-        m_fLastTime   = 0.0f;
-        m_iSkipFrame -= 1u;
+        m_dLastTimeFull = 0.0;
+        m_fLastTime     = 0.0f;
+        m_iSkipFrame   -= 1u;
     }
     else
     {
         // save total time of the previous frame
         m_dTotalTimeBefore = m_dTotalTime;
 
-        // smooth last frame time and increase total time
-        m_fLastTime   = (fNewLastTime > 0.1f) ? 0.001f : LERP(m_fLastTime, fNewLastTime, 0.15f);
-        m_dTotalTime += coreDouble(m_fLastTime);
+        // smooth and round last frame time and increase total time
+        m_dLastTimeFull = (dNewLastTime > 0.1) ? 0.001 : LERP(m_dLastTimeFull, dNewLastTime, 0.15);
+        m_fLastTime     = RCP(coreMath::RoundFactor(RCP(m_dLastTimeFull), 0.1));
+        m_dTotalTime   += coreDouble(m_fLastTime);
     }
 
     // update dynamic frame times

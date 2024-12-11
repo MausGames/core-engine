@@ -12,7 +12,6 @@
 
 // TODO 3: some drivers may "merge" displays
 // TODO 3: handle display hot-plugging (SDL_DISPLAYEVENT_CONNECTED, SDL_DISPLAYEVENT_DISCONNECTED)
-// TODO 3: improve delta-time precision, double, similar to coreThread
 // TODO 3: there should be no borderless window mode, only borderless fullscreen mode with adjusted resolution
 // TODO 5: <old comment style>
 
@@ -59,7 +58,8 @@ private:
 
     coreDouble m_dTotalTime;                       // total time since start of the application
     coreDouble m_dTotalTimeBefore;                 // total time of the previous frame
-    coreFloat  m_fLastTime;                        // smoothed last frame time
+    coreDouble m_dLastTimeFull;                    // high-precision last frame time
+    coreFloat  m_fLastTime;                        // smoothed and rounded last frame time
     coreFloat  m_afTime     [CORE_SYSTEM_TIMES];   // dynamic frame times
     coreFloat  m_afTimeSpeed[CORE_SYSTEM_TIMES];   // speed factor for the dynamic frame times
 
