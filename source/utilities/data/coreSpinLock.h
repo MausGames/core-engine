@@ -83,7 +83,7 @@ class coreRecursiveLock final
 {
 private:
 #if defined(CORE_SPINLOCK_DISABLED)
-    coreBool m_State;                    // simple boolean (instead of spinlock, not used)
+    UNUSED coreBool m_State;             // simple boolean (instead of spinlock)
 #elif defined(CORE_SPINLOCK_MUTEX)
     std::recursive_mutex m_State;        // regular recursive mutex (instead of spinlock)
 #else

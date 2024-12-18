@@ -12,6 +12,7 @@
 
 // TODO 3: add a way to control default values per project (dynamically ?)
 // TODO 3: changing a bool to an int can cause problems with existing config values, remove bool entirely ?
+// TODO 3: allow loading config files from archives
 
 
 // ****************************************************************

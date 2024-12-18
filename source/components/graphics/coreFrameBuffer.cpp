@@ -217,6 +217,8 @@ coreFrameBuffer::coreRenderTarget* coreFrameBuffer::AttachTargetTexture(const co
         if((!HAS_FLAG(eTarget, CORE_FRAMEBUFFER_TARGET_DEPTH)   || CORE_GL_SUPPORT(ARB_depth_texture)) &&
            (!HAS_FLAG(eTarget, CORE_FRAMEBUFFER_TARGET_STENCIL) || CORE_GL_SUPPORT(ARB_texture_stencil8)))
         {
+            ASSERT(!pTarget->pTexture)
+
             // allocate render target texture
             if(pcName) pTarget->pTexture = Core::Manager::Resource->Load   <coreTexture>(pcName, CORE_RESOURCE_UPDATE_MANUAL, NULL);
                   else pTarget->pTexture = Core::Manager::Resource->LoadNew<coreTexture>();

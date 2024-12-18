@@ -40,6 +40,7 @@ public:
     /* bind and unbind view-objects */
     void BindObject  (coreObject2D* pObject);
     void UnbindObject(coreObject2D* pObject);
+    void Clear       ();
 
     /* check if view-object belongs to the view-box */
     inline coreBool ContainsObject(coreObject2D* pObject)const {return m_apObject.count(pObject);}

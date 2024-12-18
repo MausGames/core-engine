@@ -79,7 +79,7 @@ private:
 
     coreBool m_bIntelMorph;                                       // apply conservative morphological anti aliasing
 
-    static coreFrameBuffer* s_pCurrent;                           // currently active frame buffer object
+    static coreFrameBuffer* s_pCurrent;                           // currently active frame buffer object (NULL = default frame buffer)
     static coreFloat s_afViewData[5];                             // view properties of the default frame buffer
 
 

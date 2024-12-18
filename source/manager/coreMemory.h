@@ -15,7 +15,6 @@
 // TODO 5: memory-pool: support polymorphism
 // TODO 5: memory-pool: 1 block for multiple objects
 // TODO 5: add interface for reusing big memory-blocks (free when?)
-// TODO 5: __declspec(allocator)
 // TODO 3: pointer to next free block inside unused block (linked list) instead of free-stack (consider sorting)
 // TODO 5: <old comment style>
 // TODO 3: #define STATIC_EXTERN(t,p) extern t* const p; needs to be before Core class

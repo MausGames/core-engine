@@ -51,7 +51,7 @@ coreStatus coreTexture::Load(coreFile* pFile)
 
     // decompress file to plain pixel data
     coreSurfaceScope pData = IMG_LoadTyped_RW(pFile->CreateReadStream(), 1, coreData::StrExtension(pFile->GetPath()));
-    if(!pData)
+    if(!pData || !pData->w || !pData->h)
     {
         Core::Log->Warning("Texture (%s) could not be loaded (SDL: %s)", m_sName.c_str(), SDL_GetError());
         return CORE_INVALID_DATA;

@@ -140,3 +140,12 @@ void coreViewBox::UnbindObject(coreObject2D* pObject)
     // remove view-object from list
     m_apObject.index(m_apObject.erase(pObject));
 }
+
+
+// ****************************************************************
+/* remove all view-objects */
+void coreViewBox::Clear()
+{
+    // just clear memory
+    m_apObject.clear();
+}

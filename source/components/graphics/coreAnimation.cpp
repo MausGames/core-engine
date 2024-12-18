@@ -94,7 +94,7 @@ coreStatus coreAnimation::Load(coreFile* pFile)
         m_Division[1] = coreMath::CeilAlign(pAnim->count, m_Division[0]) / m_Division[0];
     }
 
-    ASSERT((m_Division[0] <= m_Division[1]) && (m_Division[0] * m_Division[1] <= m_iFrameCount))
+    ASSERT((m_Division[0] <= m_Division[1]) && (m_Division[0] * m_Division[1] <= pAnim->count))
 
     // save properties
     m_iFrameCount = pAnim->count;

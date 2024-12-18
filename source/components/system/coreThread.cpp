@@ -42,6 +42,8 @@ coreThread::~coreThread()
 /* start the thread */
 SDL_Thread* coreThread::StartThread()
 {
+#if !defined(_CORE_EMSCRIPTEN_)
+
     if(!m_pThread)
     {
         // reset thread status
@@ -55,6 +57,8 @@ SDL_Thread* coreThread::StartThread()
             m_bActive = false;
         }
     }
+
+#endif
 
     return m_pThread;
 }
