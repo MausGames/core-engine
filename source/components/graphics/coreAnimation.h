@@ -10,28 +10,27 @@
 #ifndef _CORE_GUARD_ANIMATION_H_
 #define _CORE_GUARD_ANIMATION_H_
 
-// TODO 3: texture-array, texture-atlas
-
 
 // ****************************************************************
 /* animation class */
 class coreAnimation final : public coreResource
 {
 private:
-    coreTexturePtr m_pTextureFrom;   // proxy texture for current frame
-    coreTexturePtr m_pTextureTo;     // proxy texture for next frame
+    coreTexturePtr m_pTexture;     // grid texture
+    corePoint2U8   m_Division;     // grid division
+    coreUint16*    m_piTime;       // delays between frames (in milliseconds)
 
-    coreTexturePtr* m_ppFrame;       // frame textures
-    coreUint16*     m_piTime;        // delays between frames (in milliseconds)
+    coreUint16 m_iFrameCount;      // number of frames
+    coreUint16 m_iTotalTime;       // total animation time (in milliseconds)
 
-    coreUint16 m_iFrameCount;        // number of frames
-    coreUint16 m_iTotalTime;         // total animation time (in milliseconds)
+    coreVector2 m_vCurTexSize;     // texture size for a single frame
+    coreVector4 m_vCurTexOffset;   // texture offset (from, to)
+    coreUint16  m_iCurFrame;       // current base frame
+    coreFloat   m_fCurLerp;        // current interpolation value between frames (0.0f <= X < 1.0f)
 
-    coreFloat m_fLerp;               // current interpolation value between frames (0.0f <= X < 1.0f)
+    coreTextureLoad m_eLoad;       // resource load configuration
 
-    coreTextureLoad m_eLoad;         // resource load configuration
-
-    coreSync m_Sync;                 // sync object for asynchronous texture loading
+    coreSync m_Sync;               // sync object for asynchronous texture loading
 
 
 public:
@@ -50,11 +49,13 @@ public:
     coreBool ChangeFrame   (const coreUint16 iFrame, const coreFloat fLerp);
 
     /* get object properties */
-    inline const coreTexturePtr& GetTextureFrom()const {return m_pTextureFrom;}
-    inline const coreTexturePtr& GetTextureTo  ()const {return m_pTextureTo;}
-    inline const coreUint16&     GetFrameCount ()const {return m_iFrameCount;}
-    inline       coreFloat       GetTotalTime  ()const {return I_TO_F(m_iTotalTime) / 1000.0f;}
-    inline const coreFloat&      GetLerp       ()const {return m_fLerp;}
+    inline const coreTexturePtr& GetTexture     ()const {return m_pTexture;}
+    inline const coreUint16&     GetFrameCount  ()const {return m_iFrameCount;}
+    inline       coreFloat       GetTotalTime   ()const {return I_TO_F(m_iTotalTime) / 1000.0f;}
+    inline const coreVector2&    GetCurTexSize  ()const {return m_vCurTexSize;}
+    inline const coreVector4&    GetCurTexOffset()const {return m_vCurTexOffset;}
+    inline const coreUint16&     GetCurFrame    ()const {return m_iCurFrame;}
+    inline const coreFloat&      GetCurLerp     ()const {return m_fCurLerp;}
 
 
 private:
