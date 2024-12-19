@@ -46,7 +46,6 @@ coreParticleSystem::coreParticleSystem(const coreUint32 iStartSize)noexcept
 
     // create default particle effect object
     m_pDefaultEffect = new coreParticleEffect(this);
-    m_pDefaultEffect->m_pThis = m_pDefaultEffect;
 
     // create vertex array objects and instance data buffers
     m_aiVertexArray.fill(0u);
@@ -63,7 +62,7 @@ coreParticleSystem::~coreParticleSystem()
     m_aParticle.clear();
 
     // delete default particle effect object
-    SAFE_DELETE(m_pDefaultEffect)
+    SAFE_DELETE(m_pDefaultEffect)   // # after clear
 
     // delete vertex array objects and instance data buffers
     this->__Reset(CORE_RESOURCE_RESET_EXIT);
@@ -271,10 +270,42 @@ coreParticle* coreParticleSystem::CreateParticle(coreParticleEffect* pEffect)
 
 
 // ****************************************************************
+/* rebind particles */
+void coreParticleSystem::Rebind(const coreParticleEffect* pOldEffect, coreParticleEffect* pNewEffect)
+{
+    ASSERT(pOldEffect && pNewEffect && (pOldEffect != pNewEffect))
+
+    const coreObject3D* pOldOrigin = pOldEffect->GetOrigin();
+    const coreObject3D* pNewOrigin = pNewEffect->GetOrigin();
+    const coreVector3   vTransform = (pOldOrigin ? pOldOrigin->GetPosition() : coreVector3(0.0f,0.0f,0.0f)) -
+                                     (pNewOrigin ? pNewOrigin->GetPosition() : coreVector3(0.0f,0.0f,0.0f));
+
+    FOR_EACH(it, m_apRenderList)
+    {
+        coreParticle* pParticle = (*it);
+
+        // check particle effect object
+        if(pParticle->GetEffect() == pOldEffect)
+        {
+            // transform position
+            pParticle->m_BeginState.vPosition += vTransform;
+            pParticle->m_EndState  .vPosition += vTransform;
+
+            // change associated particle effect object
+            pParticle->m_pEffect = pNewEffect;
+        }
+    }
+}
+
+
+// ****************************************************************
 /* unbind particles */
 void coreParticleSystem::Unbind(const coreParticleEffect* pEffect)
 {
     ASSERT(pEffect)
+
+    const coreObject3D* pOrigin    = pEffect->GetOrigin();
+    const coreVector3   vTransform = (pOrigin ? pOrigin->GetPosition() : coreVector3(0.0f,0.0f,0.0f));
 
     FOR_EACH(it, m_apRenderList)
     {
@@ -283,14 +314,9 @@ void coreParticleSystem::Unbind(const coreParticleEffect* pEffect)
         // check particle effect object
         if(pParticle->GetEffect() == pEffect)
         {
-            const coreObject3D* pOrigin = pEffect->GetOrigin();
-
-            // check origin object and transform position
-            if(pOrigin)
-            {
-                pParticle->m_BeginState.vPosition += pOrigin->GetPosition();
-                pParticle->m_EndState  .vPosition += pOrigin->GetPosition();
-            }
+            // transform position
+            pParticle->m_BeginState.vPosition += vTransform;
+            pParticle->m_EndState  .vPosition += vTransform;
 
             // reset associated particle effect object
             pParticle->m_pEffect = m_pDefaultEffect;
@@ -350,8 +376,7 @@ void coreParticleSystem::UnbindAll()
 void coreParticleSystem::ClearAll()
 {
     // reset all particle states
-    FOR_EACH(it, m_apRenderList)
-        (*it)->Disable();
+    FOR_EACH(it, m_apRenderList) (*it)->Disable();
 
     // clear memory
     m_apRenderList.clear();
@@ -459,18 +484,17 @@ coreParticleEffect::coreParticleEffect(coreParticleSystem* pSystem)noexcept
 , m_iTimeID   (-1)
 , m_pOrigin   (NULL)
 , m_pSystem   (pSystem)
-, m_pThis     (pSystem ? pSystem->GetDefaultEffect() : NULL)
 {
 }
 
-coreParticleEffect::coreParticleEffect(const coreParticleEffect& c)noexcept
-: m_fCreation (c.m_fCreation)
-, m_iTimeID   (c.m_iTimeID)
-, m_pOrigin   (c.m_pOrigin)
-, m_pSystem   (c.m_pSystem)
-, m_pThis     (NULL)
+coreParticleEffect::coreParticleEffect(coreParticleEffect&& m)noexcept
+: m_fCreation (m.m_fCreation)
+, m_iTimeID   (m.m_iTimeID)
+, m_pOrigin   (m.m_pOrigin)
+, m_pSystem   (m.m_pSystem)
 {
-    m_pThis = c.IsDynamic() ? this : c.m_pThis;
+    // rebind all particles
+    if(m_pSystem) m_pSystem->Rebind(&m, this);   // both with same origin
 }
 
 
@@ -478,43 +502,26 @@ coreParticleEffect::coreParticleEffect(const coreParticleEffect& c)noexcept
 /* destructor */
 coreParticleEffect::~coreParticleEffect()
 {
-    // unbind all dynamic particles
-    if(this->IsDynamic())
-        this->Unbind();
+    // unbind all particles
+    this->Unbind();
 }
 
 
 // ****************************************************************
 /* assignment operations */
-coreParticleEffect& coreParticleEffect::operator = (const coreParticleEffect& c)noexcept
+coreParticleEffect& coreParticleEffect::operator = (coreParticleEffect&& m)noexcept
 {
-    // unbind all dynamic particles (if necessary)
-    if(this->IsDynamic() && (m_pSystem != c.m_pSystem))
-        this->Unbind();
+    // unbind old particles
+    this->Unbind();
+
+    // rebind new particles
+    if(m.m_pSystem) m.m_pSystem->Rebind(&m, this);
 
     // copy properties
-    m_fCreation = c.m_fCreation;
-    m_iTimeID   = c.m_iTimeID;
-    m_pOrigin   = c.m_pOrigin;
-    m_pSystem   = c.m_pSystem;
-    m_pThis     = c.IsDynamic() ? this : c.m_pThis;
+    m_fCreation = m.m_fCreation;
+    m_iTimeID   = m.m_iTimeID;
+    m_pOrigin   = m.m_pOrigin;
+    m_pSystem   = m.m_pSystem;
 
     return *this;
-}
-
-
-// ****************************************************************
-/* change associated particle system object */
-void coreParticleEffect::ChangeSystem(coreParticleSystem* pSystem, const coreBool bUnbind)
-{
-    // check for dynamic behavior
-    if(this->IsDynamic())
-    {
-        // unbind old particles (not unbinding them may cause crash if not handled)
-        if(bUnbind) this->Unbind();
-    }
-    else m_pThis = pSystem ? pSystem->GetDefaultEffect() : NULL;
-
-    // set new particle system object
-    m_pSystem = pSystem;
 }

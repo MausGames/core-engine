@@ -13,13 +13,13 @@
 // TODO 3: make different base particles ? generic
 // TODO 5: what about texture size and offset
 // TODO 5: what about velocity
-// TODO 5: what about texture index parameter to allow different objects to be rendered
-// TODO 5: SSBO[index] really faster than a divisor ? check also for their use instead of VAO in general
-// TODO 5: high systems: currently CPU(move) is bottleneck, look for improvement with transform feedback(3.0) or compute shader(4.0)
+// TODO 5: how about texture index parameter to allow different objects to be rendered
+// TODO 5: high systems: currently CPU(move) is bottleneck, look for improvement with transform feedback(3.0) or compute shader(4.3)
 // TODO 5: low systems: merge geometry to reduce draw calls
 // TODO 3: sorting based on position
 // TODO 3: culling (also on instancing)
 // TODO 5: <old comment style>
+// TODO 3: on frequency particle creation, if frequency is higher than FPS, already offset created particle times to spread them evenly (what about animation?)
 
 
 // ****************************************************************
@@ -168,6 +168,7 @@ public:
     inline coreParticle* CreateParticle() {return this->CreateParticle(m_pDefaultEffect);}
 
     /* unbind and remove particles */
+    void Rebind(const coreParticleEffect* pOldEffect, coreParticleEffect* pNewEffect);
     void Unbind(const coreParticleEffect* pEffect);
     void Clear (const coreParticleEffect* pEffect);
     void UnbindAll();
@@ -211,40 +212,34 @@ private:
     coreObject3D* m_pOrigin;         // origin object for relative movement
 
     coreParticleSystem* m_pSystem;   // associated particle system object
-    coreParticleEffect* m_pThis;     // pointer to foreign default object or to itself (to improve destructor performance)
 
 
 public:
     explicit coreParticleEffect(coreParticleSystem* pSystem = NULL)noexcept;
-    coreParticleEffect(const coreParticleEffect& c)noexcept;
+    coreParticleEffect(coreParticleEffect&& m)noexcept;
     ~coreParticleEffect();
 
     FRIEND_CLASS(coreParticleSystem)
 
     /* assignment operations */
-    coreParticleEffect& operator = (const coreParticleEffect& c)noexcept;
+    coreParticleEffect& operator = (coreParticleEffect&& m)noexcept;
 
     /* create new particles */
     template <typename F> void CreateParticle(const coreUintW iNum, const coreFloat fFrequency, F&& nInitFunc);   // [](coreParticle* OUTPUT pParticle) -> void
     template <typename F> void CreateParticle(const coreUintW iNum,                             F&& nInitFunc);   // [](coreParticle* OUTPUT pParticle) -> void
-    inline coreParticle* CreateParticle() {ASSERT(m_pSystem) return m_pSystem->CreateParticle(m_pThis);}
+    inline coreParticle* CreateParticle() {ASSERT(m_pSystem) return m_pSystem->CreateParticle(this);}
 
     /* unbind and remove particles */
-    inline void Unbind() {if(m_pSystem) m_pSystem->Unbind(m_pThis);}
-    inline void Clear () {if(m_pSystem) m_pSystem->Clear (m_pThis);}
+    inline void Unbind() {if(m_pSystem) m_pSystem->Unbind(this);}
+    inline void Clear () {if(m_pSystem) m_pSystem->Clear (this);}
 
     /* update particles with custom simulation */
-    template <typename F> inline void ForEachParticle(F&& nUpdateFunc) {ASSERT(m_pSystem) m_pSystem->ForEachParticle(m_pThis, std::forward<F>(nUpdateFunc));}   // [](coreParticle* OUTPUT pParticle, const coreUintW i) -> void
-
-    /* change associated particle system object */
-    void ChangeSystem(coreParticleSystem* pSystem, const coreBool bUnbind);
-
-    /* check for dynamic behavior */
-    inline coreBool IsDynamic()const {return (m_pThis == this);}
+    template <typename F> inline void ForEachParticle(F&& nUpdateFunc) {ASSERT(m_pSystem) m_pSystem->ForEachParticle(this, std::forward<F>(nUpdateFunc));}   // [](coreParticle* OUTPUT pParticle, const coreUintW i) -> void
 
     /* set object properties */
-    inline void SetTimeID(const coreInt8 iTimeID) {m_pThis = this; m_iTimeID = iTimeID;}
-    inline void SetOrigin(coreObject3D*  pOrigin) {m_pThis = this; m_pOrigin = pOrigin;}
+    inline void SetTimeID(const coreInt8      iTimeID) {m_iTimeID = iTimeID;}
+    inline void SetOrigin(coreObject3D*       pOrigin) {m_pOrigin = pOrigin;}
+    inline void SetSystem(coreParticleSystem* pSystem) {this->Unbind(); m_pSystem = pSystem;}
 
     /* get object properties */
     inline const coreInt8&     GetTimeID()const {return m_iTimeID;}
@@ -315,7 +310,9 @@ template <typename F> void coreParticleEffect::CreateParticle(const coreUintW iN
 
         // create particles and call init function
         for(coreUintW i = iNum * iComp; i--; )
+        {
             nInitFunc(this->CreateParticle());
+        }
     }
 }
 
@@ -323,7 +320,9 @@ template <typename F> void coreParticleEffect::CreateParticle(const coreUintW iN
 {
     // create particles and call init function
     for(coreUintW i = iNum; i--; )
+    {
         nInitFunc(this->CreateParticle());
+    }
 }
 
 
