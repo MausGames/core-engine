@@ -66,8 +66,10 @@ function SetStatus(sText)
 
     if(asMatch)
     {
-        g_pProgress.value = parseInt(asMatch[2]) * 100;
-        g_pProgress.max   = parseInt(asMatch[4]) * 100;
+        const iValue = parseInt(asMatch[2]);
+        const iMax   = parseInt(asMatch[4]);
+
+        g_pProgress.style.width = (iValue / iMax) * 100 + "%";
 
         sText = asMatch[1];
     }
