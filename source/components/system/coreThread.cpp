@@ -68,6 +68,8 @@ SDL_Thread* coreThread::StartThread()
 /* kill the thread */
 void coreThread::KillThread()
 {
+#if !defined(_CORE_EMSCRIPTEN_)
+
     if(m_pThread)
     {
         // signal thread to shut down
@@ -77,6 +79,8 @@ void coreThread::KillThread()
         SDL_WaitThread(m_pThread, NULL);
         m_pThread = NULL;
     }
+
+#endif
 }
 
 

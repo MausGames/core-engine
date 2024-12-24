@@ -23,8 +23,8 @@ CoreDebug::coreDisplay::coreDisplay()noexcept
 CoreDebug::coreMeasure::coreMeasure()noexcept
 : iPerfTime   (0u)
 , aaiQuery    {}
-, fCurrentCPU (0.0f)
-, fCurrentGPU (0.0f)
+, dCurrentCPU (0.0)
+, dCurrentGPU (0.0)
 , oOutput     ()
 {
 }
@@ -243,8 +243,8 @@ void CoreDebug::MeasureEnd(const coreHashString& sName)
         glGetQueryObjectui64v(pMeasure->aaiQuery[1].current(), GL_QUERY_RESULT, &aiResult[1]);
 
         // update GPU performance value
-        const coreFloat fDifferenceGPU = coreFloat(coreDouble(aiResult[1] - aiResult[0]) / 1.0e06);
-        pMeasure->fCurrentGPU = pMeasure->fCurrentGPU * CORE_DEBUG_SMOOTH_FACTOR + fDifferenceGPU * (1.0f-CORE_DEBUG_SMOOTH_FACTOR);
+        const coreDouble dDifferenceGPU = coreDouble(aiResult[1] - aiResult[0]) / 1.0e06;
+        pMeasure->dCurrentGPU = pMeasure->dCurrentGPU * CORE_DEBUG_SMOOTH_FACTOR + dDifferenceGPU * (1.0-CORE_DEBUG_SMOOTH_FACTOR);
     }
 
     const coreChar* pcName = sName.GetString();
@@ -259,11 +259,11 @@ void CoreDebug::MeasureEnd(const coreHashString& sName)
     }
 
     // fetch second CPU time value and update CPU performance value
-    const coreFloat fDifferenceCPU = coreFloat(coreDouble(SDL_GetPerformanceCounter() - pMeasure->iPerfTime) * Core::System->GetPerfFrequency() * 1.0e03);
-    pMeasure->fCurrentCPU = pMeasure->fCurrentCPU * CORE_DEBUG_SMOOTH_FACTOR + fDifferenceCPU * (1.0f-CORE_DEBUG_SMOOTH_FACTOR);
+    const coreDouble dDifferenceCPU = coreDouble(SDL_GetPerformanceCounter() - pMeasure->iPerfTime) * Core::System->GetPerfFrequency() * 1.0e03;
+    pMeasure->dCurrentCPU = pMeasure->dCurrentCPU * CORE_DEBUG_SMOOTH_FACTOR + dDifferenceCPU * (1.0-CORE_DEBUG_SMOOTH_FACTOR);
 
     // write formatted values to output label
-    pMeasure->oOutput.SetText(PRINT("%s (CPU %.2fms / GPU %.2fms)", pcName, pMeasure->fCurrentCPU, pMeasure->fCurrentGPU));
+    pMeasure->oOutput.SetText(PRINT("%s (CPU %.2fms / GPU %.2fms)", pcName, pMeasure->dCurrentCPU, pMeasure->dCurrentGPU));
 }
 
 

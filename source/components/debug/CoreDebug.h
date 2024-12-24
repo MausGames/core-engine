@@ -18,7 +18,7 @@
 // ****************************************************************
 /* debug definitions */
 #define CORE_DEBUG_QUERIES         (4u)        // number of GPU timer-query pairs used for each measure object
-#define CORE_DEBUG_SMOOTH_FACTOR   (0.98f)     // factor used to smooth-out time values and reduce flickering (higher = smoother, but slower)
+#define CORE_DEBUG_SMOOTH_FACTOR   (0.98)      // factor used to smooth-out time values and reduce flickering (higher = smoother, but slower)
 #define CORE_DEBUG_OVERALL_NAME    "Overall"   // name for the overall performance output object
 
 #define CORE_DEBUG_STAT_PRIMITIVES (0u)        // submitted primitives
@@ -47,9 +47,9 @@ private:
     {
         coreUint64 iPerfTime;                               // high-precision CPU time value at start
         coreRing<GLuint, CORE_DEBUG_QUERIES> aaiQuery[2];   // asynchronous GPU timer-query objects
-        coreFloat fCurrentCPU;                              // current CPU performance value
-        coreFloat fCurrentGPU;                              // current GPU performance value
-        coreLabel oOutput;                                  // label for displaying output
+        coreDouble dCurrentCPU;                             // current CPU performance value
+        coreDouble dCurrentGPU;                             // current GPU performance value
+        coreLabel  oOutput;                                 // label for displaying output
 
         coreMeasure()noexcept;
     };

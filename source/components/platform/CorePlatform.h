@@ -13,6 +13,7 @@
 // TODO 3: automatically replace parameters in the default rich-text with rich-values (when dirty) (what delimiters? $, %%, {})
 // TODO 3: expose more Steam timeline features (e.g. set default rich-text as description) (event priority, durations)
 // TODO 3: add a game state for minimized/out-of-focus
+// TODO 3: implement rate-limits (specifically for leaderboards), copy code from P1
 
 
 // ****************************************************************
