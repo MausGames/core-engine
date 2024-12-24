@@ -344,6 +344,7 @@
 #include <ios>
 #include <limits>
 #include <memory>
+#include <numbers>
 #include <random>
 #include <string>
 #include <type_traits>
