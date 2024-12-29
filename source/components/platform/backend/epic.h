@@ -24,6 +24,7 @@
 #include <epic/eos_version.h>
 
 // TODO 3: Ukrainian language is currently not supported on the Epic store
+// TODO 2: macOS never seems to work, authentication does nothing, log says nothing, documentation is confusing, I have no idea (currently the game just starts after 5 seconds and achievements won't work)
 
 
 // ****************************************************************
@@ -185,6 +186,7 @@ private:
     EOS_ProductUserId m_pUserId;         // product user identifier (connection)
 
     coreAtomic<coreUint8> m_iState;      // processing status
+    coreAtomic<coreBool>  m_bAgain;      // authenticate again
 
 
 public:
@@ -253,6 +255,7 @@ inline coreBackendEpic::coreBackendEpic()noexcept
 , m_pAccountId    (NULL)
 , m_pUserId       (NULL)
 , m_iState        (0u)
+, m_bAgain        (false)
 {
 }
 
@@ -370,23 +373,32 @@ inline coreBool coreBackendEpic::Init()
 
 #endif
 
-    // set authentication options
-    EOS_Auth_LoginOptions oLoginOptions = {};
-    oLoginOptions.ApiVersion  = EOS_AUTH_LOGIN_API_LATEST;
-    oLoginOptions.Credentials = &oCredentials;
-    oLoginOptions.ScopeFlags  = EOS_EAuthScopeFlags::EOS_AS_BasicProfile | EOS_EAuthScopeFlags::EOS_AS_Presence | EOS_EAuthScopeFlags::EOS_AS_FriendsList;
-
-    // authenticate local user
-    nEOS_Auth_Login(m_pAuth, &oLoginOptions, this, coreBackendEpic::__OnAuthLogin);
-
-    // wait on authentication (required to access user-private location)
-    const std::time_t iLimit = std::time(NULL) + 5u;
     do
     {
-        CORE_SPINLOCK_YIELD
-        nEOS_Platform_Tick(m_pPlatform);
+        // show user interface to allow corrective actions
+        const coreBool bInterface = m_bAgain;
+        m_bAgain = false;
+
+        // set authentication options
+        EOS_Auth_LoginOptions oLoginOptions = {};
+        oLoginOptions.ApiVersion  = EOS_AUTH_LOGIN_API_LATEST;
+        oLoginOptions.Credentials = &oCredentials;
+        oLoginOptions.ScopeFlags  = EOS_EAuthScopeFlags::EOS_AS_BasicProfile | EOS_EAuthScopeFlags::EOS_AS_Presence | EOS_EAuthScopeFlags::EOS_AS_FriendsList;
+        oLoginOptions.LoginFlags  = bInterface ? 0u : EOS_LF_NO_USER_INTERFACE;
+
+        // authenticate local user
+        nEOS_Auth_Login(m_pAuth, &oLoginOptions, this, coreBackendEpic::__OnAuthLogin);
+
+        // wait on authentication (required to access user-private location)
+        const std::time_t iLimit = std::time(NULL) + (bInterface ? 30 : 5);
+        do
+        {
+            CORE_SPINLOCK_YIELD
+            nEOS_Platform_Tick(m_pPlatform);
+        }
+        while(!m_bAgain && !HAS_BIT(m_iState, 0u) && (std::time(NULL) < iLimit));
     }
-    while(!HAS_BIT(m_iState, 0u) && (std::time(NULL) < iLimit));
+    while(m_bAgain);
 
     // check for successful authentication
     WARN_IF(!m_pAccountId)
@@ -751,6 +763,12 @@ inline void EOS_CALL coreBackendEpic::__OnAuthLogin(const EOS_Auth_LoginCallback
 
         // start user connection
         pThis->__LoginUser();
+    }
+    else if(pData->ResultCode == EOS_EResult::EOS_Auth_UserInterfaceRequired)
+    {
+        // authenticate again and show user interface
+        pThis->m_bAgain = true;
+        return;
     }
 
     // mark authentication as finished
