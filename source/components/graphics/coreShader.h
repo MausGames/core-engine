@@ -15,6 +15,7 @@
 // TODO 5: <old comment style>
 // TODO 5: shared uniform-buffer layout might be more efficient, but needs many queries
 // TODO 3: make shader version configurable from config.ini ? (clamp)
+// TODO 3: it's not possible to comment-out includes (both single-line and multi-line)
 
 
 // ****************************************************************

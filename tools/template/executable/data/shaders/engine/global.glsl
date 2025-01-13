@@ -222,11 +222,11 @@ uniform highp   vec2 u_v2TwoSize;
 uniform mediump vec2 u_v2TwoRotation;
 
 // default object uniforms
-uniform lowp    vec4 u_v4Color;
+uniform mediump vec4 u_v4Color;
 uniform mediump vec4 u_v4TexParam;
 
 // texture uniforms
-uniform lowp    sampler2D       u_as2Texture2D    [CORE_NUM_TEXTURES_2D];
+uniform mediump sampler2D       u_as2Texture2D    [CORE_NUM_TEXTURES_2D];
 uniform mediump sampler2DShadow u_as2TextureShadow[CORE_NUM_TEXTURES_SHADOW];
 
 // recommended texture lookup

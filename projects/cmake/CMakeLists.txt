@@ -96,7 +96,7 @@ if(CORE_EMSCRIPTEN)
     target_link_libraries(
         CoreEngine INTERFACE
         -lopenal -lidbfs.js
-        -l:libSDL2.a -l:libSDL2_ttf.a -l:libharfbuzz.a -l:libfreetype.a -l:libSDL2_image.a -l:libwebp.a -l:libzstd.a -l:libopusfile.a -l:libopus.a -l:libogg.a
+        -l:libSDL2.a -l:libSDL2_ttf.a -l:libharfbuzz.a -l:libfreetype.a -l:libSDL2_image.a -l:libwebp.a -l:libwebpdemux.a -l:libzstd.a -l:libopusfile.a -l:libopus.a -l:libogg.a
     )
 
     target_link_options(
