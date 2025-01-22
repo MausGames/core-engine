@@ -305,7 +305,6 @@
 #if defined(_CORE_DEBUG_)
     #define _CRTDBG_MAP_ALLOC
     #define _GLIBCXX_ASSERTIONS
-    #define _LIBCPP_ENABLE_ASSERTIONS 1
 #endif
 #if defined(_CORE_TEST_)
     #define _GLIBCXX_DEBUG

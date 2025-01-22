@@ -34,8 +34,8 @@ CoreGraphics::CoreGraphics()noexcept
 , m_iMaxSamples       (0u)
 , m_iMaxAnisotropy    (0u)
 , m_iMaxTextures      (0u)
-, m_fVersionOpenGL    (0.0f)
-, m_fVersionGLSL      (0.0f)
+, m_VersionOpenGL     (corePoint2U8(0u, 0u))
+, m_VersionGLSL       (corePoint2U8(0u, 0u))
 {
     Core::Log->Header("Graphics Interface");
 

@@ -1776,7 +1776,7 @@ coreStatus coreData::FolderScan(const coreChar* pcPath, const coreChar* pcFilter
     WIN32_FIND_DATAW oFile;
 
     // open folder
-    const HANDLE pFolder = FindFirstFileExW(coreData::__ToWideChar(PRINT("%s/%s", acString, pcFilter)), FindExInfoBasic, &oFile, FindExSearchNameMatch, NULL, 0u);
+    const HANDLE pFolder = FindFirstFileExW(coreData::__ToWideChar(PRINT("%s/%s", acString, pcFilter)), FindExInfoBasic, &oFile, FindExSearchNameMatch, NULL, FIND_FIRST_EX_LARGE_FETCH);
     if(pFolder == INVALID_HANDLE_VALUE)
     {
         Core::Log->Warning("Folder (%s/%s) could not be opened", acString, pcFilter);

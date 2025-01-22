@@ -6,7 +6,7 @@ SET _TARGET_=%~3
 
 MKDIR "%_TARGET_%"
 
-curl --user-agent "MausGames" --location "https://maus-games.at/data/%_PROJECT_%/%_FILE_%" --output "%_TARGET_%\%_FILE_%"
+curl --user-agent "MausGames" --location "https://www.maus-games.at/data/%_PROJECT_%/%_FILE_%" --output "%_TARGET_%\%_FILE_%"
 tar -vvv --keep-newer-files --extract --directory="%_TARGET_%" --file="%_TARGET_%\%_FILE_%"
 
 DEL "%_TARGET_%\%_FILE_%"
