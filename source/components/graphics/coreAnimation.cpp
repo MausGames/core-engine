@@ -55,7 +55,7 @@ coreStatus coreAnimation::Load(coreFile* pFile)
     if(!pFile->GetSize()) return CORE_ERROR_FILE;   // do not load file data
 
     // decompress file to animation data
-    coreAnimationScope pAnim = IMG_LoadAnimationTyped_RW(pFile->CreateReadStream(), 1, coreData::StrExtension(pFile->GetPath()));
+    coreAnimationScope pAnim = IMG_LoadAnimationTyped_IO(pFile->CreateReadStream(), true, coreData::StrExtension(pFile->GetPath()));
     if(!pAnim || !pAnim->w || !pAnim->h || !pAnim->count)
     {
         Core::Log->Warning("Animation (%s) could not be loaded (SDL: %s)", m_sName.c_str(), SDL_GetError());
@@ -65,7 +65,7 @@ coreStatus coreAnimation::Load(coreFile* pFile)
     ASSERT(std::all_of(pAnim->frames, pAnim->frames + pAnim->count, [&](const SDL_Surface* pFrame) {return (pFrame->w == pAnim->w) && (pFrame->h == pAnim->h);}))
 
     // check components
-    coreUint8 iComponents = pAnim->frames[0]->format->BytesPerPixel;
+    coreUint8 iComponents = SDL_BYTESPERPIXEL(pAnim->frames[0]->format);
     if((HAS_FLAG(m_eLoad, CORE_TEXTURE_LOAD_RG) || HAS_FLAG(m_eLoad, CORE_TEXTURE_LOAD_R)) && CORE_GL_SUPPORT(ARB_texture_rg))
     {
         WARN_IF(iComponents != 3u) {}
@@ -119,7 +119,7 @@ coreStatus coreAnimation::Load(coreFile* pFile)
 
         ASSERT(!SDL_MUSTLOCK(pFrame))
 
-        const coreUint32 iPitchFrame = pFrame->w * pFrame->format->BytesPerPixel;
+        const coreUint32 iPitchFrame = pFrame->w * SDL_BYTESPERPIXEL(pFrame->format);
         const coreUint32 iPitchPack  = iPitchFrame * m_Division[0];
         const coreUintW  iOffset     = (i % m_Division[0]) * iPitchFrame + (i / m_Division[0]) * iPitchPack * pFrame->h;
 

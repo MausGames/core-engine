@@ -69,7 +69,7 @@ public:
     coreStatus Unscramble(const coreUint64 iKey   = 0u);
 
     /* create stream for reading file data */
-    SDL_RWops* CreateReadStream()const;
+    SDL_IOStream* CreateReadStream()const;
 
     /* load and unload file data */
     coreStatus LoadData();
@@ -97,8 +97,8 @@ public:
 
 private:
     /* safely read and write */
-    static void __Read (SDL_RWops* pFile, void*       pPointer, const coreUintW iSize, const coreUintW iNum, coreBool* OUTPUT pbSuccess);
-    static void __Write(SDL_RWops* pFile, const void* pPointer, const coreUintW iSize, const coreUintW iNum, coreBool* OUTPUT pbSuccess);
+    static void __Read (SDL_IOStream* pFile, void*       pPointer, const coreUintW iSize, coreBool* OUTPUT pbSuccess);
+    static void __Write(SDL_IOStream* pFile, const void* pPointer, const coreUintW iSize, coreBool* OUTPUT pbSuccess);
 };
 
 

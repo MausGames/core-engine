@@ -25,17 +25,17 @@ CoreInput::CoreInput()noexcept
 
     const auto nLoadFunc = [](const coreChar* pcPath)
     {
-        // retrieve game controller database file
+        // retrieve gamepad database file
         if(!coreData::FileExists(pcPath)) return;
         const coreFile oFile(pcPath);
 
-        // load additional game controller mappings
-        const coreInt32 iNum = SDL_GameControllerAddMappingsFromRW(oFile.CreateReadStream(), 1);
-        if(iNum < 0) Core::Log->Warning("Game controller database could not be loaded (SDL: %s)", SDL_GetError());
-                else Core::Log->Info   ("Game controller database loaded (%d added, %d total)",   iNum, SDL_GameControllerNumMappings());
+        // load additional gamepad mappings
+        const coreInt32 iNum = SDL_AddGamepadMappingsFromIO(oFile.CreateReadStream(), true);
+        if(iNum < 0) Core::Log->Warning("Gamepad database could not be loaded (SDL: %s)", SDL_GetError());
+                else Core::Log->Info   ("Gamepad database loaded (%d added, %d total)",   iNum, SDL_GetGamepadNumMappings());
     };
-    nLoadFunc("data/other/gamecontrollerdb.txt");
-    nLoadFunc(coreData::UserFolderPrivate("gamecontrollerdb.txt"));
+    nLoadFunc("data/other/gamepad_db.txt");
+    nLoadFunc(coreData::UserFolderPrivate("gamepad_db.txt"));
 
     // start up joystick input
     this->__OpenJoysticks();
@@ -55,7 +55,7 @@ CoreInput::~CoreInput()
     this->__CloseJoysticks();
 
     // delete mouse cursor
-    if(m_pCursor) SDL_FreeCursor(m_pCursor);
+    if(m_pCursor) SDL_DestroyCursor(m_pCursor);
 
     Core::Log->Info(CORE_LOG_BOLD("Input Interface shut down"));
 }
@@ -67,115 +67,111 @@ coreBool CoreInput::ProcessEvent(const SDL_Event& oEvent)
 {
     switch(oEvent.type)
     {
-    // process window events
-    case SDL_WINDOWEVENT:
-        switch(oEvent.window.event)
-        {
-        // window focus gained
-        case SDL_WINDOWEVENT_FOCUS_GAINED:
-            if(!m_bCursorVisible) SDL_SetRelativeMouseMode(SDL_TRUE);
-            break;
+    // window focus gained
+    case SDL_EVENT_WINDOW_FOCUS_GAINED:
+        if(!m_bCursorVisible) SDL_SetWindowRelativeMouseMode(Core::System->GetWindow(), true);
+        break;
 
-        // window focus lost
-        case SDL_WINDOWEVENT_FOCUS_LOST:
-            if(!m_bCursorVisible) SDL_SetRelativeMouseMode(SDL_FALSE);
-            break;
-        }
+    // window focus lost
+    case SDL_EVENT_WINDOW_FOCUS_LOST:
+        if(!m_bCursorVisible) SDL_SetWindowRelativeMouseMode(Core::System->GetWindow(), false);
         break;
 
     // set text-input character
-    case SDL_TEXTINPUT:
+    case SDL_EVENT_TEXT_INPUT:
         this->SetKeyboardCharUTF8(oEvent.text.text);
         break;
 
     // press keyboard button
-    case SDL_KEYDOWN:
+    case SDL_EVENT_KEY_DOWN:
         if(!oEvent.key.repeat)
         {
-            this->SetKeyboardButton(oEvent.key.keysym.scancode, true);
-                 if(oEvent.key.keysym.scancode == CORE_INPUT_KEY(BACKSPACE)) this->SetKeyboardChar(CORE_INPUT_CHAR(BACKSPACE));
-            else if(oEvent.key.keysym.scancode == CORE_INPUT_KEY(RETURN))    this->SetKeyboardChar(CORE_INPUT_CHAR(RETURN));
-            else if(oEvent.key.keysym.scancode == CORE_INPUT_KEY(KP_ENTER))  this->SetKeyboardChar(CORE_INPUT_CHAR(RETURN));
-            else if(oEvent.key.keysym.mod & KMOD_CTRL)
+            this->SetKeyboardButton(oEvent.key.scancode, true);
+                 if(oEvent.key.scancode == CORE_INPUT_KEY(BACKSPACE)) this->SetKeyboardChar(CORE_INPUT_CHAR(BACKSPACE));
+            else if(oEvent.key.scancode == CORE_INPUT_KEY(RETURN))    this->SetKeyboardChar(CORE_INPUT_CHAR(RETURN));
+            else if(oEvent.key.scancode == CORE_INPUT_KEY(KP_ENTER))  this->SetKeyboardChar(CORE_INPUT_CHAR(RETURN));
+            else if(oEvent.key.mod & SDL_KMOD_CTRL)
             {
-                     if(oEvent.key.keysym.scancode == CORE_INPUT_KEY(X)) this->SetKeyboardChar(CORE_INPUT_CHAR(CUT));
-                else if(oEvent.key.keysym.scancode == CORE_INPUT_KEY(C)) this->SetKeyboardChar(CORE_INPUT_CHAR(COPY));
-                else if(oEvent.key.keysym.scancode == CORE_INPUT_KEY(V)) this->SetKeyboardChar(CORE_INPUT_CHAR(PASTE));
+                     if(oEvent.key.scancode == CORE_INPUT_KEY(X)) this->SetKeyboardChar(CORE_INPUT_CHAR(CUT));
+                else if(oEvent.key.scancode == CORE_INPUT_KEY(C)) this->SetKeyboardChar(CORE_INPUT_CHAR(COPY));
+                else if(oEvent.key.scancode == CORE_INPUT_KEY(V)) this->SetKeyboardChar(CORE_INPUT_CHAR(PASTE));
             }
-            else if(oEvent.key.keysym.scancode == CORE_INPUT_KEY(PRINTSCREEN)) return false;   // # return early
+            else if(oEvent.key.scancode == CORE_INPUT_KEY(PRINTSCREEN)) return false;   // # return early
         }
         break;
 
     // release keyboard button
-    case SDL_KEYUP:
-        this->SetKeyboardButton(oEvent.key.keysym.scancode, false);
+    case SDL_EVENT_KEY_UP:
+        this->SetKeyboardButton(oEvent.key.scancode, false);
         break;
 
 #if !defined(_CORE_MOBILE_)
 
     // press mouse button
-    case SDL_MOUSEBUTTONDOWN:
+    case SDL_EVENT_MOUSE_BUTTON_DOWN:
         this->SetMouseButton(oEvent.button.button, true);
         break;
 
     // release mouse button
-    case SDL_MOUSEBUTTONUP:
+    case SDL_EVENT_MOUSE_BUTTON_UP:
         this->SetMouseButton(oEvent.button.button, false);
         break;
 
     // move mouse position
-    case SDL_MOUSEMOTION:
-        this->SetMousePosition(coreVector2(I_TO_F(oEvent.motion.x),    -I_TO_F(oEvent.motion.y))   /Core::System->GetResolution() + coreVector2(-0.5f,0.5f));
-        this->SetMouseRelative(coreVector2(I_TO_F(oEvent.motion.xrel), -I_TO_F(oEvent.motion.yrel))/Core::System->GetResolution() + this->GetMouseRelative().xy());
+    case SDL_EVENT_MOUSE_MOTION:
+        this->SetMousePosition(coreVector2(oEvent.motion.x,    -oEvent.motion.y)    / Core::System->GetResolution() + coreVector2(-0.5f,0.5f));
+        this->SetMouseRelative(coreVector2(oEvent.motion.xrel, -oEvent.motion.yrel) / Core::System->GetResolution() + this->GetMouseRelative().xy());
         break;
 
     // move mouse wheel
-    case SDL_MOUSEWHEEL:
-        this->SetMouseWheel(oEvent.wheel.preciseY);
+    case SDL_EVENT_MOUSE_WHEEL:
+        this->SetMouseWheel(oEvent.wheel.y);
         break;
 
 #endif
 
     // press joystick button
-    case SDL_JOYBUTTONDOWN:
-        if(__CORE_INPUT_JOYSTICK(this->__GetJoystickIndex(oEvent.jbutton.which)).pController && (oEvent.jbutton.button < SDL_CONTROLLER_BUTTON_MAX)) break; FALLTHROUGH
-    case SDL_CONTROLLERBUTTONDOWN:
+    case SDL_EVENT_JOYSTICK_BUTTON_DOWN:
+        if(__CORE_INPUT_JOYSTICK(this->__GetJoystickIndex(oEvent.jbutton.which)).pGamepad && (oEvent.jbutton.button < SDL_GAMEPAD_BUTTON_COUNT)) break; FALLTHROUGH
+    case SDL_EVENT_GAMEPAD_BUTTON_DOWN:
         {
             const coreUintW iIndex = this->__GetJoystickIndex(oEvent.jbutton.which);
 
-                 if(oEvent.jbutton.button == SDL_CONTROLLER_BUTTON_DPAD_LEFT)  this->SetJoystickHat(iIndex, CORE_INPUT_DIR_LEFT,  true);
-            else if(oEvent.jbutton.button == SDL_CONTROLLER_BUTTON_DPAD_RIGHT) this->SetJoystickHat(iIndex, CORE_INPUT_DIR_RIGHT, true);
-            else if(oEvent.jbutton.button == SDL_CONTROLLER_BUTTON_DPAD_DOWN)  this->SetJoystickHat(iIndex, CORE_INPUT_DIR_DOWN,  true);
-            else if(oEvent.jbutton.button == SDL_CONTROLLER_BUTTON_DPAD_UP)    this->SetJoystickHat(iIndex, CORE_INPUT_DIR_UP,    true);
+                 if(oEvent.jbutton.button == SDL_GAMEPAD_BUTTON_DPAD_LEFT)  this->SetJoystickHat(iIndex, CORE_INPUT_DIR_LEFT,  true);
+            else if(oEvent.jbutton.button == SDL_GAMEPAD_BUTTON_DPAD_RIGHT) this->SetJoystickHat(iIndex, CORE_INPUT_DIR_RIGHT, true);
+            else if(oEvent.jbutton.button == SDL_GAMEPAD_BUTTON_DPAD_DOWN)  this->SetJoystickHat(iIndex, CORE_INPUT_DIR_DOWN,  true);
+            else if(oEvent.jbutton.button == SDL_GAMEPAD_BUTTON_DPAD_UP)    this->SetJoystickHat(iIndex, CORE_INPUT_DIR_UP,    true);
             else
             {
-                this->SetJoystickButton(iIndex, oEvent.jbutton.button, true);
+                const SDL_GamepadButtonLabel eLabel = SDL_GetGamepadButtonLabelForType(m_aJoystick[iIndex].eGamepadType, SDL_GamepadButton(oEvent.jbutton.button));
+                this->SetJoystickButton(iIndex, (eLabel != SDL_GAMEPAD_BUTTON_LABEL_UNKNOWN) ? ((eLabel - 1u) % 4u) : oEvent.jbutton.button, true);
             }
         }
         break;
 
     // release joystick button
-    case SDL_JOYBUTTONUP:
-        if(__CORE_INPUT_JOYSTICK(this->__GetJoystickIndex(oEvent.jbutton.which)).pController && (oEvent.jbutton.button < SDL_CONTROLLER_BUTTON_MAX)) break; FALLTHROUGH
-    case SDL_CONTROLLERBUTTONUP:
+    case SDL_EVENT_JOYSTICK_BUTTON_UP:
+        if(__CORE_INPUT_JOYSTICK(this->__GetJoystickIndex(oEvent.jbutton.which)).pGamepad && (oEvent.jbutton.button < SDL_GAMEPAD_BUTTON_COUNT)) break; FALLTHROUGH
+    case SDL_EVENT_GAMEPAD_BUTTON_UP:
         {
             const coreUintW iIndex = this->__GetJoystickIndex(oEvent.jbutton.which);
 
-                 if(oEvent.jbutton.button == SDL_CONTROLLER_BUTTON_DPAD_LEFT)  this->SetJoystickHat(iIndex, CORE_INPUT_DIR_LEFT,  false);
-            else if(oEvent.jbutton.button == SDL_CONTROLLER_BUTTON_DPAD_RIGHT) this->SetJoystickHat(iIndex, CORE_INPUT_DIR_RIGHT, false);
-            else if(oEvent.jbutton.button == SDL_CONTROLLER_BUTTON_DPAD_DOWN)  this->SetJoystickHat(iIndex, CORE_INPUT_DIR_DOWN,  false);
-            else if(oEvent.jbutton.button == SDL_CONTROLLER_BUTTON_DPAD_UP)    this->SetJoystickHat(iIndex, CORE_INPUT_DIR_UP,    false);
+                 if(oEvent.jbutton.button == SDL_GAMEPAD_BUTTON_DPAD_LEFT)  this->SetJoystickHat(iIndex, CORE_INPUT_DIR_LEFT,  false);
+            else if(oEvent.jbutton.button == SDL_GAMEPAD_BUTTON_DPAD_RIGHT) this->SetJoystickHat(iIndex, CORE_INPUT_DIR_RIGHT, false);
+            else if(oEvent.jbutton.button == SDL_GAMEPAD_BUTTON_DPAD_DOWN)  this->SetJoystickHat(iIndex, CORE_INPUT_DIR_DOWN,  false);
+            else if(oEvent.jbutton.button == SDL_GAMEPAD_BUTTON_DPAD_UP)    this->SetJoystickHat(iIndex, CORE_INPUT_DIR_UP,    false);
             else
             {
-                this->SetJoystickButton(iIndex, oEvent.jbutton.button, false);
+                const SDL_GamepadButtonLabel eLabel = SDL_GetGamepadButtonLabelForType(m_aJoystick[iIndex].eGamepadType, SDL_GamepadButton(oEvent.jbutton.button));
+                this->SetJoystickButton(iIndex, (eLabel != SDL_GAMEPAD_BUTTON_LABEL_UNKNOWN) ? ((eLabel - 1u) % 4u) : oEvent.jbutton.button, false);
             }
         }
         break;
 
     // move joystick axis
-    case SDL_JOYAXISMOTION:
-        if(__CORE_INPUT_JOYSTICK(this->__GetJoystickIndex(oEvent.jaxis.which)).pController && (oEvent.jaxis.axis < SDL_CONTROLLER_AXIS_MAX)) break; FALLTHROUGH
-    case SDL_CONTROLLERAXISMOTION:
+    case SDL_EVENT_JOYSTICK_AXIS_MOTION:
+        if(__CORE_INPUT_JOYSTICK(this->__GetJoystickIndex(oEvent.jaxis.which)).pGamepad && (oEvent.jaxis.axis < SDL_GAMEPAD_AXIS_COUNT)) break; FALLTHROUGH
+    case SDL_EVENT_GAMEPAD_AXIS_MOTION:
         {
             const coreUintW iIndex = this->__GetJoystickIndex(oEvent.jaxis.which);
             const coreBool  bNew   = (ABS(oEvent.jaxis.value) > Core::Config->GetInt(CORE_CONFIG_INPUT_JOYSTICKDEAD));
@@ -183,8 +179,8 @@ coreBool CoreInput::ProcessEvent(const SDL_Event& oEvent)
 
             if(bNew != bOld)
             {
-                     if(oEvent.jaxis.axis == SDL_CONTROLLER_AXIS_TRIGGERLEFT)  this->SetJoystickButton(iIndex, CORE_INPUT_BUTTON_LEFTTRIGGER,  bNew);
-                else if(oEvent.jaxis.axis == SDL_CONTROLLER_AXIS_TRIGGERRIGHT) this->SetJoystickButton(iIndex, CORE_INPUT_BUTTON_RIGHTTRIGGER, bNew);
+                     if(oEvent.jaxis.axis == SDL_GAMEPAD_AXIS_LEFT_TRIGGER)  this->SetJoystickButton(iIndex, CORE_INPUT_BUTTON_LEFT_TRIGGER,  bNew);
+                else if(oEvent.jaxis.axis == SDL_GAMEPAD_AXIS_RIGHT_TRIGGER) this->SetJoystickButton(iIndex, CORE_INPUT_BUTTON_RIGHT_TRIGGER, bNew);
             }
 
             if(bNew) this->SetJoystickAxis(iIndex, oEvent.jaxis.axis, CLAMP(I_TO_F(oEvent.jaxis.value) * RCP(I_TO_F(MAX(Core::Config->GetInt(CORE_CONFIG_INPUT_JOYSTICKMAX), 1))) * (((oEvent.jaxis.axis == 1u) || (oEvent.jaxis.axis == 3u)) ? -1.0f : 1.0f), -1.0f, 1.0f));
@@ -193,7 +189,7 @@ coreBool CoreInput::ProcessEvent(const SDL_Event& oEvent)
         break;
 
     // move joystick hat
-    case SDL_JOYHATMOTION:
+    case SDL_EVENT_JOYSTICK_HAT_MOTION:
         {
             const coreUintW iIndex = this->__GetJoystickIndex(oEvent.jhat.which);
 
@@ -205,8 +201,8 @@ coreBool CoreInput::ProcessEvent(const SDL_Event& oEvent)
         break;
 
     // attach or detach joystick
-    case SDL_JOYDEVICEADDED:
-    case SDL_JOYDEVICEREMOVED:
+    case SDL_EVENT_JOYSTICK_ADDED:
+    case SDL_EVENT_JOYSTICK_REMOVED:
         this->__CloseJoysticks();
         this->__OpenJoysticks();
         break;
@@ -214,21 +210,21 @@ coreBool CoreInput::ProcessEvent(const SDL_Event& oEvent)
 #if defined(_CORE_MOBILE_)
 
     // press finger
-    case SDL_FINGERDOWN:
-        this->SetTouchButton  (coreUintW(oEvent.tfinger.fingerId), true);
-        this->SetTouchPosition(coreUintW(oEvent.tfinger.fingerId), coreVector2(oEvent.tfinger.x, -oEvent.tfinger.y) + coreVector2(-0.5f,0.5f));
+    case SDL_EVENT_FINGER_DOWN:
+        this->SetTouchButton  (coreUintW(oEvent.tfinger.fingerID), true);
+        this->SetTouchPosition(coreUintW(oEvent.tfinger.fingerID), coreVector2(oEvent.tfinger.x, -oEvent.tfinger.y) + coreVector2(-0.5f,0.5f));
         break;
 
     // release finger
-    case SDL_FINGERUP:
-        this->SetTouchButton(coreUintW(oEvent.tfinger.fingerId), false);
+    case SDL_EVENT_FINGER_UP:
+        this->SetTouchButton(coreUintW(oEvent.tfinger.fingerID), false);
         break;
 
     // move finger
-    case SDL_FINGERMOTION:
-        this->SetTouchPosition(coreUintW(oEvent.tfinger.fingerId), coreVector2(oEvent.tfinger.x,  -oEvent.tfinger.y)  + coreVector2(-0.5f,0.5f));
-        this->SetTouchRelative(coreUintW(oEvent.tfinger.fingerId), coreVector2(oEvent.tfinger.dx, -oEvent.tfinger.dy) + this->GetTouchRelative(coreUintW(oEvent.tfinger.fingerId)));
-        this->SetTouchPressure(coreUintW(oEvent.tfinger.fingerId), oEvent.tfinger.pressure);
+    case SDL_EVENT_FINGER_MOTION:
+        this->SetTouchPosition(coreUintW(oEvent.tfinger.fingerID), coreVector2(oEvent.tfinger.x,  -oEvent.tfinger.y)  + coreVector2(-0.5f,0.5f));
+        this->SetTouchRelative(coreUintW(oEvent.tfinger.fingerID), coreVector2(oEvent.tfinger.dx, -oEvent.tfinger.dy) + this->GetTouchRelative(coreUintW(oEvent.tfinger.fingerID)));
+        this->SetTouchPressure(coreUintW(oEvent.tfinger.fingerID), oEvent.tfinger.pressure);
         break;
 
 #endif
@@ -237,11 +233,21 @@ coreBool CoreInput::ProcessEvent(const SDL_Event& oEvent)
     // test if events are identical
     #define __COMPARE(a,b,x) STATIC_ASSERT((offsetof(a, x) == offsetof(b, x)) && (std::is_same_v<decltype(a::x), decltype(b::x)>))
     {
-        __COMPARE(SDL_JoyButtonEvent, SDL_ControllerButtonEvent, which)
-        __COMPARE(SDL_JoyButtonEvent, SDL_ControllerButtonEvent, button)
-        __COMPARE(SDL_JoyAxisEvent,   SDL_ControllerAxisEvent,   which)
-        __COMPARE(SDL_JoyAxisEvent,   SDL_ControllerAxisEvent,   axis)
-        __COMPARE(SDL_JoyAxisEvent,   SDL_ControllerAxisEvent,   value)
+        __COMPARE(SDL_JoyButtonEvent, SDL_GamepadButtonEvent, which)
+        __COMPARE(SDL_JoyButtonEvent, SDL_GamepadButtonEvent, button)
+        __COMPARE(SDL_JoyAxisEvent,   SDL_GamepadAxisEvent,   which)
+        __COMPARE(SDL_JoyAxisEvent,   SDL_GamepadAxisEvent,   axis)
+        __COMPARE(SDL_JoyAxisEvent,   SDL_GamepadAxisEvent,   value)
+    }
+    #undef __COMPARE
+
+    // test if button remapping is possible
+    #define __COMPARE(a,x,y) STATIC_ASSERT(((a) == (x) - 1u) && ((a) == (y) - 5u))
+    {
+        __COMPARE(SDL_GAMEPAD_BUTTON_SOUTH, SDL_GAMEPAD_BUTTON_LABEL_A, SDL_GAMEPAD_BUTTON_LABEL_CROSS)
+        __COMPARE(SDL_GAMEPAD_BUTTON_EAST,  SDL_GAMEPAD_BUTTON_LABEL_B, SDL_GAMEPAD_BUTTON_LABEL_CIRCLE)
+        __COMPARE(SDL_GAMEPAD_BUTTON_WEST,  SDL_GAMEPAD_BUTTON_LABEL_X, SDL_GAMEPAD_BUTTON_LABEL_SQUARE)
+        __COMPARE(SDL_GAMEPAD_BUTTON_NORTH, SDL_GAMEPAD_BUTTON_LABEL_Y, SDL_GAMEPAD_BUTTON_LABEL_TRIANGLE)
     }
     #undef __COMPARE
 
@@ -259,7 +265,7 @@ void CoreInput::SetCursor(const coreChar* pcPath)
         coreFileScope pFile = Core::Manager::Resource->RetrieveFile(pcPath);
 
         // decompress file to plain pixel data
-        coreSurfaceScope pData = IMG_LoadTyped_RW(pFile->CreateReadStream(), 1, coreData::StrExtension(pcPath));
+        coreSurfaceScope pData = IMG_LoadTyped_IO(pFile->CreateReadStream(), true, coreData::StrExtension(pcPath));
         if(!pData)
         {
             Core::Log->Warning("Cursor (%s) could not be loaded (SDL: %s)", pcPath, SDL_GetError());
@@ -267,7 +273,7 @@ void CoreInput::SetCursor(const coreChar* pcPath)
         }
 
         // delete old mouse cursor
-        if(m_pCursor) SDL_FreeCursor(m_pCursor);
+        if(m_pCursor) SDL_DestroyCursor(m_pCursor);
 
         // create and set new mouse cursor
         m_pCursor = SDL_CreateColorCursor(pData, 0, 0);
@@ -292,7 +298,7 @@ void CoreInput::ShowCursor(const coreBool bStatus)
     if(m_bCursorVisible == bStatus) return;
 
     // toggle cursor visibility
-    SDL_SetRelativeMouseMode(bStatus ? SDL_FALSE : SDL_TRUE);
+    SDL_SetWindowRelativeMouseMode(Core::System->GetWindow(), !bStatus);
 
     // save visibility status
     m_bCursorVisible = bStatus;
@@ -391,7 +397,7 @@ void CoreInput::JoystickRumble(const coreUintW iIndex, const coreFloat fStrength
     if(Core::Config->GetBool(CORE_CONFIG_INPUT_RUMBLE))
     {
         // start simple rumble effect
-        SDL_JoystickRumble(__CORE_INPUT_JOYSTICK(iIndex).pJoystick, F_TO_UI(fStrengthLow * 65535.0f), F_TO_UI(fStrengthHigh * 65535.0f), iLengthMs);
+        SDL_RumbleJoystick(__CORE_INPUT_JOYSTICK(iIndex).pJoystick, F_TO_UI(fStrengthLow * 65535.0f), F_TO_UI(fStrengthHigh * 65535.0f), iLengthMs);
     }
 }
 
@@ -408,7 +414,7 @@ void CoreInput::JoystickChangeLED(const coreUintW iIndex, const coreVector3 vCol
     {
         // set new color
         oJoystick.iColor = iNewColor;
-        SDL_JoystickSetLED(oJoystick.pJoystick, F_TO_UI(vColor.x * 255.0f), F_TO_UI(vColor.y * 255.0f), F_TO_UI(vColor.z * 255.0f));
+        SDL_SetJoystickLED(oJoystick.pJoystick, F_TO_UI(vColor.x * 255.0f), F_TO_UI(vColor.y * 255.0f), F_TO_UI(vColor.z * 255.0f));
     }
 }
 
@@ -544,54 +550,71 @@ void CoreInput::__OpenJoysticks()
     ASSERT(m_aJoystick.empty())
 
     // check for available joystick devices
-    const coreUintW iNumJoysticks = SDL_NumJoysticks();
-    if(iNumJoysticks)
+    coreInt32      iJoystickCount = 0u;
+    coreAllocScope piJoystickList = SDL_GetJoysticks(&iJoystickCount);
+    if(iJoystickCount)
     {
         Core::Log->ListStartInfo("Joysticks and Gamepads found");
         {
-            m_aJoystick.reserve(iNumJoysticks + 1u);
-            for(coreUintW i = 0u; i < iNumJoysticks; ++i)
-            {
-                coreJoystick oJoystick = {};
+            // reserve some memory
+            m_aJoystick.reserve(iJoystickCount + 1u);
 
-                // open game controller and joystick device
-                oJoystick.pController = SDL_GameControllerOpen(i);
-                oJoystick.pJoystick   = oJoystick.pController ? SDL_GameControllerGetJoystick(oJoystick.pController) : SDL_JoystickOpen(i);
+            for(coreUintW i = 0u, ie = iJoystickCount; i < ie; ++i)
+            {
+                coreJoystick& oJoystick = m_aJoystick.emplace_back();
+
+                // store joystick instance ID
+                const SDL_JoystickID iJoystickID = piJoystickList[i];
+                oJoystick.iJoystickID = iJoystickID;
+
+                // open gamepad and joystick device
+                oJoystick.pGamepad  = SDL_OpenGamepad(iJoystickID);
+                oJoystick.pJoystick = oJoystick.pGamepad ? SDL_GetGamepadJoystick(oJoystick.pGamepad) : SDL_OpenJoystick(iJoystickID);
 
                 // get device type
-                oJoystick.eControllerType = SDL_GameControllerGetType(oJoystick.pController);
-                oJoystick.eJoystickType   = SDL_JoystickGetType      (oJoystick.pJoystick);
+                oJoystick.eGamepadType  = SDL_GetGamepadType (oJoystick.pGamepad);
+                oJoystick.eJoystickType = SDL_GetJoystickType(oJoystick.pJoystick);
 
-                if(oJoystick.eControllerType == SDL_CONTROLLER_TYPE_UNKNOWN)
+                if(oJoystick.eGamepadType <= SDL_GAMEPAD_TYPE_STANDARD)
                 {
                     // get device information
                     coreUint16 iVendor, iProduct;
-                    SDL_GetJoystickGUIDInfo(SDL_JoystickGetGUID(oJoystick.pJoystick), &iVendor, &iProduct, NULL, NULL);
+                    SDL_GetJoystickGUIDInfo(SDL_GetJoystickGUID(oJoystick.pJoystick), &iVendor, &iProduct, NULL, NULL);
 
-                    // identify special controller type
+                    // identify special gamepad types
                     if((iVendor == 0x28DEu) && (iProduct == 0x11FFu))
                     {
-                        oJoystick.eControllerType = SDL_GameControllerType(CORE_INPUT_TYPE_STEAM);
+                        oJoystick.eGamepadType = CORE_INPUT_TYPE_STEAM;
+                    }
+                    else if(((iVendor == 0x1949u) && (iProduct == 0x0419u)) || ((iVendor == 0x0171u) && (iProduct == 0x0419u)))
+                    {
+                        oJoystick.eGamepadType = CORE_INPUT_TYPE_LUNA;
+                    }
+                    else if((iVendor == 0x18D1u) && (iProduct == 0x9400u))
+                    {
+                        oJoystick.eGamepadType = CORE_INPUT_TYPE_STADIA;
                     }
                 }
 
                 // get device features
-                const coreInt32 iNumButtons   = SDL_JoystickNumButtons           (oJoystick.pJoystick);
-                const coreInt32 iNumAxes      = SDL_JoystickNumAxes              (oJoystick.pJoystick);
-                const coreInt32 iNumHats      = SDL_JoystickNumHats              (oJoystick.pJoystick);
-                const coreInt32 iNumTouchpads = SDL_GameControllerGetNumTouchpads(oJoystick.pController);
-                const coreBool  bHasAccel     = SDL_GameControllerHasSensor      (oJoystick.pController, SDL_SENSOR_ACCEL) != SDL_FALSE;
-                const coreBool  bHasGyro      = SDL_GameControllerHasSensor      (oJoystick.pController, SDL_SENSOR_GYRO)  != SDL_FALSE;
+                const coreInt32 iNumButtons   = SDL_GetNumJoystickButtons (oJoystick.pJoystick);
+                const coreInt32 iNumAxes      = SDL_GetNumJoystickAxes    (oJoystick.pJoystick);
+                const coreInt32 iNumHats      = SDL_GetNumJoystickHats    (oJoystick.pJoystick);
+                const coreInt32 iNumBalls     = SDL_GetNumJoystickBalls   (oJoystick.pJoystick);
+                const coreInt32 iNumTouchpads = SDL_GetNumGamepadTouchpads(oJoystick.pGamepad);
 
-                // get current power-level
-                const SDL_JoystickPowerLevel ePowerLevel = SDL_JoystickCurrentPowerLevel(oJoystick.pJoystick);
+                // get current connection status
+                const SDL_JoystickConnectionState eConnectionState = SDL_GetJoystickConnectionState(oJoystick.pJoystick);
 
-                // save joystick object
-                m_aJoystick.push_back(oJoystick);
-                Core::Log->ListAdd(CORE_LOG_BOLD("%s:") " %s (%s, %s, %s, powerlevel %d, type %d+%d, %d buttons, %d axes, %d hats, %d touchpads, rumble %s, led %s, accelerometer %s, gyroscope %s)",
-                                   oJoystick.pController ? "Gamepad" : "Joystick", this->GetJoystickName(i), this->GetJoystickSerial(i), this->GetJoystickPath(i), this->GetJoystickGUID(i),
-                                   ePowerLevel, oJoystick.eControllerType, oJoystick.eJoystickType, iNumButtons, iNumAxes, iNumHats, iNumTouchpads,
-                                   this->GetJoystickHasRumble(i) ? "YES" : "NO", this->GetJoystickHasLED(i) ? "YES" : "NO", bHasAccel ? "YES" : "NO", bHasGyro ? "YES" : "NO");
+                // get current battery status
+                coreInt32 iPercent;
+                const SDL_PowerState ePowerState = SDL_GetJoystickPowerInfo(oJoystick.pJoystick, &iPercent);
+
+                // log joystick information
+                Core::Log->ListAdd(CORE_LOG_BOLD("%s:") " %s (%s, %s, %s, %s (%d), connection %d, battery %d (%d%%), %d buttons, %d axes, %d hats, %d balls, %d touchpads, rumble %s, led %s, accelerometer %s, gyroscope %s)",
+                                   oJoystick.pGamepad ? "Gamepad" : "Joystick", this->GetJoystickName(i), this->GetJoystickSerial(i), this->GetJoystickPath(i), this->GetJoystickGUID(i),
+                                   SDL_GetGamepadStringForType(oJoystick.eGamepadType), oJoystick.eJoystickType, eConnectionState, ePowerState, MAX0(iPercent), iNumButtons, iNumAxes, iNumHats, iNumBalls, iNumTouchpads,
+                                   this->GetJoystickHasRumble(i) ? "YES" : "NO", this->GetJoystickHasLED(i) ? "YES" : "NO", this->GetJoystickHasAccel(i) ? "YES" : "NO", this->GetJoystickHasGyro(i) ? "YES" : "NO");
             }
         }
         Core::Log->ListEnd();
@@ -599,7 +622,7 @@ void CoreInput::__OpenJoysticks()
         // sort correctly by joystick instance ID
         std::sort(m_aJoystick.begin(), m_aJoystick.end(), [](const coreJoystick& A, const coreJoystick& B)
         {
-            return (SDL_JoystickInstanceID(A.pJoystick) < SDL_JoystickInstanceID(B.pJoystick));
+            return (A.iJoystickID < B.iJoystickID);
         });
     }
     else Core::Log->Info("No Joysticks or Gamepads found");
@@ -619,8 +642,8 @@ void CoreInput::__CloseJoysticks()
     // close all joystick devices
     FOR_EACH(it, m_aJoystick)
     {
-             if(it->pController) SDL_GameControllerClose(it->pController);
-        else if(it->pJoystick)   SDL_JoystickClose      (it->pJoystick);
+             if(it->pGamepad)  SDL_CloseGamepad (it->pGamepad);
+        else if(it->pJoystick) SDL_CloseJoystick(it->pJoystick);
     }
 
     // clear memory
@@ -632,12 +655,12 @@ void CoreInput::__CloseJoysticks()
 /* convert joystick instance ID to joystick index */
 coreUintW CoreInput::__GetJoystickIndex(const SDL_JoystickID iID)const
 {
-    const SDL_Joystick* pFind = SDL_JoystickFromInstanceID(iID);
+    ASSERT(!m_aJoystick.empty())
 
     // find required joystick object
     FOR_EACH(it, m_aJoystick)
     {
-        if(it->pJoystick == pFind) return m_aJoystick.index(it);
+        if(it->iJoystickID == iID) return m_aJoystick.index(it);
     }
 
     // return index to empty/merged joystick object

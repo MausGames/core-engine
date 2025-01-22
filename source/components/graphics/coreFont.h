@@ -72,12 +72,12 @@ public:
     coreInt32 RetrieveGlyphKerning(const coreChar*  pcMultiByte1, const coreChar*  pcMultiByte2, const coreUint16 iHeight, const coreUint8 iOutline);
 
     /* retrieve font-related attributes */
-    inline const coreChar* RetrieveFamilyName()const                                              {ASSERT(!m_aapFont.empty()) return TTF_FontFaceFamilyName(m_aapFont.front().front());}
-    inline const coreChar* RetrieveStyleName ()const                                              {ASSERT(!m_aapFont.empty()) return TTF_FontFaceStyleName (m_aapFont.front().front());}
-    inline       coreInt32 RetrieveAscent    (const coreUint16 iHeight, const coreUint8 iOutline) {this->__EnsureHeight(iHeight, iOutline); return TTF_FontAscent  (m_aapFont.at(iHeight).at(iOutline));}
-    inline       coreInt32 RetrieveDescent   (const coreUint16 iHeight, const coreUint8 iOutline) {this->__EnsureHeight(iHeight, iOutline); return TTF_FontDescent (m_aapFont.at(iHeight).at(iOutline));}
-    inline       coreInt32 RetrieveRealHeight(const coreUint16 iHeight, const coreUint8 iOutline) {this->__EnsureHeight(iHeight, iOutline); return TTF_FontHeight  (m_aapFont.at(iHeight).at(iOutline));}
-    inline       coreInt32 RetrieveLineSkip  (const coreUint16 iHeight, const coreUint8 iOutline) {this->__EnsureHeight(iHeight, iOutline); return TTF_FontLineSkip(m_aapFont.at(iHeight).at(iOutline));}
+    inline const coreChar* RetrieveFamilyName()const                                              {ASSERT(!m_aapFont.empty()) return TTF_GetFontFamilyName(m_aapFont.front().front());}
+    inline const coreChar* RetrieveStyleName ()const                                              {ASSERT(!m_aapFont.empty()) return TTF_GetFontStyleName (m_aapFont.front().front());}
+    inline       coreInt32 RetrieveAscent    (const coreUint16 iHeight, const coreUint8 iOutline) {this->__EnsureHeight(iHeight, iOutline); return TTF_GetFontAscent  (m_aapFont.at(iHeight).at(iOutline));}
+    inline       coreInt32 RetrieveDescent   (const coreUint16 iHeight, const coreUint8 iOutline) {this->__EnsureHeight(iHeight, iOutline); return TTF_GetFontDescent (m_aapFont.at(iHeight).at(iOutline));}
+    inline       coreInt32 RetrieveRealHeight(const coreUint16 iHeight, const coreUint8 iOutline) {this->__EnsureHeight(iHeight, iOutline); return TTF_GetFontHeight  (m_aapFont.at(iHeight).at(iOutline));}
+    inline       coreInt32 RetrieveLineSkip  (const coreUint16 iHeight, const coreUint8 iOutline) {this->__EnsureHeight(iHeight, iOutline); return TTF_GetFontLineSkip(m_aapFont.at(iHeight).at(iOutline));}
 
     /* convert multibyte UTF-8 character to UTF-32 glyph */
     static coreUint8 ConvertToGlyph(const coreChar* pcMultiByte, coreChar32* OUTPUT pcGlyph);

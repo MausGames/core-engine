@@ -4,9 +4,6 @@
     <Filter Include="additional">
       <UniqueIdentifier>{ab448a9d-7329-424d-ac5c-302c3421dc19}</UniqueIdentifier>
     </Filter>
-    <Filter Include="additional\android">
-      <UniqueIdentifier>{460240d2-c662-4ec1-948d-fe19c5317d48}</UniqueIdentifier>
-    </Filter>
     <Filter Include="additional\windows">
       <UniqueIdentifier>{fbc18f25-82be-45dc-ba1a-3e9b7a70d3d3}</UniqueIdentifier>
     </Filter>
@@ -188,9 +185,6 @@
     </ClCompile>
     <ClCompile Include="..\..\..\source\components\debug\CoreDebug.cpp">
       <Filter>components\debug</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\source\additional\android\main.c">
-      <Filter>additional\android</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\source\additional\coreCPUID.cpp">
       <Filter>additional</Filter>

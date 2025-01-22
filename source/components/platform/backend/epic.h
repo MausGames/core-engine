@@ -874,7 +874,7 @@ inline void EOS_CALL coreBackendEpic::__OnUIAddNotifyDisplaySettingsUpdated(cons
     if(pData->bIsExclusiveInput)
     {
         // notify about focus loss
-        SDL_Event oEvent = {SDL_USEREVENT};
+        SDL_Event oEvent = {SDL_EVENT_USER};
         SDL_PushEvent(&oEvent);
     }
 }

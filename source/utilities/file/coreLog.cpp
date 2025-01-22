@@ -55,7 +55,7 @@ coreLog::coreLog(const coreChar* pcPath)noexcept
         m_iLastTime = SDL_GetTicks();
 
         // save thread-ID from the creator
-        m_iThisThread = SDL_ThreadID();
+        m_iThisThread = SDL_GetCurrentThreadID();
     }
 
 #endif
@@ -93,13 +93,13 @@ void coreLog::__Write(const coreBool bTimeStamp, coreWorkString& sMessage, const
         if(bTimeStamp)
         {
             // get time-value and thread-ID
-            const coreUint32   iTime   = SDL_GetTicks();
-            const SDL_threadID iThread = SDL_ThreadID();
+            const coreUint64   iTime   = SDL_GetTicks();
+            const SDL_ThreadID iThread = SDL_GetCurrentThreadID();
 
             // write time-value and thread-ID
-            std::fprintf(m_pFile, "<span class=\"time\">[%02u:%02u.%03u - %3u]</span> <span class=\"%s\">[%04lX]</span> ",
-                         (iTime / 1000u) / 60u, (iTime / 1000u) % 60u, (iTime % 1000u), coreUint32(MIN(iTime - m_iLastTime, 999u)),
-                         (iThread == m_iThisThread) ? "thread1" : "thread2", iThread);
+            std::fprintf(m_pFile, "<span class=\"time\">[%02llu:%02llu.%03llu - %3llu]</span> <span class=\"%s\">[%04llX]</span> ",
+                         (iTime / 1000u) / 60u, (iTime / 1000u) % 60u, (iTime % 1000u), coreUint64(MIN(iTime - m_iLastTime, 999u)),
+                         (iThread == m_iThisThread) ? "thread1" : "thread2", coreUint64(iThread));
 
             // save time-value (for duration approximations)
             m_iLastTime = iTime;

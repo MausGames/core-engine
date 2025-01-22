@@ -872,7 +872,7 @@ inline void coreBackendSteam::__OnGameOverlayActivated(const GameOverlayActivate
     if(pResult->m_bActive)
     {
         // notify about focus loss
-        SDL_Event oEvent = {SDL_USEREVENT};
+        SDL_Event oEvent = {SDL_EVENT_USER};
         SDL_PushEvent(&oEvent);
     }
 }

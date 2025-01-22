@@ -87,7 +87,7 @@ private:
 #elif defined(CORE_SPINLOCK_MUTEX)
     std::recursive_mutex m_State;        // regular recursive mutex (instead of spinlock)
 #else
-    std::atomic<SDL_threadID> m_State;   // atomic thread-ID of the current owner
+    std::atomic<SDL_ThreadID> m_State;   // atomic thread-ID of the current owner
 #endif
 
     coreUint8 m_iCount;                  // current levels of ownership
@@ -271,8 +271,8 @@ FORCE_INLINE coreBool coreRecursiveLock::TryLock()
     return m_State.try_lock() ? (m_iCount++, true) : false;
 #else
 
-    SDL_threadID       iExpected = 0u;
-    const SDL_threadID iDesired  = SDL_ThreadID();
+    SDL_ThreadID       iExpected = 0u;
+    const SDL_ThreadID iDesired  = SDL_GetCurrentThreadID();
 
     if(m_State.compare_exchange_weak(iExpected, iDesired, std::memory_order::acquire, std::memory_order::relaxed) || (iExpected == iDesired))
     {

@@ -40,6 +40,7 @@ private:
     /* display structure */
     struct coreDisplay final
     {
+        SDL_DisplayID        iDisplayID;       // display instance ID
         coreSet<coreVector2> avAvailableRes;   // all available screen resolutions (highest to lowest, primary on width)
         coreVector2          vDesktopRes;      // desktop resolution
         coreVector2          vWorkAreaRes;     // work area resolution (e.g. without task bar)
@@ -69,7 +70,7 @@ private:
     coreDouble m_dPerfFrequency;                   // high-precision time coefficient
     coreUint64 m_iPerfTime;                        // high-precision time value
 
-    SDL_threadID m_iMainThread;                    // thread-ID from the main-thread
+    SDL_ThreadID m_iMainThread;                    // thread-ID from the main-thread
 
     coreBool m_bWinFocusLost;                      // window/application lost focus (through event)
     coreBool m_bWinPosChanged;                     // window position changed (through event)
@@ -116,7 +117,7 @@ public:
     inline const coreUint32&     GetCurFrame       ()const                       {return m_iCurFrame;}
     inline const coreDouble&     GetPerfFrequency  ()const                       {return m_dPerfFrequency;}
     inline const coreUint64&     GetPerfTime       ()const                       {return m_iPerfTime;}
-    inline const SDL_threadID&   GetMainThread     ()const                       {return m_iMainThread;}
+    inline const SDL_ThreadID&   GetMainThread     ()const                       {return m_iMainThread;}
     inline const coreBool&       GetWinFocusLost   ()const                       {return m_bWinFocusLost;}
     inline const coreBool&       GetWinPosChanged  ()const                       {return m_bWinPosChanged;}
     inline const coreBool&       GetWinSizeChanged ()const                       {return m_bWinSizeChanged;}
@@ -132,6 +133,9 @@ private:
 
     /* update the high-precision time */
     void __UpdateTime();
+
+    /* handle displays */
+    coreUintW __GetDisplayIndex(const SDL_DisplayID iID)const;
 };
 
 

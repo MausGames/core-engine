@@ -69,16 +69,16 @@
 // See end of file for full version history.
 
 
-#if defined(SDL_rwops_h_)
+#if defined(SDL_iostream_h_)
 
-    #define FILE           SDL_RWops
-    #define fopen          SDL_RWFromFile
-    #define fopen_s        [](SDL_RWops** f, const char* n, const char* m) {(*f) = SDL_RWFromFile(n, m); return (*f) ? 0 : -1;}
-    #define fclose         SDL_RWclose
-    #define fread(a,b,c,d) SDL_RWread(d, a, b, c)
-    #define fseek(a,b,c)   int(SDL_RWseek(a, b, c) == -1)
-    #define ftell(a)       int(SDL_RWtell(a))
-    #define fgetc          [](SDL_RWops* f) {unsigned char c; return SDL_RWread(f, &c, 1u, 1u) ? int(c) : EOF;}
+    #define FILE           SDL_IOStream
+    #define fopen          SDL_IOFromFile
+    #define fopen_s        [](SDL_IOStream** f, const char* n, const char* m) {(*f) = SDL_IOFromFile(n, m); return (*f) ? 0 : -1;}
+    #define fclose         SDL_CloseIO
+    #define fread(a,b,c,d) (b ? (SDL_ReadIO(d, a, b * c) / b) : 0)
+    #define fseek(a,b,c)   int(SDL_SeekIO(a, b, SDL_IOWhence(c)) == -1)
+    #define ftell(a)       int(SDL_TellIO(a))
+    #define fgetc          [](SDL_IOStream* f) {unsigned char c; return SDL_ReadIO(f, &c, 1u) ? int(c) : EOF;}
 
 #endif
 
@@ -5567,7 +5567,7 @@ int stb_vorbis_get_samples_float(stb_vorbis *f, int channels, float **buffer, in
 #endif // STB_VORBIS_HEADER_ONLY
 
 
-#if defined(SDL_rwops_h_)
+#if defined(SDL_iostream_h_)
 
     #undef FILE
     #undef fopen

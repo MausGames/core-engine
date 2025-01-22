@@ -427,7 +427,7 @@ void coreResourceManager::Reshape()
 /* acquire resource index table space */
 void coreResourceManager::AllocIndex(coreResourceHandle* OUTPUT pHandle)
 {
-    ASSERT(pHandle && !pHandle->m_iIndex && (SDL_ThreadID() == Core::System->GetMainThread()))
+    ASSERT(pHandle && !pHandle->m_iIndex && (SDL_GetCurrentThreadID() == Core::System->GetMainThread()))
 
     for(coreUintW i = s_iTableStart; i < CORE_RESOURCE_INDICES; ++i)
     {
@@ -455,7 +455,7 @@ void coreResourceManager::AllocIndex(coreResourceHandle* OUTPUT pHandle)
 /* release resource index table space */
 void coreResourceManager::FreeIndex(coreResourceHandle* OUTPUT pHandle)
 {
-    ASSERT(pHandle && pHandle->m_iIndex && (SDL_ThreadID() == Core::System->GetMainThread()))
+    ASSERT(pHandle && pHandle->m_iIndex && (SDL_GetCurrentThreadID() == Core::System->GetMainThread()))
 
     const coreResourceIndex iIndex = pHandle->m_iIndex;
     ASSERT(pHandle == s_apHandleTable[iIndex])
@@ -479,7 +479,7 @@ coreStatus coreResourceManager::__InitThread()
     const SDL_GLContext& pContext = Core::Graphics->GetResourceContext();
 
     // assign resource context to resource thread
-    if((SDL_GL_MakeCurrent(Core::System->GetWindow(), pContext) && SDL_GL_MakeCurrent(NULL, pContext)) || (SDL_GL_GetCurrentContext() != pContext))
+    if((!SDL_GL_MakeCurrent(Core::System->GetWindow(), pContext) && !SDL_GL_MakeCurrent(NULL, pContext)) || (SDL_GL_GetCurrentContext() != pContext))
     {
         Core::Log->Warning("Resource context could not be assigned to resource thread (SDL: %s)", SDL_GetError());
         return CORE_ERROR_SYSTEM;
@@ -528,7 +528,7 @@ coreStatus coreResourceManager::__RunThread()
 void coreResourceManager::__ExitThread()
 {
     // dissociate resource context from resource thread
-    if(SDL_GL_MakeCurrent(Core::System->GetWindow(), NULL)) SDL_GL_MakeCurrent(NULL, NULL);
+    if(!SDL_GL_MakeCurrent(Core::System->GetWindow(), NULL)) SDL_GL_MakeCurrent(NULL, NULL);
 }
 
 

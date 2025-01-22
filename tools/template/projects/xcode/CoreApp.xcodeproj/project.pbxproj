@@ -18,12 +18,12 @@
 		5B5B7C8D27D2A146003FD836 /* libopenal.dylib in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 5B5B7C7F27D2A146003FD836 /* libopenal.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
 		5BBB44ED2BB057E300A229F2 /* libopusfile.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 5BBB44E92BB057E300A229F2 /* libopusfile.dylib */; };
 		5BBB44EE2BB057E300A229F2 /* libopusfile.dylib in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 5BBB44E92BB057E300A229F2 /* libopusfile.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
-		5BBB44EF2BB057E300A229F2 /* libSDL2_image.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 5BBB44EA2BB057E300A229F2 /* libSDL2_image.dylib */; };
-		5BBB44F02BB057E300A229F2 /* libSDL2_image.dylib in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 5BBB44EA2BB057E300A229F2 /* libSDL2_image.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
-		5BBB44F12BB057E300A229F2 /* libSDL2.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 5BBB44EB2BB057E300A229F2 /* libSDL2.dylib */; };
-		5BBB44F22BB057E300A229F2 /* libSDL2.dylib in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 5BBB44EB2BB057E300A229F2 /* libSDL2.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
-		5BBB44F32BB057E300A229F2 /* libSDL2_ttf.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 5BBB44EC2BB057E300A229F2 /* libSDL2_ttf.dylib */; };
-		5BBB44F42BB057E300A229F2 /* libSDL2_ttf.dylib in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 5BBB44EC2BB057E300A229F2 /* libSDL2_ttf.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
+		5BBB44EF2BB057E300A229F2 /* libSDL3_image.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 5BBB44EA2BB057E300A229F2 /* libSDL3_image.dylib */; };
+		5BBB44F02BB057E300A229F2 /* libSDL3_image.dylib in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 5BBB44EA2BB057E300A229F2 /* libSDL3_image.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
+		5BBB44F12BB057E300A229F2 /* libSDL3.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 5BBB44EB2BB057E300A229F2 /* libSDL3.dylib */; };
+		5BBB44F22BB057E300A229F2 /* libSDL3.dylib in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 5BBB44EB2BB057E300A229F2 /* libSDL3.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
+		5BBB44F32BB057E300A229F2 /* libSDL3_ttf.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 5BBB44EC2BB057E300A229F2 /* libSDL3_ttf.dylib */; };
+		5BBB44F42BB057E300A229F2 /* libSDL3_ttf.dylib in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 5BBB44EC2BB057E300A229F2 /* libSDL3_ttf.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -35,10 +35,10 @@
 			files = (
 				5BBB44EE2BB057E300A229F2 /* libopusfile.dylib in Embed Frameworks */,
 				5B5B7C8727D2A146003FD836 /* libzstd.dylib in Embed Frameworks */,
-				5BBB44F42BB057E300A229F2 /* libSDL2_ttf.dylib in Embed Frameworks */,
+				5BBB44F42BB057E300A229F2 /* libSDL3_ttf.dylib in Embed Frameworks */,
 				5B5B7C8D27D2A146003FD836 /* libopenal.dylib in Embed Frameworks */,
-				5BBB44F22BB057E300A229F2 /* libSDL2.dylib in Embed Frameworks */,
-				5BBB44F02BB057E300A229F2 /* libSDL2_image.dylib in Embed Frameworks */,
+				5BBB44F22BB057E300A229F2 /* libSDL3.dylib in Embed Frameworks */,
+				5BBB44F02BB057E300A229F2 /* libSDL3_image.dylib in Embed Frameworks */,
 			);
 			name = "Embed Frameworks";
 			runOnlyForDeploymentPostprocessing = 0;
@@ -58,9 +58,9 @@
 		5B5B7C7C27D2A145003FD836 /* libzstd.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libzstd.dylib; path = ../../../CoreEngine/libraries/bin/macos/libzstd.dylib; sourceTree = "<group>"; };
 		5B5B7C7F27D2A146003FD836 /* libopenal.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libopenal.dylib; path = ../../../CoreEngine/libraries/bin/macos/libopenal.dylib; sourceTree = "<group>"; };
 		5BBB44E92BB057E300A229F2 /* libopusfile.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libopusfile.dylib; path = ../../../CoreEngine/libraries/bin/macos/libopusfile.dylib; sourceTree = "<group>"; };
-		5BBB44EA2BB057E300A229F2 /* libSDL2_image.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libSDL2_image.dylib; path = ../../../CoreEngine/libraries/bin/macos/libSDL2_image.dylib; sourceTree = "<group>"; };
-		5BBB44EB2BB057E300A229F2 /* libSDL2.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libSDL2.dylib; path = ../../../CoreEngine/libraries/bin/macos/libSDL2.dylib; sourceTree = "<group>"; };
-		5BBB44EC2BB057E300A229F2 /* libSDL2_ttf.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libSDL2_ttf.dylib; path = ../../../CoreEngine/libraries/bin/macos/libSDL2_ttf.dylib; sourceTree = "<group>"; };
+		5BBB44EA2BB057E300A229F2 /* libSDL3_image.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libSDL3_image.dylib; path = ../../../CoreEngine/libraries/bin/macos/libSDL3_image.dylib; sourceTree = "<group>"; };
+		5BBB44EB2BB057E300A229F2 /* libSDL3.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libSDL3.dylib; path = ../../../CoreEngine/libraries/bin/macos/libSDL3.dylib; sourceTree = "<group>"; };
+		5BBB44EC2BB057E300A229F2 /* libSDL3_ttf.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libSDL3_ttf.dylib; path = ../../../CoreEngine/libraries/bin/macos/libSDL3_ttf.dylib; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -69,12 +69,12 @@
 			buildActionMask = 2147483647;
 			files = (
 				5B06DFB927CAB3320036BB19 /* libCoreEngine.a in Frameworks */,
-				5BBB44F32BB057E300A229F2 /* libSDL2_ttf.dylib in Frameworks */,
+				5BBB44F32BB057E300A229F2 /* libSDL3_ttf.dylib in Frameworks */,
 				5BBB44ED2BB057E300A229F2 /* libopusfile.dylib in Frameworks */,
 				5B5B7C8C27D2A146003FD836 /* libopenal.dylib in Frameworks */,
 				5B5B7C8627D2A146003FD836 /* libzstd.dylib in Frameworks */,
-				5BBB44EF2BB057E300A229F2 /* libSDL2_image.dylib in Frameworks */,
-				5BBB44F12BB057E300A229F2 /* libSDL2.dylib in Frameworks */,
+				5BBB44EF2BB057E300A229F2 /* libSDL3_image.dylib in Frameworks */,
+				5BBB44F12BB057E300A229F2 /* libSDL3.dylib in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -106,9 +106,9 @@
 			isa = PBXGroup;
 			children = (
 				5BBB44E92BB057E300A229F2 /* libopusfile.dylib */,
-				5BBB44EA2BB057E300A229F2 /* libSDL2_image.dylib */,
-				5BBB44EC2BB057E300A229F2 /* libSDL2_ttf.dylib */,
-				5BBB44EB2BB057E300A229F2 /* libSDL2.dylib */,
+				5BBB44EA2BB057E300A229F2 /* libSDL3_image.dylib */,
+				5BBB44EC2BB057E300A229F2 /* libSDL3_ttf.dylib */,
+				5BBB44EB2BB057E300A229F2 /* libSDL3.dylib */,
 				5B5B7C7F27D2A146003FD836 /* libopenal.dylib */,
 				5B5B7C7C27D2A145003FD836 /* libzstd.dylib */,
 				5B06DFCA27CAB5C30036BB19 /* OpenGL.framework */,

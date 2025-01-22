@@ -113,14 +113,27 @@ void coreTextBox::SetInput(const coreBool bInput)
 
     if(m_bInput)
     {
-        // start text-input
-        if(++s_iActiveCounter == 1) SDL_StartTextInput();
+        if(++s_iActiveCounter == 1)
+        {
+            // set function properties
+            coreProperties oProps;
+            SDL_SetNumberProperty (oProps, SDL_PROP_TEXTINPUT_TYPE_NUMBER,           m_cReplace ? SDL_TEXTINPUT_TYPE_TEXT_PASSWORD_HIDDEN : SDL_TEXTINPUT_TYPE_TEXT);
+            SDL_SetNumberProperty (oProps, SDL_PROP_TEXTINPUT_CAPITALIZATION_NUMBER, SDL_CAPITALIZE_NONE);
+            SDL_SetBooleanProperty(oProps, SDL_PROP_TEXTINPUT_AUTOCORRECT_BOOLEAN,   false);
+            SDL_SetBooleanProperty(oProps, SDL_PROP_TEXTINPUT_MULTILINE_BOOLEAN,     false);
+
+            // start text-input
+            SDL_StartTextInputWithProperties(Core::System->GetWindow(), oProps);
+        }
         m_sPrevious = m_sText;
     }
     else
     {
-        // stop text-input
-        if(--s_iActiveCounter == 0) SDL_StopTextInput();
+        if(--s_iActiveCounter == 0)
+        {
+            // stop text-input
+            SDL_StopTextInput(Core::System->GetWindow());
+        }
     }
     ASSERT(s_iActiveCounter >= 0)
 }

@@ -51,7 +51,7 @@ coreStatus coreFont::Load(coreFile* pFile)
         return CORE_INVALID_DATA;
     }
 
-    Core::Log->Info("Font (%s, %s, %s, %d faces) loaded", m_sName.c_str(), this->RetrieveFamilyName(), this->RetrieveStyleName(), TTF_FontFaces(m_aapFont.front().front()));
+    Core::Log->Info("Font (%s, %s, %s) loaded", m_sName.c_str(), this->RetrieveFamilyName(), this->RetrieveStyleName());
     return CORE_OK;
 }
 
@@ -103,7 +103,7 @@ SDL_Surface* coreFont::CreateTextOutline(const coreChar* pcText, const coreUint1
     this->__EnsureHeight(iHeight, iOutline);
 
     // render and return the text surface
-    return TTF_RenderUTF8_Shaded(m_aapFont.at(iHeight).at(iOutline), (pcText[0] == '\0') ? " " : pcText, CORE_FONT_COLOR_FRONT, CORE_FONT_COLOR_BACK);
+    return TTF_RenderText_Shaded(m_aapFont.at(iHeight).at(iOutline), (pcText[0] == '\0') ? " " : pcText, 0u, CORE_FONT_COLOR_FRONT, CORE_FONT_COLOR_BACK);
 }
 
 SDL_Surface* coreFont::CreateGlyphOutline(const coreChar32 cGlyph, const coreUint16 iHeight, const coreUint8 iOutline)
@@ -112,7 +112,7 @@ SDL_Surface* coreFont::CreateGlyphOutline(const coreChar32 cGlyph, const coreUin
     this->__EnsureHeight(iHeight, iOutline);
 
     // render and return the text surface
-    return TTF_RenderGlyph32_Shaded(m_aapFont.at(iHeight).at(iOutline), cGlyph, CORE_FONT_COLOR_FRONT, CORE_FONT_COLOR_BACK);
+    return TTF_RenderGlyph_Shaded(m_aapFont.at(iHeight).at(iOutline), cGlyph, CORE_FONT_COLOR_FRONT, CORE_FONT_COLOR_BACK);
 }
 
 
@@ -133,7 +133,7 @@ coreBool coreFont::AreGlyphsProvided(const coreChar* pcText)
         pcCursor += coreFont::ConvertToGlyph(pcCursor, &cGlyph);
 
         // check for the glyph
-        if(!TTF_GlyphIsProvided32(pFont, cGlyph))
+        if(!TTF_FontHasGlyph(pFont, cGlyph))
         {
             return false;
         }
@@ -154,7 +154,7 @@ coreVector2 coreFont::RetrieveTextDimensions(const coreChar* pcText, const coreU
 
     // retrieve dimensions
     coreInt32 iX, iY;
-    TTF_SizeUTF8(m_aapFont.at(iHeight).at(iOutline), pcText, &iX, &iY);
+    TTF_GetStringSize(m_aapFont.at(iHeight).at(iOutline), pcText, 0u, &iX, &iY);
 
     return coreVector2(I_TO_F(iX), I_TO_F(iY));
 }
@@ -179,15 +179,15 @@ coreInt8 coreFont::RetrieveTextShift(const coreChar* pcText, const coreUint16 iH
 
         // retrieve vertical bounds
         coreInt32 iMinY, iMaxY;
-        TTF_GlyphMetrics32(pFont, cGlyph, NULL, NULL, &iMinY, &iMaxY, NULL);
+        TTF_GetGlyphMetrics(pFont, cGlyph, NULL, NULL, &iMinY, &iMaxY, NULL);
 
         iTotalMinY = MIN(iTotalMinY, iMinY);
         iTotalMaxY = MAX(iTotalMaxY, iMaxY);
     }
 
     // retrieve baseline offsets
-    const coreInt32 iAscent  = TTF_FontAscent (pFont);
-    const coreInt32 iDescent = TTF_FontDescent(pFont);
+    const coreInt32 iAscent  = TTF_GetFontAscent (pFont);
+    const coreInt32 iDescent = TTF_GetFontDescent(pFont);
 
     // calculate final shift
     return coreInt8(MIN(iAscent - iTotalMaxY, 0) + MAX(iDescent - iTotalMinY, 0));
@@ -201,7 +201,7 @@ coreBool coreFont::IsGlyphProvided(const coreChar32 cGlyph)
     ASSERT(!m_aapFont.empty())
 
     // check for the glyph with first available sub-font
-    return (TTF_GlyphIsProvided32(m_aapFont.front().front(), cGlyph) != 0);
+    return TTF_FontHasGlyph(m_aapFont.front().front(), cGlyph);
 }
 
 coreBool coreFont::IsGlyphProvided(const coreChar* pcMultiByte)
@@ -225,7 +225,7 @@ void coreFont::RetrieveGlyphMetrics(const coreChar32 cGlyph, const coreUint16 iH
 
     // retrieve dimensions
     coreInt32 iMinY, iMaxY;
-    TTF_GlyphMetrics32(pFont, cGlyph, piMinX, piMaxX, &iMinY, &iMaxY, piAdvance);
+    TTF_GetGlyphMetrics(pFont, cGlyph, piMinX, piMaxX, &iMinY, &iMaxY, piAdvance);
 
     // return vertical bounds
     if(piMinY) (*piMinY) = iMinY;
@@ -234,8 +234,8 @@ void coreFont::RetrieveGlyphMetrics(const coreChar32 cGlyph, const coreUint16 iH
     if(piShift)
     {
         // retrieve baseline offsets
-        const coreInt32 iAscent  = TTF_FontAscent (pFont);
-        const coreInt32 iDescent = TTF_FontDescent(pFont);
+        const coreInt32 iAscent  = TTF_GetFontAscent (pFont);
+        const coreInt32 iDescent = TTF_GetFontDescent(pFont);
 
         // calculate final shift
         (*piShift) = MIN(iAscent - iMaxY, 0) + MAX(iDescent - iMinY, 0);
@@ -262,7 +262,8 @@ coreInt32 coreFont::RetrieveGlyphKerning(const coreChar32 cGlyph1, const coreCha
     this->__EnsureHeight(iHeight, iOutline);
 
     // retrieve kerning
-    return TTF_GetFontKerningSizeGlyphs32(m_aapFont.at(iHeight).at(iOutline), cGlyph1, cGlyph2);
+    coreInt32 iKerning;
+    return TTF_GetGlyphKerning(m_aapFont.at(iHeight).at(iOutline), cGlyph1, cGlyph2, &iKerning) ? iKerning : 0;
 }
 
 coreInt32 coreFont::RetrieveGlyphKerning(const coreChar* pcMultiByte1, const coreChar* pcMultiByte2, const coreUint16 iHeight, const coreUint8 iOutline)
@@ -312,8 +313,14 @@ coreBool coreFont::__InitHeight(const coreUint16 iHeight, const coreUint8 iOutli
 {
     ASSERT(!m_aapFont.count(iHeight) || !m_aapFont.at(iHeight).count(iOutline))
 
+    // set function properties
+    coreProperties oProps;
+    SDL_SetPointerProperty(oProps, TTF_PROP_FONT_CREATE_IOSTREAM_POINTER,           m_pFile->CreateReadStream());
+    SDL_SetBooleanProperty(oProps, TTF_PROP_FONT_CREATE_IOSTREAM_AUTOCLOSE_BOOLEAN, true);
+    SDL_SetFloatProperty  (oProps, TTF_PROP_FONT_CREATE_SIZE_FLOAT,                 I_TO_F(iHeight));
+
     // create new sub-font
-    TTF_Font* pNewFont = TTF_OpenFontIndexDPIRW(m_pFile->CreateReadStream(), 1, iHeight, 0, 0u, 0u);
+    TTF_Font* pNewFont = TTF_OpenFontWithProperties(oProps);
     if(!pNewFont)
     {
         Core::Log->Warning("Sub-Font (%s, %u height, %u outline) could not be loaded", m_sName.c_str(), iHeight, iOutline);
@@ -321,8 +328,8 @@ coreBool coreFont::__InitHeight(const coreUint16 iHeight, const coreUint8 iOutli
     }
 
     // enable font hinting and kerning
-    TTF_SetFontHinting(pNewFont, m_iHinting);
-    TTF_SetFontKerning(pNewFont, m_bKerning ? 1 : 0);
+    TTF_SetFontHinting(pNewFont, TTF_HintingFlags(m_iHinting));
+    TTF_SetFontKerning(pNewFont, m_bKerning);
 
     // enable outlining
     if(iOutline) TTF_SetFontOutline(pNewFont, iOutline);

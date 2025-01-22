@@ -50,7 +50,7 @@ coreStatus coreTexture::Load(coreFile* pFile)
     if(!pFile->GetSize())  return CORE_ERROR_FILE;   // do not load file data
 
     // decompress file to plain pixel data
-    coreSurfaceScope pData = IMG_LoadTyped_RW(pFile->CreateReadStream(), 1, coreData::StrExtension(pFile->GetPath()));
+    coreSurfaceScope pData = IMG_LoadTyped_IO(pFile->CreateReadStream(), true, coreData::StrExtension(pFile->GetPath()));
     if(!pData || !pData->w || !pData->h)
     {
         Core::Log->Warning("Texture (%s) could not be loaded (SDL: %s)", m_sName.c_str(), SDL_GetError());
@@ -58,22 +58,22 @@ coreStatus coreTexture::Load(coreFile* pFile)
     }
 
     // convert from low-channel data (if not supported)
-    if((pData->format->BytesPerPixel < 3u) && !CORE_GL_SUPPORT(ARB_texture_rg))
+    if((SDL_BYTESPERPIXEL(pData->format) < 3u) && !CORE_GL_SUPPORT(ARB_texture_rg))
     {
-        pData = SDL_ConvertSurfaceFormat(pData, SDL_PIXELFORMAT_RGB24, 0u);
+        pData = SDL_ConvertSurface(pData, SDL_PIXELFORMAT_RGB24);
     }
 
     // convert to smaller texture format (if supported)
     if((HAS_FLAG(m_eLoad, CORE_TEXTURE_LOAD_RG) || HAS_FLAG(m_eLoad, CORE_TEXTURE_LOAD_R)) && CORE_GL_SUPPORT(ARB_texture_rg))
     {
-        WARN_IF(pData->format->BytesPerPixel != 3u) {}
+        WARN_IF(SDL_BYTESPERPIXEL(pData->format) != 3u) {}
         else pData = coreTexture::CreateReduction(HAS_FLAG(m_eLoad, CORE_TEXTURE_LOAD_RG) ? 2u : 1u, pData);
     }
 
     ASSERT(!SDL_MUSTLOCK(pData))
 
     // calculate data size
-    const coreUint8  iComponents = pData->format->BytesPerPixel;
+    const coreUint8  iComponents = SDL_BYTESPERPIXEL(pData->format);
     const coreUint32 iDataSize   = pData->w * pData->h * iComponents;
     ASSERT(iComponents && iDataSize)
 
@@ -660,13 +660,13 @@ SDL_Surface* coreTexture::CreateReduction(const coreUintW iComponents, const SDL
 {
     ASSERT(iComponents && pInput)
 
-    const coreUintW iSource = pInput->format->BytesPerPixel;
+    const coreUintW iSource = SDL_BYTESPERPIXEL(pInput->format);
     const coreUintW iTarget = iComponents;
     ASSERT(iTarget < iSource)
 
     // create SDL surface (on demand)
-    if(!pOutput) pOutput = SDL_CreateRGBSurfaceWithFormat(0u, pInput->w, pInput->h, 8 * iTarget, SDL_DEFINE_PIXELFORMAT(SDL_PIXELTYPE_ARRAYU8, SDL_PACKEDORDER_NONE, SDL_PACKEDLAYOUT_NONE, 8 * iTarget, iTarget));
-    ASSERT((pOutput->w == pInput->w) && (pOutput->h == pInput->h) && (pOutput->format->BytesPerPixel == iTarget))
+    if(!pOutput) pOutput = SDL_CreateSurface(pInput->w, pInput->h, SDL_PixelFormat(SDL_DEFINE_PIXELFORMAT(SDL_PIXELTYPE_ARRAYU8, SDL_PACKEDORDER_NONE, SDL_PACKEDLAYOUT_NONE, 8 * iTarget, iTarget)));
+    ASSERT((pOutput->w == pInput->w) && (pOutput->h == pInput->h) && (SDL_BYTESPERPIXEL(pOutput->format) == iTarget))
 
     // assume no memory aliasing
     const coreByte*  pInputMem  = ASSUME_ALIGNED(s_cast<const coreByte*>(pInput ->pixels), ALIGNMENT_NEW);

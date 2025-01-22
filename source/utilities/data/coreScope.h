@@ -57,6 +57,26 @@ public:
 
 
 // ****************************************************************
+/* property group wrapper */
+class coreProperties final
+{
+private:
+    SDL_PropertiesID m_iPropertiesID;   // property group identifier
+
+
+public:
+    coreProperties()noexcept;
+    ~coreProperties();
+
+    DISABLE_COPY(coreProperties)
+    DISABLE_HEAP
+
+    /* access property group identifier */
+    inline operator SDL_PropertiesID ()const {return m_iPropertiesID;}
+};
+
+
+// ****************************************************************
 /* constructor */
 template <typename T> constexpr coreScope<T>::coreScope(T* ptObject)noexcept
 : m_ptObject (ptObject)
@@ -85,13 +105,30 @@ template <typename T> coreScope<T>& coreScope<T>::operator = (coreScope&& m)noex
 
 
 // ****************************************************************
+/* constructor */
+inline coreProperties::coreProperties()noexcept
+: m_iPropertiesID (0u)
+{
+    m_iPropertiesID = SDL_CreateProperties();
+}
+
+
+// ****************************************************************
+/* destructor */
+inline coreProperties::~coreProperties()
+{
+    SDL_DestroyProperties(m_iPropertiesID);
+}
+
+
+// ****************************************************************
 /* default scope types */
 CORE_SCOPE_CLASS(coreFileScope,      coreFile,      {if(m_ptObject) m_ptObject->Acquire();}, {if(m_ptObject) m_ptObject->Release();})
-CORE_SCOPE_CLASS(corePathScope,      coreChar,      {},                                      {if(m_ptObject) SDL_free         (m_ptObject);})
-CORE_SCOPE_CLASS(coreSurfaceScope,   SDL_Surface,   {},                                      {if(m_ptObject) SDL_FreeSurface  (m_ptObject);})
-CORE_SCOPE_CLASS(coreAnimationScope, IMG_Animation, {},                                      {if(m_ptObject) IMG_FreeAnimation(m_ptObject);})
+CORE_SCOPE_CLASS(coreSurfaceScope,   SDL_Surface,   {},                                      {if(m_ptObject) SDL_DestroySurface(m_ptObject);})
+CORE_SCOPE_CLASS(coreAnimationScope, IMG_Animation, {},                                      {if(m_ptObject) IMG_FreeAnimation (m_ptObject);})
 
-template <typename T> CORE_SCOPE_CLASS(coreDataScope, T, {}, {SAFE_DELETE_ARRAY(this->m_ptObject)})
+template <typename T> CORE_SCOPE_CLASS(coreAllocScope, T, {}, {if(this->m_ptObject) SDL_free(this->m_ptObject);})
+template <typename T> CORE_SCOPE_CLASS(coreDataScope,  T, {}, {SAFE_DELETE_ARRAY(this->m_ptObject)})
 
 
 #endif /* _CORE_GUARD_SCOPE_H_ */

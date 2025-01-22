@@ -8,6 +8,9 @@
 ///////////////////////////////////////////////////////////
 #if defined(__EMSCRIPTEN__)
 
+#define SDL_MAIN_HANDLED
+#include <SDL3/SDL_main.h>
+
 extern int coreMain(int argc, char** argv);
 
 
@@ -15,8 +18,8 @@ extern int coreMain(int argc, char** argv);
 /* start up the application */
 int main(int argc, char** argv)
 {
-    // run the application
-    return coreMain(argc, argv);
+    // run the application (with SDL hint parsing)
+    return SDL_RunApp(argc, argv, coreMain, NULL);
 }
 
 

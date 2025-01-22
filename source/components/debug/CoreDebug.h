@@ -100,6 +100,9 @@ public:
     FRIEND_CLASS(Core)
     DISABLE_COPY(CoreDebug)
 
+    /* process debug events */
+    coreBool ProcessEvent(const SDL_Event& oEvent);
+
     /* render textures directly on screen */
     void DisplayTexture(const coreTexturePtr& pTexture, const coreVector2 vSize = coreVector2(0.2f,0.2f));
 

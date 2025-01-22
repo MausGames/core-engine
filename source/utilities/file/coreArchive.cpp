@@ -73,7 +73,7 @@ coreStatus coreFile::Save(const coreChar* pcPath)
     const coreChar* pcTemp = DEFINED(CORE_FILE_SAFEWRITE) ? PRINT("%s.temp_%u", m_sPath.c_str(), coreData::ProcessID()) : m_sPath.c_str();
 
     // open file
-    SDL_RWops* pFile = SDL_RWFromFile(pcTemp, "wb");
+    SDL_IOStream* pFile = SDL_IOFromFile(pcTemp, "wb");
     if(!pFile)
     {
         Core::Log->Warning("File (%s) could not be saved (SDL: %s)", m_sPath.c_str(), SDL_GetError());
@@ -83,10 +83,10 @@ coreStatus coreFile::Save(const coreChar* pcPath)
     coreBool bSuccess = true;
 
     // save file data
-    coreFile::__Write(pFile, m_pData, sizeof(coreByte), m_iSize, &bSuccess);
+    coreFile::__Write(pFile, m_pData, m_iSize, &bSuccess);
 
     // close file
-    if(SDL_RWclose(pFile) || !bSuccess)
+    if(!SDL_CloseIO(pFile) || !bSuccess)
     {
         Core::Log->Warning("File (%s) could not be saved properly (SDL: %s)", m_sPath.c_str(), SDL_GetError());
         return CORE_ERROR_FILE;
@@ -188,32 +188,32 @@ coreStatus coreFile::Unscramble(const coreUint64 iKey)
 
 // ****************************************************************
 /* create stream for reading file data */
-SDL_RWops* coreFile::CreateReadStream()const
+SDL_IOStream* coreFile::CreateReadStream()const
 {
-    SDL_RWops* pFile;
+    SDL_IOStream* pFile;
     if(m_iArchivePos == __CORE_FILE_TYPE_MEMORY)
     {
         // create memory stream
         if(!m_pData || !m_iSize) return NULL;
-        pFile = SDL_RWFromConstMem(m_pData, m_iSize);
+        pFile = SDL_IOFromConstMem(m_pData, m_iSize);
     }
     else if(m_pArchive)
     {
         // open archive
-        pFile = SDL_RWFromFile(m_pArchive->GetPath(), "rb");
+        pFile = SDL_IOFromFile(m_pArchive->GetPath(), "rb");
         if(!pFile) return NULL;
 
         // seek file data position
-        if(SDL_RWseek(pFile, m_iArchivePos, RW_SEEK_SET) != m_iArchivePos)
+        if(SDL_SeekIO(pFile, m_iArchivePos, SDL_IO_SEEK_SET) != m_iArchivePos)
         {
-            SDL_RWclose(pFile);
+            SDL_CloseIO(pFile);
             return NULL;
         }
     }
     else
     {
         // open direct file
-        pFile = SDL_RWFromFile(m_sPath.c_str(), "rb");
+        pFile = SDL_IOFromFile(m_sPath.c_str(), "rb");
         if(!pFile) return NULL;
     }
 
@@ -237,24 +237,24 @@ coreStatus coreFile::LoadData()
 
 #endif
 
-    SDL_RWops* pFile;
+    SDL_IOStream* pFile;
     if(m_pArchive)
     {
         // open archive
-        pFile = SDL_RWFromFile(m_pArchive->GetPath(), "rb");
+        pFile = SDL_IOFromFile(m_pArchive->GetPath(), "rb");
         if(!pFile) return CORE_ERROR_FILE;
 
         // seek file data position
-        if(SDL_RWseek(pFile, m_iArchivePos, RW_SEEK_SET) != m_iArchivePos)
+        if(SDL_SeekIO(pFile, m_iArchivePos, SDL_IO_SEEK_SET) != m_iArchivePos)
         {
-            SDL_RWclose(pFile);
+            SDL_CloseIO(pFile);
             return CORE_ERROR_FILE;
         }
     }
     else
     {
         // open direct file
-        pFile = SDL_RWFromFile(m_sPath.c_str(), "rb");
+        pFile = SDL_IOFromFile(m_sPath.c_str(), "rb");
         if(!pFile) return CORE_ERROR_FILE;
     }
 
@@ -262,10 +262,10 @@ coreStatus coreFile::LoadData()
 
     // cache file data
     m_pData = new coreByte[m_iSize];
-    coreFile::__Read(pFile, m_pData, sizeof(coreByte), m_iSize, &bSuccess);
+    coreFile::__Read(pFile, m_pData, m_iSize, &bSuccess);
 
     // close file
-    if(SDL_RWclose(pFile) || !bSuccess)
+    if(!SDL_CloseIO(pFile) || !bSuccess)
     {
         SAFE_DELETE_ARRAY(m_pData)
         return CORE_ERROR_FILE;
@@ -352,27 +352,27 @@ void coreFile::FlushFilesystem()
 
 // ****************************************************************
 /* safely read from stream */
-void coreFile::__Read(SDL_RWops* pFile, void* pPointer, const coreUintW iSize, const coreUintW iNum, coreBool* OUTPUT pbSuccess)
+void coreFile::__Read(SDL_IOStream* pFile, void* pPointer, const coreUintW iSize, coreBool* OUTPUT pbSuccess)
 {
-    ASSERT(pFile && pPointer && iSize && iNum && pbSuccess)
+    ASSERT(pFile && pPointer && iSize && pbSuccess)
 
     // read and check for errors
-    if(!(*pbSuccess) || !((*pbSuccess) = (SDL_RWread(pFile, pPointer, iSize, iNum) == iNum)))
+    if(!(*pbSuccess) || !((*pbSuccess) = (SDL_ReadIO(pFile, pPointer, iSize) == iSize)))
     {
         // reset output memory
-        std::memset(pPointer, 0, iSize * iNum);
+        std::memset(pPointer, 0, iSize);
     }
 }
 
 
 // ****************************************************************
 /* safely write to stream */
-void coreFile::__Write(SDL_RWops* pFile, const void* pPointer, const coreUintW iSize, const coreUintW iNum, coreBool* OUTPUT pbSuccess)
+void coreFile::__Write(SDL_IOStream* pFile, const void* pPointer, const coreUintW iSize, coreBool* OUTPUT pbSuccess)
 {
-    ASSERT(pFile && pPointer && iSize && iNum && pbSuccess)
+    ASSERT(pFile && pPointer && iSize && pbSuccess)
 
     // write and check for errors
-    if(*pbSuccess) (*pbSuccess) = (SDL_RWwrite(pFile, pPointer, iSize, iNum) == iNum);
+    if(*pbSuccess) (*pbSuccess) = (SDL_WriteIO(pFile, pPointer, iSize) == iSize);
 }
 
 
@@ -389,7 +389,7 @@ coreArchive::coreArchive(const coreChar* pcPath)noexcept
 , m_apFile {}
 {
     // open archive
-    SDL_RWops* pArchive = SDL_RWFromFile(m_sPath.c_str(), "rb");
+    SDL_IOStream* pArchive = SDL_IOFromFile(m_sPath.c_str(), "rb");
     if(!pArchive)
     {
         Core::Log->Warning("Archive (%s) could not be opened (SDL: %s)", m_sPath.c_str(), SDL_GetError());
@@ -400,19 +400,19 @@ coreArchive::coreArchive(const coreChar* pcPath)noexcept
 
     // read magic number and file version
     coreUint32 aiHead[2];
-    coreFile::__Read(pArchive, &aiHead, sizeof(coreUint32), 2u, &bSuccess);
+    coreFile::__Read(pArchive, &aiHead, sizeof(coreUint32) * 2u, &bSuccess);
 
     // check magic number and file version
     if((aiHead[0] != CORE_FILE_MAGIC) || (aiHead[1] != CORE_FILE_VERSION))
     {
-        SDL_RWclose(pArchive);
+        SDL_CloseIO(pArchive);
         Core::Log->Warning("Archive (%s) is not a valid CFA-file", m_sPath.c_str());
         return;
     }
 
     // read number of files
     coreUint16 iNumFiles;
-    coreFile::__Read(pArchive, &iNumFiles, sizeof(coreUint16), 1u, &bSuccess);
+    coreFile::__Read(pArchive, &iNumFiles, sizeof(coreUint16), &bSuccess);
 
     // read file headers
     for(coreUintW i = iNumFiles; i--; )
@@ -423,10 +423,10 @@ coreArchive::coreArchive(const coreChar* pcPath)noexcept
         coreUint32 iArchivePos;
 
         // read file header data
-        coreFile::__Read(pArchive, &iPathLen,    sizeof(coreUint8),  1u,       &bSuccess);
-        coreFile::__Read(pArchive, acPath,       sizeof(coreChar),   iPathLen, &bSuccess);
-        coreFile::__Read(pArchive, &iSize,       sizeof(coreUint32), 1u,       &bSuccess);
-        coreFile::__Read(pArchive, &iArchivePos, sizeof(coreUint32), 1u,       &bSuccess);
+        coreFile::__Read(pArchive, &iPathLen,    sizeof(coreUint8),  &bSuccess);
+        coreFile::__Read(pArchive, acPath,       iPathLen,           &bSuccess);
+        coreFile::__Read(pArchive, &iSize,       sizeof(coreUint32), &bSuccess);
+        coreFile::__Read(pArchive, &iArchivePos, sizeof(coreUint32), &bSuccess);
         acPath[iPathLen] = '\0';
 
         // add new file object
@@ -440,7 +440,7 @@ coreArchive::coreArchive(const coreChar* pcPath)noexcept
     }
 
     // close archive
-    if(SDL_RWclose(pArchive) || !bSuccess)
+    if(!SDL_CloseIO(pArchive) || !bSuccess)
     {
         this->ClearFiles();
         Core::Log->Warning("Archive (%s) could not be opened properly (SDL: %s)", m_sPath.c_str(), SDL_GetError());
@@ -479,7 +479,7 @@ coreStatus coreArchive::Save(const coreChar* pcPath)
     const coreChar* pcTemp = DEFINED(CORE_FILE_SAFEWRITE) ? PRINT("%s.temp_%u", m_sPath.c_str(), coreData::ProcessID()) : m_sPath.c_str();
 
     // open archive
-    SDL_RWops* pArchive = SDL_RWFromFile(pcTemp, "wb");
+    SDL_IOStream* pArchive = SDL_IOFromFile(pcTemp, "wb");
     if(!pArchive)
     {
         Core::Log->Warning("Archive (%s) could not be saved (SDL: %s)", m_sPath.c_str(), SDL_GetError());
@@ -490,11 +490,11 @@ coreStatus coreArchive::Save(const coreChar* pcPath)
 
     // save magic number and file version
     const coreUint32 aiHead[2] = {CORE_FILE_MAGIC, CORE_FILE_VERSION};
-    coreFile::__Write(pArchive, aiHead, sizeof(coreUint32), 2u, &bSuccess);
+    coreFile::__Write(pArchive, aiHead, sizeof(coreUint32) * 2u, &bSuccess);
 
     // save number of files
     const coreUint16 iNumFiles = m_apFile.size();
-    coreFile::__Write(pArchive, &iNumFiles, sizeof(coreUint16), 1u, &bSuccess);
+    coreFile::__Write(pArchive, &iNumFiles, sizeof(coreUint16), &bSuccess);
 
     // save file headers
     this->__CalculatePositions();
@@ -504,20 +504,20 @@ coreStatus coreArchive::Save(const coreChar* pcPath)
         const coreUint8 iPathLen = MIN(std::strlen((*it)->GetPath()), 255u);
 
         // write header
-        coreFile::__Write(pArchive, &iPathLen,             sizeof(coreUint8),  1u,       &bSuccess);
-        coreFile::__Write(pArchive,  (*it)->GetPath(),     sizeof(coreChar),   iPathLen, &bSuccess);
-        coreFile::__Write(pArchive, &(*it)->GetSize(),     sizeof(coreUint32), 1u,       &bSuccess);
-        coreFile::__Write(pArchive, &(*it)->m_iArchivePos, sizeof(coreUint32), 1u,       &bSuccess);
+        coreFile::__Write(pArchive, &iPathLen,             sizeof(coreUint8),  &bSuccess);
+        coreFile::__Write(pArchive,  (*it)->GetPath(),     iPathLen,           &bSuccess);
+        coreFile::__Write(pArchive, &(*it)->GetSize(),     sizeof(coreUint32), &bSuccess);
+        coreFile::__Write(pArchive, &(*it)->m_iArchivePos, sizeof(coreUint32), &bSuccess);
     }
 
     // save file data
     FOR_EACH(it, m_apFile)
     {
-        coreFile::__Write(pArchive, (*it)->GetData(), sizeof(coreByte), (*it)->GetSize(), &bSuccess);
+        coreFile::__Write(pArchive, (*it)->GetData(), (*it)->GetSize(), &bSuccess);
     }
 
     // close archive
-    if(SDL_RWclose(pArchive) || !bSuccess)
+    if(!SDL_CloseIO(pArchive) || !bSuccess)
     {
         Core::Log->Warning("Archive (%s) could not be saved properly (SDL: %s)", m_sPath.c_str(), SDL_GetError());
         return CORE_ERROR_FILE;

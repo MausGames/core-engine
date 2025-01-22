@@ -103,7 +103,7 @@ void coreGenBuffers(coreUintW iCount, GLuint* OUTPUT pNames)
 
 void coreGenVertexArrays(coreUintW iCount, GLuint* OUTPUT pNames)
 {
-    ASSERT(SDL_ThreadID() == Core::System->GetMainThread())
+    ASSERT(SDL_GetCurrentThreadID() == Core::System->GetMainThread())
 
     // generate vertex array names (without lock, because only executed on main-thread)
     CORE_GL_POOL_GENERATE(s_PoolVertexArrays, glCreateVertexArrays, glGenVertexArrays)
@@ -128,7 +128,7 @@ void coreDelBuffers(coreUintW iCount, const GLuint* pNames)
 
 void coreDelVertexArrays(coreUintW iCount, const GLuint* pNames)
 {
-    ASSERT(SDL_ThreadID() == Core::System->GetMainThread())
+    ASSERT(SDL_GetCurrentThreadID() == Core::System->GetMainThread())
 
     // delete vertex array names (without lock)
     CORE_GL_POOL_DELETE(s_PoolVertexArrays, glDeleteVertexArrays)

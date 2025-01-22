@@ -149,6 +149,14 @@ CoreDebug::~CoreDebug()
 
 
 // ****************************************************************
+/* process debug events */
+coreBool CoreDebug::ProcessEvent(const SDL_Event& oEvent)
+{
+    return true;
+}
+
+
+// ****************************************************************
 /* render texture directly on screen */
 void CoreDebug::DisplayTexture(const coreTexturePtr& pTexture, const coreVector2 vSize)
 {
@@ -255,7 +263,7 @@ void CoreDebug::MeasureEnd(const coreHashString& sName)
 
         // add additional performance information (frame rate and process memory)
         const coreFloat fTime = Core::System->GetTime();
-        if(fTime) pcName = PRINT("%s %.1f FPS%s %.2f MB / %.2f MB", pcName, RCP(fTime), SDL_GL_GetSwapInterval() ? "*" : "", coreDouble(coreData::ProcessMemory()) / (1024.0*1024.0), coreDouble(Core::Graphics->ProcessGpuMemory()) / (1024.0*1024.0));
+        if(fTime) pcName = PRINT("%s %.1f FPS%s %.2f MB / %.2f MB", pcName, RCP(fTime), SDL_GL_GetSwapIntervalInline() ? "*" : "", coreDouble(coreData::ProcessMemory()) / (1024.0*1024.0), coreDouble(Core::Graphics->ProcessGpuMemory()) / (1024.0*1024.0));
     }
 
     // fetch second CPU time value and update CPU performance value
@@ -286,7 +294,7 @@ void CoreDebug::__StatStart()
     if(CORE_GL_SUPPORT(ARB_pipeline_statistics_query))
     {
         // limit the processing frequency (because of high performance impact)
-        if(SDL_GL_GetSwapInterval() || (F_TO_UI(Core::System->GetTotalTimeFloat(100.0) * 4.0f) % m_aStat.size() != m_aStat.index()))
+        if(SDL_GL_GetSwapIntervalInline() || (F_TO_UI(Core::System->GetTotalTimeFloat(100.0) * 4.0f) % m_aStat.size() != m_aStat.index()))
         {
             // switch to next statistic object (only process one at a time, or it may crash)
             m_aStat.next();
@@ -347,13 +355,13 @@ void CoreDebug::__UpdateOutput()
     if(!m_bEnabled) return;
 
     // toggle output visibility
-    if(Core::Input->GetKeyboardButton(CORE_INPUT_KEY(F1), CORE_INPUT_PRESS) || Core::Input->GetJoystickButton(CORE_INPUT_JOYSTICK_ANY, SDL_CONTROLLER_BUTTON_LEFTSTICK, CORE_INPUT_PRESS))
+    if(Core::Input->GetKeyboardButton(CORE_INPUT_KEY(F1), CORE_INPUT_PRESS) || Core::Input->GetJoystickButton(CORE_INPUT_JOYSTICK_ANY, SDL_GAMEPAD_BUTTON_LEFT_STICK, CORE_INPUT_PRESS))
         m_bVisible = !m_bVisible;
 
     // toggle vertical synchronization
     if(Core::Input->GetKeyboardButton(CORE_INPUT_KEY(F2), CORE_INPUT_PRESS))
     {
-        SDL_GL_SetSwapInterval(SDL_GL_GetSwapInterval() ? 0 : 1);
+        SDL_GL_SetSwapInterval(SDL_GL_GetSwapIntervalInline() ? 0 : 1);
     }
 
     // hold and skip frame

@@ -107,8 +107,8 @@ CoreGraphics::CoreGraphics()noexcept
 
     // enable vertical synchronization
     const coreInt32 iVsync = Core::Config->GetInt(CORE_CONFIG_SYSTEM_VSYNC);
-         if(!SDL_GL_SetSwapInterval(iVsync)) Core::Log->Info("Vertical synchronization configured (interval %d)", iVsync);
-    else if(!SDL_GL_SetSwapInterval(1))      Core::Log->Info("Vertical synchronization configured (default)");
+         if(SDL_GL_SetSwapInterval(iVsync)) Core::Log->Info("Vertical synchronization configured (interval %d)", iVsync);
+    else if(SDL_GL_SetSwapInterval(1))      Core::Log->Info("Vertical synchronization configured (default)");
     else Core::Log->Warning("Vertical synchronization not directly supported (SDL: %s)", SDL_GetError());
 
     // setup texturing and packing
@@ -180,7 +180,7 @@ CoreGraphics::CoreGraphics()noexcept
     SDL_GL_SwapWindow(Core::System->GetWindow());
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | (CoreApp::Settings::Graphics::StencilSize ? GL_STENCIL_BUFFER_BIT : 0u));
 
-    if(Core::Config->GetBool(CORE_CONFIG_BASE_ASYNCMODE) && !DEFINED(_CORE_EMSCRIPTEN_) && (SDL_GetCPUCount() > 1) && CORE_GL_SUPPORT(CORE_shared_context))
+    if(Core::Config->GetBool(CORE_CONFIG_BASE_ASYNCMODE) && !DEFINED(_CORE_EMSCRIPTEN_) && (SDL_GetNumLogicalCPUCores() > 1) && CORE_GL_SUPPORT(CORE_shared_context))
     {
         // create resource context (after reset, because of flickering on Windows with fullscreen)
         m_pResourceContext = SDL_GL_CreateContext(Core::System->GetWindow());
@@ -213,14 +213,14 @@ CoreGraphics::~CoreGraphics()
     coreExitOpenGL();
 
     // disable vertical synchronization
-    SDL_GL_SetSwapInterval(0);
+    SDL_GL_SetSwapInterval(0);   // # AMD hotfix: prevent old crash on engine reset
 
     // dissociate render context from main window
     SDL_GL_MakeCurrent(Core::System->GetWindow(), NULL);
 
     // delete OpenGL contexts
-    SDL_GL_DeleteContext(m_pResourceContext);
-    SDL_GL_DeleteContext(m_pRenderContext);
+    SDL_GL_DestroyContext(m_pResourceContext);
+    SDL_GL_DestroyContext(m_pRenderContext);
 
     Core::Log->Info(CORE_LOG_BOLD("Graphics Interface shut down"));
 }
@@ -700,7 +700,7 @@ void CoreGraphics::TakeScreenshot(const coreChar* pcPath)const
         }
 
         // create SDL surface
-        coreSurfaceScope pSurface = SDL_CreateRGBSurfaceWithFormatFrom(pConvert, iWidthDst, iHeight, 24, iPitchDst, SDL_PIXELFORMAT_RGB24);
+        coreSurfaceScope pSurface = SDL_CreateSurfaceFrom(iWidthDst, iHeight, SDL_PIXELFORMAT_RGB24, pConvert, iPitchDst);
         if(pSurface)
         {
             const coreChar* pcFullPath = std::strcmp(coreData::StrExtension(sPathCopy.c_str()), "png") ? PRINT("%s.png", sPathCopy.c_str()) : sPathCopy.c_str();

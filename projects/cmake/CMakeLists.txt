@@ -96,7 +96,7 @@ if(CORE_EMSCRIPTEN)
     target_link_libraries(
         CoreEngine INTERFACE
         -lopenal -lidbfs.js
-        -l:libSDL2.a -l:libSDL2_ttf.a -l:libharfbuzz.a -l:libfreetype.a -l:libSDL2_image.a -l:libwebp.a -l:libwebpdemux.a -l:libzstd.a -l:libopusfile.a -l:libopus.a -l:libogg.a
+        -l:libSDL3.a -l:libSDL3_ttf.a -l:libharfbuzz.a -l:libfreetype.a -l:libSDL3_image.a -l:libwebp.a -l:libwebpdemux.a -l:libzstd.a -l:libopusfile.a -l:libopus.a -l:libogg.a
     )
 
     target_link_options(
@@ -134,7 +134,7 @@ else()
     target_link_libraries(
         CoreEngine INTERFACE
         -ldl -lpthread -lGL
-        -l:libSDL2.so -l:libSDL2_ttf.so -l:libSDL2_image.so -l:libopenal.so -l:libzstd.so -l:libopusfile.so
+        -l:libSDL3.so -l:libSDL3_ttf.so -l:libSDL3_image.so -l:libopenal.so -l:libzstd.so -l:libopusfile.so
     )
 
     target_link_options(

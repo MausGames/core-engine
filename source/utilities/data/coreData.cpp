@@ -587,7 +587,7 @@ const coreChar* coreData::SystemDirAppData()
 #elif defined(_CORE_SWITCH_)
 
     // get default save-game path
-    return PRINT("%s", corePathScope(SDL_GetPrefPath(NULL, NULL)).Get());
+    return PRINT("%s", coreAllocScope(SDL_GetPrefPath(NULL, NULL)).Get());
 
 #endif
 
@@ -1047,7 +1047,7 @@ void coreData::InitDefaultFolders()
 #if defined(_CORE_MACOS_)
     coreData::SetCurDir(coreCocoaPathResource());
 #elif defined(_CORE_SWITCH_)
-    coreData::SetCurDir(corePathScope(SDL_GetBasePath()).Get());
+    coreData::SetCurDir(SDL_GetBasePath());
 #else
     coreData::SetCurDir(PRINT("%s/../..", coreData::ProcessDir()));
 #endif
@@ -1391,11 +1391,11 @@ coreBool coreData::FileExists(const coreChar* pcPath)
 #else
 
     // open file
-    SDL_RWops* pFile = SDL_RWFromFile(pcPath, "rb");
+    SDL_IOStream* pFile = SDL_IOFromFile(pcPath, "rb");
     if(pFile)
     {
         // file exists
-        SDL_RWclose(pFile);
+        SDL_CloseIO(pFile);
         return true;
     }
 
@@ -1437,12 +1437,12 @@ coreInt64 coreData::FileSize(const coreChar* pcPath)
 #else
 
     // open file
-    SDL_RWops* pFile = SDL_RWFromFile(pcPath, "rb");
+    SDL_IOStream* pFile = SDL_IOFromFile(pcPath, "rb");
     if(pFile)
     {
         // get size from stream
-        const coreInt64 iSize = SDL_RWsize(pFile);
-        SDL_RWclose(pFile);
+        const coreInt64 iSize = SDL_GetIOSize(pFile);
+        SDL_CloseIO(pFile);
 
         return iSize;
     }
@@ -1699,11 +1699,11 @@ coreBool coreData::FolderWritable(const coreChar* pcPath)
 #else
 
     // create temporary file
-    SDL_RWops* pFile = SDL_RWFromFile(pcTemp, "wb");
+    SDL_IOStream* pFile = SDL_IOFromFile(pcTemp, "wb");
     if(pFile)
     {
         // close and delete file again
-        SDL_RWclose(pFile);
+        SDL_CloseIO(pFile);
         coreData::FileDelete(pcTemp);
 
         return true;

@@ -365,9 +365,9 @@
     #define STB_SPRINTF_NOUNALIGNED
 #endif
 
-#include <SDL2/SDL.h>
-#include <SDL2/SDL_ttf.h>
-#include <SDL2/SDL_image.h>
+#include <SDL3/SDL.h>
+#include <SDL3/SDL_ttf.h>
+#include <SDL3/SDL_image.h>
 #if defined(_CORE_GLES_)
     #include <GLES3/gl32.h>
 #else
@@ -704,6 +704,10 @@ public:
     {
         static const coreChar* const Name;             // project name
         static const coreChar* const Version;          // version string
+        static const coreChar* const Identifier;       // unique application identifier (e.g. at.maus-games.core-app)
+        static const coreChar* const Creator;          // author/company name
+        static const coreChar* const Year;             // copyright year
+        static const coreChar* const Website;          // website URL
         static const coreChar* const IconPath;         // window icon file path
         static const coreChar* const CursorPath;       // mouse cursor file path
         static const coreBool        UserManagement;   // enable user-management (OS and platform)

@@ -13,49 +13,57 @@
 // TODO 3: remove the 1-frame delay when using the Set* interface from game-code
 // TODO 2: press and release within the same frame gets ignored, but it is assumed that both cannot happen in the same loop
 // TODO 5: <old comment style>
-// TODO 3: allow loading game controller databases from archives
+// TODO 3: allow loading gamepad databases from archives
 // TODO 3: mouse button 0 is not used
 // TODO 2: in browser (Firefox?), xbox 360 controller: right stick is axis 3+4 (instead of 2+3), and d-pad is converted to another axis-pair 6+7
 // TODO 3: change hat to d-pad ? and handle d-pad buttons as actual buttons if required by game
-// TODO 3: SDL_CONTROLLERTOUCHPADDOWN, SDL_CONTROLLERTOUCHPADMOTION, SDL_CONTROLLERTOUCHPADUP
-// TODO 3: case SDL_CONTROLLERSENSORUPDATE, oEvent.csensor.type == SDL_SENSOR_ACCEL, SDL_SENSOR_GYRO; SDL_GameControllerSetSensorEnabled
+// TODO 3: SDL_EVENT_GAMEPAD_TOUCHPAD_DOWN, SDL_EVENT_GAMEPAD_TOUCHPAD_MOTION, SDL_EVENT_GAMEPAD_TOUCHPAD_UP
+// TODO 3: case SDL_EVENT_GAMEPAD_SENSOR_UPDATE, oEvent.csensor.type == SDL_SENSOR_ACCEL, SDL_SENSOR_GYRO; SDL_SetGamepadSensorEnabled
 // TODO 3: implement last used joystick type, rumble and color for ANY, last used input mode (incl keyboard/mouse, touch)
 // TODO 4: should cursor handling go into CoreSystem ?
 
 
 // ****************************************************************
 /* input definitions */
-#define __CORE_INPUT_PRESS(x)          {SET_BIT(x, CORE_INPUT_RELEASE, false)                       SET_BIT(x, CORE_INPUT_PRESS, !HAS_BIT(x, CORE_INPUT_HOLD)) SET_BIT(x, CORE_INPUT_HOLD, true)}
-#define __CORE_INPUT_RELEASE(x)        {SET_BIT(x, CORE_INPUT_RELEASE, HAS_BIT(x, CORE_INPUT_HOLD)) SET_BIT(x, CORE_INPUT_PRESS, false)                        SET_BIT(x, CORE_INPUT_HOLD, false)}
-#define __CORE_INPUT_COUNT(x,c)        {if(x) for(coreUintW j = 0u; j < CORE_INPUT_TYPES; ++j) if(HAS_BIT(x, j)) {++(c)[j]; ADD_BIT(m_iAnyButton, j)}}
-#define __CORE_INPUT_JOYSTICK(i)       (m_aJoystick[MIN(i, m_aJoystick.size() - 1u)])
+#define __CORE_INPUT_PRESS(x)           {SET_BIT(x, CORE_INPUT_RELEASE, false)                       SET_BIT(x, CORE_INPUT_PRESS, !HAS_BIT(x, CORE_INPUT_HOLD)) SET_BIT(x, CORE_INPUT_HOLD, true)}
+#define __CORE_INPUT_RELEASE(x)         {SET_BIT(x, CORE_INPUT_RELEASE, HAS_BIT(x, CORE_INPUT_HOLD)) SET_BIT(x, CORE_INPUT_PRESS, false)                        SET_BIT(x, CORE_INPUT_HOLD, false)}
+#define __CORE_INPUT_COUNT(x,c)         {if(x) for(coreUintW j = 0u; j < CORE_INPUT_TYPES; ++j) if(HAS_BIT(x, j)) {++(c)[j]; ADD_BIT(m_iAnyButton, j)}}
+#define __CORE_INPUT_JOYSTICK(i)        (m_aJoystick[MIN(i, m_aJoystick.size() - 1u)])
 
-#define CORE_INPUT_BUTTONS_KEYBOARD    (287u)   // number of handled keyboard buttons (#SDL_NUM_SCANCODES)
-#define CORE_INPUT_BUTTONS_MOUSE       (16u)    // number of handled mouse buttons
-#define CORE_INPUT_BUTTONS_JOYSTICK    (32u)    // number of handled joystick buttons
-#define CORE_INPUT_AXIS                (8u)     // number of handled joystick axis
-#define CORE_INPUT_DIRECTIONS          (4u)     // number of handled joystick (hat) directions
-#define CORE_INPUT_TYPES               (4u)     // number of different status types
+#define CORE_INPUT_BUTTONS_KEYBOARD     (287u)   // number of handled keyboard buttons (# SDL_SCANCODE_COUNT)
+#define CORE_INPUT_BUTTONS_MOUSE        (16u)    // number of handled mouse buttons
+#define CORE_INPUT_BUTTONS_JOYSTICK     (32u)    // number of handled joystick buttons
+#define CORE_INPUT_AXIS                 (8u)     // number of handled joystick axis
+#define CORE_INPUT_DIRECTIONS           (4u)     // number of handled joystick (hat) directions
+#define CORE_INPUT_TYPES                (4u)     // number of different status types
 
 #if defined(_CORE_MOBILE_)
-    #define CORE_INPUT_FINGERS         (5u)     // maximum number of simultaneous fingers
+    #define CORE_INPUT_FINGERS          (5u)     // maximum number of simultaneous fingers
 #else
-    #define CORE_INPUT_FINGERS         (1u)
+    #define CORE_INPUT_FINGERS          (1u)
 #endif
 
-#define CORE_INPUT_INVALID_KEYBOARD    (CORE_INPUT_KEY(UNKNOWN))
-#define CORE_INPUT_INVALID_MOUSE       (0xFFu)
-#define CORE_INPUT_INVALID_JOYSTICK    (0xFFu)
+#define CORE_INPUT_INVALID_KEYBOARD     (CORE_INPUT_KEY(UNKNOWN))
+#define CORE_INPUT_INVALID_MOUSE        (0xFFu)
+#define CORE_INPUT_INVALID_JOYSTICK     (0xFFu)
 
-#define CORE_INPUT_JOYSTICK_ANY        (Core::Input->GetJoystickNum())
+#define CORE_INPUT_JOYSTICK_ANY         (Core::Input->GetJoystickNum())
 
-#define CORE_INPUT_BUTTON_LEFTTRIGGER  (SDL_CONTROLLER_BUTTON_MAX + 0u)
-#define CORE_INPUT_BUTTON_RIGHTTRIGGER (SDL_CONTROLLER_BUTTON_MAX + 1u)
+#define CORE_INPUT_BUTTON_A             (SDL_GAMEPAD_BUTTON_SOUTH)
+#define CORE_INPUT_BUTTON_B             (SDL_GAMEPAD_BUTTON_EAST)
+#define CORE_INPUT_BUTTON_X             (SDL_GAMEPAD_BUTTON_WEST)
+#define CORE_INPUT_BUTTON_Y             (SDL_GAMEPAD_BUTTON_NORTH)
+#define CORE_INPUT_BUTTON_LEFT_TRIGGER  (SDL_GamepadButton(SDL_GAMEPAD_BUTTON_COUNT + 0u))
+#define CORE_INPUT_BUTTON_RIGHT_TRIGGER (SDL_GamepadButton(SDL_GAMEPAD_BUTTON_COUNT + 1u))
+#define CORE_INPUT_BUTTON_ACCEPT        (CORE_INPUT_BUTTON_A)
+#define CORE_INPUT_BUTTON_CANCEL        (CORE_INPUT_BUTTON_B)
 
-#define CORE_INPUT_TYPE_STEAM          (SDL_CONTROLLER_TYPE_MAX + 0u)
+#define CORE_INPUT_TYPE_STEAM           (SDL_GamepadType(SDL_GAMEPAD_TYPE_COUNT + 0u))
+#define CORE_INPUT_TYPE_LUNA            (SDL_GamepadType(SDL_GAMEPAD_TYPE_COUNT + 1u))
+#define CORE_INPUT_TYPE_STADIA          (SDL_GamepadType(SDL_GAMEPAD_TYPE_COUNT + 2u))
 
-#define CORE_INPUT_KEY(k)              (SDL_SCANCODE_ ## k)
-#define CORE_INPUT_CHAR(c)             (SDLK_         ## c)
+#define CORE_INPUT_KEY(k)               (SDL_SCANCODE_ ## k)
+#define CORE_INPUT_CHAR(c)              (SDLK_         ## c)
 
 using coreInputKey  = SDL_Scancode;
 using coreInputChar = SDL_Keycode;
@@ -113,10 +121,11 @@ private:
     /* joystick structure */
     struct coreJoystick final
     {
-        SDL_GameController*    pController;                 // game controller handle
-        SDL_Joystick*          pJoystick;                   // joystick device handle
-        SDL_GameControllerType eControllerType;             // 
-        SDL_JoystickType       eJoystickType;               // 
+        SDL_JoystickID   iJoystickID;                       // joystick instance ID
+        SDL_Gamepad*     pGamepad;                          // gamepad device handle
+        SDL_Joystick*    pJoystick;                         // joystick device handle
+        SDL_GamepadType  eGamepadType;                      // gamepad device type
+        SDL_JoystickType eJoystickType;                     // joystick device type
 
         coreUint8  aiButton[CORE_INPUT_BUTTONS_JOYSTICK];   // status of the joystick buttons
         coreUint8  aiCount [CORE_INPUT_TYPES];              // number of joystick buttons with same status
@@ -173,13 +182,15 @@ public:
     void ForwardHatToStick   (const coreUintW iIndex);
 
     /* retrieve joystick data */
-    inline const coreChar* GetJoystickName        (const coreUintW iIndex)const {return __CORE_INPUT_JOYSTICK(iIndex).pController ? SDL_GameControllerName(__CORE_INPUT_JOYSTICK(iIndex).pController) : __CORE_INPUT_JOYSTICK(iIndex).pJoystick ? SDL_JoystickName(__CORE_INPUT_JOYSTICK(iIndex).pJoystick) : "";}
-    inline const coreChar* GetJoystickSerial      (const coreUintW iIndex)const {return __CORE_INPUT_JOYSTICK(iIndex).pJoystick   ? SDL_JoystickGetSerial (__CORE_INPUT_JOYSTICK(iIndex).pJoystick)   : "";}
-    inline const coreChar* GetJoystickPath        (const coreUintW iIndex)const {return __CORE_INPUT_JOYSTICK(iIndex).pJoystick   ? SDL_JoystickPath      (__CORE_INPUT_JOYSTICK(iIndex).pJoystick)   : "";}
-    inline const coreChar* GetJoystickGUID        (const coreUintW iIndex)const {if(__CORE_INPUT_JOYSTICK(iIndex).pJoystick) {static coreChar s_acGUID[64]; SDL_JoystickGetGUIDString(SDL_JoystickGetGUID(__CORE_INPUT_JOYSTICK(iIndex).pJoystick), s_acGUID, ARRAY_SIZE(s_acGUID)); return s_acGUID;} return "";}
-    inline coreBool        GetJoystickHasRumble   (const coreUintW iIndex)const {return (SDL_JoystickHasRumble(__CORE_INPUT_JOYSTICK(iIndex).pJoystick) != SDL_FALSE);}
-    inline coreBool        GetJoystickHasLED      (const coreUintW iIndex)const {return (SDL_JoystickHasLED   (__CORE_INPUT_JOYSTICK(iIndex).pJoystick) != SDL_FALSE);}
-    inline coreUint8       GetJoystickGamepadType (const coreUintW iIndex)const {return __CORE_INPUT_JOYSTICK(iIndex).eControllerType;}
+    inline const coreChar* GetJoystickName        (const coreUintW iIndex)const {return __CORE_INPUT_JOYSTICK(iIndex).pGamepad  ? SDL_GetGamepadName   (__CORE_INPUT_JOYSTICK(iIndex).pGamepad)  : __CORE_INPUT_JOYSTICK(iIndex).pJoystick ? SDL_GetJoystickName(__CORE_INPUT_JOYSTICK(iIndex).pJoystick) : "";}
+    inline const coreChar* GetJoystickSerial      (const coreUintW iIndex)const {return __CORE_INPUT_JOYSTICK(iIndex).pJoystick ? SDL_GetJoystickSerial(__CORE_INPUT_JOYSTICK(iIndex).pJoystick) : "";}
+    inline const coreChar* GetJoystickPath        (const coreUintW iIndex)const {return __CORE_INPUT_JOYSTICK(iIndex).pJoystick ? SDL_GetJoystickPath  (__CORE_INPUT_JOYSTICK(iIndex).pJoystick) : "";}
+    inline const coreChar* GetJoystickGUID        (const coreUintW iIndex)const {if(__CORE_INPUT_JOYSTICK(iIndex).pJoystick) {static coreChar s_acGUID[64]; SDL_GUIDToString(SDL_GetJoystickGUID(__CORE_INPUT_JOYSTICK(iIndex).pJoystick), s_acGUID, ARRAY_SIZE(s_acGUID)); return s_acGUID;} return "";}
+    inline coreBool        GetJoystickHasRumble   (const coreUintW iIndex)const {return SDL_GetBooleanProperty(SDL_GetJoystickProperties(__CORE_INPUT_JOYSTICK(iIndex).pJoystick), SDL_PROP_JOYSTICK_CAP_RUMBLE_BOOLEAN,  false);}
+    inline coreBool        GetJoystickHasLED      (const coreUintW iIndex)const {return SDL_GetBooleanProperty(SDL_GetJoystickProperties(__CORE_INPUT_JOYSTICK(iIndex).pJoystick), SDL_PROP_JOYSTICK_CAP_RGB_LED_BOOLEAN, false);}
+    inline coreBool        GetJoystickHasAccel    (const coreUintW iIndex)const {return SDL_GamepadHasSensor(__CORE_INPUT_JOYSTICK(iIndex).pGamepad, SDL_SENSOR_ACCEL);}
+    inline coreBool        GetJoystickHasGyro     (const coreUintW iIndex)const {return SDL_GamepadHasSensor(__CORE_INPUT_JOYSTICK(iIndex).pGamepad, SDL_SENSOR_GYRO);}
+    inline coreUint8       GetJoystickGamepadType (const coreUintW iIndex)const {return __CORE_INPUT_JOYSTICK(iIndex).eGamepadType;}
     inline coreUint8       GetJoystickJoystickType(const coreUintW iIndex)const {return __CORE_INPUT_JOYSTICK(iIndex).eJoystickType;}
     inline coreUintW       GetJoystickNum         ()const                       {return m_aJoystick.size() - 1u;}
 
@@ -214,8 +225,8 @@ public:
     inline coreBool           GetJoystickButton(const coreUintW iIndex, const coreUint8 iButton, const coreInputType eType)const       {ASSERT(iButton    < CORE_INPUT_BUTTONS_JOYSTICK) return HAS_BIT(__CORE_INPUT_JOYSTICK(iIndex).aiButton[iButton], eType);}
     inline coreBool           GetJoystickHat   (const coreUintW iIndex, const coreInputDir eDirection, const coreInputType eType)const {ASSERT(eDirection < CORE_INPUT_DIRECTIONS)       return HAS_BIT(__CORE_INPUT_JOYSTICK(iIndex).aiHat[eDirection], eType);}
     inline const coreFloat&   GetJoystickAxis  (const coreUintW iIndex, const coreUint8 iAxis)const                                    {ASSERT(iAxis      < CORE_INPUT_AXIS)             return __CORE_INPUT_JOYSTICK(iIndex).afAxis[iAxis];}
-    inline const coreVector2& GetJoystickStickL(const coreUintW iIndex)const                                                           {return r_cast<const coreVector2&>(__CORE_INPUT_JOYSTICK(iIndex).afAxis[SDL_CONTROLLER_AXIS_LEFTX]);}
-    inline const coreVector2& GetJoystickStickR(const coreUintW iIndex)const                                                           {return r_cast<const coreVector2&>(__CORE_INPUT_JOYSTICK(iIndex).afAxis[SDL_CONTROLLER_AXIS_RIGHTX]);}
+    inline const coreVector2& GetJoystickStickL(const coreUintW iIndex)const                                                           {return r_cast<const coreVector2&>(__CORE_INPUT_JOYSTICK(iIndex).afAxis[SDL_GAMEPAD_AXIS_LEFTX]);}
+    inline const coreVector2& GetJoystickStickR(const coreUintW iIndex)const                                                           {return r_cast<const coreVector2&>(__CORE_INPUT_JOYSTICK(iIndex).afAxis[SDL_GAMEPAD_AXIS_RIGHTX]);}
 
     /* access touch input */
     inline void                SetTouchButton  (const coreUintW iIndex, const coreBool bStatus)         {WARN_IF(iIndex >= CORE_INPUT_FINGERS) return; SET_BIT(m_aTouch[iIndex].iButton, CORE_INPUT_DATA, bStatus)}

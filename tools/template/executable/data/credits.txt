@@ -795,7 +795,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 
 -------------------------------------------------------------------
-SDL2 (zlib)
+SDL3 (zlib)
 
 Copyright (c) 1997 Sam Lantinga <slouken@libsdl.org>
 
@@ -819,7 +819,7 @@ freely, subject to the following restrictions:
 
 
 -------------------------------------------------------------------
-SDL2_image (zlib)
+SDL3_image (zlib)
 
 Copyright (c) 1997 Sam Lantinga <slouken@libsdl.org>
 
@@ -843,9 +843,9 @@ freely, subject to the following restrictions:
 
 
 -------------------------------------------------------------------
-SDL2_ttf (zlib)
+SDL3_ttf (zlib)
 
-Copyright (c) 2001 Sam Lantinga <slouken@libsdl.org>
+Copyright (c) 1997 Sam Lantinga <slouken@libsdl.org>
 
 This software is provided 'as-is', without any express or implied
 warranty. In no event will the authors be held liable for any damages

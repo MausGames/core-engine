@@ -788,14 +788,14 @@ void coreRichText::__GenerateTexture()
             // create solid text surface data
             pSolid = pFont->CreateGlyph(cGlyph, iRelHeight);
             WARN_IF(!pSolid) break;
-            ASSERT((pSolid->format->BitsPerPixel == 8u) && !SDL_MUSTLOCK(pSolid))
+            ASSERT((SDL_BITSPERPIXEL(pSolid->format) == 8u) && !SDL_MUSTLOCK(pSolid))
 
             if(iRelOutline)
             {
                 // create outlined text surface data
                 pOutline = pFont->CreateGlyphOutline(cGlyph, iRelHeight, iRelOutline);
                 WARN_IF(!pOutline) break;
-                ASSERT((pOutline->format->BitsPerPixel == 8u) && !SDL_MUSTLOCK(pSolid))
+                ASSERT((SDL_BITSPERPIXEL(pOutline->format) == 8u) && !SDL_MUSTLOCK(pSolid))
             }
 
             // set texture properties

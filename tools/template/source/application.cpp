@@ -11,12 +11,16 @@
 // project settings
 const coreChar* const CoreApp::Settings::Name                          = "Core Application";
 const coreChar* const CoreApp::Settings::Version                       = "0.0.1";
+const coreChar* const CoreApp::Settings::Identifier                    = "at.maus-games.core-app";
+const coreChar* const CoreApp::Settings::Creator                       = "Martin Mauersics";
+const coreChar* const CoreApp::Settings::Year                          = "XXXX";
+const coreChar* const CoreApp::Settings::Website                       = "https://www.maus-games.at";
 const coreChar* const CoreApp::Settings::IconPath                      = "data/textures/game_icon.webp";
 const coreChar* const CoreApp::Settings::CursorPath                    = "data/textures/default_cursor.webp";
 const coreBool        CoreApp::Settings::UserManagement                = false;
-const coreUint8       CoreApp::Settings::Graphics::DepthSize           = 24u;
-const coreUint8       CoreApp::Settings::Graphics::StencilSize         = 8u;
-const coreBool        CoreApp::Settings::Graphics::AlphaChannel        = true;
+const coreUint8       CoreApp::Settings::Graphics::DepthSize           = 16u;
+const coreUint8       CoreApp::Settings::Graphics::StencilSize         = 0u;
+const coreBool        CoreApp::Settings::Graphics::AlphaChannel        = false;
 const coreBool        CoreApp::Settings::Graphics::DoubleBuffer        = true;
 const coreBool        CoreApp::Settings::Graphics::StereoRender        = false;
 const coreUint32      CoreApp::Settings::Platform::SteamAppID[2]       = {0u, 0u};

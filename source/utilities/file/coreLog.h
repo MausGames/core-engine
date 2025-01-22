@@ -50,8 +50,8 @@ private:
     coreUint8  m_iListStatus;       // currently writing a list
     coreUint16 m_iWarnLimit;        // remaining number of warnings (to prevent infinite spam)
 
-    coreUint32   m_iLastTime;       // last time-value for duration approximations
-    SDL_threadID m_iThisThread;     // thread-ID from the creator of this log
+    coreUint64   m_iLastTime;       // last time-value for duration approximations
+    SDL_ThreadID m_iThisThread;     // thread-ID from the creator of this log
 
     coreRecursiveLock m_Lock;       // recursive spinlock to prevent concurrent log access
 

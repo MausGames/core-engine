@@ -35,29 +35,36 @@ CoreSystem::CoreSystem()noexcept
 {
     Core::Log->Header("System Interface");
 
-    // set SDL behavior hints
-    SDL_SetHint(SDL_HINT_APP_NAME,                           CoreApp::Settings::Name);
-    SDL_SetHint(SDL_HINT_EVENT_LOGGING,                      DEFINED(_CORE_DEBUG_) ? "1" : "0");
-    SDL_SetHint(SDL_HINT_JOYSTICK_ALLOW_BACKGROUND_EVENTS,   "1");
-    SDL_SetHint(SDL_HINT_MOUSE_AUTO_CAPTURE,                 "0");
-    SDL_SetHint(SDL_HINT_MOUSE_RELATIVE_MODE_CENTER,         "0");
-    SDL_SetHint(SDL_HINT_OPENGL_ES_DRIVER,                   "1");
-    SDL_SetHint(SDL_HINT_VIDEO_DOUBLE_BUFFER,                "1");
-    SDL_SetHint(SDL_HINT_VIDEO_X11_NET_WM_BYPASS_COMPOSITOR, DEFINED(_CORE_DEBUG_) ? "0" : "1");
-    SDL_SetHint(SDL_HINT_WINDOWS_DISABLE_THREAD_NAMING,      DEFINED(_CORE_DEBUG_) ? "0" : "1");
-
     // load SDL only once (to improve reset performance, and prevent crashes)
     UNUSED static const coreBool s_bOnce = []()
     {
+        // set SDL application metadata
+        SDL_SetAppMetadataProperty(SDL_PROP_APP_METADATA_NAME_STRING,       CoreApp::Settings::Name);
+        SDL_SetAppMetadataProperty(SDL_PROP_APP_METADATA_VERSION_STRING,    CoreApp::Settings::Version);
+        SDL_SetAppMetadataProperty(SDL_PROP_APP_METADATA_IDENTIFIER_STRING, CoreApp::Settings::Identifier);
+        SDL_SetAppMetadataProperty(SDL_PROP_APP_METADATA_CREATOR_STRING,    CoreApp::Settings::Creator);
+        SDL_SetAppMetadataProperty(SDL_PROP_APP_METADATA_COPYRIGHT_STRING,  PRINT("Copyright (c) %s %s", CoreApp::Settings::Year, CoreApp::Settings::Creator));
+        SDL_SetAppMetadataProperty(SDL_PROP_APP_METADATA_URL_STRING,        CoreApp::Settings::Website);
+        SDL_SetAppMetadataProperty(SDL_PROP_APP_METADATA_TYPE_STRING,       "game");
+
+        // set SDL behavior hints
+        SDL_SetHint(SDL_HINT_EVENT_LOGGING,                      DEFINED(_CORE_DEBUG_) ? "1" : "0");
+        SDL_SetHint(SDL_HINT_JOYSTICK_ALLOW_BACKGROUND_EVENTS,   "1");
+        SDL_SetHint(SDL_HINT_MOUSE_AUTO_CAPTURE,                 "0");
+        SDL_SetHint(SDL_HINT_MOUSE_RELATIVE_MODE_CENTER,         "0");
+        SDL_SetHint(SDL_HINT_OPENGL_ES_DRIVER,                   "1");
+        SDL_SetHint(SDL_HINT_VIDEO_DOUBLE_BUFFER,                "1");
+        SDL_SetHint(SDL_HINT_VIDEO_X11_NET_WM_BYPASS_COMPOSITOR, DEFINED(_CORE_DEBUG_) ? "0" : "1");
+
         // enable SDL debug messages
-        SDL_LogSetAllPriority(Core::Debug->IsEnabled() ? SDL_LOG_PRIORITY_INFO : SDL_LOG_PRIORITY_WARN);
+        SDL_SetLogPriorities(Core::Debug->IsEnabled() ? SDL_LOG_PRIORITY_INFO : SDL_LOG_PRIORITY_WARN);
 
         // get default log callback (standard output)
         SDL_LogOutputFunction nOldFunc;
-        SDL_LogGetOutputFunction(&nOldFunc, NULL);
+        SDL_GetLogOutputFunction(&nOldFunc, NULL);
 
         // register new log callback
-        SDL_LogSetOutputFunction([](void* pUserData, const coreInt32 iCategory, const SDL_LogPriority ePriority, const coreChar* pcMessage)
+        SDL_SetLogOutputFunction([](void* pUserData, const coreInt32 iCategory, const SDL_LogPriority ePriority, const coreChar* pcMessage)
         {
             if((iCategory == SDL_LOG_CATEGORY_APPLICATION) || (iCategory == SDL_LOG_CATEGORY_ASSERT))
             {
@@ -73,87 +80,92 @@ CoreSystem::CoreSystem()noexcept
         r_cast<void*>(nOldFunc));
 
         // get SDL version
-        SDL_version oVersionSDL; SDL_GetVersion(&oVersionSDL);
-        const SDL_version* pVersionTTF = TTF_Linked_Version();
-        const SDL_version* pVersionIMG = IMG_Linked_Version();
+        const coreInt32 iVersionSDL = SDL_GetVersion();
+        const coreInt32 iVersionTTF = TTF_Version();
+        const coreInt32 iVersionIMG = IMG_Version();
 
         // init SDL libraries
-        if(SDL_Init(SDL_INIT_VIDEO | SDL_INIT_GAMECONTROLLER) || TTF_Init() || !IMG_Init(IMG_INIT_PNG | IMG_INIT_WEBP) || SDL_GL_LoadLibrary(NULL))
+        if(!SDL_Init(SDL_INIT_VIDEO | SDL_INIT_GAMEPAD) || !TTF_Init() || !SDL_GL_LoadLibrary(NULL))
         {
             Core::Log->Error("SDL could not be initialized (SDL: %s)", SDL_GetError());
         }
         else
         {
-            Core::Log->Info("SDL initialized (%d.%d.%d %s, TTF %d.%d.%d, IMG %d.%d.%d, %s)",
-                            oVersionSDL .major, oVersionSDL .minor, oVersionSDL .patch, SDL_GetRevision(),
-                            pVersionTTF->major, pVersionTTF->minor, pVersionTTF->patch,
-                            pVersionIMG->major, pVersionIMG->minor, pVersionIMG->patch, SDL_GetPlatform());
+            Core::Log->Info("SDL initialized (%d.%d.%d %s, TTF %d.%d.%d, IMG %d.%d.%d, %s, sandbox %d)",
+                            SDL_VERSIONNUM_MAJOR(iVersionSDL), SDL_VERSIONNUM_MINOR(iVersionSDL), SDL_VERSIONNUM_MICRO(iVersionSDL), SDL_GetRevision(),
+                            SDL_VERSIONNUM_MAJOR(iVersionTTF), SDL_VERSIONNUM_MINOR(iVersionTTF), SDL_VERSIONNUM_MICRO(iVersionTTF),
+                            SDL_VERSIONNUM_MAJOR(iVersionIMG), SDL_VERSIONNUM_MINOR(iVersionIMG), SDL_VERSIONNUM_MICRO(iVersionIMG), SDL_GetPlatform(), SDL_GetSandbox());
         }
 
         // execute main-thread with higher priority
-        SDL_SetThreadPriority(SDL_THREAD_PRIORITY_HIGH);
+        SDL_SetCurrentThreadPriority(SDL_THREAD_PRIORITY_HIGH);
 
         // disable screen saver
         SDL_DisableScreenSaver();
 
         // disable unwanted events
-        constexpr coreUint32 aiDisable[] = {SDL_DROPFILE, SDL_DROPTEXT, SDL_DROPBEGIN, SDL_DROPCOMPLETE, SDL_KEYMAPCHANGED, SDL_CLIPBOARDUPDATE};
-        for(coreUintW i = 0u; i < ARRAY_SIZE(aiDisable); ++i) SDL_EventState(aiDisable[i], SDL_DISABLE);
+        constexpr coreUint32 aiDisable[] = {SDL_EVENT_DROP_FILE, SDL_EVENT_DROP_TEXT, SDL_EVENT_DROP_BEGIN, SDL_EVENT_DROP_COMPLETE, SDL_EVENT_DROP_POSITION, SDL_EVENT_KEYMAP_CHANGED, SDL_EVENT_CLIPBOARD_UPDATE};
+        for(coreUintW i = 0u; i < ARRAY_SIZE(aiDisable); ++i) SDL_SetEventEnabled(aiDisable[i], false);
 
         // remove all events created during initialization
         SDL_PumpEvents();
-        SDL_FlushEvents(SDL_FIRSTEVENT, SDL_LASTEVENT);
+        SDL_FlushEvents(SDL_EVENT_FIRST, SDL_EVENT_LAST);
 
         // automatically shut down SDL libraries on exit
-        WARN_IF(std::atexit([]() {SDL_GL_UnloadLibrary(); IMG_Quit(); TTF_Quit(); SDL_Quit();})) {}
+        WARN_IF(std::atexit([]() {SDL_GL_UnloadLibrary(); TTF_Quit(); SDL_Quit();})) {}
         return true;
     }();
 
     // load all available displays
-    const coreUintW iNumDisplays = SDL_GetNumVideoDisplays();
-    if(iNumDisplays)
+    coreInt32      iDisplayCount = 0u;
+    coreAllocScope piDisplayList = SDL_GetDisplays(&iDisplayCount);
+    if(iDisplayCount)
     {
         Core::Log->ListStartInfo("Available Displays");
         {
-            for(coreUintW i = 0u; i < iNumDisplays; ++i)
+            // reserve some memory
+            m_aDisplayData.reserve(iDisplayCount);
+
+            for(coreUintW i = 0u, ie = iDisplayCount; i < ie; ++i)
             {
                 coreDisplay& oDisplayData = m_aDisplayData.emplace_back();
 
+                // store display instance ID
+                const SDL_DisplayID iDisplayID = piDisplayList[i];
+                oDisplayData.iDisplayID = iDisplayID;
+
                 // retrieve desktop resolution
-                SDL_DisplayMode oDesktop = {};
-                SDL_GetDesktopDisplayMode(i, &oDesktop);
-                oDisplayData.vDesktopRes = coreVector2(I_TO_F(oDesktop.w), I_TO_F(oDesktop.h));
+                const SDL_DisplayMode* pDesktop = SDL_GetDesktopDisplayMode(iDisplayID);
+                oDisplayData.vDesktopRes = coreVector2(I_TO_F(pDesktop->w), I_TO_F(pDesktop->h));
 
                 // retrieve work area resolution
                 SDL_Rect oWorkArea = {};
-                SDL_GetDisplayUsableBounds(i, &oWorkArea);
+                SDL_GetDisplayUsableBounds(iDisplayID, &oWorkArea);
                 oDisplayData.vWorkAreaRes = coreVector2(I_TO_F(oWorkArea.w), I_TO_F(oWorkArea.h));
 
-                // retrieve display DDPI
-                coreFloat fDDPI = 0.0f, fHDPI = 0.0f, fVDPI = 0.0f;
-                SDL_GetDisplayDPI(i, &fDDPI, &fHDPI, &fVDPI);
+                // retrieve display scale
+                const coreFloat fScale = SDL_GetDisplayContentScale(iDisplayID);
 
                 // load all available screen resolutions
-                const coreUintW iNumModes = SDL_GetNumDisplayModes(i);
-                if(iNumModes)
+                coreInt32      iModeCount = 0u;
+                coreAllocScope ppModeList = SDL_GetFullscreenDisplayModes(iDisplayID, &iModeCount);
+                if(iModeCount)
                 {
-                    Core::Log->ListDeeper(CORE_LOG_BOLD("Display %u:") " %s (%d Hz, %.1f/%.1f/%.1f DPI, %d/%d offset)", i, SDL_GetDisplayName(i), oDesktop.refresh_rate, fDDPI, fHDPI, fVDPI, oWorkArea.x, oWorkArea.y);
+                    Core::Log->ListDeeper(CORE_LOG_BOLD("Display %u:") " %s (%.2f Hz, %.0f%% scale, %d/%d offset)", i, SDL_GetDisplayName(iDisplayID), pDesktop->refresh_rate, fScale * 100.0f, oWorkArea.x, oWorkArea.y);
                     {
                         // reserve some memory
-                        oDisplayData.avAvailableRes.reserve(iNumModes);
+                        oDisplayData.avAvailableRes.reserve(iModeCount);
 
-                        for(coreUintW j = 0u; j < iNumModes; ++j)
+                        for(coreUintW j = 0u, je = iModeCount; j < je; ++j)
                         {
-                            // retrieve resolution
-                            SDL_DisplayMode oMode = {};
-                            SDL_GetDisplayMode(i, j, &oMode);
+                            const SDL_DisplayMode* pMode = ppModeList[j];
 
                             // add new resolution
-                            const coreVector2 vModeRes = coreVector2(I_TO_F(oMode.w), I_TO_F(oMode.h));
+                            const coreVector2 vModeRes = coreVector2(I_TO_F(pMode->w), I_TO_F(pMode->h));
                             if(!oDisplayData.avAvailableRes.count(vModeRes))
                             {
                                 oDisplayData.avAvailableRes.push_back(vModeRes);
-                                Core::Log->ListAdd("%4d x %4d%s", oMode.w, oMode.h, (vModeRes == oDisplayData.vDesktopRes) ? " (Desktop)" : "");
+                                Core::Log->ListAdd("%4d x %4d%s", pMode->w, pMode->h, (vModeRes == oDisplayData.vDesktopRes) ? " (Desktop)" : "");
                             }
                         }
 
@@ -183,17 +195,18 @@ CoreSystem::CoreSystem()noexcept
         if(oDisplayData.vWorkAreaRes  .IsNull()) oDisplayData.vWorkAreaRes = oDisplayData.avAvailableRes.front();
         if(oDisplayData.vMaximumRes   .IsNull()) oDisplayData.vMaximumRes  = oDisplayData.avAvailableRes.front();
     }
+    ASSERT(m_aDisplayData[0].iDisplayID == SDL_GetPrimaryDisplay())
 
     // sanitize display index
     if(m_iDisplayIndex >= m_aDisplayData.size()) m_iDisplayIndex = 0u;
-    const coreDisplay& oPrimary = m_aDisplayData[m_iDisplayIndex];
+    const coreDisplay& oTarget = m_aDisplayData[m_iDisplayIndex];
 
     // sanitize screen resolution
-    if(oPrimary.avAvailableRes.size() == 1u) m_vResolution = oPrimary.vWorkAreaRes;
+    if(oTarget.avAvailableRes.size() == 1u) m_vResolution = oTarget.vWorkAreaRes;
     this->SetWindowResolution(m_vResolution);
 
     // sanitize fullscreen mode
-    if(oPrimary.avAvailableRes.size() == 1u) m_eMode = CORE_SYSTEM_MODE_WINDOWED;
+    if(oTarget.avAvailableRes.size() == 1u) m_eMode = CORE_SYSTEM_MODE_WINDOWED;
     m_eMode = CLAMP(m_eMode, CORE_SYSTEM_MODE_WINDOWED, CORE_SYSTEM_MODE_FULLSCREEN);
 
     // configure the OpenGL context
@@ -219,7 +232,7 @@ CoreSystem::CoreSystem()noexcept
     if(!Core::Config->GetBool(CORE_CONFIG_BASE_FALLBACKMODE))
     {
         // create quick test-window
-        m_pWindow = SDL_CreateWindow(NULL, 0, 0, 32, 32, SDL_WINDOW_OPENGL | SDL_WINDOW_HIDDEN);
+        m_pWindow = SDL_CreateWindow(NULL, 32, 32, SDL_WINDOW_OPENGL | SDL_WINDOW_HIDDEN);
         if(m_pWindow)
         {
             // test all available versions (descending)
@@ -236,7 +249,7 @@ CoreSystem::CoreSystem()noexcept
                 if(pContext)
                 {
                     // select current version
-                    SDL_GL_DeleteContext(pContext);
+                    SDL_GL_DestroyContext(pContext);
                     break;
                 }
             }
@@ -250,7 +263,7 @@ CoreSystem::CoreSystem()noexcept
     if(!Core::Config->GetBool(CORE_CONFIG_BASE_FALLBACKMODE))
     {
         // create quick test-window and test-context
-        m_pWindow = SDL_CreateWindow(NULL, 0, 0, 32, 32, SDL_WINDOW_OPENGL | SDL_WINDOW_HIDDEN);
+        m_pWindow = SDL_CreateWindow(NULL, 32, 32, SDL_WINDOW_OPENGL | SDL_WINDOW_HIDDEN);
         if(m_pWindow)
         {
             const SDL_GLContext pContext = SDL_GL_CreateContext(m_pWindow);
@@ -258,7 +271,7 @@ CoreSystem::CoreSystem()noexcept
             {
                 // get highest OpenGL version
                 const corePoint2U8 oVersion = coreData::StrVersion(r_cast<const coreChar*>(glGetString(GL_VERSION)));
-                SDL_GL_DeleteContext(pContext);
+                SDL_GL_DestroyContext(pContext);
 
                 // set version and request core profile
                 if((oVersion >= corePoint2U8(3u, 0u)) || DEFINED(_CORE_MACOS_))
@@ -288,20 +301,30 @@ CoreSystem::CoreSystem()noexcept
     }
 
     // check for shared context
-    if(Core::Config->GetBool(CORE_CONFIG_BASE_ASYNCMODE) && !DEFINED(_CORE_EMSCRIPTEN_) && (SDL_GetCPUCount() > 1))
+    if(Core::Config->GetBool(CORE_CONFIG_BASE_ASYNCMODE) && !DEFINED(_CORE_EMSCRIPTEN_) && (SDL_GetNumLogicalCPUCores() > 1))
     {
         SDL_GL_SetAttribute(SDL_GL_SHARE_WITH_CURRENT_CONTEXT, 1);
     }
 
-    // define window properties
-    const coreBool   bDesktop = (m_vResolution == m_aDisplayData[m_iDisplayIndex].vDesktopRes);
-    const coreInt32  iPos     = SDL_WINDOWPOS_CENTERED_DISPLAY(m_iDisplayIndex);
-    const coreInt32  iSizeX   = F_TO_SI(m_vResolution.x);
-    const coreInt32  iSizeY   = F_TO_SI(m_vResolution.y);
-    const coreUint32 iFlags   = SDL_WINDOW_OPENGL | ((m_eMode == CORE_SYSTEM_MODE_FULLSCREEN) ? (SDL_WINDOW_FULLSCREEN | SDL_WINDOW_MOUSE_GRABBED) : ((m_eMode == CORE_SYSTEM_MODE_BORDERLESS) ? (bDesktop ? SDL_WINDOW_FULLSCREEN_DESKTOP : SDL_WINDOW_BORDERLESS) : SDL_WINDOW_RESIZABLE));
+    // define window appearance
+    const coreInt32 iPos   = SDL_WINDOWPOS_CENTERED_DISPLAY(oTarget.iDisplayID);
+    const coreInt32 iSizeX = F_TO_SI(m_vResolution.x);
+    const coreInt32 iSizeY = F_TO_SI(m_vResolution.y);
+
+    // set function properties
+    coreProperties oProps;
+    SDL_SetNumberProperty (oProps, SDL_PROP_WINDOW_CREATE_X_NUMBER,              iPos);
+    SDL_SetNumberProperty (oProps, SDL_PROP_WINDOW_CREATE_Y_NUMBER,              iPos);
+    SDL_SetNumberProperty (oProps, SDL_PROP_WINDOW_CREATE_WIDTH_NUMBER,          iSizeX);
+    SDL_SetNumberProperty (oProps, SDL_PROP_WINDOW_CREATE_HEIGHT_NUMBER,         iSizeY);
+    SDL_SetBooleanProperty(oProps, SDL_PROP_WINDOW_CREATE_OPENGL_BOOLEAN,        true);
+    SDL_SetBooleanProperty(oProps, SDL_PROP_WINDOW_CREATE_FULLSCREEN_BOOLEAN,    (m_eMode == CORE_SYSTEM_MODE_FULLSCREEN) || ((m_eMode == CORE_SYSTEM_MODE_BORDERLESS) && (m_vResolution == oTarget.vDesktopRes)));
+    SDL_SetBooleanProperty(oProps, SDL_PROP_WINDOW_CREATE_MOUSE_GRABBED_BOOLEAN, (m_eMode == CORE_SYSTEM_MODE_FULLSCREEN));
+    SDL_SetBooleanProperty(oProps, SDL_PROP_WINDOW_CREATE_BORDERLESS_BOOLEAN,    (m_eMode != CORE_SYSTEM_MODE_WINDOWED));
+    SDL_SetBooleanProperty(oProps, SDL_PROP_WINDOW_CREATE_RESIZABLE_BOOLEAN,     (m_eMode == CORE_SYSTEM_MODE_WINDOWED));
 
     // create main window object
-    m_pWindow = SDL_CreateWindow(NULL, iPos, iPos, iSizeX, iSizeY, iFlags);
+    m_pWindow = SDL_CreateWindowWithProperties(oProps);
     if(!m_pWindow)
     {
         Core::Log->Warning("Problems creating main window, trying different settings (SDL: %s)", SDL_GetError());
@@ -312,10 +335,17 @@ CoreSystem::CoreSystem()noexcept
         SDL_GL_SetAttribute(SDL_GL_MULTISAMPLESAMPLES, 0);
 
         // create another main window object
-        m_pWindow = SDL_CreateWindow(NULL, iPos, iPos, iSizeX, iSizeY, iFlags);
+        m_pWindow = SDL_CreateWindowWithProperties(oProps);
         if(!m_pWindow) Core::Log->Error("Main window could not be created (SDL: %s)", SDL_GetError());
     }
     Core::Log->Info("Main window created (%s, %s, %.0f x %.0f, display %u, mode %u)", SDL_GetCurrentVideoDriver(), SDL_GetPixelFormatName(SDL_GetWindowPixelFormat(m_pWindow)), m_vResolution.x, m_vResolution.y, m_iDisplayIndex, m_eMode);
+
+    // set fullscreen mode
+    if(m_eMode == CORE_SYSTEM_MODE_FULLSCREEN)
+    {
+        SDL_DisplayMode oMode;
+        SDL_SetWindowFullscreenMode(m_pWindow, SDL_GetClosestFullscreenDisplayMode(oTarget.iDisplayID, F_TO_SI(m_vResolution.x), F_TO_SI(m_vResolution.y), 0.0f, true, &oMode) ? &oMode : NULL);
+    }
 
     // restrict window size
     SDL_SetWindowMinimumSize(m_pWindow, CORE_SYSTEM_WINDOW_MINIMUM, CORE_SYSTEM_WINDOW_MINIMUM);
@@ -332,7 +362,7 @@ CoreSystem::CoreSystem()noexcept
     }
 
     // save thread-ID from the main-thread
-    m_iMainThread = SDL_ThreadID();
+    m_iMainThread = SDL_GetCurrentThreadID();
 
     // log platform information
     Core::Log->ListStartInfo("Platform Information");
@@ -344,23 +374,22 @@ CoreSystem::CoreSystem()noexcept
         const coreUint64 iMemoryUsed = iMemoryTotal - iMemoryAvailable;
         const coreDouble dMemoryPct  = 100.0 * (coreDouble(iMemoryUsed) / coreDouble(MAX(iMemoryTotal, 1u)));
 
-        coreString  sLocaleStr  = "";
-        SDL_Locale* pLocaleList = SDL_GetPreferredLocales();
-        if(pLocaleList)
+        coreString     sLocaleStr   = "";
+        coreAllocScope ppLocaleList = SDL_GetPreferredLocales(NULL);
+        if(ppLocaleList)
         {
-            for(SDL_Locale* pCurrent = pLocaleList; pCurrent->language; ++pCurrent)
+            for(SDL_Locale** ppCurrent = ppLocaleList.Get(); (*ppCurrent); ++ppCurrent)
             {
-                sLocaleStr += pCurrent->country ? PRINT("%s_%s", pCurrent->language, pCurrent->country) : pCurrent->language;
+                sLocaleStr += (*ppCurrent)->country ? PRINT("%s_%s", (*ppCurrent)->language, (*ppCurrent)->country) : (*ppCurrent)->language;
                 sLocaleStr += ' ';
             }
-            SDL_free(pLocaleList);
         }
 
         coreInt32 iSeconds, iPercent;
         const SDL_PowerState ePowerState = SDL_GetPowerInfo(&iSeconds, &iPercent);
 
         Core::Log->ListAdd(CORE_LOG_BOLD("Operating System:")  " %s",                                             coreData::SystemOsName());
-        Core::Log->ListAdd(CORE_LOG_BOLD("Processor:")         " %s (%s, %d logical cores, %d bytes cache line)", coreData::SystemCpuBrand(), coreData::SystemCpuVendor(), SDL_GetCPUCount(), SDL_GetCPUCacheLineSize());
+        Core::Log->ListAdd(CORE_LOG_BOLD("Processor:")         " %s (%s, %d logical cores, %d bytes cache line)", coreData::SystemCpuBrand(), coreData::SystemCpuVendor(), SDL_GetNumLogicalCPUCores(), SDL_GetCPUCacheLineSize());
         Core::Log->ListAdd(CORE_LOG_BOLD("System Memory:")     " %llu/%llu MB (%.1f%%)",                          iMemoryUsed / (1024u * 1024u), iMemoryTotal / (1024u * 1024u), dMemoryPct);
         Core::Log->ListAdd(CORE_LOG_BOLD("Disk Space:")        " %llu MB available",                              iSpaceAvailable / (1024u * 1024u));
         Core::Log->ListAdd(CORE_LOG_BOLD("Preferred Locales:") " %s",                                             sLocaleStr.c_str());
@@ -375,6 +404,11 @@ CoreSystem::CoreSystem()noexcept
     // log HarfBuzz library version
     coreInt32 iMajorHB, iMinorHB, iPatchHB; TTF_GetHarfBuzzVersion(&iMajorHB, &iMinorHB, &iPatchHB);
     if(iMajorHB) Core::Log->Info("HarfBuzz initialized (%d.%d.%d)", iMajorHB, iMinorHB, iPatchHB);
+
+    // log WebP library version
+    const coreInt32 iDecoderVersion = WebPGetDecoderVersion();
+    const coreInt32 iDemuxVersion   = WebPGetDemuxVersion();
+    Core::Log->Info("WebP initialized (decode %d.%d.%d, demux %d.%d.%d)", (iDecoderVersion >> 16) & 0xFF, (iDecoderVersion >> 8) & 0xFF, iDecoderVersion & 0xFF, (iDemuxVersion >> 16) & 0xFF, (iDemuxVersion >> 8) & 0xFF, iDemuxVersion & 0xFF);
 
     // log Zstandard library version
     Core::Log->Info("Zstandard initialized (%s, %s-threaded)", ZSTD_versionString(), ZSTD_cParam_getBounds(ZSTD_c_nbWorkers).upperBound ? "multi" : "single");
@@ -425,7 +459,7 @@ void CoreSystem::SetWindowIcon(const coreChar* pcPath)
         coreFileScope pFile = Core::Manager::Resource->RetrieveFile(pcPath);
 
         // decompress file to plain pixel data
-        coreSurfaceScope pData = IMG_LoadTyped_RW(pFile->CreateReadStream(), 1, coreData::StrExtension(pcPath));
+        coreSurfaceScope pData = IMG_LoadTyped_IO(pFile->CreateReadStream(), true, coreData::StrExtension(pcPath));
         if(!pData)
         {
             Core::Log->Warning("Icon (%s) could not be loaded (SDL: %s)", pcPath, SDL_GetError());
@@ -461,11 +495,26 @@ void CoreSystem::SetWindowResolution(const coreVector2 vResolution)
 
         if(m_pWindow)
         {
-            // fit to desktop if required
-            if(m_eMode == CORE_SYSTEM_MODE_BORDERLESS) SDL_SetWindowFullscreen(m_pWindow, (m_vResolution == oCurrent.vDesktopRes) ? SDL_WINDOW_FULLSCREEN_DESKTOP : 0u);
+            // set new fullscreen mode
+            if(m_eMode == CORE_SYSTEM_MODE_FULLSCREEN)
+            {
+                SDL_DisplayMode oMode;
+                SDL_SetWindowFullscreenMode(m_pWindow, SDL_GetClosestFullscreenDisplayMode(oCurrent.iDisplayID, F_TO_SI(m_vResolution.x), F_TO_SI(m_vResolution.y), 0.0f, true, &oMode) ? &oMode : NULL);
+            }
+            else if(m_eMode == CORE_SYSTEM_MODE_BORDERLESS)
+            {
+                if(SDL_GetWindowFullscreenMode(m_pWindow)) SDL_SetWindowFullscreenMode(m_pWindow, NULL);
+            }
 
-            // define window properties
-            const coreInt32 iPos   = SDL_WINDOWPOS_CENTERED_DISPLAY(m_iDisplayIndex);
+            // set new fullscreen state
+            const coreBool bFullscreen = (m_eMode == CORE_SYSTEM_MODE_FULLSCREEN) || ((m_eMode == CORE_SYSTEM_MODE_BORDERLESS) && (m_vResolution == oCurrent.vDesktopRes));
+            if(bFullscreen != (SDL_GetWindowFlags(m_pWindow) & SDL_WINDOW_FULLSCREEN))
+            {
+                SDL_SetWindowFullscreen(m_pWindow, bFullscreen);
+            }
+
+            // define window appearance
+            const coreInt32 iPos   = SDL_WINDOWPOS_CENTERED_DISPLAY(oCurrent.iDisplayID);
             const coreInt32 iSizeX = F_TO_SI(m_vResolution.x);
             const coreInt32 iSizeY = F_TO_SI(m_vResolution.y);
 
@@ -494,11 +543,10 @@ void CoreSystem::SetWindowAll(const coreUint8 iDisplayIndex, const coreVector2 v
         m_eMode = eMode;
         Core::Config->SetInt(CORE_CONFIG_SYSTEM_FULLSCREEN, m_eMode);
 
-        // set new window appearance
-        SDL_SetWindowFullscreen(m_pWindow, (m_eMode == CORE_SYSTEM_MODE_FULLSCREEN) ? SDL_WINDOW_FULLSCREEN : 0u);
-        SDL_SetWindowMouseGrab (m_pWindow, (m_eMode == CORE_SYSTEM_MODE_FULLSCREEN) ? SDL_TRUE : SDL_FALSE);
-        SDL_SetWindowBordered  (m_pWindow, (m_eMode == CORE_SYSTEM_MODE_WINDOWED)   ? SDL_TRUE : SDL_FALSE);
-        SDL_SetWindowResizable (m_pWindow, (m_eMode == CORE_SYSTEM_MODE_WINDOWED)   ? SDL_TRUE : SDL_FALSE);
+        // set new window properties
+        SDL_SetWindowMouseGrab(m_pWindow, (m_eMode == CORE_SYSTEM_MODE_FULLSCREEN));
+        SDL_SetWindowBordered (m_pWindow, (m_eMode == CORE_SYSTEM_MODE_WINDOWED));
+        SDL_SetWindowResizable(m_pWindow, (m_eMode == CORE_SYSTEM_MODE_WINDOWED));
     }
 
     // change the resolution
@@ -524,70 +572,58 @@ void CoreSystem::__UpdateEvents()
     {
         switch(oEvent.type)
         {
-        // process window events
-        case SDL_WINDOWEVENT:
-            switch(oEvent.window.event)
-            {
-            // window moved
-            case SDL_WINDOWEVENT_MOVED:
-                m_bWinPosChanged = true;
-                m_iDisplayIndex  = CLAMP(SDL_GetWindowDisplayIndex(m_pWindow), 0, coreInt32(m_aDisplayData.size()) - 1);
-                Core::Config->SetInt(CORE_CONFIG_SYSTEM_DISPLAY, m_iDisplayIndex);
-                break;
-
-            // window size changed
-            case SDL_WINDOWEVENT_SIZE_CHANGED:
-                m_bWinSizeChanged = true;
-                m_vResolution     = coreVector2(I_TO_F(oEvent.window.data1), I_TO_F(oEvent.window.data2));
-                Core::Config->SetInt(CORE_CONFIG_SYSTEM_WIDTH,  F_TO_SI(m_vResolution.x));
-                Core::Config->SetInt(CORE_CONFIG_SYSTEM_HEIGHT, F_TO_SI(m_vResolution.y));
-                break;
-
-            // window focus lost
-            case SDL_WINDOWEVENT_HIDDEN:
-            case SDL_WINDOWEVENT_MINIMIZED:
-            case SDL_WINDOWEVENT_MAXIMIZED:
-            case SDL_WINDOWEVENT_RESTORED:
-            case SDL_WINDOWEVENT_FOCUS_LOST:
-                m_bWinFocusLost = true;
-                break;
-
-            // window closed
-            case SDL_WINDOWEVENT_CLOSE:
-                if(oEvent.window.windowID == SDL_GetWindowID(m_pWindow)) this->Quit();
-                else SDL_DestroyWindow(SDL_GetWindowFromID(oEvent.window.windowID));
-                break;
-            }
+        // window position changed
+        case SDL_EVENT_WINDOW_MOVED:
+            m_bWinPosChanged = true;
+            m_iDisplayIndex  = CLAMP(this->__GetDisplayIndex(SDL_GetDisplayForWindow(m_pWindow)), 0u, m_aDisplayData.size() - 1u);
+            Core::Config->SetInt(CORE_CONFIG_SYSTEM_DISPLAY, m_iDisplayIndex);
             break;
 
-        // process display events
-        case SDL_DISPLAYEVENT:
-            switch(oEvent.display.event)
-            {
-            // display focus lost
-            case SDL_DISPLAYEVENT_DISCONNECTED:
-                m_bWinFocusLost = true;
-                break;
-            }
+        // window size changed
+        case SDL_EVENT_WINDOW_RESIZED:
+            m_bWinSizeChanged = true;
+            m_vResolution     = coreVector2(I_TO_F(oEvent.window.data1), I_TO_F(oEvent.window.data2));
+            Core::Config->SetInt(CORE_CONFIG_SYSTEM_WIDTH,  F_TO_SI(m_vResolution.x));
+            Core::Config->SetInt(CORE_CONFIG_SYSTEM_HEIGHT, F_TO_SI(m_vResolution.y));
+            break;
+
+        // window focus lost
+        case SDL_EVENT_WINDOW_HIDDEN:
+        case SDL_EVENT_WINDOW_MINIMIZED:
+        case SDL_EVENT_WINDOW_MAXIMIZED:
+        case SDL_EVENT_WINDOW_RESTORED:
+        case SDL_EVENT_WINDOW_FOCUS_LOST:
+            m_bWinFocusLost = true;
+            break;
+
+        // window closed
+        case SDL_EVENT_WINDOW_CLOSE_REQUESTED:
+            if(oEvent.window.windowID == SDL_GetWindowID(m_pWindow)) this->Quit();
+            else SDL_DestroyWindow(SDL_GetWindowFromID(oEvent.window.windowID));
             break;
 
         // application focus lost
-        case SDL_JOYDEVICEREMOVED:
-        case SDL_USEREVENT:
-        case SDL_APP_WILLENTERBACKGROUND:
-        case SDL_APP_DIDENTERFOREGROUND:
+        case SDL_EVENT_DISPLAY_REMOVED:
+        case SDL_EVENT_KEYBOARD_REMOVED:
+        case SDL_EVENT_MOUSE_REMOVED:
+        case SDL_EVENT_JOYSTICK_REMOVED:
+        case SDL_EVENT_USER:
+        case SDL_EVENT_WILL_ENTER_BACKGROUND:
+        case SDL_EVENT_DID_ENTER_FOREGROUND:
             m_bWinFocusLost = true;
             break;
 
         // application closed
-        case SDL_QUIT:
-        case SDL_APP_TERMINATING:
+        case SDL_EVENT_QUIT:
+        case SDL_EVENT_TERMINATING:
             this->Quit();
             break;
         }
 
-        // forward event to input component
-        if(!Core::Input->ProcessEvent(oEvent)) return;
+        // forward event to other components
+        const coreBool bState1 = Core::Input->ProcessEvent(oEvent);
+        const coreBool bState2 = Core::Debug->ProcessEvent(oEvent);
+        if(!bState1 || !bState2) return;
     }
 }
 
@@ -643,4 +679,21 @@ void CoreSystem::__UpdateTime()
 
     // increase current frame number
     ++m_iCurFrame;
+}
+
+
+// ****************************************************************
+/* convert display instance ID to display index */
+coreUintW CoreSystem::__GetDisplayIndex(const SDL_DisplayID iID)const
+{
+    ASSERT(!m_aDisplayData.empty())
+
+    // find required display
+    FOR_EACH(it, m_aDisplayData)
+    {
+        if(it->iDisplayID == iID) return m_aDisplayData.index(it);
+    }
+
+    // return index to primary display
+    return 0u;
 }

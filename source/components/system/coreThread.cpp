@@ -49,8 +49,15 @@ SDL_Thread* coreThread::StartThread()
         // reset thread status
         m_bActive = true;
 
+        // set function properties
+        coreProperties oProps;
+        SDL_SetPointerProperty(oProps, SDL_PROP_THREAD_CREATE_ENTRY_FUNCTION_POINTER, r_cast<void*>(coreThreadMain));
+        SDL_SetStringProperty (oProps, SDL_PROP_THREAD_CREATE_NAME_STRING,            m_sName.c_str());
+        SDL_SetPointerProperty(oProps, SDL_PROP_THREAD_CREATE_USERDATA_POINTER,       this);
+        SDL_SetNumberProperty (oProps, SDL_PROP_THREAD_CREATE_STACKSIZE_NUMBER,       1u * 1024u * 1024u);
+
         // create thread object
-        m_pThread = SDL_CreateThreadWithStackSize(coreThreadMain, m_sName.c_str(), 1u * 1024u * 1024u, this);
+        m_pThread = SDL_CreateThreadWithProperties(oProps);
         WARN_IF(!m_pThread)
         {
             Core::Log->Warning("Thread (%s) could not be started (SDL: %s)", m_sName.c_str(), SDL_GetError());
@@ -158,7 +165,7 @@ coreStatus coreThread::__Main()
     coreDouble dWait       = 0.0;
 
     // call init-routine
-    Core::Log->Info("Thread (%s, %04lX) started", m_sName.c_str(), SDL_GetThreadID(m_pThread));
+    Core::Log->Info("Thread (%s, %04lX) started", m_sName.c_str(), SDL_GetCurrentThreadID());
     coreStatus eReturn = this->__InitThread();
 
     // begin main-loop
@@ -196,7 +203,7 @@ coreStatus coreThread::__Main()
 
     // call exit-routine
     this->__ExitThread();
-    Core::Log->Info("Thread (%s, %04lX) finished", m_sName.c_str(), SDL_GetThreadID(m_pThread));
+    Core::Log->Info("Thread (%s, %04lX) finished", m_sName.c_str(), SDL_GetCurrentThreadID());
 
     m_bActive = false;
     return eReturn;

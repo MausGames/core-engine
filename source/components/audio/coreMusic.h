@@ -42,9 +42,9 @@ enum coreMusicRepeat : coreUint8
 /* Opus stream structure */
 struct coreOpusStream final
 {
-    SDL_RWops* pContext;          // file stream
-    coreInt64  aiSeekOffset[3];   // data seek offsets (SET, CUR, END)
-    coreUint8  aiSeekType  [3];   // data seek types   (SET, CUR, END)
+    SDL_IOStream* pContext;          // file stream
+    coreInt64     aiSeekOffset[3];   // data seek offsets (SET, CUR, END)
+    SDL_IOWhence  aeSeekType  [3];   // data seek types   (SET, CUR, END)
 
     explicit coreOpusStream(coreFile* pFile)noexcept;
     ~coreOpusStream();
