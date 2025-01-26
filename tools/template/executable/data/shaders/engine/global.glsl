@@ -180,9 +180,9 @@
     #define invariant
 #endif
 #if !defined(CORE_GL_standard_derivatives)
-    #define dFdx(x)   ((x) * 0.0)
-    #define dFdy(x)   ((x) * 0.0)
-    #define fwidth(x) ((x) * 0.0)
+    #define dFdx(x)   ((x) * 0.0 + 0.0001)
+    #define dFdy(x)   ((x) * 0.0 + 0.0001)
+    #define fwidth(x) ((x) * 0.0 + 0.0001)
 #endif
 #if defined(GL_EXT_demote_to_helper_invocation)
     #define discard demote

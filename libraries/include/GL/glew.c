@@ -4343,7 +4343,7 @@ const GLubyte * GLEWAPIENTRY glewGetString (GLenum name)
   static const GLubyte* _glewString[] =
   {
     (const GLubyte*)NULL,
-    (const GLubyte*)"2.2.0",
+    (const GLubyte*)"2.2.0 custom",
     (const GLubyte*)"2",
     (const GLubyte*)"2",
     (const GLubyte*)"0"

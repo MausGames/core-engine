@@ -366,7 +366,7 @@ const coreChar* coreData::SystemOsName()
     if(uname(&oInfo)) return "Linux";
 
     // return full operating system name
-    return PRINT("%s %s (%s, glibc %s %s)", oInfo.sysname, oInfo.release, oInfo.version, gnu_get_libc_version(), gnu_get_libc_release());
+    return PRINT("%s %s (%s, glibc %s %s) 🐧", oInfo.sysname, oInfo.release, oInfo.version, gnu_get_libc_version(), gnu_get_libc_release());
 
 #elif defined(_CORE_MACOS_)
 

@@ -10,6 +10,8 @@
 #ifndef _CORE_GUARD_SET_H_
 #define _CORE_GUARD_SET_H_
 
+// TODO 3: prevent accidental duplicates (operator[], insert(it), emplace(it), etc.)
+
 
 // ****************************************************************
 /* set container class */
@@ -19,6 +21,10 @@ private:
     /* internal types */
     using coreIterator      = typename coreList<T>::iterator;
     using coreConstIterator = typename coreList<T>::const_iterator;
+
+    /* hide undesired functions */
+    using coreList<T>::push_back;
+    using coreList<T>::push_front;
 
 
 public:
