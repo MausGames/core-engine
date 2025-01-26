@@ -77,6 +77,8 @@ private:
     coreFloat m_fNearClip;                                        // near clipping plane
     coreFloat m_fFarClip;                                         // far clipping plane
 
+    coreString m_sName;                                           // debug label
+
     coreBool m_bIntelMorph;                                       // apply conservative morphological anti aliasing
 
     static coreFrameBuffer* s_pCurrent;                           // currently active frame buffer object (NULL = default frame buffer)
@@ -114,6 +116,7 @@ public:
     inline void SetFOV     (const coreFloat fFOV)      {m_fFOV      = fFOV;}
     inline void SetNearClip(const coreFloat fNearClip) {m_fNearClip = fNearClip;}
     inline void SetFarClip (const coreFloat fFarClip)  {m_fFarClip  = fFarClip;}
+    inline void SetName    (const coreChar* pcName)    {m_sName     = pcName;}
 
     /* get object properties */
     inline const GLuint&           GetIdentifier   ()const                            {return m_iIdentifier;}

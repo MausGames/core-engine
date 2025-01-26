@@ -23,6 +23,7 @@ coreFrameBuffer::coreFrameBuffer()noexcept
 , m_fFOV          (0.0f)
 , m_fNearClip     (0.0f)
 , m_fFarClip      (0.0f)
+, m_sName         ("")
 , m_bIntelMorph   (false)
 {
 }
@@ -163,6 +164,19 @@ coreStatus coreFrameBuffer::Create(const coreVector2 vResolution, const coreFram
         if(bAgain) return this->Create(vResolution, eType);
 
         return CORE_ERROR_SYSTEM;
+    }
+
+    if(!m_sName.empty())
+    {
+        // add debug label (to frame buffer)
+        Core::Graphics->LabelOpenGL(GL_FRAMEBUFFER, m_iIdentifier, m_sName.c_str());
+
+        // add debug label (to attachments)
+        for(coreUintW i = 0u; i < ARRAY_SIZE(apTarget); ++i)
+        {
+                 if(apTarget[i]->IsTexture()) Core::Graphics->LabelOpenGL(GL_TEXTURE,      apTarget[i]->pTexture->GetIdentifier(), PRINT("%s.%zu.texture", m_sName.c_str(), i));
+            else if(apTarget[i]->IsBuffer ()) Core::Graphics->LabelOpenGL(GL_RENDERBUFFER, apTarget[i]->iBuffer,                   PRINT("%s.%zu.buffer",  m_sName.c_str(), i));
+        }
     }
 
     return CORE_OK;
