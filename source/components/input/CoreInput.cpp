@@ -37,8 +37,61 @@ CoreInput::CoreInput()noexcept
     nLoadFunc("data/other/gamepad_db.txt");
     nLoadFunc(coreData::UserFolderPrivate("gamepad_db.txt"));
 
+    // log all available keyboards
+    coreInt32      iKeyboardCount = 0u;
+    coreAllocScope piKeyboardList = SDL_GetKeyboards(&iKeyboardCount);
+    if(iKeyboardCount)
+    {
+        Core::Log->ListStartInfo("Keyboards found");
+        {
+            for(coreUintW i = 0u, ie = iKeyboardCount; i < ie; ++i)
+            {
+                Core::Log->ListAdd("%s", SDL_GetKeyboardNameForID(piKeyboardList[i]));
+            }
+        }
+        Core::Log->ListEnd();
+    }
+    else Core::Log->Info("No Keyboards found");
+
+    // log all available mice
+    coreInt32      iMouseCount = 0u;
+    coreAllocScope piMouseList = SDL_GetMice(&iMouseCount);
+    if(iMouseCount)
+    {
+        Core::Log->ListStartInfo("Mice found");
+        {
+            for(coreUintW i = 0u, ie = iMouseCount; i < ie; ++i)
+            {
+                Core::Log->ListAdd("%s 🐁", SDL_GetMouseNameForID(piMouseList[i]));
+            }
+        }
+        Core::Log->ListEnd();
+    }
+    else Core::Log->Info("No Mice found");
+
     // start up joystick input
     this->__OpenJoysticks();
+
+    // log all available touch devices
+    coreInt32      iTouchCount = 0u;
+    coreAllocScope piTouchList = SDL_GetTouchDevices(&iTouchCount);
+    if(iTouchCount)
+    {
+        Core::Log->ListStartInfo("Touch Devices found");
+        {
+            for(coreUintW i = 0u, ie = iTouchCount; i < ie; ++i)
+            {
+                Core::Log->ListAdd("%s (type %d)", SDL_GetTouchDeviceName(piTouchList[i]), SDL_GetTouchDeviceType(piTouchList[i]));
+            }
+        }
+        Core::Log->ListEnd();
+    }
+    else Core::Log->Info("No Touch Devices found");
+
+    // log screen keyboard support
+    if(SDL_HasScreenKeyboardSupport())
+         Core::Log->Info("Screen Keyboard supported");
+    else Core::Log->Info("Screen Keyboard not supported");
 
     // clear all last pressed input buttons
     m_Keyboard.iLast = CORE_INPUT_INVALID_KEYBOARD;
