@@ -462,6 +462,7 @@ template <typename T> void coreSwitchBox<T>::Previous()
 /* default switch-box types */
 using coreSwitchBoxU8  = coreSwitchBox<coreUint8>;
 using coreSwitchBoxU16 = coreSwitchBox<coreUint16>;
+using coreSwitchBoxI32 = coreSwitchBox<coreInt32>;
 using coreSwitchBoxStr = coreSwitchBox<coreString>;
 
 

@@ -577,7 +577,7 @@ const coreChar* coreData::SystemDirAppData()
 #elif defined(_CORE_ANDROID_)
 
     // get internal storage path for this application
-    return SDL_AndroidGetInternalStoragePath();
+    return SDL_GetAndroidInternalStoragePath();
 
 #elif defined(_CORE_EMSCRIPTEN_)
 

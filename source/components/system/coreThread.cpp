@@ -149,9 +149,9 @@ void coreThread::UpdateFunctions()
     // loop trough all functions
     FOR_EACH_DYN(it, m_anFuncActive)
     {
-        // call function and remove when successful
-        if(it->nFunction()) DYN_KEEP  (it, m_anFuncActive)
-                       else DYN_REMOVE(it, m_anFuncActive)
+        // call function and remove when finished
+        if(it->nFunction() == CORE_BUSY) DYN_KEEP  (it, m_anFuncActive)
+                                    else DYN_REMOVE(it, m_anFuncActive)
     }
 }
 
@@ -161,7 +161,7 @@ void coreThread::UpdateFunctions()
 coreStatus coreThread::__Main()
 {
     coreUint64 iBeforeTime = 0u;
-    coreUint64 iAfterTime  = 0u;
+    coreUint64 iAfterTime  = 0u;   // first iteration does not wait
     coreDouble dWait       = 0.0;
 
     // call init-routine
@@ -181,7 +181,7 @@ coreStatus coreThread::__Main()
             dWait = MAX(dWait + (1.0 / coreDouble(m_fFrequency)), 0.0);
             SDL_Delay(F_TO_UI(dWait * 1000.0));
 
-            // handle rounding-errors
+            // handle waiting-overhead
             iAfterTime = SDL_GetPerformanceCounter();
             dWait     -= coreDouble(iAfterTime - iBeforeTime) * Core::System->GetPerfFrequency();
         }

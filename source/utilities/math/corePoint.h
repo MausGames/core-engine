@@ -49,8 +49,10 @@ public:
 /* default point types */
 using corePoint2U8  = corePoint<coreUint8,  2u>;
 using corePoint2U16 = corePoint<coreUint16, 2u>;
+using corePoint2I32 = corePoint<coreInt32,  2u>;
 using corePoint3U8  = corePoint<coreUint8,  3u>;
 using corePoint3U16 = corePoint<coreUint16, 3u>;
+using corePoint3I32 = corePoint<coreInt32,  3u>;
 using coreUint128   = corePoint<coreUint64, 2u>;
 
 

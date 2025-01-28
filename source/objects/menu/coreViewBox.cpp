@@ -37,24 +37,23 @@ void coreViewBox::Render()
         const coreVector2 vLowerLeft  = (vPosition - vBound) * vResolution.zw();
         const coreVector2 vUpperRight = (vPosition + vBound) * vResolution.zw();
 
-        // start scissor testing
+        // use scissor testing
         Core::Graphics->StartScissorTest(vLowerLeft, vUpperRight);
-
-        // render view-objects
-        FOR_EACH(it, m_apObject)
         {
-            const coreVector2 vObjPosition = (*it)->GetScreenPosition();
-            const coreVector2 vObjBound    = (*it)->GetScreenBound() * 0.5f;
-
-            // cull outside of view-box
-            if((ABS(vObjPosition.x - vPosition.x) <= vObjBound.x + vBound.x) &&
-               (ABS(vObjPosition.y - vPosition.y) <= vObjBound.y + vBound.y))
+            // render view-objects
+            FOR_EACH(it, m_apObject)
             {
-                (*it)->Render();
+                const coreVector2 vObjPosition = (*it)->GetScreenPosition();
+                const coreVector2 vObjBound    = (*it)->GetScreenBound() * 0.5f;
+
+                // cull outside of view-box
+                if((ABS(vObjPosition.x - vPosition.x) <= vObjBound.x + vBound.x) &&
+                   (ABS(vObjPosition.y - vPosition.y) <= vObjBound.y + vBound.y))
+                {
+                    (*it)->Render();
+                }
             }
         }
-
-        // end scissor testing
         Core::Graphics->EndScissorTest();
     }
     else

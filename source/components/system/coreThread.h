@@ -28,8 +28,8 @@ private:
     SDL_Thread* m_pThread;                     // pointer to thread structure
     coreString  m_sName;                       // name of the thread
 
-    coreFloat m_fFrequency;                    // average number of iterations per second (0.0f = ignore)
-    coreBool  m_bActive;                       // currently active and not forced to shut down
+    coreAtomic<coreFloat> m_fFrequency;        // average number of iterations per second (0.0f = ignore)
+    coreAtomic<coreBool>  m_bActive;           // currently active and not forced to shut down
 
     coreList<coreCustomFunc> m_anFuncNew;      // new custom functions (separate, to allow attaching and executing at the same time)
     coreList<coreCustomFunc> m_anFuncActive;   // active custom functions
@@ -58,9 +58,9 @@ public:
     inline void SetFrequency(const coreFloat fFrequency) {m_fFrequency = fFrequency;}
 
     /* get object properties */
-    inline const coreChar*  GetName     ()const {return m_sName.c_str();}
-    inline const coreFloat& GetFrequency()const {return m_fFrequency;}
-    inline const coreBool&  GetActive   ()const {return m_bActive;}
+    inline const coreChar* GetName     ()const {return m_sName.c_str();}
+    inline       coreFloat GetFrequency()const {return m_fFrequency;}
+    inline       coreBool  GetActive   ()const {return m_bActive;}
 
 
 private:

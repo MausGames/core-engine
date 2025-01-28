@@ -16,7 +16,7 @@
 #include <string>
 #include <vector>
 
-using uIsWow64Process = BOOL (WINAPI *) (HANDLE, PBOOL);
+using UIsWow64Process = BOOL (WINAPI *) (HANDLE, PBOOL);
 
 
 // ****************************************************************
@@ -69,7 +69,7 @@ static bool IsWow64()
     }
 
     // get function pointer from kernel library
-    const uIsWow64Process nIsWow64Process = reinterpret_cast<uIsWow64Process>(GetProcAddress(GetModuleHandleW(L"kernel32"), "IsWow64Process"));
+    const UIsWow64Process nIsWow64Process = reinterpret_cast<UIsWow64Process>(GetProcAddress(GetModuleHandleW(L"kernel32"), "IsWow64Process"));
     if(nIsWow64Process)
     {
         // check for 64-bit operating system

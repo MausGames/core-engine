@@ -18,6 +18,7 @@
 // TODO 3: do not make newline checks on max-width text
 // TODO 3: on rich-text and label, changing rectify inbetween will not update invalidate<>clear handling (only problematic when disabling rectify), which can result in bleeding
 // TODO 3: handle extremely big fonts completely filling out a render pass texture
+// TODO 3: support adding arbitrary 2d-objects into the text
 
 
 // ****************************************************************
