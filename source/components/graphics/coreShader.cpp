@@ -302,6 +302,7 @@ coreProgram::coreProgram()noexcept
 , m_eStatus        (CORE_PROGRAM_NEW)
 , m_aiUniform      {}
 , m_aiAttribute    {}
+, m_aiBuffer       {}
 , m_avCache        {}
 , m_iHash          (0u)
 , m_bBinary        (false)
@@ -449,15 +450,22 @@ coreStatus coreProgram::Load(coreFile* pFile)
         for(coreUintW i = 0u; i < CORE_TEXTURE_UNITS_2D;     ++i) glUniform1i(glGetUniformLocation(m_iIdentifier, s_asTexture2D    [i].GetString()), i);
         for(coreUintW i = 0u; i < CORE_TEXTURE_UNITS_SHADOW; ++i) glUniform1i(glGetUniformLocation(m_iIdentifier, s_asTextureShadow[i].GetString()), i + CORE_TEXTURE_SHADOW);
 
-        // bind uniform buffer objects
         if(CORE_GL_SUPPORT(ARB_uniform_buffer_object))
         {
+            // bind default uniform buffer objects
             const GLuint iTransform3DBlock = glGetUniformBlockIndex(m_iIdentifier, CORE_SHADER_BUFFER_TRANSFORM3D);
             const GLuint iTransform2DBlock = glGetUniformBlockIndex(m_iIdentifier, CORE_SHADER_BUFFER_TRANSFORM2D);
             const GLuint iAmbientBlock     = glGetUniformBlockIndex(m_iIdentifier, CORE_SHADER_BUFFER_AMBIENT);
             if(iTransform3DBlock != GL_INVALID_INDEX) glUniformBlockBinding(m_iIdentifier, iTransform3DBlock, CORE_SHADER_BUFFER_TRANSFORM3D_NUM);
             if(iTransform2DBlock != GL_INVALID_INDEX) glUniformBlockBinding(m_iIdentifier, iTransform2DBlock, CORE_SHADER_BUFFER_TRANSFORM2D_NUM);
             if(iAmbientBlock     != GL_INVALID_INDEX) glUniformBlockBinding(m_iIdentifier, iAmbientBlock,     CORE_SHADER_BUFFER_AMBIENT_NUM);
+
+            // bind custom uniform buffer objects
+            FOR_EACH(it, m_aiBuffer)
+            {
+                const GLuint iBlock = glGetUniformBlockIndex(m_iIdentifier, m_aiBuffer.get_string(it));
+                if(iBlock != GL_INVALID_INDEX) glUniformBlockBinding(m_iIdentifier, iBlock, (*it));
+            }
         }
 
         // add debug label
