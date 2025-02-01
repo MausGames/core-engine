@@ -32,6 +32,7 @@
     #include <unistd.h>
     #include <dirent.h>
     #include <pwd.h>
+    #include <ftw.h>
     #include <dlfcn.h>
     #include <sys/utsname.h>
     #include <sys/statvfs.h>
@@ -1061,8 +1062,8 @@ void coreData::InitDefaultFolders()
         pcPath = std::strcmp(pcPath, "!appdata") ? PRINT("%s/", pcPath) : coreData::SystemDirAppData();
     }
 
-    // use default user folder (and create folder hierarchy)
-    if(!pcPath || !pcPath[0] || (coreData::FolderCreate(pcPath) != CORE_OK) || !coreData::FolderWritable(pcPath))
+    // use default user folder (and create directory hierarchy)
+    if(!pcPath || !pcPath[0] || (coreData::DirectoryCreate(pcPath) != CORE_OK) || !coreData::DirectoryWritable(pcPath))
     {
         #if defined(_CORE_WINDOWS_) || defined(_CORE_LINUX_)
             pcPath = CoreApp::Settings::UserManagement ? coreData::SystemDirAppData() : "user/";
@@ -1070,7 +1071,7 @@ void coreData::InitDefaultFolders()
             pcPath = coreData::SystemDirAppData();
         #endif
 
-        coreData::FolderCreate(pcPath);
+        coreData::DirectoryCreate(pcPath);
     }
 
     // save selected user folder
@@ -1617,6 +1618,9 @@ coreStatus coreData::FileMove(const coreChar* pcFrom, const coreChar* pcTo)
 
 #endif
 
+    // try to copy on error (# but never delete source file)
+    if(coreData::FileCopy(pcFrom, pcTo) == CORE_OK) return CORE_OK;
+
     return CORE_ERROR_FILE;
 }
 
@@ -1642,8 +1646,8 @@ coreStatus coreData::FileDelete(const coreChar* pcPath)
 
 
 // ****************************************************************
-/* check if folder exists */
-coreBool coreData::FolderExists(const coreChar* pcPath)
+/* check if directory exists */
+coreBool coreData::DirectoryExists(const coreChar* pcPath)
 {
     ASSERT(pcPath)
 
@@ -1666,8 +1670,8 @@ coreBool coreData::FolderExists(const coreChar* pcPath)
 
 #else
 
-    // try to write into presumed folder
-    if(coreData::FolderWritable(pcPath)) return true;
+    // try to write into presumed directory
+    if(coreData::DirectoryWritable(pcPath)) return true;
 
 #endif
 
@@ -1676,8 +1680,8 @@ coreBool coreData::FolderExists(const coreChar* pcPath)
 
 
 // ****************************************************************
-/* check if folder is writable */
-coreBool coreData::FolderWritable(const coreChar* pcPath)
+/* check if directory is writable */
+coreBool coreData::DirectoryWritable(const coreChar* pcPath)
 {
     ASSERT(pcPath)
 
@@ -1716,55 +1720,170 @@ coreBool coreData::FolderWritable(const coreChar* pcPath)
 
 
 // ****************************************************************
-/* create folder hierarchy */
-coreStatus coreData::FolderCreate(const coreChar* pcPath)
+/* copy directory from source to destination (and merge) */
+coreStatus coreData::DirectoryCopy(const coreChar* pcFrom, const coreChar* pcTo)
 {
-    ASSERT(pcPath)
+    ASSERT(pcFrom && pcTo)
 
-    // check if folder already exists (less expensive)
-    if(coreData::FolderExists(pcPath)) return CORE_OK;
-    ASSERT(pcPath[0])
+    // do not copy to same directory (unreliable check)
+    WARN_IF(!std::strcmp(pcFrom, pcTo)) return CORE_INVALID_INPUT;
 
-    coreChar  acString[CORE_DATA_MAX_PATH];
-    coreChar* pcCursor = acString + 1u;   // # handle possible first path delimiter
+    // check if source directory even exists
+    if(!coreData::DirectoryExists(pcFrom)) return CORE_ERROR_FILE;
 
-    // make local copy
-    coreData::StrCopy(acString, ARRAY_SIZE(acString), pcPath);
+    // create destination directory
+    coreData::DirectoryCreate(pcTo);
 
-    // loop through all sub-folders
-    for(; (*pcCursor) != '\0'; ++pcCursor)
+    // copy all children (recursively)
+    return coreData::DirectoryEnum(pcFrom, "*", CORE_ENUM_TYPE_DEFAULT, c_cast<coreChar*>(pcTo), [](const coreChar* pcPath, const coreFileStats& oStats, void* pData)
     {
-        if(((*pcCursor) == '/') || ((*pcCursor) == '\\'))
-        {
-            // build temporary path
-            (*pcCursor) = '\0';
+        const coreChar* pcNewPath = PRINT("%s/%s", s_cast<coreChar*>(pData), coreData::StrFilename(pcPath));
 
-            // create sub-folder
-            #if defined(_CORE_WINDOWS_)
-                if(!CreateDirectoryW(coreData::__ToWideChar(acString), NULL) && (GetLastError() != ERROR_ALREADY_EXISTS)) return CORE_ERROR_FILE;
-            #else
-                if(mkdir(acString, S_IRWXU) && (errno != EEXIST)) return CORE_ERROR_FILE;
-            #endif
-
-            // reset path
-            (*pcCursor) = '/';
-        }
-        else if((*pcCursor) == ':')
-        {
-            // skip volume and scheme components
-            while(((*(pcCursor + 1u)) == '/') || ((*(pcCursor + 1u)) == '\\')) ++pcCursor;
-        }
-    }
-
-    return CORE_OK;
+        if(oStats.bDirectory) coreData::DirectoryCopy(pcPath, pcNewPath);
+                         else coreData::FileCopy     (pcPath, pcNewPath);
+    });
 }
 
 
 // ****************************************************************
-/* retrieve relative paths of all files from a folder */
-coreStatus coreData::FolderScan(const coreChar* pcPath, const coreChar* pcFilter, coreList<coreString>* OUTPUT pasOutput)
+/* move directory from source to destination (and merge) */
+coreStatus coreData::DirectoryMove(const coreChar* pcFrom, const coreChar* pcTo)
+{
+    ASSERT(pcFrom && pcTo)
+
+    // do not move to same directory (unreliable check)
+    WARN_IF(!std::strcmp(pcFrom, pcTo)) return CORE_INVALID_INPUT;
+
+    // check if source directory even exists
+    if(!coreData::DirectoryExists(pcFrom)) return CORE_ERROR_FILE;
+
+    // move directory fast (but only works if destination directory does not exist and is on the same volume)
+#if defined(_CORE_WINDOWS_)
+    if(MoveFileExW(coreData::__ToWideChar(pcFrom), coreData::__ToWideChar(pcTo), 0u)) return CORE_OK;
+#else
+    if(!std::rename(pcFrom, pcTo)) return CORE_OK;
+#endif
+
+    // create destination directory
+    coreData::DirectoryCreate(pcTo);
+
+    // move all children (recursively)
+    const coreStatus eStatus = coreData::DirectoryEnum(pcFrom, "*", CORE_ENUM_TYPE_DEFAULT, c_cast<coreChar*>(pcTo), [](const coreChar* pcPath, const coreFileStats& oStats, void* pData)
+    {
+        const coreChar* pcNewPath = PRINT("%s/%s", s_cast<coreChar*>(pData), coreData::StrFilename(pcPath));
+
+        if(oStats.bDirectory) coreData::DirectoryMove(pcPath, pcNewPath);
+                         else coreData::FileMove     (pcPath, pcNewPath);
+    });
+
+    // delete source directory (if empty)
+    coreData::DirectoryDelete(pcFrom, false);
+
+    return eStatus;
+}
+
+
+// ****************************************************************
+/* delete existing directory */
+coreStatus coreData::DirectoryDelete(const coreChar* pcPath, const coreBool bWithContent)
+{
+    ASSERT(pcPath)
+
+#if defined(_CORE_WINDOWS_)
+
+    if(bWithContent)
+    {
+        // delete all children first (recursively)
+        coreData::DirectoryEnum(pcPath, "*", CORE_ENUM_TYPE_TREE, NULL, [](const coreChar* pcPath, const coreFileStats& oStats, void* pData)
+        {
+            if(oStats.bDirectory) RemoveDirectoryW(coreData::__ToWideChar(pcPath));
+                             else DeleteFileW     (coreData::__ToWideChar(pcPath));
+        });
+    }
+
+    // delete base directory (if empty)
+    if(RemoveDirectoryW(coreData::__ToWideChar(pcPath))) return CORE_OK;
+
+#elif defined(_CORE_LINUX_) || defined(_CORE_MACOS_) || defined(_CORE_EMSCRIPTEN_) || defined(_CORE_SWITCH_)
+
+    if(bWithContent)
+    {
+        // delete everything (recursively)
+        const auto nWalkFunc = [](const coreChar* pcPath, const struct stat* pBuffer, const coreInt32 iFlags, struct FTW* pInfo)
+        {
+            if(S_ISDIR(pBuffer->st_mode)) return rmdir (pcPath);
+                                     else return unlink(pcPath);
+        };
+
+        // walk through the whole directory tree (children first)
+        if(!nftw(pcPath, nWalkFunc, 20, FTW_DEPTH | FTW_PHYS)) return CORE_OK;
+    }
+    else
+    {
+        // delete base directory (if empty)
+        if(!rmdir(pcPath)) return CORE_OK;
+    }
+
+#endif
+
+    return CORE_ERROR_FILE;
+}
+
+
+// ****************************************************************
+/* create directory hierarchy */
+coreStatus coreData::DirectoryCreate(const coreChar* pcPath)
+{
+    ASSERT(pcPath)
+
+    // check if directory already exists
+    if(coreData::DirectoryExists(pcPath)) return CORE_OK;
+
+    // handle parent directory first (recursively)
+    coreData::DirectoryCreate(coreData::StrDirectory(pcPath));   // ignore errors
+
+    // create base directory
+#if defined(_CORE_WINDOWS_)
+    if(CreateDirectoryW(coreData::__ToWideChar(pcPath), NULL)) return CORE_OK;
+#else
+    if(!mkdir(pcPath, S_IRWXU)) return CORE_OK;
+#endif
+
+    return CORE_ERROR_FILE;
+}
+
+
+// ****************************************************************
+/* retrieve relative paths of all files from a directory */
+coreStatus coreData::DirectoryScan(const coreChar* pcPath, const coreChar* pcFilter, coreList<coreString>* OUTPUT pasOutput)
 {
     ASSERT(pcPath && pcFilter && pasOutput)
+
+    return coreData::DirectoryEnum(pcPath, pcFilter, CORE_ENUM_TYPE_DEFAULT, pasOutput, [](const coreChar* pcPath, const coreFileStats& oStats, void* pData)
+    {
+        if(!oStats.bDirectory) s_cast<coreList<coreString>*>(pData)->push_back(pcPath);
+    });
+}
+
+
+// ****************************************************************
+/* retrieve relative paths of all files from a directory tree */
+coreStatus coreData::DirectoryScanTree(const coreChar* pcPath, const coreChar* pcFilter, coreList<coreString>* OUTPUT pasOutput)
+{
+    ASSERT(pcPath && pcFilter && pasOutput)
+
+    return coreData::DirectoryEnum(pcPath, pcFilter, CORE_ENUM_TYPE_TREE, pasOutput, [](const coreChar* pcPath, const coreFileStats& oStats, void* pData)
+    {
+        if(!oStats.bDirectory) s_cast<coreList<coreString>*>(pData)->push_back(pcPath);
+    });
+}
+
+
+// ****************************************************************
+/* enumerate relative paths of all children from a directory */
+coreStatus coreData::DirectoryEnum(const coreChar* pcPath, const coreChar* pcFilter, const coreEnumType eEnumType, void* pEnumData, const coreEnumFunc nEnumFunc)
+{
+    ASSERT(pcPath && pcFilter)
 
     coreChar acString[CORE_DATA_MAX_PATH];
 
@@ -1776,20 +1895,43 @@ coreStatus coreData::FolderScan(const coreChar* pcPath, const coreChar* pcFilter
     WIN32_FIND_DATAW oFile;
 
     // open folder
-    const HANDLE pFolder = FindFirstFileExW(coreData::__ToWideChar(PRINT("%s/%s", acString, pcFilter)), FindExInfoBasic, &oFile, FindExSearchNameMatch, NULL, FIND_FIRST_EX_LARGE_FETCH);
+    const HANDLE pFolder = FindFirstFileExW(coreData::__ToWideChar(PRINT(HAS_FLAG(eEnumType, CORE_ENUM_TYPE_TREE) ? "%s/*" : "%s/%s", acString, pcFilter)), FindExInfoBasic, &oFile, FindExSearchNameMatch, NULL, FIND_FIRST_EX_LARGE_FETCH);
     if(pFolder == INVALID_HANDLE_VALUE)
     {
         Core::Log->Warning("Folder (%s/%s) could not be opened", acString, pcFilter);
         return CORE_ERROR_FILE;
     }
 
-    // loop through all files
+    // loop through all children
     do
     {
-        // check and add file path
         if(oFile.cFileName[0] != L'.')
         {
-            pasOutput->push_back(PRINT("%s/%s", acString, coreData::__ToAnsiChar(oFile.cFileName)));
+            // enter child directory (recursively)
+            if(HAS_FLAG(eEnumType, CORE_ENUM_TYPE_TREE) && HAS_FLAG(oFile.dwFileAttributes, FILE_ATTRIBUTE_DIRECTORY))
+            {
+                coreData::DirectoryEnum(PRINT("%s/%s", acString, coreData::__ToAnsiChar(oFile.cFileName)), pcFilter, eEnumType, pEnumData, nEnumFunc);
+            }
+
+            // check filter pattern
+            if(!HAS_FLAG(eEnumType, CORE_ENUM_TYPE_TREE) || coreData::StrCmpLike(pFile->d_name, pcFilter))
+            {
+                const coreChar* pcFullPath = PRINT("%s/%s", acString, coreData::__ToAnsiChar(oFile.cFileName));
+
+                // prepare file info
+                coreFileStats oStats = {};
+                oStats.bDirectory = HAS_FLAG(oFile.dwFileAttributes, FILE_ATTRIBUTE_DIRECTORY);
+
+                // query additional file info
+                if(HAS_FLAG(eEnumType, CORE_ENUM_TYPE_STATS))
+                {
+                    oStats.iSize      = (coreInt64(oFile.nFileSizeHigh) << 32u) | (coreInt64(oFile.nFileSizeLow));
+                    oStats.iWriteTime = r_cast<coreUint64&>(oFile.ftLastWriteTime) / 10000000ull - 11644473600ull;
+                }
+
+                // enumerate child
+                nEnumFunc(pcFullPath, oStats, pEnumData);
+            }
         }
     }
     while(FindNextFileW(pFolder, &oFile));
@@ -1809,13 +1951,42 @@ coreStatus coreData::FolderScan(const coreChar* pcPath, const coreChar* pcFilter
         return CORE_ERROR_FILE;
     }
 
-    // loop through all files
+    // loop through all children
     while((pFile = readdir(pFolder)))
     {
-        // check and add file path
-        if((pFile->d_name[0] != '.') && coreData::StrCmpLike(pFile->d_name, pcFilter))
+        if(pFile->d_name[0] != '.')
         {
-            pasOutput->push_back(PRINT("%s/%s", acString, pFile->d_name));
+            // enter child directory (recursively)
+            if(HAS_FLAG(eEnumType, CORE_ENUM_TYPE_TREE) && (pFile->d_type == DT_DIR))
+            {
+                coreData::DirectoryEnum(PRINT("%s/%s", acString, pFile->d_name), pcFilter, eEnumType, pEnumData, nEnumFunc);
+            }
+
+            // check filter pattern
+            if(coreData::StrCmpLike(pFile->d_name, pcFilter))
+            {
+                const coreChar* pcFullPath = PRINT("%s/%s", acString, pFile->d_name);
+
+                // prepare file info
+                coreFileStats oStats = {};
+                oStats.bDirectory = (pFile->d_type == DT_DIR);
+
+                // query additional file info
+                if(HAS_FLAG(eEnumType, CORE_ENUM_TYPE_STATS))
+                {
+                    struct stat oBuffer;
+
+                    // get POSIX file info
+                    if(!stat(pcFullPath, &oBuffer))
+                    {
+                        oStats.iSize      = oBuffer.st_size;
+                        oStats.iWriteTime = oBuffer.st_mtime;
+                    }
+                }
+
+                // enumerate child
+                nEnumFunc(pcFullPath, oStats, pEnumData);
+            }
         }
     }
 
@@ -1829,35 +2000,7 @@ coreStatus coreData::FolderScan(const coreChar* pcPath, const coreChar* pcFilter
 
 
 // ****************************************************************
-/* retrieve relative paths of all files from a folder tree */
-coreStatus coreData::FolderScanTree(const coreChar* pcPath, const coreChar* pcFilter, coreList<coreString>* OUTPUT pasOutput)
-{
-    coreList<coreString> asLocalList;
-
-    // scan current folder
-    const coreStatus eError = coreData::FolderScan(pcPath, "*", &asLocalList);
-    if(eError != CORE_OK) return eError;   // only check here
-
-    FOR_EACH(it, asLocalList)
-    {
-        if(coreData::FolderExists(it->c_str()))
-        {
-            // scan deeper folder (recursively)
-            FolderScanTree(it->c_str(), pcFilter, pasOutput);
-        }
-        else if(coreData::StrCmpLike(it->c_str(), pcFilter))
-        {
-            // add file path
-            pasOutput->push_back(std::move(*it));
-        }
-    }
-
-    return CORE_OK;
-}
-
-
-// ****************************************************************
-/* create symbolic link to file or folder */
+/* create symbolic link to file or directory */
 coreStatus coreData::SymlinkCreate(const coreChar* pcPath, const coreChar* pcTarget)
 {
 #if defined(_CORE_WINDOWS_)
@@ -2173,7 +2316,7 @@ const coreChar* coreData::StrFilename(const coreChar* pcInput, const coreBool bE
     if(bExtension)
     {
         // return after last path-delimiter
-        for(const coreChar* pcCursor = pcInput + std::strlen(pcInput) - 1u; pcCursor >= pcInput; --pcCursor)
+        for(const coreChar* pcCursor = pcInput + std::strlen(pcInput) - 2u; pcCursor >= pcInput; --pcCursor)
         {
             if(((*pcCursor) == '/') || ((*pcCursor) == '\\'))
                 return pcCursor + 1u;
@@ -2226,7 +2369,7 @@ corePoint2U8 coreData::StrVersion(const coreChar* pcInput)
 
 // ****************************************************************
 /* copy string into another buffer */
-coreBool coreData::StrCopy(coreChar* OUTPUT pcOutput, const coreUintW iOutputSize, const coreChar* pcInput, const coreUintW iNum)
+coreUintW coreData::StrCopy(coreChar* OUTPUT pcOutput, const coreUintW iOutputSize, const coreChar* pcInput, const coreUintW iNum)
 {
     ASSERT(pcOutput && iOutputSize && pcInput && (iNum <= std::strlen(pcInput)))
 
@@ -2238,8 +2381,8 @@ coreBool coreData::StrCopy(coreChar* OUTPUT pcOutput, const coreUintW iOutputSiz
     std::memcpy(pcOutput, pcInput, iOutputLen);
     pcOutput[iOutputLen] = '\0';
 
-    WARN_IF(iInputLen >= iOutputSize) return false;
-    return true;
+    WARN_IF(iInputLen >= iOutputSize) return 0u;
+    return iOutputLen;
 }
 
 
@@ -2258,8 +2401,8 @@ const coreChar* coreData::__PrepareSystemDir(const coreChar* pcPath)
     // create full path
     const coreChar* pcFullPath = PRINT("%s/%s/", pcPath, s_sIdentifier.c_str());
 
-    // create folder hierarchy (and check if path is valid)
-    if(coreData::FolderCreate(pcFullPath) != CORE_OK) return NULL;
+    // create directory hierarchy (and check if path is valid)
+    if(coreData::DirectoryCreate(pcFullPath) != CORE_OK) return NULL;
 
     return pcFullPath;
 }

@@ -257,12 +257,12 @@ coreFile* coreResourceManager::RetrieveFile(const coreHashString& sPath)
 
 // ****************************************************************
 /* retrieve relative paths of all available resource files */
-void coreResourceManager::FolderScan(const coreChar* pcPath, const coreChar* pcFilter, coreList<coreString>* OUTPUT pasOutput)
+void coreResourceManager::DirectoryScan(const coreChar* pcPath, const coreChar* pcFilter, coreList<coreString>* OUTPUT pasOutput)
 {
     ASSERT(pcPath && pcFilter && pasOutput)
 
     // find direct resource files
-    coreData::FolderScan(pcPath, pcFilter, pasOutput);
+    coreData::DirectoryScan(pcPath, pcFilter, pasOutput);
 
     // find resources files in archives
     const coreChar* pcPattern = PRINT("%s/%s", pcPath, pcFilter);
@@ -536,10 +536,10 @@ void coreResourceManager::__ExitThread()
 /* load all relevant default resources */
 void coreResourceManager::__LoadDefault()
 {
-    coreList<coreString> asArchiveList;
-
-    coreData::FolderScan("data/archives", "*.cfa", &asArchiveList);
-    FOR_EACH(it, asArchiveList) this->RetrieveArchive(it->c_str());
+    coreData::DirectoryEnum("data/archives", "*.cfa", CORE_ENUM_TYPE_DEFAULT, this, [](const coreChar* pcPath, const coreFileStats& oStats, void* pData)
+    {
+        s_cast<coreResourceManager*>(pData)->RetrieveArchive(pcPath);
+    });
 
     this->Load<coreTexture>("default_black.webp",             CORE_RESOURCE_UPDATE_AUTO,   "data/textures/default_black.webp",  CORE_TEXTURE_LOAD_NO_COMPRESS | CORE_TEXTURE_LOAD_NO_FILTER | CORE_TEXTURE_LOAD_NEAREST);
     this->Load<coreTexture>("default_normal.webp",            CORE_RESOURCE_UPDATE_AUTO,   "data/textures/default_normal.webp", CORE_TEXTURE_LOAD_NO_COMPRESS | CORE_TEXTURE_LOAD_NO_FILTER | CORE_TEXTURE_LOAD_NEAREST);

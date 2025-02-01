@@ -330,9 +330,9 @@ void coreLanguage::GetAvailableLanguages(const coreChar* pcPath, const coreChar*
 {
     ASSERT(pasOutput)
 
-    // retrieve files from the folder
+    // retrieve files from the directory
     coreList<coreString> asFile;
-    Core::Manager::Resource->FolderScan(pcPath, pcFilter, &asFile);
+    Core::Manager::Resource->DirectoryScan(pcPath, pcFilter, &asFile);
 
     // reserve some memory
     pasOutput->reserve(asFile.size());

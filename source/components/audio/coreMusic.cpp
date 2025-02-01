@@ -345,17 +345,17 @@ coreStatus coreMusicPlayer::AddMusicArchive(const coreChar* pcPath, const coreCh
 
 
 // ****************************************************************
-/* add music objects from folder */
-coreStatus coreMusicPlayer::AddMusicFolder(const coreChar* pcPath, const coreChar* pcFilter)
+/* add music objects from directory */
+coreStatus coreMusicPlayer::AddMusicDirectory(const coreChar* pcPath, const coreChar* pcFilter)
 {
     coreBool bStatus = false;
 
-    // get specific files from the folder
-    coreList<coreString> asFolder;
-    Core::Manager::Resource->FolderScan(pcPath, pcFilter, &asFolder);
+    // retrieve files from the directory
+    coreList<coreString> asFile;
+    Core::Manager::Resource->DirectoryScan(pcPath, pcFilter, &asFile);
 
     // try to add all files to the music-player
-    FOR_EACH(it, asFolder)
+    FOR_EACH(it, asFile)
     {
         if(this->AddMusicFile(it->c_str()) == CORE_OK)
             bStatus = true;

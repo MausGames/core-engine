@@ -15,7 +15,6 @@
 // TODO 3: add ToChars float precision parameter (+ search for 'PRINT("%f' and 'PRINT("%.')
 // TODO 3: make !temp and !appdata replace instead
 // TODO 3: add compiled/included Windows SDK version to BuildLibrary string
-// TODO 3: FolderScanTree should not allocate temporary list and string memory for (non-directory) entries outside the filter-pattern
 // TODO 2: implement checks and proper handling for paths exceeding the max length (currently they are truncated and might throw "not enough buffer-space" errors on some APIs)
 // TODO 3: manually convert Win32 paths to \\?\ format, only for absolute paths (expand relative paths ? similar to user-folder ?), and requires changing path-delimiter '/' to '\' (what about SDL RWops ?)
 // TODO 1: handle distinction between user-folder (read+write) and data-folder (read only), for all platforms, and all file+directory functions
@@ -56,6 +55,21 @@ STATIC_ASSERT(CORE_DATA_STRING_LEN >= CORE_DATA_MAX_PATH)
     #define mbrtoc32(a,b,c,d) mbrtowc(r_cast<coreWchar*>(a), b, c, d)   // __STDC_ISO_10646__
 #endif
 
+enum coreEnumType : coreUint8
+{
+    CORE_ENUM_TYPE_DEFAULT = 0x00u,   // enumerate simply
+    CORE_ENUM_TYPE_TREE    = 0x01u,   // enumerate recursively (children first)
+    CORE_ENUM_TYPE_STATS   = 0x02u    // query additional file info
+};
+ENABLE_BITWISE(coreEnumType)
+
+struct coreFileStats final
+{
+    coreBool    bDirectory;   // directory state
+    coreInt64   iSize;        // file size       (additional)
+    std::time_t iWriteTime;   // file write time (additional)
+};
+
 enum coreCpuType : coreUint8
 {
     CORE_CPU_AMD     = 1u,
@@ -87,6 +101,9 @@ private:
         coreChar  aacData[CORE_DATA_STRING_NUM][CORE_DATA_STRING_LEN];   // aligned temp-string buffer
         coreUintW iCurrent;                                              // current temp-string
     };
+
+    /* internal types */
+    using coreEnumFunc = void (*) (const coreChar*, const coreFileStats&, void*);
 
 
 private:
@@ -178,20 +195,24 @@ public:
     static                 void  HeapRealloc(void* pHeap, void** OUTPUT ppPointer, const coreUintW iSize);
     static                 void  HeapFree   (void* pHeap, void** OUTPUT ppPointer);
 
-    /* handle physical files and folders */
-    static std::FILE*  FileOpen      (const coreChar* pcPath, const coreChar* pcMode);
-    static coreBool    FileExists    (const coreChar* pcPath);
-    static coreInt64   FileSize      (const coreChar* pcPath);
-    static std::time_t FileWriteTime (const coreChar* pcPath);
-    static coreStatus  FileCopy      (const coreChar* pcFrom, const coreChar* pcTo);
-    static coreStatus  FileMove      (const coreChar* pcFrom, const coreChar* pcTo);
-    static coreStatus  FileDelete    (const coreChar* pcPath);
-    static coreBool    FolderExists  (const coreChar* pcPath);
-    static coreBool    FolderWritable(const coreChar* pcPath);
-    static coreStatus  FolderCreate  (const coreChar* pcPath);
-    static coreStatus  FolderScan    (const coreChar* pcPath, const coreChar* pcFilter, coreList<coreString>* OUTPUT pasOutput);
-    static coreStatus  FolderScanTree(const coreChar* pcPath, const coreChar* pcFilter, coreList<coreString>* OUTPUT pasOutput);
-    static coreStatus  SymlinkCreate (const coreChar* pcPath, const coreChar* pcTarget);
+    /* handle physical files and directories */
+    static std::FILE*  FileOpen         (const coreChar* pcPath, const coreChar* pcMode);
+    static coreBool    FileExists       (const coreChar* pcPath);
+    static coreInt64   FileSize         (const coreChar* pcPath);
+    static std::time_t FileWriteTime    (const coreChar* pcPath);
+    static coreStatus  FileCopy         (const coreChar* pcFrom, const coreChar* pcTo);
+    static coreStatus  FileMove         (const coreChar* pcFrom, const coreChar* pcTo);
+    static coreStatus  FileDelete       (const coreChar* pcPath);
+    static coreBool    DirectoryExists  (const coreChar* pcPath);
+    static coreBool    DirectoryWritable(const coreChar* pcPath);
+    static coreStatus  DirectoryCopy    (const coreChar* pcFrom, const coreChar* pcTo);
+    static coreStatus  DirectoryMove    (const coreChar* pcFrom, const coreChar* pcTo);
+    static coreStatus  DirectoryDelete  (const coreChar* pcPath, const coreBool bWithContent);
+    static coreStatus  DirectoryCreate  (const coreChar* pcPath);
+    static coreStatus  DirectoryScan    (const coreChar* pcPath, const coreChar* pcFilter, coreList<coreString>* OUTPUT pasOutput);
+    static coreStatus  DirectoryScanTree(const coreChar* pcPath, const coreChar* pcFilter, coreList<coreString>* OUTPUT pasOutput);
+    static coreStatus  DirectoryEnum    (const coreChar* pcPath, const coreChar* pcFilter, const coreEnumType eEnumType, void* pEnumData, const coreEnumFunc nEnumFunc);   // [](const coreChar* pcPath, const coreFileStats& oStats, void* pData) -> void
+    static coreStatus  SymlinkCreate    (const coreChar* pcPath, const coreChar* pcTarget);
 
     /* check for system errors */
     static coreBool CheckLastError();
@@ -228,7 +249,7 @@ public:
     static const coreChar*        StrDirectory(const coreChar* pcInput);
     static const coreChar*        StrExtension(const coreChar* pcInput);
     static corePoint2U8           StrVersion  (const coreChar* pcInput);
-    static coreBool               StrCopy     (coreChar* OUTPUT pcOutput, const coreUintW iOutputSize, const coreChar* pcInput, const coreUintW iNum = 0u);
+    static coreUintW              StrCopy     (coreChar* OUTPUT pcOutput, const coreUintW iOutputSize, const coreChar* pcInput, const coreUintW iNum = 0u);
 
     /* operate with containers */
     template <typename T> static inline void Shuffle(const T& tBegin, const T& tEnd, const coreUint32 iSeed = std::time(NULL)) {std::shuffle(tBegin, tEnd, std::minstd_rand(iSeed));}

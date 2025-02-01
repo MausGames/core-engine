@@ -66,8 +66,8 @@ coreStatus coreFile::Save(const coreChar* pcPath)
     if(pcPath) m_sPath = pcPath;
     ASSERT(!m_sPath.empty())
 
-    // create folder hierarchy
-    coreData::FolderCreate(m_sPath.c_str());
+    // create directory hierarchy
+    coreData::DirectoryCreate(coreData::StrDirectory(m_sPath.c_str()));
 
     // write to temporary file first (to improve robustness)
     const coreChar* pcTemp = DEFINED(CORE_FILE_SAFEWRITE) ? PRINT("%s.temp_%u", m_sPath.c_str(), coreData::ProcessID()) : m_sPath.c_str();
@@ -468,8 +468,8 @@ coreStatus coreArchive::Save(const coreChar* pcPath)
     if(pcPath) m_sPath = pcPath;
     ASSERT(!m_sPath.empty())
 
-    // create folder hierarchy
-    coreData::FolderCreate(m_sPath.c_str());
+    // create directory hierarchy
+    coreData::DirectoryCreate(coreData::StrDirectory(m_sPath.c_str()));
 
     // cache missing file data
     FOR_EACH(it, m_apFile)

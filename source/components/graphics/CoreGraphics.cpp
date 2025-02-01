@@ -705,8 +705,8 @@ void CoreGraphics::TakeScreenshot(const coreChar* pcPath)const
         {
             const coreChar* pcFullPath = std::strcmp(coreData::StrExtension(sPathCopy.c_str()), "png") ? PRINT("%s.png", sPathCopy.c_str()) : sPathCopy.c_str();
 
-            // create folder hierarchy
-            coreData::FolderCreate(pcFullPath);
+            // create directory hierarchy
+            coreData::DirectoryCreate(coreData::StrDirectory(pcFullPath));
 
             // save the surface as PNG image
             IMG_SavePNG(pSurface, pcFullPath);

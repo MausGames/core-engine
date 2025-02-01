@@ -648,7 +648,7 @@ enum coreStatus : coreInt8
     CORE_OK            =  0,    // everything is fine
     CORE_BUSY          =  1,    // currently waiting for an event
 
-    CORE_ERROR_FILE    = -1,    // error on reading, writing or finding a file or folder
+    CORE_ERROR_FILE    = -1,    // error on reading, writing or finding a file or directory
     CORE_ERROR_SUPPORT = -2,    // requested feature is not supported on the target system
     CORE_ERROR_SYSTEM  = -3,    // invalid system or application behavior
 
