@@ -510,12 +510,12 @@ const coreCpuType& coreData::SystemCpuType()
         const coreChar* pcBrand = coreData::StrToLower(coreData::SystemCpuBrand());
 
         // determine CPU vendor
-        if(std::strstr(pcBrand, "amd"))   return CORE_CPU_AMD;
-        if(std::strstr(pcBrand, "intel")) return CORE_CPU_INTEL;
-        if(std::strstr(pcBrand, "apple")) return CORE_CPU_APPLE;
+        if(std::strstr(pcBrand, "amd"))   return CORE_CPU_TYPE_AMD;
+        if(std::strstr(pcBrand, "intel")) return CORE_CPU_TYPE_INTEL;
+        if(std::strstr(pcBrand, "apple")) return CORE_CPU_TYPE_APPLE;
 
         WARN_IF(true) {}
-        return CORE_CPU_UNKNOWN;
+        return CORE_CPU_TYPE_UNKNOWN;
     }();
 
     return s_eCpuType;

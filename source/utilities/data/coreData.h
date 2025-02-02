@@ -72,19 +72,19 @@ struct coreFileStats final
 
 enum coreCpuType : coreUint8
 {
-    CORE_CPU_AMD     = 1u,
-    CORE_CPU_INTEL   = 2u,
-    CORE_CPU_APPLE   = 3u,
-    CORE_CPU_UNKNOWN = 0xFFu,
+    CORE_CPU_TYPE_AMD     = 1u,
+    CORE_CPU_TYPE_INTEL   = 2u,
+    CORE_CPU_TYPE_APPLE   = 3u,
+    CORE_CPU_TYPE_UNKNOWN = 0xFFu
 };
 
 enum coreGpuType : coreUint8
 {
-    CORE_GPU_AMD     = 1u,
-    CORE_GPU_NVIDIA  = 2u,
-    CORE_GPU_INTEL   = 3u,
-    CORE_GPU_APPLE   = 4u,
-    CORE_GPU_UNKNOWN = 0xFFu,
+    CORE_GPU_TYPE_AMD     = 1u,
+    CORE_GPU_TYPE_NVIDIA  = 2u,
+    CORE_GPU_TYPE_INTEL   = 3u,
+    CORE_GPU_TYPE_APPLE   = 4u,
+    CORE_GPU_TYPE_UNKNOWN = 0xFFu
 };
 
 STATIC_ASSERT(sizeof(std::time_t) == 8u)
@@ -218,10 +218,10 @@ public:
     static coreBool CheckLastError();
 
     /* retrieve date and time */
-    static void            DateTimeValue(coreUint16* OUTPUT piYea, coreUint16* OUTPUT piMon, coreUint16* OUTPUT piDay, coreUint16* OUTPUT piHou, coreUint16* OUTPUT piMin, coreUint16* OUTPUT piSec, const std::tm* pTimeMap = TIMEMAP_CURRENT);
-    static const coreChar* DateTimePrint(const coreChar* pcFormat, const std::tm* pTimeMap = TIMEMAP_CURRENT);
-    static inline const coreChar* DateString(const std::tm* pTimeMap = TIMEMAP_CURRENT) {return coreData::DateTimePrint("%Y-%m-%d", pTimeMap);}
-    static inline const coreChar* TimeString(const std::tm* pTimeMap = TIMEMAP_CURRENT) {return coreData::DateTimePrint("%H:%M:%S", pTimeMap);}
+    static        void            DateTimeValue(coreUint16* OUTPUT piYea, coreUint16* OUTPUT piMon, coreUint16* OUTPUT piDay, coreUint16* OUTPUT piHou, coreUint16* OUTPUT piMin, coreUint16* OUTPUT piSec, const std::tm* pTimeMap = TIMEMAP_CURRENT);
+    static        const coreChar* DateTimePrint(const coreChar* pcFormat, const std::tm* pTimeMap = TIMEMAP_CURRENT);
+    static inline const coreChar* DateString   (const std::tm* pTimeMap = TIMEMAP_CURRENT) {return coreData::DateTimePrint("%Y-%m-%d", pTimeMap);}
+    static inline const coreChar* TimeString   (const std::tm* pTimeMap = TIMEMAP_CURRENT) {return coreData::DateTimePrint("%H:%M:%S", pTimeMap);}
 
     /* compress and decompress data */
     static coreStatus Compress  (const coreByte* pInput, const coreUint32 iInputSize, coreByte** OUTPUT ppOutput, coreUint32* OUTPUT piOutputSize, const coreInt32  iLevel = ZSTD_CLEVEL_DEFAULT);

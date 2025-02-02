@@ -302,7 +302,7 @@ void __coreInitOpenGL()
     #undef __REMAP
 
     // # Intel hotfix: prevent hang on old drivers
-    GLEW_CORE_shared_context = (Core::Graphics->SystemGpuType() != CORE_GPU_INTEL) || GLEW_VERSION_4_1;
+    GLEW_CORE_shared_context = (Core::Graphics->SystemGpuType() != CORE_GPU_TYPE_INTEL) || GLEW_VERSION_4_1;
 
     // handle support for deprecated features
     GLEW_CORE_gl2_compatibility = !GLEW_VERSION_3_0;

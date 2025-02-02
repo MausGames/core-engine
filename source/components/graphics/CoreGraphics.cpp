@@ -653,14 +653,14 @@ const coreGpuType& CoreGraphics::SystemGpuType()const
         const coreChar* pcVendor = coreData::StrToLower(PRINT("%s", glGetString(GL_VENDOR)));   // to handle NULL
 
         // determine GPU vendor
-        if(std::strstr(pcVendor, "amd"))    return CORE_GPU_AMD;
-        if(std::strstr(pcVendor, "ati"))    return CORE_GPU_AMD;
-        if(std::strstr(pcVendor, "nvidia")) return CORE_GPU_NVIDIA;
-        if(std::strstr(pcVendor, "intel"))  return CORE_GPU_INTEL;
-        if(std::strstr(pcVendor, "apple"))  return CORE_GPU_APPLE;
+        if(std::strstr(pcVendor, "amd"))    return CORE_GPU_TYPE_AMD;
+        if(std::strstr(pcVendor, "ati"))    return CORE_GPU_TYPE_AMD;
+        if(std::strstr(pcVendor, "nvidia")) return CORE_GPU_TYPE_NVIDIA;
+        if(std::strstr(pcVendor, "intel"))  return CORE_GPU_TYPE_INTEL;
+        if(std::strstr(pcVendor, "apple"))  return CORE_GPU_TYPE_APPLE;
 
         WARN_IF(true) {}
-        return CORE_GPU_UNKNOWN;
+        return CORE_GPU_TYPE_UNKNOWN;
     }();
 
     return s_eGpuType;

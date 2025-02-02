@@ -341,7 +341,7 @@ void __coreInitOpenGLES()
     }
 
     // # Nvidia hotfix: prevent hang when trying to retrieve shader-program binaries
-    if((Core::Graphics->SystemGpuType() == CORE_GPU_NVIDIA) && DEFINED(_CORE_ANGLE_))
+    if((Core::Graphics->SystemGpuType() == CORE_GPU_TYPE_NVIDIA) && DEFINED(_CORE_ANGLE_))
     {
         g_CoreContext.__GL_OES_get_program_binary = false;
     }
