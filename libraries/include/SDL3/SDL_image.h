@@ -3,7 +3,7 @@
 
 /*
   SDL_image:  An example image loading library for use with SDL
-  Copyright (C) 1997-2024 Sam Lantinga <slouken@libsdl.org>
+  Copyright (C) 1997-2025 Sam Lantinga <slouken@libsdl.org>
 
   This software is provided 'as-is', without any express or implied
   warranty.  In no event will the authors be held liable for any damages
@@ -22,13 +22,16 @@
   3. This notice may not be removed or altered from any source distribution.
 */
 
+/* WIKI CATEGORY: SDLImage */
+
 /**
- *  \file SDL_image.h
+ * # CategorySDLImage
  *
- *  Header file for SDL_image library
+ * Header file for SDL_image library
  *
  * A simple library to load images of various formats as SDL surfaces
  */
+
 #ifndef SDL_IMAGE_H_
 #define SDL_IMAGE_H_
 
@@ -44,7 +47,7 @@ extern "C" {
  * Printable format: "%d.%d.%d", MAJOR, MINOR, MICRO
  */
 #define SDL_IMAGE_MAJOR_VERSION 3
-#define SDL_IMAGE_MINOR_VERSION 1
+#define SDL_IMAGE_MINOR_VERSION 2
 #define SDL_IMAGE_MICRO_VERSION 0
 
 /**
@@ -1968,7 +1971,9 @@ extern SDL_DECLSPEC bool SDLCALL IMG_SaveJPG(SDL_Surface *surface, const char *f
 extern SDL_DECLSPEC bool SDLCALL IMG_SaveJPG_IO(SDL_Surface *surface, SDL_IOStream *dst, bool closeio, int quality);
 
 /**
- * Animated image support Currently only animated GIFs are supported.
+ * Animated image support
+ *
+ * Currently only animated GIFs and WEBP images are supported.
  */
 typedef struct IMG_Animation
 {
