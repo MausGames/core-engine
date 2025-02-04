@@ -10,9 +10,11 @@
 #ifndef _CORE_GUARD_FONT_H_
 #define _CORE_GUARD_FONT_H_
 
-// TODO 3: distance fields for sharper text
-// TODO 5: clear-type (LCD) font rendering
+// TODO 3: distance fields for sharper text (TTF_SetFontSDF + TTF_RenderGlyph_Blended)
+// TODO 5: clear-type font rendering (TTF_RenderGlyph_LCD)
 // TODO 5: <old comment style>
+// TODO 3: TTF_AddFallbackFont
+// TODO 3: check support for color emojis
 
 
 // ****************************************************************
@@ -33,15 +35,15 @@ private:
     coreMap<coreUint16, coreMap<coreUint8, TTF_Font*>> m_aapFont;   // list with sub-fonts in different heights <height, <outline>>
     coreFile* m_pFile;                                              // file object with resource data
 
-    coreUint8 m_iHinting;                                           // hinting-algorithm to use (NORMAL, LIGHT, MONO, NONE, LIGHT_SUBPIXEL (very expensive))
-    coreBool  m_bKerning;                                           // apply kerning if available
+    TTF_HintingFlags m_eHinting;                                    // hinting-algorithm to use
+    coreBool         m_bKerning;                                    // apply kerning if available
 
     coreUint16 m_iLastHeight;                                       // last requested height
     coreUint8  m_iLastOutline;                                      // last requested outline
 
 
 public:
-    explicit coreFont(const coreUint8 iHinting = TTF_HINTING_LIGHT, const coreBool bKerning = true)noexcept;
+    explicit coreFont(const TTF_HintingFlags eHinting = TTF_HINTING_LIGHT, const coreBool bKerning = true)noexcept;
     ~coreFont()final;
 
     DISABLE_COPY(coreFont)

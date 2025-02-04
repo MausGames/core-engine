@@ -11,11 +11,11 @@
 
 // ****************************************************************
 /* constructor */
-coreFont::coreFont(const coreUint8 iHinting, const coreBool bKerning)noexcept
+coreFont::coreFont(const TTF_HintingFlags eHinting, const coreBool bKerning)noexcept
 : coreResource   ()
 , m_aapFont      {}
 , m_pFile        (NULL)
-, m_iHinting     (iHinting)
+, m_eHinting     (eHinting)
 , m_bKerning     (bKerning)
 , m_iLastHeight  (0u)
 , m_iLastOutline (0u)
@@ -51,7 +51,7 @@ coreStatus coreFont::Load(coreFile* pFile)
         return CORE_INVALID_DATA;
     }
 
-    Core::Log->Info("Font (%s, %s, %s) loaded", m_sName.c_str(), this->RetrieveFamilyName(), this->RetrieveStyleName());
+    Core::Log->Info("Font (%s, %s, %s, %d faces) loaded", m_sName.c_str(), this->RetrieveFamilyName(), this->RetrieveStyleName(), TTF_GetNumFontFaces(m_aapFont.front().front()));
     return CORE_OK;
 }
 
@@ -287,15 +287,13 @@ coreUint8 coreFont::ConvertToGlyph(const coreChar* pcMultiByte, coreChar32* OUTP
     // handle UTF-8 encoding
     if(HAS_FLAG((*pcMultiByte), 0x80u))
     {
-        std::mbstate_t oState = {};
-
         // count number of bytes
         const coreUint8 iBytes = 2u + HAS_FLAG((*pcMultiByte), 0xE0u) + HAS_FLAG((*pcMultiByte), 0xF0u);
         ASSERT(iBytes <= 4u)
 
         // convert character
-        const coreUintW iResult = std::mbrtoc32(pcGlyph, pcMultiByte, iBytes, &oState);
-        ASSERT(iResult == iBytes)
+        (*pcGlyph) = SDL_StepUTF8(&pcMultiByte, NULL);
+        ASSERT((*pcGlyph) != SDL_INVALID_UNICODE_CODEPOINT)
 
         return iBytes;
     }
@@ -315,9 +313,17 @@ coreBool coreFont::__InitHeight(const coreUint16 iHeight, const coreUint8 iOutli
 
     // set function properties
     coreProperties oProps;
-    SDL_SetPointerProperty(oProps, TTF_PROP_FONT_CREATE_IOSTREAM_POINTER,           m_pFile->CreateReadStream());
-    SDL_SetBooleanProperty(oProps, TTF_PROP_FONT_CREATE_IOSTREAM_AUTOCLOSE_BOOLEAN, true);
-    SDL_SetFloatProperty  (oProps, TTF_PROP_FONT_CREATE_SIZE_FLOAT,                 I_TO_F(iHeight));
+    if(m_aapFont.empty())
+    {
+        SDL_SetPointerProperty(oProps, TTF_PROP_FONT_CREATE_IOSTREAM_POINTER,           m_pFile->CreateReadStream());
+        SDL_SetBooleanProperty(oProps, TTF_PROP_FONT_CREATE_IOSTREAM_AUTOCLOSE_BOOLEAN, true);
+        SDL_SetFloatProperty  (oProps, TTF_PROP_FONT_CREATE_SIZE_FLOAT,                 I_TO_F(iHeight));
+    }
+    else
+    {
+        SDL_SetPointerProperty(oProps, TTF_PROP_FONT_CREATE_EXISTING_FONT,              m_aapFont.front().front());
+        SDL_SetFloatProperty  (oProps, TTF_PROP_FONT_CREATE_SIZE_FLOAT,                 I_TO_F(iHeight));
+    }
 
     // create new sub-font
     TTF_Font* pNewFont = TTF_OpenFontWithProperties(oProps);
@@ -328,11 +334,11 @@ coreBool coreFont::__InitHeight(const coreUint16 iHeight, const coreUint8 iOutli
     }
 
     // enable font hinting and kerning
-    TTF_SetFontHinting(pNewFont, TTF_HintingFlags(m_iHinting));
+    TTF_SetFontHinting(pNewFont, m_eHinting);
     TTF_SetFontKerning(pNewFont, m_bKerning);
 
     // enable outlining
-    if(iOutline) TTF_SetFontOutline(pNewFont, iOutline);
+    TTF_SetFontOutline(pNewFont, iOutline);
 
     // save sub-font
     m_aapFont[iHeight].emplace(iOutline, pNewFont);
