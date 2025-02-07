@@ -263,11 +263,10 @@ coreStatus Core::Run()
             s_bRestart = false;
         }
 
-        // update the event system
+        // update components before the application
         System->__UpdateEvents();
-
-        // update the input button interface
-        Input->__UpdateButtonsStart();
+        System->__UpdateWindow();
+        Input ->__UpdateButtonsStart();
 
         // move and render the application
         Application->Move();
@@ -276,13 +275,12 @@ coreStatus Core::Run()
         // update the object manager
         Manager::Object->__UpdateObjects();
 
-        // update all remaining components
+        // update components after the application
         Audio   ->__UpdateSources();
         Audio   ->__UpdateDevice();
         Platform->__UpdateBackend();
         Debug   ->__UpdateOutput();
         Graphics->__UpdateScene();   // # contains frame terminator
-        System  ->__UpdateWindow();
         System  ->__UpdateTime();
         Input   ->__UpdateButtonsEnd();
 

@@ -14,6 +14,8 @@
 // TODO 3: handle display hot-plugging (SDL_DISPLAYEVENT_CONNECTED, SDL_DISPLAYEVENT_DISCONNECTED)
 // TODO 3: there should be no borderless window mode, only borderless fullscreen mode with adjusted resolution
 // TODO 5: <old comment style>
+// TODO 3: handle saving config on maximized window, also save last window position ?
+// TODO 2: as of now, setting window position does not work on Wayland and returns false + SDL_GetError (in Wayland_SetWindowPosition)
 
 
 // ****************************************************************
@@ -40,11 +42,13 @@ private:
     /* display structure */
     struct coreDisplay final
     {
-        SDL_DisplayID        iDisplayID;       // display instance ID
-        coreSet<coreVector2> avAvailableRes;   // all available screen resolutions (highest to lowest, primary on width)
-        coreVector2          vDesktopRes;      // desktop resolution
-        coreVector2          vWorkAreaRes;     // work area resolution (e.g. without task bar)
-        coreVector2          vMaximumRes;      // highest available resolution (primary on width)
+        SDL_DisplayID               iDisplayID;         // display instance ID
+        coreSet<coreVector2>        avAvailableRes;     // all available screen resolutions (highest to lowest, primary on width)
+        coreSet<coreSet<coreFloat>> aafAvailableRate;   // all available refresh rates (in Hz) (highest to lowest)
+        coreVector2                 vDesktopRes;        // desktop resolution
+        coreFloat                   fDesktopRate;       // desktop refresh rate (in Hz)
+        coreVector2                 vWorkAreaRes;       // work area resolution (e.g. without task bar)
+        coreVector2                 vMaximumRes;        // highest available resolution (primary on width)
     };
 
 
@@ -55,6 +59,7 @@ private:
     coreUint8             m_iDisplayIndex;         // current display index
 
     coreVector2    m_vResolution;                  // width and height of the window
+    coreFloat      m_fRefreshRate;                 // refresh rate (in Hz)
     coreSystemMode m_eMode;                        // fullscreen mode
 
     coreDouble m_dTotalTime;                       // total time since start of the application
@@ -91,7 +96,7 @@ public:
     void SetWindowTitle     (const coreChar*   pcTitle);
     void SetWindowIcon      (const coreChar*   pcPath);
     void SetWindowResolution(const coreVector2 vResolution);
-    void SetWindowAll       (const coreUint8   iDisplayIndex, const coreVector2 vResolution, const coreSystemMode eMode);
+    void SetWindowAll       (const coreUint8   iDisplayIndex, const coreVector2 vResolution, const coreFloat fRefreshRate, const coreSystemMode eMode);
 
     /* control time */
     inline void SetTimeSpeed(const coreUintW iID, const coreFloat fTimeSpeed) {ASSERT(iID < CORE_SYSTEM_TIMES) m_afTimeSpeed[iID] = fTimeSpeed;}
@@ -107,6 +112,7 @@ public:
     inline       coreUintW       GetDisplayCount   ()const                       {return m_aDisplayData.size();}
     inline const coreUint8&      GetDisplayIndex   ()const                       {return m_iDisplayIndex;}
     inline const coreVector2&    GetResolution     ()const                       {return m_vResolution;}
+    inline const coreFloat&      GetRefreshRate    ()const                       {return m_fRefreshRate;}
     inline const coreSystemMode& GetMode           ()const                       {return m_eMode;}
     inline const coreDouble&     GetTotalTime      ()const                       {return m_dTotalTime;}
     inline const coreDouble&     GetTotalTimeBefore()const                       {return m_dTotalTimeBefore;}
