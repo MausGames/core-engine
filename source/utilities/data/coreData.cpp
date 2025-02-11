@@ -1619,9 +1619,7 @@ coreStatus coreData::FileMove(const coreChar* pcFrom, const coreChar* pcTo)
 #endif
 
     // try to copy on error (# but never delete source file)
-    if(coreData::FileCopy(pcFrom, pcTo) == CORE_OK) return CORE_OK;
-
-    return CORE_ERROR_FILE;
+    return coreData::FileCopy(pcFrom, pcTo);
 }
 
 
@@ -2065,7 +2063,7 @@ coreBool coreData::CheckLastError()
 
         // convert error code to readable message (XSI compliant)
         coreChar acBuffer[512];
-        const coreChar* pcString = (strerror_r(iError, acBuffer, ARRAY_SIZE(acBuffer)), acBuffer);
+        const coreChar* pcString = strerror_r(iError, acBuffer, ARRAY_SIZE(acBuffer)) ? "unknown error" : acBuffer;
 
     #endif
 

@@ -471,7 +471,7 @@ coreStatus coreProgram::Load(coreFile* pFile)
         // add debug label
         Core::Graphics->LabelOpenGL(GL_PROGRAM, m_iIdentifier, m_sName.c_str());
 
-        Core::Log->Info("Program (%s) loaded", m_sName.c_str());
+        Core::Log->Info("Program (%s, %s) loaded", m_sName.c_str(), m_bBinary ? "cached" : "not cached");
         this->__WriteInterface();
 
         m_eStatus = CORE_PROGRAM_SUCCESSFUL;
