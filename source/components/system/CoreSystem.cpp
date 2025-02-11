@@ -585,6 +585,8 @@ void CoreSystem::SetWindowAll(const coreUint8 iDisplayIndex, const coreVector2 v
 /* update the event system */
 void CoreSystem::__UpdateEvents()
 {
+    coreBool bResetEngine = false;
+
     // check for system errors
     coreData::CheckLastError();
 
@@ -629,8 +631,14 @@ void CoreSystem::__UpdateEvents()
             else SDL_DestroyWindow(SDL_GetWindowFromID(oEvent.window.windowID));
             break;
 
-        // application focus lost
+        // display added or removed
+        case SDL_EVENT_DISPLAY_ADDED:
         case SDL_EVENT_DISPLAY_REMOVED:
+            m_bWinFocusLost = true;
+            bResetEngine    = true;
+            break;
+
+        // application focus lost
         case SDL_EVENT_KEYBOARD_REMOVED:
         case SDL_EVENT_MOUSE_REMOVED:
         case SDL_EVENT_JOYSTICK_REMOVED:
@@ -652,6 +660,9 @@ void CoreSystem::__UpdateEvents()
         const coreBool bState2 = Core::Debug->ProcessEvent(oEvent);
         if(!bState1 || !bState2) return;
     }
+
+    // reset engine on certain events
+    if(bResetEngine) Core::Reset();
 }
 
 

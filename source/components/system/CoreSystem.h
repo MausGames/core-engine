@@ -11,7 +11,6 @@
 #define _CORE_GUARD_SYSTEM_H_
 
 // TODO 3: some drivers may "merge" displays
-// TODO 3: handle display hot-plugging (SDL_DISPLAYEVENT_CONNECTED, SDL_DISPLAYEVENT_DISCONNECTED)
 // TODO 3: there should be no borderless window mode, only borderless fullscreen mode with adjusted resolution
 // TODO 5: <old comment style>
 // TODO 3: handle saving config on maximized window, also save last window position ?
