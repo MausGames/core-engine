@@ -292,6 +292,7 @@ public:
     static constexpr coreMatrix4 ShearZY     (const coreFloat   fFactor);
     static constexpr coreMatrix4 Orientation (const coreVector3 vDirection, const coreVector3 vOrientation);
     static inline    coreMatrix4 Perspective (const coreVector2 vResolution, const coreFloat fFOV, const coreFloat fNearClip, const coreFloat fFarClip);
+    static inline    coreMatrix4 Perspective (const coreVector2 vResolution, const coreFloat fFOV, const coreFloat fNearClip, const coreFloat fFarClip, const coreFloat fAspectRatio);
     static constexpr coreMatrix4 Ortho       (const coreVector2 vResolution);
     static constexpr coreMatrix4 Ortho       (const coreFloat   fLeft, const coreFloat fRight, const coreFloat fBottom, const coreFloat fTop, const coreFloat fNearClip, const coreFloat fFarClip);
     static constexpr coreMatrix4 Camera      (const coreVector3 vPosition, const coreVector3 vDirection, const coreVector3 vOrientation);
@@ -1002,14 +1003,30 @@ constexpr coreMatrix4 coreMatrix4::Orientation(const coreVector3 vDirection, con
 inline coreMatrix4 coreMatrix4::Perspective(const coreVector2 vResolution, const coreFloat fFOV, const coreFloat fNearClip, const coreFloat fFarClip)
 {
     const coreFloat   A = COT(fFOV * 0.5f);
-    const coreVector2 B = vResolution.yx().LowRatio() * A;
+    const coreVector2 B = vResolution.LowRatio() * A;
 
     const coreFloat N = fNearClip;
     const coreFloat F = fFarClip;
     const coreFloat I = RCP(N-F);
 
-    return coreMatrix4( B.x, 0.0f,       0.0f,  0.0f,
-                       0.0f,  B.y,       0.0f,  0.0f,
+    return coreMatrix4( B.y, 0.0f,       0.0f,  0.0f,
+                       0.0f,  B.x,       0.0f,  0.0f,
+                       0.0f, 0.0f,    (N+F)*I, -1.0f,
+                       0.0f, 0.0f, 2.0f*N*F*I,  0.0f);
+}
+
+inline coreMatrix4 coreMatrix4::Perspective(const coreVector2 vResolution, const coreFloat fFOV, const coreFloat fNearClip, const coreFloat fFarClip, const coreFloat fAspectRatio)
+{
+    const coreVector2 R = coreVector2(fAspectRatio, 1.0f).LowRatio();
+    const coreFloat   A = COT(fFOV * 0.5f);
+    const coreVector2 B = (vResolution * R.yx()).LowRatio() * R * A;
+
+    const coreFloat N = fNearClip;
+    const coreFloat F = fFarClip;
+    const coreFloat I = RCP(N-F);
+
+    return coreMatrix4( B.y, 0.0f,       0.0f,  0.0f,
+                       0.0f,  B.x,       0.0f,  0.0f,
                        0.0f, 0.0f,    (N+F)*I, -1.0f,
                        0.0f, 0.0f, 2.0f*N*F*I,  0.0f);
 }

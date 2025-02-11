@@ -28,6 +28,8 @@ CoreSystem::CoreSystem()noexcept
 , m_iSkipFrame       (1u)
 , m_dPerfFrequency   (0.0)
 , m_iPerfTime        (0u)
+, m_fCanonBase       (0.0f)
+, m_vCanonSize       (coreVector2(0.0f,0.0f))
 , m_iMainThread      (0u)
 , m_bWinFocusLost    (false)
 , m_bWinPosChanged   (false)
@@ -509,6 +511,9 @@ void CoreSystem::SetWindowResolution(const coreVector2 vResolution)
         m_vResolution.x = CLAMP(m_vResolution.x, I_TO_F(CORE_SYSTEM_WINDOW_MINIMUM), vMaximum.x);
         m_vResolution.y = CLAMP(m_vResolution.y, I_TO_F(CORE_SYSTEM_WINDOW_MINIMUM), vMaximum.y);
 
+        // refresh canonical aspect ratio
+        this->__RefreshCanonAspectRatio();
+
         if(m_pWindow)
         {
             // always leave fullscreen (otherwise many following changes will be ignored)
@@ -612,6 +617,7 @@ void CoreSystem::__UpdateEvents()
         case SDL_EVENT_WINDOW_RESIZED:
             m_bWinSizeChanged = true;
             m_vResolution     = coreVector2(I_TO_F(oEvent.window.data1), I_TO_F(oEvent.window.data2));
+            this->__RefreshCanonAspectRatio();
             Core::Config->SetInt(CORE_CONFIG_SYSTEM_WIDTH,  F_TO_SI(m_vResolution.x));
             Core::Config->SetInt(CORE_CONFIG_SYSTEM_HEIGHT, F_TO_SI(m_vResolution.y));
             break;
@@ -721,6 +727,20 @@ void CoreSystem::__UpdateTime()
 
     // increase current frame number
     ++m_iCurFrame;
+}
+
+
+// ****************************************************************
+/* refresh canonical aspect ratio */
+void CoreSystem::__RefreshCanonAspectRatio()
+{
+    // pre-calculate full two-dimensional ratio (xy = normal, zw = reciprocal)
+    static const coreVector4 s_vCanonFullRatio = coreVector4(coreVector2(coreFloat(CoreApp::Settings::System::AspectRatio), 1.0f).HighRatio(),
+                                                             coreVector2(1.0f, coreFloat(CoreApp::Settings::System::AspectRatio)).LowRatio());
+
+    // calculate new properties
+    m_fCanonBase = (m_vResolution * s_vCanonFullRatio.zw()).Min();
+    m_vCanonSize = (m_vResolution * s_vCanonFullRatio.yx()).HighRatio() * s_vCanonFullRatio.xy();   // high precision
 }
 
 

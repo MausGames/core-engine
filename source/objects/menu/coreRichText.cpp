@@ -82,8 +82,8 @@ void coreRichText::Render()
     }
 
     // center characters around object position
-    const coreVector2 vResolution = Core::System->GetResolution();
-    const coreVector2 vRelOffset  = m_vScreenSize * coreVector2(-0.5f,0.5f) - coreVector2(0.0f, m_fTopHeight);
+    const coreFloat   fCanonBase = Core::System->GetCanonBase();
+    const coreVector2 vRelOffset = m_vScreenSize * coreVector2(-0.5f,0.5f) - coreVector2(0.0f, m_fTopHeight);
 
     const auto nCharDataFunc = [&](const coreCharacter& oCharacter, const coreAnim& oAnim, const corePass& oPass)
     {
@@ -93,8 +93,8 @@ void coreRichText::Render()
         const coreVector2 vDirection = oAnim.vDirection;
 
         // calculate resolution-modified transformation parameters
-        coreVector2 vCharPosition  = vPosition * vResolution.Min();
-        coreVector2 vCharSize      = vSize     * vResolution.Min();
+        coreVector2 vCharPosition  = vPosition * fCanonBase;
+        coreVector2 vCharSize      = vSize     * fCanonBase;
         coreVector2 vCharDirection = vDirection.InvertedX();
 
         // add offset to position

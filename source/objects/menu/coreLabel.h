@@ -19,7 +19,7 @@
 
 // ****************************************************************
 /* menu label definitions */
-#define CORE_LABEL_DETAIL        (Core::System->GetResolution().y * 1.0f)
+#define CORE_LABEL_DETAIL        (Core::System->GetCanonBase())
 #define CORE_LABEL_SIZE_FACTOR   (RCP(CORE_LABEL_DETAIL))       // map texture resolution on current window resolution
 #define CORE_LABEL_HEIGHT_FACTOR (CORE_LABEL_DETAIL / 800.0f)   // set real font height relative to current window resolution
 #define CORE_LABEL_TEXTURE       (1u)                           // default texture unit (other than 0, to reduce texture switches)

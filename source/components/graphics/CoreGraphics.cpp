@@ -17,6 +17,7 @@ CoreGraphics::CoreGraphics()noexcept
 , m_fFOV              (0.0f)
 , m_fNearClip         (0.0f)
 , m_fFarClip          (0.0f)
+, m_fAspectRatio      (0.0f)
 , m_vCamPosition      (coreVector3(0.0f,0.0f,0.0f))
 , m_vCamDirection     (coreVector3(0.0f,0.0f,0.0f))
 , m_vCamOrientation   (coreVector3(0.0f,0.0f,0.0f))
@@ -167,7 +168,7 @@ CoreGraphics::CoreGraphics()noexcept
 
     // reset camera and view frustum
     this->SetCamera(coreVector3(0.0f,0.0f,0.0f), coreVector3(0.0f,0.0f,-1.0f), coreVector3(0.0f,1.0f,0.0f));
-    this->SetView  (coreVector2(0.0f,0.0f), PI*0.25f, 1.0f, 1000.0f);
+    this->SetView  (coreVector2(0.0f,0.0f), PI*0.25f, 1.0f, 1000.0f, 0.0f);
 
     // reset ambient light
     for(coreUintW i = 0u; i < CORE_GRAPHICS_LIGHTS; ++i)
@@ -251,13 +252,16 @@ void CoreGraphics::SetCamera(const coreVector3 vPosition, const coreVector3 vDir
 
 // ****************************************************************
 /* set view frustum and create projection matrices */
-void CoreGraphics::SetView(coreVector2 vResolution, const coreFloat fFOV, const coreFloat fNearClip, const coreFloat fFarClip)
+void CoreGraphics::SetView(coreVector2 vResolution, const coreFloat fFOV, const coreFloat fNearClip, const coreFloat fFarClip, coreFloat fAspectRatio)
 {
     coreBool bNewView = false;
 
     // retrieve window resolution
     if(!vResolution.x) vResolution.x = Core::System->GetResolution().x;
     if(!vResolution.y) vResolution.y = Core::System->GetResolution().y;
+
+    // retrieve canonical aspect ratio
+    if(!fAspectRatio) fAspectRatio = coreFloat(CoreApp::Settings::System::AspectRatio);
 
     // set properties of the view frustum
     if(m_vViewResolution.xy() != vResolution)
@@ -270,14 +274,15 @@ void CoreGraphics::SetView(coreVector2 vResolution, const coreFloat fFOV, const 
         glViewport(0, 0, F_TO_SI(vResolution.x), F_TO_SI(vResolution.y));
         bNewView = true;
     }
-    if(m_fFOV      != fFOV)      {m_fFOV      = fFOV;      bNewView = true;}
-    if(m_fNearClip != fNearClip) {m_fNearClip = fNearClip; bNewView = true;}
-    if(m_fFarClip  != fFarClip)  {m_fFarClip  = fFarClip;  bNewView = true;}
+    if(m_fFOV         != fFOV)         {m_fFOV         = fFOV;         bNewView = true;}
+    if(m_fNearClip    != fNearClip)    {m_fNearClip    = fNearClip;    bNewView = true;}
+    if(m_fFarClip     != fFarClip)     {m_fFarClip     = fFarClip;     bNewView = true;}
+    if(m_fAspectRatio != fAspectRatio) {m_fAspectRatio = fAspectRatio; bNewView = true;}
 
     if(bNewView)
     {
         // create projection matrices
-        m_mPerspective = coreMatrix4::Perspective(vResolution, m_fFOV, m_fNearClip, m_fFarClip);
+        m_mPerspective = coreMatrix4::Perspective(vResolution, m_fFOV, m_fNearClip, m_fFarClip, m_fAspectRatio);
         m_mOrtho       = coreMatrix4::Ortho      (vResolution);
 
         // invoke transformation data update

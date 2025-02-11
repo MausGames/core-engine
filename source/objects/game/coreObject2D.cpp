@@ -212,13 +212,13 @@ void coreObject2D::Move()
     // check current update status
     if(HAS_FLAG(m_eUpdate, CORE_OBJECT_UPDATE_TRANSFORM))
     {
-        const coreVector2 vResolution = Core::System->GetResolution();
-        const coreVector2 vViewDir    = HAS_FLAG(m_eStyle, CORE_OBJECT2D_STYLE_VIEWDIR)   ? Core::Manager::Object->GetSpriteViewDir  () : coreVector2(0.0f,1.0f);
-        const coreVector2 vAltCenter  = HAS_FLAG(m_eStyle, CORE_OBJECT2D_STYLE_ALTCENTER) ? Core::Manager::Object->GetSpriteAltCenter() : vResolution;
+        const coreFloat   fCanonBase = Core::System->GetCanonBase();
+        const coreVector2 vViewDir   = HAS_FLAG(m_eStyle, CORE_OBJECT2D_STYLE_VIEWDIR)   ? Core::Manager::Object->GetSpriteViewDir  () : coreVector2(0.0f,1.0f);
+        const coreVector2 vAltCenter = HAS_FLAG(m_eStyle, CORE_OBJECT2D_STYLE_ALTCENTER) ? Core::Manager::Object->GetSpriteAltCenter() : Core::System->GetResolution();
 
         // calculate resolution-modified transformation parameters
-        m_vScreenPosition  = m_vPosition * vResolution.Min();
-        m_vScreenSize      = m_vSize     * vResolution.Min();
+        m_vScreenPosition  = m_vPosition * fCanonBase;
+        m_vScreenSize      = m_vSize     * fCanonBase;
         m_vScreenDirection = m_vDirection.InvertedX();
 
         // add origin and offset to position

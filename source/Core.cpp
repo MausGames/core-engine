@@ -128,6 +128,7 @@ void Core::Reset()
     const coreFloat   fFOV             = Graphics->m_fFOV;
     const coreFloat   fNearClip        = Graphics->m_fNearClip;
     const coreFloat   fFarClip         = Graphics->m_fFarClip;
+    const coreFloat   fAspectRatio     = Graphics->m_fAspectRatio;
     const coreVector3 vCamPosition     = Graphics->m_vCamPosition;
     const coreVector3 vCamDirection    = Graphics->m_vCamDirection;
     const coreVector3 vCamOrientation  = Graphics->m_vCamOrientation;
@@ -152,7 +153,7 @@ void Core::Reset()
     System  ->m_dTotalTime       = dTotalTime;
     System  ->m_dTotalTimeBefore = dTotalTimeBefore;
     System  ->m_iCurFrame        = iCurFrame;
-    Graphics->SetView  (System->m_vResolution, fFOV, fNearClip, fFarClip);
+    Graphics->SetView  (System->m_vResolution, fFOV, fNearClip, fFarClip, fAspectRatio);
     Graphics->SetCamera(vCamPosition, vCamDirection, vCamOrientation);
     for(coreUintW i = 0u; i < CORE_SYSTEM_TIMES;    ++i) System  ->SetTimeSpeed(i, afTimeSpeed[i]);
     for(coreUintW i = 0u; i < CORE_GRAPHICS_LIGHTS; ++i) Graphics->SetLight    (i, aLight[i].vPosition, aLight[i].vDirection, aLight[i].vValue);
@@ -175,7 +176,7 @@ void Core::Reset()
 void Core::Reshape()
 {
     // reset view frustum
-    Graphics->SetView(System->m_vResolution, Graphics->m_fFOV, Graphics->m_fNearClip, Graphics->m_fFarClip);
+    Graphics->SetView(System->m_vResolution, Graphics->m_fFOV, Graphics->m_fNearClip, Graphics->m_fFarClip, Graphics->m_fAspectRatio);
 
     // reshape resources
     Manager::Resource->Reshape();

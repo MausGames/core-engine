@@ -710,6 +710,11 @@ public:
         static const coreChar* const CursorPath;       // mouse cursor file path
         static const coreBool        UserManagement;   // enable user-management (OS and platform)
 
+        struct INTERFACE System final
+        {
+            static const coreDouble AspectRatio;   // canonical aspect ratio
+        };
+
         struct INTERFACE Graphics final
         {
             static const coreUint8 DepthSize;      // depth buffer size (0, 16, 24, 32)

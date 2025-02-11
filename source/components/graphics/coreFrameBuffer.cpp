@@ -9,7 +9,7 @@
 #include "Core.h"
 
 coreFrameBuffer* coreFrameBuffer::s_pCurrent      = NULL;
-coreFloat        coreFrameBuffer::s_afViewData[5] = {};
+coreFloat        coreFrameBuffer::s_afViewData[6] = {};
 
 
 // ****************************************************************
@@ -23,6 +23,7 @@ coreFrameBuffer::coreFrameBuffer()noexcept
 , m_fFOV          (0.0f)
 , m_fNearClip     (0.0f)
 , m_fFarClip      (0.0f)
+, m_fAspectRatio  (0.0f)
 , m_sName         ("")
 , m_bIntelMorph   (false)
 {
@@ -61,9 +62,10 @@ coreStatus coreFrameBuffer::Create(const coreVector2 vResolution, const coreFram
     m_vResolution = coreVector2(I_TO_F(iWidth), I_TO_F(iHeight));
 
     // set view properties
-    if(!m_fFOV)      m_fFOV      = Core::Graphics->GetFOV();
-    if(!m_fNearClip) m_fNearClip = Core::Graphics->GetNearClip();
-    if(!m_fFarClip)  m_fFarClip  = Core::Graphics->GetFarClip();
+    if(!m_fFOV)         m_fFOV         = Core::Graphics->GetFOV();
+    if(!m_fNearClip)    m_fNearClip    = Core::Graphics->GetNearClip();
+    if(!m_fFarClip)     m_fFarClip     = Core::Graphics->GetFarClip();
+    if(!m_fAspectRatio) m_fAspectRatio = Core::Graphics->GetAspectRatio();
 
     // check for multisampling
     const coreUint8 iSamples     = CLAMP(Core::Config->GetInt(CORE_CONFIG_GRAPHICS_ANTIALIASING), 0, Core::Graphics->GetMaxSamples());
@@ -286,6 +288,7 @@ void coreFrameBuffer::StartDraw()
         s_afViewData[2] = Core::Graphics->GetFOV();
         s_afViewData[3] = Core::Graphics->GetNearClip();
         s_afViewData[4] = Core::Graphics->GetFarClip();
+        s_afViewData[5] = Core::Graphics->GetAspectRatio();
     }
 
     // set frame buffer
@@ -293,7 +296,7 @@ void coreFrameBuffer::StartDraw()
     s_pCurrent = this;
 
     // set view frustum
-    Core::Graphics->SetView(m_vResolution, m_fFOV, m_fNearClip, m_fFarClip);
+    Core::Graphics->SetView(m_vResolution, m_fFOV, m_fNearClip, m_fFarClip, m_fAspectRatio);
 }
 
 
@@ -308,7 +311,7 @@ void coreFrameBuffer::EndDraw()
     s_pCurrent = NULL;
 
     // reset view frustum
-    Core::Graphics->SetView(coreVector2(s_afViewData[0], s_afViewData[1]), s_afViewData[2], s_afViewData[3], s_afViewData[4]);
+    Core::Graphics->SetView(coreVector2(s_afViewData[0], s_afViewData[1]), s_afViewData[2], s_afViewData[3], s_afViewData[4], s_afViewData[5]);
     std::memset(s_afViewData, 0, sizeof(s_afViewData));
 }
 

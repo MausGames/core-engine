@@ -74,6 +74,9 @@ private:
     coreDouble m_dPerfFrequency;                   // high-precision time coefficient
     coreUint64 m_iPerfTime;                        // high-precision time value
 
+    coreFloat   m_fCanonBase;                      // canonical base resolution (major axis)
+    coreVector2 m_vCanonSize;                      // canonical transform size
+
     SDL_ThreadID m_iMainThread;                    // thread-ID from the main-thread
 
     coreBool m_bWinFocusLost;                      // window/application lost focus (through event)
@@ -122,6 +125,8 @@ public:
     inline const coreUint32&     GetCurFrame       ()const                       {return m_iCurFrame;}
     inline const coreDouble&     GetPerfFrequency  ()const                       {return m_dPerfFrequency;}
     inline const coreUint64&     GetPerfTime       ()const                       {return m_iPerfTime;}
+    inline const coreFloat&      GetCanonBase      ()const                       {return m_fCanonBase;}
+    inline const coreVector2&    GetCanonSize      ()const                       {return m_vCanonSize;}
     inline const SDL_ThreadID&   GetMainThread     ()const                       {return m_iMainThread;}
     inline const coreBool&       GetWinFocusLost   ()const                       {return m_bWinFocusLost;}
     inline const coreBool&       GetWinPosChanged  ()const                       {return m_bWinPosChanged;}
@@ -138,6 +143,9 @@ private:
 
     /* update the high-precision time */
     void __UpdateTime();
+
+    /* refresh canonical aspect ratio */
+    void __RefreshCanonAspectRatio();
 
     /* handle displays */
     coreUintW __GetDisplayIndex(const SDL_DisplayID iID)const;

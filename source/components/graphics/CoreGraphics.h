@@ -49,6 +49,7 @@ private:
     coreFloat m_fFOV;                           // field-of-view
     coreFloat m_fNearClip;                      // near clipping plane
     coreFloat m_fFarClip;                       // far clipping plane
+    coreFloat m_fAspectRatio;                   // aspect ratio
 
     coreVector3 m_vCamPosition;                 // position of the camera
     coreVector3 m_vCamDirection;                // direction of the camera
@@ -87,7 +88,7 @@ public:
 
     /* control camera and view frustum */
     void SetCamera(const coreVector3 vPosition, const coreVector3 vDirection, const coreVector3 vOrientation);
-    void SetView  (coreVector2 vResolution, const coreFloat fFOV, const coreFloat fNearClip, const coreFloat fFarClip);
+    void SetView  (coreVector2 vResolution, const coreFloat fFOV, const coreFloat fNearClip, const coreFloat fFarClip, coreFloat fAspectRatio);
 
     /* control ambient */
     void SetLight(const coreUintW iIndex, const coreVector4 vPosition, const coreVector4 vDirection, const coreVector4 vValue);
@@ -132,6 +133,7 @@ public:
     inline const coreFloat&     GetFOV            ()const                       {return m_fFOV;}
     inline const coreFloat&     GetNearClip       ()const                       {return m_fNearClip;}
     inline const coreFloat&     GetFarClip        ()const                       {return m_fFarClip;}
+    inline const coreFloat&     GetAspectRatio    ()const                       {return m_fAspectRatio;}
     inline const coreVector3&   GetCamPosition    ()const                       {return m_vCamPosition;}
     inline const coreVector3&   GetCamDirection   ()const                       {return m_vCamDirection;}
     inline const coreVector3&   GetCamOrientation ()const                       {return m_vCamOrientation;}
