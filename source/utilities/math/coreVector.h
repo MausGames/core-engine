@@ -391,13 +391,31 @@ public:
     constexpr coreVector3      xyz ()const                  {return coreVector3(x, y, z);}
     constexpr coreVector3      yzw ()const                  {return coreVector3(y, z, w);}
     constexpr coreVector2      xy  ()const                  {return coreVector2(x, y);}
+    constexpr coreVector2      xz  ()const                  {return coreVector2(x, z);}
+    constexpr coreVector2      xw  ()const                  {return coreVector2(x, w);}
+    constexpr coreVector2      yx  ()const                  {return coreVector2(y, x);}
     constexpr coreVector2      yz  ()const                  {return coreVector2(y, z);}
+    constexpr coreVector2      yw  ()const                  {return coreVector2(y, w);}
+    constexpr coreVector2      zx  ()const                  {return coreVector2(z, x);}
+    constexpr coreVector2      zy  ()const                  {return coreVector2(z, y);}
     constexpr coreVector2      zw  ()const                  {return coreVector2(z, w);}
+    constexpr coreVector2      wx  ()const                  {return coreVector2(w, x);}
+    constexpr coreVector2      wy  ()const                  {return coreVector2(w, y);}
+    constexpr coreVector2      wz  ()const                  {return coreVector2(w, z);}
     inline    void             xyz (const coreVector3 v)    {x = v.x; y = v.y; z = v.z;}
     inline    void             yzw (const coreVector3 v)    {y = v.x; z = v.y; w = v.z;}
     inline    void             xy  (const coreVector2 v)    {x = v.x; y = v.y;}
+    inline    void             xz  (const coreVector2 v)    {x = v.x; z = v.y;}
+    inline    void             xw  (const coreVector2 v)    {x = v.x; w = v.y;}
+    inline    void             yx  (const coreVector2 v)    {y = v.x; x = v.y;}
     inline    void             yz  (const coreVector2 v)    {y = v.x; z = v.y;}
+    inline    void             yw  (const coreVector2 v)    {y = v.x; w = v.y;}
+    inline    void             zx  (const coreVector2 v)    {z = v.x; x = v.y;}
+    inline    void             zy  (const coreVector2 v)    {z = v.x; y = v.y;}
     inline    void             zw  (const coreVector2 v)    {z = v.x; w = v.y;}
+    inline    void             wx  (const coreVector2 v)    {w = v.x; x = v.y;}
+    inline    void             wy  (const coreVector2 v)    {w = v.x; y = v.y;}
+    inline    void             wz  (const coreVector2 v)    {w = v.x; z = v.y;}
 
     /* invert vector */
     constexpr coreVector4 operator - ()const {return coreVector4(-x, -y, -z, -w);}
