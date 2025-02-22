@@ -84,8 +84,8 @@ if(CORE_EMSCRIPTEN)
     target_compile_options(
         CoreEngine PUBLIC
         -msse3 -pipe -Wall -Wextra -Wpedantic
-        -matomics -mbulk-memory -mmultivalue -mmutable-globals -mnontrapping-fptoint -mreference-types -msimd128 -msign-ext
-        $<IF:$<CONFIG:DEBUG>, -O0 -g3 -gsplit-dwarf -gz=zlib, -Os -flto -fwhole-program-vtables -ffinite-math-only -fno-signed-zeros -fno-trapping-math -fno-math-errno -ffp-contract=off -fno-rtti -fno-exceptions -Werror>
+        -matomics -mbulk-memory -mextended-const -mmultivalue -mmutable-globals -mnontrapping-fptoint -mreference-types -msign-ext -msimd128 -mtail-call
+        $<IF:$<CONFIG:DEBUG>, -O0 -g3 -gsplit-dwarf -gz=zlib -ftrivial-auto-var-init=pattern, -Os -flto -fwhole-program-vtables -fvirtual-function-elimination -fforce-emit-vtables -fstrict-vtable-pointers -fno-strict-overflow -ffinite-math-only -fno-signed-zeros -fno-trapping-math -fno-math-errno -ffp-contract=off -fno-rtti -fno-exceptions -Werror>
     )
 
     target_link_directories(
@@ -96,7 +96,7 @@ if(CORE_EMSCRIPTEN)
     target_link_libraries(
         CoreEngine INTERFACE
         -lopenal -lidbfs.js
-        -l:libSDL3.a -l:libSDL3_ttf.a -l:libharfbuzz.a -l:libfreetype.a -l:libSDL3_image.a -l:libwebp.a -l:libwebpdemux.a -l:libzstd.a -l:libopusfile.a -l:libopus.a -l:libogg.a
+        -l:libSDL3.a -l:libSDL3_ttf.a -l:libSDL3_image.a -l:libwebp.a -l:libwebpdemux.a -l:libzstd.a -l:libopusfile.a -l:libopus.a -l:libogg.a
     )
 
     target_link_options(
@@ -123,7 +123,7 @@ else()
     target_compile_options(
         CoreEngine PUBLIC
         -msse3 -pipe -Wall -Wextra -Wpedantic
-        $<IF:$<CONFIG:DEBUG>, -O0 -g3 -gsplit-dwarf -gz=zlib -glldb, -Os -flto -fwhole-program-vtables -ffinite-math-only -fno-signed-zeros -fno-trapping-math -fno-math-errno -ffp-contract=off -fno-rtti -fno-exceptions -Werror>
+        $<IF:$<CONFIG:DEBUG>, -O0 -g3 -glldb -gsplit-dwarf -gz=zlib -ftrivial-auto-var-init=pattern, -Os -flto -fwhole-program-vtables -fvirtual-function-elimination -fforce-emit-vtables -fstrict-vtable-pointers -fno-strict-overflow -ffinite-math-only -fno-signed-zeros -fno-trapping-math -fno-math-errno -ffp-contract=off -fno-rtti -fno-exceptions -Werror>
     )
 
     target_link_directories(
@@ -140,7 +140,7 @@ else()
     target_link_options(
         CoreEngine INTERFACE
         -fuse-ld=mold LINKER:--compress-debug-sections=zlib
-        $<IF:$<CONFIG:DEBUG>, LINKER:--separate-debug-file, -flto -rdynamic LINKER:--gc-sections LINKER:--icf=all LINKER:--ignore-data-address-equality>
+        $<IF:$<CONFIG:DEBUG>, LINKER:--separate-debug-file, -flto -rdynamic LINKER:--gc-sections LINKER:--icf=all LINKER:--ignore-data-address-equality LINKER:--as-needed>
     )
 
     if(NOT CORE_DEBUG)
@@ -204,12 +204,12 @@ if(CORE_TEST)
 
     target_compile_options(
         CoreEngine PUBLIC
-        -fsanitize=undefined,address -fverify-intermediate-code
+        -fsanitize=undefined,address,leak -fverify-intermediate-code
     )
 
     target_link_options(
         CoreEngine INTERFACE
-        -fsanitize=undefined,address
+        -fsanitize=undefined,address,leak
     )
 
 endif()
