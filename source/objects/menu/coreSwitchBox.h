@@ -75,13 +75,19 @@ public:
     void ClearEntries();
 
     /* switch current entry */
-    void        SelectIndex(const coreUintW iIndex);
-    coreBool    SelectText (const coreChar* pcText);
-    coreBool    SelectValue(const T&        tValue);
-    inline void SelectFirst() {if(!m_aEntry.empty()) this->SelectIndex(0u);}
-    inline void SelectLast () {if(!m_aEntry.empty()) this->SelectIndex(m_aEntry.size() - 1u);}
-    void        Next       ();
-    void        Previous   ();
+    void     SelectIndex(const coreUintW iIndex);
+    coreBool SelectText (const coreChar* pcText);
+    coreBool SelectValue(const T&        tValue);
+    void     SelectFirst();
+    void     SelectLast ();
+    void     Next       ();
+    void     Previous   ();
+
+    /* find entries */
+    coreUintW FindText (const coreChar* pcText)const;
+    coreUintW FindValue(const T&        tValue)const;
+    coreBool  HasText  (const coreChar* pcText)const;
+    coreBool  HasValue (const T&        tValue)const;
 
     /* access entries */
     inline const coreChar* GetText      (const coreUintW iIndex)const {ASSERT(iIndex      < m_aEntry.size()) return m_aEntry[iIndex]     .psText->c_str();}
@@ -423,6 +429,18 @@ template <typename T> coreBool coreSwitchBox<T>::SelectValue(const T& tValue)
     return false;
 }
 
+template <typename T> void coreSwitchBox<T>::SelectFirst()
+{
+    // select first entry
+    if(!m_aEntry.empty()) this->SelectIndex(0u);
+}
+
+template <typename T> void coreSwitchBox<T>::SelectLast()
+{
+    // select last entry
+    if(!m_aEntry.empty()) this->SelectIndex(m_aEntry.size() - 1u);
+}
+
 
 // ****************************************************************
 /* switch to next entry */
@@ -455,6 +473,54 @@ template <typename T> void coreSwitchBox<T>::Previous()
 
     // update text
     this->__UpdateTranslate();
+}
+
+
+// ****************************************************************
+/* find specific entry */
+template <typename T> coreUintW coreSwitchBox<T>::FindText(const coreChar* pcText)const
+{
+    // loop through all entries
+    for(coreUintW i = 0u, ie = m_aEntry.size(); i < ie; ++i)
+    {
+        // search specific text
+        if(!std::strcmp(m_aEntry[i].psText->c_str(), pcText))
+        {
+            return i;
+        }
+    }
+
+    // text not found
+    return SIZE_MAX;
+}
+
+template <typename T> coreUintW coreSwitchBox<T>::FindValue(const T& tValue)const
+{
+    // loop through all entries
+    for(coreUintW i = 0u, ie = m_aEntry.size(); i < ie; ++i)
+    {
+        // search specific value
+        if(m_aEntry[i].tValue == tValue)
+        {
+            return i;
+        }
+    }
+
+    // value not found
+    return SIZE_MAX;
+}
+
+
+// ****************************************************************
+/* check for specific entry */
+template <typename T> coreBool coreSwitchBox<T>::HasText(const coreChar* pcText)const
+{
+    return (this->FindText(pcText) != SIZE_MAX);
+}
+
+template <typename T> coreBool coreSwitchBox<T>::HasValue(const T& tValue)const
+{
+    return (this->FindValue(tValue) != SIZE_MAX);
 }
 
 
