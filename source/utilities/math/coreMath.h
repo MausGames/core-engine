@@ -908,7 +908,7 @@ constexpr coreFloat coreMath::Float16To32(const coreUint16 iInput)
 /* enable relevant floating-point exceptions (per thread) */
 inline void coreMath::EnableExceptions()
 {
-#if defined(_CORE_DEBUG_) && !defined(_CORE_MACOS_)
+#if defined(_CORE_DEBUG_) && !defined(_CORE_WINDOWS_) && !defined(_CORE_MACOS_)
 
     #if defined(_CORE_SSE_)
 

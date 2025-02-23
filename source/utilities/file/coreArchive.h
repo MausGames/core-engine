@@ -19,6 +19,7 @@
 // TODO 3: add status-enum to file and store in archive: compressed, scrambled
 // TODO 3: mmap, CreateFileMapping+MapViewOfFile instead of reading into a buffer ? unbuffered reading ? batching (e.g. DirectStorage) ?
 // TODO 2: when saving an archive fails late, file-state was already adjusted and cannot be recovered (archive-pos)
+// TODO 3: get size from archive (sum up all files and headers, but paths have variable sizes)
 
 
 // ****************************************************************

@@ -305,10 +305,12 @@
 #if defined(_CORE_DEBUG_)
     #define _CRTDBG_MAP_ALLOC
     #define _GLIBCXX_ASSERTIONS
+    #define _LIBCPP_HARDENING_MODE _LIBCPP_HARDENING_MODE_FAST
 #endif
 #if defined(_CORE_TEST_)
     #define _GLIBCXX_DEBUG
     #define _GLIBCXX_SANITIZE_VECTOR 1
+    #define _LIBCPP_HARDENING_MODE _LIBCPP_HARDENING_MODE_EXTENSIVE
 #endif
 
 #if defined(_CORE_WINDOWS_)

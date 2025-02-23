@@ -34,8 +34,8 @@ ENABLE_BITWISE(coreDataBufferStorage)
 
 enum coreDataBufferMap : coreUint8
 {
-    CORE_DATABUFFER_MAP_INVALIDATE_ALL = GL_MAP_INVALIDATE_BUFFER_BIT,                             // invalidate complete buffer   (best for complete updating)
-    CORE_DATABUFFER_MAP_UNSYNCHRONIZED = GL_MAP_INVALIDATE_RANGE_BIT | GL_MAP_UNSYNCHRONIZED_BIT   // map and unmap unsynchronized (best for partial updating)
+    CORE_DATABUFFER_MAP_INVALIDATE_ALL = GL_MAP_INVALIDATE_BUFFER_BIT,                             // invalidate complete buffer   (best for complete updates)
+    CORE_DATABUFFER_MAP_UNSYNCHRONIZED = GL_MAP_INVALIDATE_RANGE_BIT | GL_MAP_UNSYNCHRONIZED_BIT   // map and unmap unsynchronized (best for partial updates)
 };
 
 

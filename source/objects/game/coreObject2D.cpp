@@ -278,6 +278,8 @@ void coreObject2D::Interact()
         }
     });
 
+    STATIC_ASSERT(CORE_INPUT_FINGERS <= sizeof(m_iFinger)*8u)
+
 #else
 
     // get relative mouse cursor position

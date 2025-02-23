@@ -57,9 +57,10 @@ template <typename T> constexpr typename coreList<T>::coreIterator coreList<T>::
 
     // remember current index
     const coreUintW iIndex = this->index(it);
+    ASSERT(iIndex < this->size())
 
-    // swap and delete target item (but do not preserve ordering)
-    std::swap(it, this->end() - 1u);
+    // overwrite target item with last item (and do not preserve ordering)
+    if(iIndex < this->size() - 1u) (*it) = std::move(this->back());
     this->pop_back();
 
     return this->begin() + iIndex;

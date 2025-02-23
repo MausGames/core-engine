@@ -511,9 +511,6 @@ void CoreSystem::SetWindowResolution(const coreVector2 vResolution)
         m_vResolution.x = CLAMP(m_vResolution.x, I_TO_F(CORE_SYSTEM_WINDOW_MINIMUM), vMaximum.x);
         m_vResolution.y = CLAMP(m_vResolution.y, I_TO_F(CORE_SYSTEM_WINDOW_MINIMUM), vMaximum.y);
 
-        // refresh canonical aspect ratio
-        this->__RefreshCanonAspectRatio();
-
         if(m_pWindow)
         {
             // always leave fullscreen (otherwise many following changes will be ignored)
@@ -549,6 +546,9 @@ void CoreSystem::SetWindowResolution(const coreVector2 vResolution)
             SDL_FlushEvent(SDL_EVENT_WINDOW_RESIZED);
         }
     }
+
+    // refresh canonical aspect ratio
+    this->__RefreshCanonAspectRatio();
 }
 
 
@@ -734,6 +734,8 @@ void CoreSystem::__UpdateTime()
 /* refresh canonical aspect ratio */
 void CoreSystem::__RefreshCanonAspectRatio()
 {
+    ASSERT(CoreApp::Settings::System::AspectRatio && !m_vResolution.IsNull())
+
     // pre-calculate full two-dimensional ratio (xy = normal, zw = reciprocal)
     static const coreVector4 s_vCanonFullRatio = coreVector4(coreVector2(coreFloat(CoreApp::Settings::System::AspectRatio), 1.0f).HighRatio(),
                                                              coreVector2(1.0f, coreFloat(CoreApp::Settings::System::AspectRatio)).LowRatio());

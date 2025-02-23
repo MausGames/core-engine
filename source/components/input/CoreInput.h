@@ -21,6 +21,8 @@
 // TODO 3: case SDL_EVENT_GAMEPAD_SENSOR_UPDATE, oEvent.csensor.type == SDL_SENSOR_ACCEL, SDL_SENSOR_GYRO; SDL_SetGamepadSensorEnabled
 // TODO 3: implement last used joystick type, rumble and color for ANY, last used input mode (incl keyboard/mouse, touch)
 // TODO 4: should cursor handling go into CoreSystem ?
+// TODO 3: add option to flip confirm and cancel gamepad buttons for menu
+// TODO 3: implement haptics again
 
 
 // ****************************************************************

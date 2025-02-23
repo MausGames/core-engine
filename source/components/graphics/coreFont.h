@@ -15,6 +15,7 @@
 // TODO 5: <old comment style>
 // TODO 3: TTF_AddFallbackFont
 // TODO 3: check support for color emojis
+// TODO 3: allow floating-point font height, but that would increase permutations significantly (maybe somehow use unmodified base-height as key)
 
 
 // ****************************************************************
