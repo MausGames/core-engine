@@ -135,6 +135,7 @@ public:
     inline    coreVector2 LowRatio    ()const {return ((*this) * RCP(this->Processed(ABS).Max()));}
     inline    coreVector2 HighRatio   ()const {return ((*this) * RCP(this->Processed(ABS).Min()));}
     constexpr coreFloat   AspectRatio ()const {return (x * RCP(y));}
+    constexpr coreVector2 AspectRatio2()const;
     inline    coreFloat   Angle       ()const {return (-std::atan2(x, y));}   // (x, y)
     constexpr coreBool    IsNormalized()const {return (coreMath::IsNear(this->LengthSq(), 1.0f));}
     constexpr coreBool    IsAligned   ()const {return (x*y == 0.0f);}
@@ -524,6 +525,27 @@ constexpr coreVector2 coreVector2::MapStepRotated45(const coreUint8 iStep)const
     case 6u: return  this->Rotated90 ();
     case 7u: return  this->Rotated45 ();
     }
+}
+
+
+// ****************************************************************
+/* calculate minimum readable aspect ratio */
+constexpr coreVector2 coreVector2::AspectRatio2()const
+{
+    ASSERT(!this->IsNull())
+
+    coreInt32 A = F_TO_SI(x);
+    coreInt32 B = F_TO_SI(y);
+
+    while(B)
+    {
+        const coreInt32 C = B;
+
+        B = A % B;
+        A = C;
+    }
+
+    return coreVector2(I_TO_F(F_TO_SI(x) / A), I_TO_F(F_TO_SI(y) / A));
 }
 
 
