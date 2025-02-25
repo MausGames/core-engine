@@ -74,7 +74,7 @@ coreStatus coreTexture::Load(coreFile* pFile)
 
     // calculate data size
     const coreUint8  iComponents = SDL_BYTESPERPIXEL(pData->format);
-    const coreUint32 iDataSize   = pData->w * pData->h * iComponents;
+    const coreUint32 iDataSize   = pData->pitch * pData->h;
     ASSERT(iComponents && iDataSize)
 
     // check load configuration
@@ -229,8 +229,12 @@ void coreTexture::Modify(const coreUint32 iOffsetX, const coreUint32 iOffsetY, c
     ASSERT(iWidth && iHeight && (iOffsetX + iWidth <= F_TO_UI(m_vResolution.x)) && (iOffsetY + iHeight <= F_TO_UI(m_vResolution.y)))
 
     // check for OpenGL extensions
-    const coreBool bPixelBuffer = CORE_GL_SUPPORT(ARB_pixel_buffer_object) && coreMath::IsAligned(iDataSize / iHeight, 4u) && iDataSize && pData;
+    const coreBool bPixelBuffer = CORE_GL_SUPPORT(ARB_pixel_buffer_object) && iDataSize && pData;
     const coreBool bMipMap      = CORE_GL_SUPPORT(EXT_framebuffer_object)  && (m_iLevels > 1u);
+
+    // adjust row unpack alignment
+    const coreUint32 iUnaligned = (iDataSize / iHeight) % 4u;
+    if(iUnaligned) glPixelStorei(GL_UNPACK_ALIGNMENT, (iUnaligned == 2u) ? 2 : 1);
 
     if(m_bCompressed)
     {
@@ -317,6 +321,9 @@ void coreTexture::Modify(const coreUint32 iOffsetX, const coreUint32 iOffsetY, c
             if(bMipMap) glGenerateMipmap(GL_TEXTURE_2D);
         }
     }
+
+    // reset row unpack alignment
+    if(iUnaligned) glPixelStorei(GL_UNPACK_ALIGNMENT, 4);
 }
 
 
@@ -669,16 +676,17 @@ SDL_Surface* coreTexture::CreateReduction(const coreUintW iComponents, const SDL
     ASSERT((pOutput->w == pInput->w) && (pOutput->h == pInput->h) && (SDL_BYTESPERPIXEL(pOutput->format) == iTarget))
 
     // assume no memory aliasing
-    const coreByte*  pInputMem  = ASSUME_ALIGNED(s_cast<const coreByte*>(pInput ->pixels), ALIGNMENT_NEW);
-    coreByte* OUTPUT pOutputMem = ASSUME_ALIGNED(s_cast<coreByte*>      (pOutput->pixels), ALIGNMENT_NEW);
+    const coreByte*  pInMemory  = ASSUME_ALIGNED(s_cast<const coreByte*>(pInput ->pixels), ALIGNMENT_NEW);
+    coreByte* OUTPUT pOutMemory = ASSUME_ALIGNED(s_cast<coreByte*>      (pOutput->pixels), ALIGNMENT_NEW);
 
     // manually copy texels
     for(coreUintW i = 0u, ie = LOOP_NONZERO(pInput->h); i < ie; ++i)
     {
         for(coreUintW j = 0u, je = LOOP_NONZERO(pInput->w); j < je; ++j)
         {
-            const coreUintW iOffset = j + i * je;
-            std::memcpy(pOutputMem + (iOffset * iTarget), pInputMem + (iOffset * iSource), iTarget);
+            const coreUintW iInOffset  = (j * iSource) + (i * pInput ->pitch);
+            const coreUintW iOutOffset = (j * iTarget) + (i * pOutput->pitch);
+            std::memcpy(pOutMemory + iOutOffset, pInMemory + iInOffset, iTarget);
         }
     }
 
@@ -798,7 +806,11 @@ void coreTextureVolume::Modify(const coreUint32 iOffsetX, const coreUint32 iOffs
     ASSERT(iWidth && iHeight && iDepth && (iOffsetX + iWidth <= F_TO_UI(m_vResolution.x)) && (iOffsetY + iHeight <= F_TO_UI(m_vResolution.y)) && (iOffsetZ + iDepth <= F_TO_UI(m_vResolution.z)))
 
     // check for OpenGL extensions
-    const coreBool bPixelBuffer = CORE_GL_SUPPORT(ARB_pixel_buffer_object) && coreMath::IsAligned(iDataSize / iHeight / iDepth, 4u) && iDataSize && pData;
+    const coreBool bPixelBuffer = CORE_GL_SUPPORT(ARB_pixel_buffer_object) && iDataSize && pData;
+
+    // adjust row unpack alignment
+    const coreUint32 iUnaligned = (iDataSize / iHeight / iDepth) % 4u;
+    if(iUnaligned) glPixelStorei(GL_UNPACK_ALIGNMENT, (iUnaligned == 2u) ? 2 : 1);
 
     coreDataBuffer oBuffer;
     if(bPixelBuffer)
@@ -828,6 +840,9 @@ void coreTextureVolume::Modify(const coreUint32 iOffsetX, const coreUint32 iOffs
         // update texture data
         glTexSubImage3D(GL_TEXTURE_3D, 0, iOffsetX, iOffsetY, iOffsetZ, iWidth, iHeight, iDepth, m_Spec.iFormat, m_Spec.iType, pData);
     }
+
+    // reset row unpack alignment
+    if(iUnaligned) glPixelStorei(GL_UNPACK_ALIGNMENT, 4);
 }
 
 
@@ -921,7 +936,11 @@ void coreTextureCube::Modify(const coreUint32 iOffsetX, const coreUint32 iOffset
     ASSERT(iWidth && iHeight && (iOffsetX + iWidth <= F_TO_UI(m_vResolution.x)) && (iOffsetY + iHeight <= F_TO_UI(m_vResolution.y)) && (iFace < 6u))
 
     // check for OpenGL extensions
-    const coreBool bPixelBuffer = CORE_GL_SUPPORT(ARB_pixel_buffer_object) && coreMath::IsAligned(iDataSize / iHeight, 4u) && iDataSize && pData;
+    const coreBool bPixelBuffer = CORE_GL_SUPPORT(ARB_pixel_buffer_object) && iDataSize && pData;
+
+    // adjust row unpack alignment
+    const coreUint32 iUnaligned = (iDataSize / iHeight) % 4u;
+    if(iUnaligned) glPixelStorei(GL_UNPACK_ALIGNMENT, (iUnaligned == 2u) ? 2 : 1);
 
     coreDataBuffer oBuffer;
     if(bPixelBuffer)
@@ -951,6 +970,9 @@ void coreTextureCube::Modify(const coreUint32 iOffsetX, const coreUint32 iOffset
         // update texture data
         glTexSubImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + iFace, 0, iOffsetX, iOffsetY, iWidth, iHeight, m_Spec.iFormat, m_Spec.iType, pData);
     }
+
+    // reset row unpack alignment
+    if(iUnaligned) glPixelStorei(GL_UNPACK_ALIGNMENT, 4);
 }
 
 
