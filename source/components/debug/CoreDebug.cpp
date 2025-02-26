@@ -331,6 +331,9 @@ void CoreDebug::__StatStart()
             glBeginQuery(m_aStat.current().iTarget, m_aStat.current().iQuery);
             m_aStat.current().iStatus = 1u;
         }
+
+        // write draw statistics
+        m_aStatOutput[3].SetText(PRINT("Draw Calls: %'u (%'u instances)", coreModel::ConsumeDrawCallCount(), coreModel::ConsumeInstanceCount()));
     }
 }
 

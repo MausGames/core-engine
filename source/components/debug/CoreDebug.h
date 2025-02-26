@@ -84,7 +84,7 @@ private:
     coreLabel    m_Loading;                            // resource manager loading indicator
 
     coreRing<coreStat, CORE_DEBUG_STATS> m_aStat;      // statistic objects to retrieve various pipeline statistics
-    coreLabel m_aStatOutput[3];                        // labels for displaying statistic output
+    coreLabel m_aStatOutput[4];                        // labels for displaying statistic output
 
     coreBool m_bEnabled;                               // debug-monitor is enabled (debug-build or debug-context)
     coreBool m_bVisible;                               // output is visible on screen

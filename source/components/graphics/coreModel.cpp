@@ -11,7 +11,9 @@
 #include "model/MD5.h"
 #include <forsyth_too.h>
 
-coreModel* coreModel::s_pCurrent = NULL;
+coreModel* coreModel::s_pCurrent       = NULL;
+coreUint32 coreModel::s_iDrawCallCount = 0u;
+coreUint32 coreModel::s_iInstanceCount = 0u;
 
 
 // ****************************************************************
@@ -387,6 +389,10 @@ void coreModel::DrawArrays()const
     // draw the model (without index buffer)
     ASSERT((s_pCurrent == this) || !s_pCurrent)
     glDrawArrays(m_iPrimitiveType, 0, m_iNumVertices);
+
+    // update draw statistics
+    s_iDrawCallCount += 1u;
+    s_iInstanceCount += 1u;
 }
 
 void coreModel::DrawElements()const
@@ -394,6 +400,10 @@ void coreModel::DrawElements()const
     // draw the model (with index buffer)
     ASSERT(((s_pCurrent == this) || !s_pCurrent) && m_IndexBuffer.IsValid())
     glDrawRangeElements(m_iPrimitiveType, 0u, m_iNumVertices - 1u, m_iNumIndices, m_iIndexType, NULL);
+
+    // update draw statistics
+    s_iDrawCallCount += 1u;
+    s_iInstanceCount += 1u;
 }
 
 
@@ -404,6 +414,10 @@ void coreModel::DrawArraysInstanced(const coreUint32 iCount)const
     // draw the model instanced (without index buffer)
     ASSERT(((s_pCurrent == this) || !s_pCurrent) && iCount)
     glDrawArraysInstanced(m_iPrimitiveType, 0, m_iNumVertices, iCount);
+
+    // update draw statistics
+    s_iDrawCallCount += 1u;
+    s_iInstanceCount += iCount;
 }
 
 void coreModel::DrawElementsInstanced(const coreUint32 iCount)const
@@ -411,6 +425,10 @@ void coreModel::DrawElementsInstanced(const coreUint32 iCount)const
     // draw the model instanced (with index buffer)
     ASSERT(((s_pCurrent == this) || !s_pCurrent) && m_IndexBuffer.IsValid() && iCount)
     glDrawElementsInstanced(m_iPrimitiveType, m_iNumIndices, m_iIndexType, NULL, iCount);
+
+    // update draw statistics
+    s_iDrawCallCount += 1u;
+    s_iInstanceCount += iCount;
 }
 
 

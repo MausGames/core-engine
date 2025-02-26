@@ -85,6 +85,8 @@ private:
     coreSync m_Sync;                              // sync object for asynchronous model loading
 
     static coreModel* s_pCurrent;                 // currently active model object
+    static coreUint32 s_iDrawCallCount;           // number of draw calls         (since last consumption)
+    static coreUint32 s_iInstanceCount;           // number of rendered instances (since last consumption)
 
 
 public:
@@ -143,6 +145,10 @@ public:
 
     /* get currently active model object */
     static inline coreModel* GetCurrent() {return s_pCurrent;}
+
+    /* consume draw statistics */
+    static inline coreUint32 ConsumeDrawCallCount() {const coreUint32 A = s_iDrawCallCount; s_iDrawCallCount = 0u; return A;}
+    static inline coreUint32 ConsumeInstanceCount() {const coreUint32 A = s_iInstanceCount; s_iInstanceCount = 0u; return A;}
 };
 
 
