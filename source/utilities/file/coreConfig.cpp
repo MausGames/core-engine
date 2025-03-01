@@ -73,13 +73,13 @@ coreStatus coreConfig::Load()
     const coreChar* pcTo   = pcData;
     const coreChar* pcEnd  = pcData + oFile.GetSize();
 
-    const auto nAssignFunc = [&](coreString* OUTPUT pString)
+    const auto nAssignFunc = [&](coreString* OUTPUT psString)
     {
-        ASSERT(pString->empty())
+        ASSERT(psString->empty())
 
         // assign string currently in range
-        pString->assign(pcFrom, pcTo - pcFrom);
-        pString->trim();
+        psString->assign(pcFrom, pcTo - pcFrom);
+        psString->trim();
 
         // begin next string
         pcFrom = pcTo + 1u;

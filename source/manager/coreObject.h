@@ -154,12 +154,12 @@ public:
     DISABLE_COPY(coreObjectManager)
 
     /* test collision between different structures */
-    template <typename F> void TestCollision(const coreInt32     iType,                                                             F&& nCallback);   // [](coreObject3D* OUTPUT pObjectA, coreObject3D* OUTPUT pObjectB, const coreVector3 vIntersection,                            const coreBool bFirstHit) -> void
-    template <typename F> void TestCollision(const coreInt32     iType1,   const coreInt32      iType2,                             F&& nCallback);   // [](coreObject3D* OUTPUT pObjectA, coreObject3D* OUTPUT pObjectB, const coreVector3 vIntersection,                            const coreBool bFirstHit) -> void
-    template <typename F> void TestCollision(const coreInt32     iType,    coreObject3D* OUTPUT pObject,                            F&& nCallback);   // [](coreObject3D* OUTPUT pObjectA, coreObject3D* OUTPUT pObjectB, const coreVector3 vIntersection,                            const coreBool bFirstHit) -> void
-    template <typename F> void TestCollision(const coreInt32     iType,    const coreVector3    vRayPos, const coreVector3 vRayDir, F&& nCallback);   // [](coreObject3D* OUTPUT pObject,                                 const coreFloat*  pfHitDistance, const coreUint8 iHitCount, const coreBool bFirstHit) -> void
-    static coreBool            TestCollision(const coreObject3D* pObject1, const coreObject3D*  pObject2,                           coreVector3* OUTPUT pvIntersection);
-    static coreBool            TestCollision(const coreObject3D* pObject,  const coreVector3    vRayPos, const coreVector3 vRayDir, coreFloat*   OUTPUT pfHitDistance, coreUint8* OUTPUT piHitCount);
+    template <typename F> void TestCollision(const coreInt32     iType,                                                            F&& nCallback);   // [](coreObject3D* OUTPUT pObjectA, coreObject3D* OUTPUT pObjectB, const coreVector3 vIntersection,                            const coreBool bFirstHit) -> void
+    template <typename F> void TestCollision(const coreInt32     iType1,   const coreInt32     iType2,                             F&& nCallback);   // [](coreObject3D* OUTPUT pObjectA, coreObject3D* OUTPUT pObjectB, const coreVector3 vIntersection,                            const coreBool bFirstHit) -> void
+    template <typename F> void TestCollision(const coreInt32     iType,    coreObject3D*       pObject,                            F&& nCallback);   // [](coreObject3D* OUTPUT pObjectA, coreObject3D* OUTPUT pObjectB, const coreVector3 vIntersection,                            const coreBool bFirstHit) -> void
+    template <typename F> void TestCollision(const coreInt32     iType,    const coreVector3   vRayPos, const coreVector3 vRayDir, F&& nCallback);   // [](coreObject3D* OUTPUT pObject,                                 const coreFloat*  pfHitDistance, const coreUint8 iHitCount, const coreBool bFirstHit) -> void
+    static coreBool            TestCollision(const coreObject3D* pObject1, const coreObject3D* pObject2,                           coreVector3* OUTPUT pvIntersection);
+    static coreBool            TestCollision(const coreObject3D* pObject,  const coreVector3   vRayPos, const coreVector3 vRayDir, coreFloat*   OUTPUT pfHitDistance, coreUint8* OUTPUT piHitCount);
 
     /* refresh all existing 2d-objects */
     void RefreshSprites();
@@ -270,7 +270,7 @@ template <typename F> void coreObjectManager::TestCollision(const coreInt32 iTyp
 
 // ****************************************************************
 /* test collision between list and 3d-object */
-template <typename F> void coreObjectManager::TestCollision(const coreInt32 iType, coreObject3D* OUTPUT pObject, F&& nCallback)
+template <typename F> void coreObjectManager::TestCollision(const coreInt32 iType, coreObject3D* pObject, F&& nCallback)
 {
     ASSERT(iType && pObject)
 

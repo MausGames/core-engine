@@ -199,22 +199,22 @@ void coreShader::__LoadGlobalCode()
     if(!CORE_GL_SUPPORT(ARB_instanced_arrays) || !CORE_GL_SUPPORT(ARB_vertex_array_object))
         s_asGlobalCode[1].append("#undef _CORE_OPTION_INSTANCING_ \n");
 
-    const auto nRetrieveFunc = [](const coreChar* pcPath, coreString* OUTPUT pString)
+    const auto nRetrieveFunc = [](const coreChar* pcPath, coreString* OUTPUT psString)
     {
         // retrieve shader file
         coreFileScope pFile = Core::Manager::Resource->RetrieveFile(pcPath);
         WARN_IF(!pFile->GetData()) return;
 
         // copy data
-        pString->append(r_cast<const coreChar*>(pFile->GetData()), pFile->GetSize());
-        pString->append("\n #line 1 \n");
+        psString->append(r_cast<const coreChar*>(pFile->GetData()), pFile->GetSize());
+        psString->append("\n #line 1 \n");
 
         // parse and adapt shader code
-        coreShader::__ReduceSize     (pString);
-        coreShader::__ResolveIncludes(pString, pFile);
+        coreShader::__ReduceSize     (psString);
+        coreShader::__ResolveIncludes(psString, pFile);
 
         // reduce memory consumption
-        pString->shrink_to_fit();
+        psString->shrink_to_fit();
     };
     nRetrieveFunc("data/shaders/engine/global.glsl",                 &s_asGlobalCode[1]);
     nRetrieveFunc("data/shaders/engine/shader_vertex.glsl",          &s_asGlobalCode[2]);

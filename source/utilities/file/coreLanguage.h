@@ -109,7 +109,7 @@ public:
     inline coreBool        HasString(const coreHashString& sKey)const {return m_asStringList.count_bs(sKey);}
 
     /* bind and unbind foreign string pointers */
-    void        BindForeign  (coreString* psForeign, const coreHashString& sKey, coreAssembleFunc nFunc = NULL);
+    void        BindForeign  (coreString* psForeign, const coreHashString& sKey, coreAssembleFunc nFunc = NULL);   // [](coreString* OUTPUT psString) -> void
     inline void UnbindForeign(coreString* psForeign) {ASSERT(m_asForeign.count_bs(psForeign)) m_asForeign.erase_bs(psForeign); m_anAssemble.erase_bs(psForeign);}
 
     /* manually refresh foreign string pointers */

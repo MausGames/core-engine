@@ -8,8 +8,8 @@
 ///////////////////////////////////////////////////////////
 #if defined(__linux__)
 
-#pragma GCC diagnostic ignored "-Wunused-function"
-#pragma GCC diagnostic ignored "-Wunused-parameter"
+#pragma clang diagnostic ignored "-Wunused-function"
+#pragma clang diagnostic ignored "-Wunused-parameter"
 
 #include <unistd.h>
 #include <signal.h>

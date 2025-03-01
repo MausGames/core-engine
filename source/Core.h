@@ -267,17 +267,17 @@
 
 #else
 
-    // disable unwanted compiler warnings (with -Wall -Wextra)
-    #pragma GCC diagnostic ignored "-Wassume"
-    #pragma GCC diagnostic ignored "-Wdefaulted-function-deleted"
-    #pragma GCC diagnostic ignored "-Wformat-security"
-    #pragma GCC diagnostic ignored "-Wgnu-zero-variadic-macro-arguments"
-    #pragma GCC diagnostic ignored "-Wmisleading-indentation"
-    #pragma GCC diagnostic ignored "-Wunused-parameter"
+    // disable unwanted compiler warnings (with -Wall -Wextra -Wpedantic)
+    #pragma clang diagnostic ignored "-Wassume"
+    #pragma clang diagnostic ignored "-Wdefaulted-function-deleted"
+    #pragma clang diagnostic ignored "-Wformat-security"
+    #pragma clang diagnostic ignored "-Wgnu-zero-variadic-macro-arguments"
+    #pragma clang diagnostic ignored "-Wmisleading-indentation"
+    #pragma clang diagnostic ignored "-Wunused-parameter"
 
 #endif
 
-#if !defined(_CORE_DEBUG_)
+#if !defined(_CORE_DEBUG_) && !defined(_CORE_EMSCRIPTEN_) && !defined(_CORE_SWITCH_)
     #if defined(_CORE_MSVC_)
         #pragma fenv_access (off)   // ignore access to the floating-point environment (on purpose)
         #pragma fp_contract (off)   // disallow contracting of floating-point expressions
@@ -615,7 +615,11 @@ template <typename T, T tExpression> struct INTERFACE coreForceCompileTime final
 {
     enum : T {tResult = tExpression};
 };
-#define FORCE_COMPILE_TIME(x) (coreForceCompileTime<decltype(x), x>::tResult)
+#if defined(_CORE_IDE_)
+    #define FORCE_COMPILE_TIME(x) (x)
+#else
+    #define FORCE_COMPILE_TIME(x) (coreForceCompileTime<decltype(x), x>::tResult)
+#endif
 
 // directly call constructor and destructor on pointer
 #define CALL_CONSTRUCTOR(p,...) {using __t = std::decay_t<decltype(*(p))>; new(p) __t(__VA_ARGS__);}
