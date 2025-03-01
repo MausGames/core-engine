@@ -25,7 +25,7 @@
 
 // ****************************************************************
 /* XXH32 hash function (32-bit) */
-FUNC_LOCAL coreUint32 __coreHashXXH32(const coreByte* pData, const coreUintW iLength, const coreUint32 iSeed)
+coreUint32 __coreHashXXH32(const coreByte* pData, const coreUintW iLength, const coreUint32 iSeed)
 {
     return XXH32(pData, iLength, iSeed);
 }
@@ -33,22 +33,22 @@ FUNC_LOCAL coreUint32 __coreHashXXH32(const coreByte* pData, const coreUintW iLe
 
 // ****************************************************************
 /* XXH3_64 hash function (64-bit) */
-FUNC_LOCAL coreUint64 coreHashXXH64(const coreByte* pData, const coreUintW iLength)
+coreUint64 coreHashXXH64(const coreByte* pData, const coreUintW iLength)
 {
     return XXH3_64bits(pData, iLength);
 }
 
-FUNC_LOCAL coreUint64 coreHashXXH64(const coreByte* pData, const coreUintW iLength, const coreUint64 iSeed)
+coreUint64 coreHashXXH64(const coreByte* pData, const coreUintW iLength, const coreUint64 iSeed)
 {
     return XXH3_64bits_withSeed(pData, iLength, iSeed);
 }
 
-FUNC_LOCAL coreUint64 coreHashXXH64(const coreChar* pcString)
+coreUint64 coreHashXXH64(const coreChar* pcString)
 {
     return coreHashXXH64(r_cast<const coreByte*>(pcString), std::strlen(pcString) + 1u);
 }
 
-FUNC_LOCAL coreUint64 coreHashXXH64(const coreChar* pcString, const coreUint64 iSeed)
+coreUint64 coreHashXXH64(const coreChar* pcString, const coreUint64 iSeed)
 {
     return coreHashXXH64(r_cast<const coreByte*>(pcString), std::strlen(pcString) + 1u, iSeed);
 }
@@ -56,22 +56,22 @@ FUNC_LOCAL coreUint64 coreHashXXH64(const coreChar* pcString, const coreUint64 i
 
 // ****************************************************************
 /* XXH3_128 hash function (128-bit) */
-FUNC_LOCAL coreUint128 coreHashXXH128(const coreByte* pData, const coreUintW iLength)
+coreUint128 coreHashXXH128(const coreByte* pData, const coreUintW iLength)
 {
     return std::bit_cast<coreUint128>(XXH3_128bits(pData, iLength));
 }
 
-FUNC_LOCAL coreUint128 coreHashXXH128(const coreByte* pData, const coreUintW iLength, const coreUint64 iSeed)
+coreUint128 coreHashXXH128(const coreByte* pData, const coreUintW iLength, const coreUint64 iSeed)
 {
     return std::bit_cast<coreUint128>(XXH3_128bits_withSeed(pData, iLength, iSeed));
 }
 
-FUNC_LOCAL coreUint128 coreHashXXH128(const coreChar* pcString)
+coreUint128 coreHashXXH128(const coreChar* pcString)
 {
     return coreHashXXH128(r_cast<const coreByte*>(pcString), std::strlen(pcString) + 1u);
 }
 
-FUNC_LOCAL coreUint128 coreHashXXH128(const coreChar* pcString, const coreUint64 iSeed)
+coreUint128 coreHashXXH128(const coreChar* pcString, const coreUint64 iSeed)
 {
     return coreHashXXH128(r_cast<const coreByte*>(pcString), std::strlen(pcString) + 1u, iSeed);
 }

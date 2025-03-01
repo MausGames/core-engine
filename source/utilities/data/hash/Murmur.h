@@ -13,7 +13,7 @@
 
 // ****************************************************************
 /* Murmur3A hash function (x86, 32-bit) */
-inline FUNC_LOCAL coreUint32 coreHashMurmur32(const coreByte* pData, const coreUint32 iLength, const coreUint32 iSeed = 0u)
+inline coreUint32 coreHashMurmur32(const coreByte* pData, const coreUint32 iLength, const coreUint32 iSeed = 0u)
 {
     ASSERT(pData && iLength)
 
@@ -65,7 +65,7 @@ inline FUNC_LOCAL coreUint32 coreHashMurmur32(const coreByte* pData, const coreU
     return h1;
 }
 
-inline FUNC_LOCAL coreUint32 coreHashMurmur32(const coreChar* pcString, const coreUint32 iSeed = 0u)
+inline coreUint32 coreHashMurmur32(const coreChar* pcString, const coreUint32 iSeed = 0u)
 {
     return coreHashMurmur32(r_cast<const coreByte*>(pcString), std::strlen(pcString) + 1u, iSeed);
 }
@@ -73,7 +73,7 @@ inline FUNC_LOCAL coreUint32 coreHashMurmur32(const coreChar* pcString, const co
 
 // ****************************************************************
 /* Murmur2B hash function (x64, 64-bit) */
-inline FUNC_LOCAL coreUint64 coreHashMurmur64(const coreByte* pData, coreUint64 iLength, const coreUint64 iSeed = 0u)
+inline coreUint64 coreHashMurmur64(const coreByte* pData, coreUint64 iLength, const coreUint64 iSeed = 0u)
 {
     ASSERT(pData && iLength)
 
@@ -116,7 +116,7 @@ inline FUNC_LOCAL coreUint64 coreHashMurmur64(const coreByte* pData, coreUint64 
     return h;
 }
 
-inline FUNC_LOCAL coreUint64 coreHashMurmur64(const coreChar* pcString, const coreUint64 iSeed = 0u)
+inline coreUint64 coreHashMurmur64(const coreChar* pcString, const coreUint64 iSeed = 0u)
 {
     return coreHashMurmur64(r_cast<const coreByte*>(pcString), std::strlen(pcString) + 1u, iSeed);
 }
@@ -124,7 +124,7 @@ inline FUNC_LOCAL coreUint64 coreHashMurmur64(const coreChar* pcString, const co
 
 // ****************************************************************
 /* Murmur3F hash function (x64, 128-bit) */
-inline FUNC_LOCAL coreUint128 coreHashMurmur128(const coreByte* pData, const coreUint64 iLength, const coreUint32 iSeed = 0u)
+inline coreUint128 coreHashMurmur128(const coreByte* pData, const coreUint64 iLength, const coreUint32 iSeed = 0u)
 {
     ASSERT(pData && iLength)
 
@@ -220,7 +220,7 @@ inline FUNC_LOCAL coreUint128 coreHashMurmur128(const coreByte* pData, const cor
     return coreUint128(h1, h2);
 }
 
-inline FUNC_LOCAL coreUint128 coreHashMurmur128(const coreChar* pcString, const coreUint32 iSeed = 0u)
+inline coreUint128 coreHashMurmur128(const coreChar* pcString, const coreUint32 iSeed = 0u)
 {
     return coreHashMurmur128(r_cast<const coreByte*>(pcString), std::strlen(pcString) + 1u, iSeed);
 }

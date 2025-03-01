@@ -84,7 +84,7 @@ alignas(ALIGNMENT_CACHE) static constexpr coreUint32 g_aiTableCRC32[] =
 
 // ****************************************************************
 /* CRC-32 hash function */
-constexpr FUNC_PURE coreUint32 coreHashCRC32(const coreByte* pData, coreUintW iLength)
+constexpr coreUint32 coreHashCRC32(const coreByte* pData, coreUintW iLength)
 {
     ASSERT(pData && iLength)
 
@@ -100,7 +100,7 @@ constexpr FUNC_PURE coreUint32 coreHashCRC32(const coreByte* pData, coreUintW iL
     return iHash ^ 0xFFFFFFFFu;
 }
 
-constexpr FUNC_PURE coreUint32 coreHashCRC32(const coreChar* pcString)
+constexpr coreUint32 coreHashCRC32(const coreChar* pcString)
 {
     ASSERT(pcString)
 

@@ -42,6 +42,7 @@
 // TODO 3: automatic Core::Reshape() if not handled, currently it's explicit in every application, CoreApp callback ?
 // TODO 3: [CORE2] with OpenGL 4.2 or higher, normalized floating-point data is actually mapped to [-MAX,MAX] instead of [MIN,MAX], and the current conversion doesn't fit any of those, what about ES and WebGL ? is there an extension to check ? (https://www.khronos.org/opengl/wiki/Normalized_Integer)
 // TODO 4: noexcept = default, ~T()noexcept
+// TODO 5: re-introduce __declspec(noalias), __attribute__((pure)) and __attribute__((const)) if it ever makes sense again, also __attribute__((noescape)), e.g. for dynamic functions
 
 
 // ****************************************************************
@@ -194,9 +195,9 @@
 // ****************************************************************
 /* compiler definitions */
 #if defined(_CORE_MSVC_)
-    #define UNUSED           [[maybe_unused]]       // possibly unused variable (warnings 4100, 4101, 4189)
-    #define OUTPUT           __restrict             // output parameter without aliasing
+    #define OUTPUT           __restrict             // output pointer or reference parameter without aliasing
     #define INTERFACE        __declspec(novtable)   // pure interface class without direct instantiation
+    #define UNUSED           [[maybe_unused]]       // possibly unused variable (warnings 4100, 4101, 4189)
     #define THREAD_LOCAL     __declspec(thread)     // thread-local storage without dynamic construction and destruction
     #define FORCE_INLINE     __forceinline          // always inline the function
     #define DONT_INLINE      __declspec(noinline)   // never inline the function
@@ -205,15 +206,11 @@
     #define RETURN_RESTRICT  __declspec(restrict)   // returned object will not be aliased with another pointer
     #define RETURN_NONNULL   _Ret_notnull_          // returned pointer will not be null
     #define RETURN_NODISCARD [[nodiscard]]          // returned value should not be discarded (but can be cast to void)
-    #define FUNC_PURE                               // function does not modify anything (or reads volatile global state), and returns a value
-    #define FUNC_CONST       __declspec(noalias)    // function only reads parameters (without indirections), and returns a value
-    #define FUNC_LOCAL       __declspec(noalias)    // function only reads parameters, reads first-level indirections (e.g. this), and returns a value
-    #define FUNC_NOALIAS     __declspec(noalias)    // function only reads parameters, reads and writes first-level indirections, and may return a value
     #define FUNC_TERMINATE   [[noreturn]]           // function does not return (e.g. by calling exit(3) or abort(3))
 #else
-    #define UNUSED           [[maybe_unused]]
     #define OUTPUT           __restrict__
     #define INTERFACE
+    #define UNUSED           [[maybe_unused]]
     #define THREAD_LOCAL     __thread
     #define FORCE_INLINE     __attribute__((always_inline)) inline
     #define DONT_INLINE      __attribute__((noinline))
@@ -222,10 +219,6 @@
     #define RETURN_RESTRICT  __attribute__((returns_nonnull))
     #define RETURN_NONNULL   __attribute__((returns_nonnull))
     #define RETURN_NODISCARD [[nodiscard]]
-    #define FUNC_PURE        __attribute__((pure))
-    #define FUNC_CONST       __attribute__((const))
-    #define FUNC_LOCAL       __attribute__((pure))
-    #define FUNC_NOALIAS
     #define FUNC_TERMINATE   [[noreturn]]
 #endif
 
@@ -292,6 +285,11 @@
         #pragma STDC FENV_ACCESS OFF
         #pragma STDC FP_CONTRACT OFF
     #endif
+#endif
+
+#if defined(_CORE_EMSCRIPTEN_)
+    #undef  THREAD_LOCAL
+    #define THREAD_LOCAL   // multi-threading is not supported or required
 #endif
 
 

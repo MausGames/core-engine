@@ -11,7 +11,7 @@
 #define _CORE_GUARD_MATH_H_
 
 // TODO 5: SIN and COS with MacLaurin or Taylor series (no lookup-table, because memory access may be equally slow)
-// TODO 5: FUNC_CONST and FORCEINLINE on every function in this class (beware of errno changes, maybe not const) ?
+// TODO 5: RETURN_NODISCARD and FORCEINLINE on every function in this class (beware of errno changes, maybe not const) ?
 // TODO 5: add integer-log (macro)
 // TODO 5: use std::common_type for return values
 // TODO 4: should HashCombine be moved to coreData? hashes are all defined in data-category

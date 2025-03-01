@@ -169,9 +169,9 @@ public:
     inline const coreTextureSpec& GetSpec      ()const {return m_Spec;}
 
     /* process and convert image data */
-    static FUNC_NOALIAS void CreateNextLevel (const coreUintW iInWidth, const coreUintW iInHeight, const coreUintW iComponents, const coreByte* pInput, coreByte* OUTPUT pOutput);
-    static              void CreateCompressed(const coreUintW iInWidth, const coreUintW iInHeight, const coreUintW iComponents, const coreByte* pInput, coreByte* OUTPUT pOutput);
-    static SDL_Surface*      CreateReduction (const coreUintW iComponents, const SDL_Surface* pInput, SDL_Surface* OUTPUT pOutput = NULL);
+    static void         CreateNextLevel (const coreUintW iInWidth, const coreUintW iInHeight, const coreUintW iComponents, const coreByte* pInput, coreByte* OUTPUT pOutput);
+    static void         CreateCompressed(const coreUintW iInWidth, const coreUintW iInHeight, const coreUintW iComponents, const coreByte* pInput, coreByte* OUTPUT pOutput);
+    static SDL_Surface* CreateReduction (const coreUintW iComponents, const SDL_Surface* pInput, SDL_Surface* OUTPUT pOutput = NULL);
 
 
 private:

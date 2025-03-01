@@ -573,7 +573,7 @@ coreStatus coreTexture::Invalidate(const coreUint8 iLevel)
 
 // ****************************************************************
 /* create next level-of-detail image */
-FUNC_NOALIAS void coreTexture::CreateNextLevel(const coreUintW iInWidth, const coreUintW iInHeight, const coreUintW iComponents, const coreByte* pInput, coreByte* OUTPUT pOutput)
+void coreTexture::CreateNextLevel(const coreUintW iInWidth, const coreUintW iInHeight, const coreUintW iComponents, const coreByte* pInput, coreByte* OUTPUT pOutput)
 {
     ASSERT((coreMath::IsPot(iInWidth)  && (iInWidth  >= 2u)) &&
            (coreMath::IsPot(iInHeight) && (iInHeight >= 2u)) &&

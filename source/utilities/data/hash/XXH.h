@@ -13,7 +13,7 @@
 
 // ****************************************************************
 /* XXH32 hash function (32-bit) */
-template <typename T> constexpr FUNC_LOCAL coreUint32 coreHashXXH32(const T* ptData, const coreUintW iLength, const coreUint32 iSeed = 0u)
+template <typename T> constexpr coreUint32 coreHashXXH32(const T* ptData, const coreUintW iLength, const coreUint32 iSeed = 0u)
 {
     ASSERT(ptData && iLength)
 
@@ -95,12 +95,12 @@ template <typename T> constexpr FUNC_LOCAL coreUint32 coreHashXXH32(const T* ptD
     }
     else
     {
-        extern FUNC_LOCAL coreUint32 __coreHashXXH32(const coreByte* pData, const coreUintW iLength, const coreUint32 iSeed);
+        extern coreUint32 __coreHashXXH32(const coreByte* pData, const coreUintW iLength, const coreUint32 iSeed);
         return __coreHashXXH32(r_cast<const coreByte*>(ptData), iLength, iSeed);
     }
 }
 
-constexpr FUNC_LOCAL coreUint32 coreHashXXH32(const coreChar* pcString, const coreUint32 iSeed = 0u)
+constexpr coreUint32 coreHashXXH32(const coreChar* pcString, const coreUint32 iSeed = 0u)
 {
     return coreHashXXH32(pcString, coreStrLenConst(pcString) + 1u, iSeed);
 }
@@ -108,18 +108,18 @@ constexpr FUNC_LOCAL coreUint32 coreHashXXH32(const coreChar* pcString, const co
 
 // ****************************************************************
 /* XXH3_64 hash function (64-bit) */
-extern FUNC_LOCAL coreUint64 coreHashXXH64(const coreByte* pData, const coreUintW iLength);
-extern FUNC_LOCAL coreUint64 coreHashXXH64(const coreByte* pData, const coreUintW iLength, const coreUint64 iSeed);
-extern FUNC_LOCAL coreUint64 coreHashXXH64(const coreChar* pcString);
-extern FUNC_LOCAL coreUint64 coreHashXXH64(const coreChar* pcString, const coreUint64 iSeed);
+extern coreUint64 coreHashXXH64(const coreByte* pData, const coreUintW iLength);
+extern coreUint64 coreHashXXH64(const coreByte* pData, const coreUintW iLength, const coreUint64 iSeed);
+extern coreUint64 coreHashXXH64(const coreChar* pcString);
+extern coreUint64 coreHashXXH64(const coreChar* pcString, const coreUint64 iSeed);
 
 
 // ****************************************************************
 /* XXH3_128 hash function (128-bit) */
-extern FUNC_LOCAL coreUint128 coreHashXXH128(const coreByte* pData, const coreUintW iLength);
-extern FUNC_LOCAL coreUint128 coreHashXXH128(const coreByte* pData, const coreUintW iLength, const coreUint64 iSeed);
-extern FUNC_LOCAL coreUint128 coreHashXXH128(const coreChar* pcString);
-extern FUNC_LOCAL coreUint128 coreHashXXH128(const coreChar* pcString, const coreUint64 iSeed);
+extern coreUint128 coreHashXXH128(const coreByte* pData, const coreUintW iLength);
+extern coreUint128 coreHashXXH128(const coreByte* pData, const coreUintW iLength, const coreUint64 iSeed);
+extern coreUint128 coreHashXXH128(const coreChar* pcString);
+extern coreUint128 coreHashXXH128(const coreChar* pcString, const coreUint64 iSeed);
 
 
 // ****************************************************************
