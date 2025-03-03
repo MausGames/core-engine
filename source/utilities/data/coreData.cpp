@@ -811,6 +811,24 @@ coreBool coreData::DetectSteamDeck()
 
 
 // ****************************************************************
+/* detect X11 compositor */
+coreBool coreData::DetectX11()
+{
+    const coreChar* pcVariable = coreData::GetEnvironment("XDG_SESSION_TYPE");
+    return (pcVariable && !std::strcmp(pcVariable, "x11"));
+}
+
+
+// ****************************************************************
+/* detect Wayland compositor */
+coreBool coreData::DetectWayland()
+{
+    const coreChar* pcVariable = coreData::GetEnvironment("XDG_SESSION_TYPE");
+    return (pcVariable && !std::strcmp(pcVariable, "wayland"));
+}
+
+
+// ****************************************************************
 /* detect Gamescope compositor */
 coreBool coreData::DetectGamescope()
 {
