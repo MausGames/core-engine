@@ -123,7 +123,7 @@ else()
     target_compile_options(
         CoreEngine PUBLIC
         -msse3 -pipe -Wall -Wextra -Wpedantic
-        $<IF:$<CONFIG:DEBUG>, -O0 -g3 -glldb -gsplit-dwarf -gz=zlib -ftrivial-auto-var-init=pattern, -Os -flto -fwhole-program-vtables -fvirtual-function-elimination -fforce-emit-vtables -fstrict-vtable-pointers -fno-strict-overflow -ffinite-math-only -fno-signed-zeros -fno-trapping-math -fno-math-errno -ffp-contract=off -fno-rtti -fno-exceptions -Werror>
+        $<IF:$<CONFIG:DEBUG>, -O0 -g3 -glldb -gsplit-dwarf -gz=zlib -ftrivial-auto-var-init=pattern, -Os -flto -fvisibility=hidden -fwhole-program-vtables -fvirtual-function-elimination -fforce-emit-vtables -fstrict-vtable-pointers -fno-strict-overflow -ffinite-math-only -fno-signed-zeros -fno-trapping-math -fno-math-errno -ffp-contract=off -fno-rtti -fno-exceptions -Werror>
     )
 
     target_link_directories(
@@ -140,7 +140,7 @@ else()
     target_link_options(
         CoreEngine INTERFACE
         -fuse-ld=mold LINKER:--compress-debug-sections=zlib
-        $<IF:$<CONFIG:DEBUG>, LINKER:--separate-debug-file, -flto -rdynamic LINKER:--gc-sections LINKER:--icf=all LINKER:--ignore-data-address-equality LINKER:--as-needed>
+        $<IF:$<CONFIG:DEBUG>, LINKER:--separate-debug-file, -flto LINKER:--gc-sections LINKER:--icf=all LINKER:--ignore-data-address-equality LINKER:--as-needed>
     )
 
     if(NOT CORE_DEBUG)
