@@ -131,9 +131,8 @@ private:
     coreMap<coreObject3D*, coreUint16> m_aiIndex;                   // index for fast 3d-object lookup
     coreBool                           m_bIndexDirty;               // index needs full reconstruction
 
-    coreModelPtr  m_pLowQuad;                                       // low-memory square model (4 bytes per vertex, 16 total)
-    coreModelPtr  m_pLowTriangle;                                   // low-memory triangle model (8 bytes per vertex, 24 total)
-    coreObject2D* m_pBlitFallback;                                  // 2d-object used for fallback-blitting onto the default frame buffer
+    coreModelPtr m_pLowQuad;                                        // low-memory square model (4 bytes per vertex, 16 total)
+    coreModelPtr m_pLowTriangle;                                    // low-memory triangle model (8 bytes per vertex, 24 total)
 
     coreSet<coreObject2D*> m_apSpriteList;                          // list with pointers to all existing 2d-objects
     coreVector2            m_vSpriteViewDir;                        // global 2d-object rotation (override)
@@ -173,7 +172,6 @@ public:
     inline const coreObjectList& GetObjectList     (const coreInt32 iType) {return m_aapObjectList[iType];}   // # create if not available
     inline const coreModelPtr&   GetLowQuad        ()const                 {return m_pLowQuad;}
     inline const coreModelPtr&   GetLowTriangle    ()const                 {return m_pLowTriangle;}
-    inline       coreObject2D*   GetBlitFallback   ()const                 {return m_pBlitFallback;}
     inline const coreVector2&    GetSpriteViewDir  ()const                 {return m_vSpriteViewDir;}
     inline const coreVector2&    GetSpriteAltCenter()const                 {return m_vSpriteAltCenter;}
 

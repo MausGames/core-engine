@@ -367,80 +367,24 @@ void coreFrameBuffer::Blit(const coreFrameBufferTarget eTargets, coreFrameBuffer
     }
     else
     {
-        // blit without extension support
-        if(pDestination)
+        ASSERT(pDestination)
+
+        // switch to source frame buffer
+        const coreBool bToggle = (s_pCurrent != this);
+        if(bToggle) glBindFramebuffer(GL_FRAMEBUFFER, m_iIdentifier);
+
+        // handle color target blitting (only)
+        if(HAS_FLAG(eTargets, CORE_FRAMEBUFFER_TARGET_COLOR))
         {
-            // switch to source frame buffer
-            const coreBool bToggle = (s_pCurrent != this);
-            if(bToggle) glBindFramebuffer(GL_FRAMEBUFFER, m_iIdentifier);
-
-            // handle color target blitting
-            if(HAS_FLAG(eTargets, CORE_FRAMEBUFFER_TARGET_COLOR))
+            if(pDestination->m_aColorTarget[0].pTexture)
             {
-                if(pDestination->m_aColorTarget[0].pTexture)
-                {
-                    // copy screen to destination texture
-                    pDestination->m_aColorTarget[0].pTexture->Enable(0);
-                    glCopyTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, iDstX, iDstY, iWidth, iHeight);
-                }
+                // copy screen to destination texture
+                pDestination->m_aColorTarget[0].pTexture->CopyFrameBuffer(0u, 0u, iDstX, iDstY, iWidth, iHeight);
             }
-
-            // handle depth target blitting
-            if(HAS_FLAG(eTargets, CORE_FRAMEBUFFER_TARGET_DEPTH))
-            {
-                if(pDestination->m_DepthTarget.pTexture)
-                {
-                    // attach source depth texture as color target
-                    glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, m_DepthTarget.pTexture->GetIdentifier(), 0u);
-
-                    // copy screen to destination texture
-                    pDestination->m_DepthTarget.pTexture->Enable(0);
-                    glCopyTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, iDstX, iDstY, iWidth, iHeight);
-
-                    // re-attach old color target
-                    glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, m_aColorTarget[0].pTexture ? m_aColorTarget[0].pTexture->GetIdentifier() : 0u, 0);
-                }
-            }
-
-            // switch back to old frame buffer
-            if(bToggle) glBindFramebuffer(GL_FRAMEBUFFER, s_pCurrent ? s_pCurrent->GetIdentifier() : 0u);
         }
-        else
-        {
-            // completely switch to default frame buffer
-            coreFrameBuffer* pHoldCurrent = s_pCurrent;
-            if(pHoldCurrent) coreFrameBuffer::EndDraw();
 
-            // handle color target blitting onto the default frame buffer
-            if(m_aColorTarget[0].pTexture)
-            {
-                glDisable(GL_DEPTH_TEST);
-                glDisable(GL_BLEND);
-                {
-                    const coreFloat   fDstInvWid = Core::Graphics->GetViewResolution().w;
-                    const coreVector2 vDstInvRes = Core::Graphics->GetViewResolution().zw();
-                    const coreVector2 vSrcInvRes = coreVector2(1.0f,1.0f) / m_vResolution;
-
-                    // forward transformation data and move
-                    coreObject2D* pBlitFallback = Core::Manager::Object->GetBlitFallback();
-                    pBlitFallback->SetSize     (coreVector2(I_TO_F(iWidth), -I_TO_F(iHeight)) * fDstInvWid);
-                    pBlitFallback->SetCenter   (coreVector2(I_TO_F(iDstX),   I_TO_F(iDstY))   * fDstInvWid + coreVector2(I_TO_F(iWidth), I_TO_F(iHeight)) * vDstInvRes * 0.5f - 0.5f);
-                    pBlitFallback->SetTexSize  (coreVector2(I_TO_F(iWidth),  I_TO_F(iHeight)) * vSrcInvRes);
-                    pBlitFallback->SetTexOffset(coreVector2(I_TO_F(iSrcX),   I_TO_F(iSrcY))   * vSrcInvRes);
-                    pBlitFallback->Move();
-
-                    // forward source color texture and render
-                    pBlitFallback->DefineTexture(0u, m_aColorTarget[0].pTexture);
-                    pBlitFallback->Render();
-                    pBlitFallback->DefineTexture(0u, NULL);
-                }
-                glEnable(GL_DEPTH_TEST);
-                glEnable(GL_BLEND);
-            }
-
-            // completely switch back to old frame buffer
-            if(pHoldCurrent) pHoldCurrent->StartDraw();
-        }
+        // switch back to old frame buffer
+        if(bToggle) glBindFramebuffer(GL_FRAMEBUFFER, s_pCurrent ? s_pCurrent->GetIdentifier() : 0u);
     }
 }
 

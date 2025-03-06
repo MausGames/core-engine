@@ -33,7 +33,6 @@ coreObjectManager::coreObjectManager()noexcept
 , m_bIndexDirty       (false)
 , m_pLowQuad          (NULL)
 , m_pLowTriangle      (NULL)
-, m_pBlitFallback     (NULL)
 , m_apSpriteList      {}
 , m_vSpriteViewDir    (coreVector2(0.0f,1.0f))
 , m_vSpriteAltCenter  (coreVector2(0.0f,0.0f))
@@ -471,15 +470,6 @@ void coreObjectManager::__Reset(const coreResourceReset eInit)
 
         Core::Log->Info("Low-Memory models created");
 
-        // create frame buffer fallback
-        if(!CORE_GL_SUPPORT(EXT_framebuffer_blit))
-        {
-            m_pBlitFallback = new coreObject2D();
-            m_pBlitFallback->DefineProgram("default_2d_program");
-
-            Core::Log->Warning("Frame buffer fallback created");
-        }
-
         // refresh all existing 2d-objects
         this->RefreshSprites();
     }
@@ -488,9 +478,6 @@ void coreObjectManager::__Reset(const coreResourceReset eInit)
         // unload low-memory models
         m_pLowQuad    ->Unload();
         m_pLowTriangle->Unload();
-
-        // delete frame buffer fallback
-        SAFE_DELETE(m_pBlitFallback)
     }
 }
 

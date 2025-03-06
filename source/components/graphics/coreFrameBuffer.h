@@ -11,11 +11,9 @@
 #define _CORE_GUARD_FRAMEBUFFER_H_
 
 // TODO 3: mipmapping ? (explicit function, how to reserve levels ? -> new create-enum-value, don't forget to move nearest-filter)
-// TODO 5: check for multipl-viewport-rendering
+// TODO 5: check for multi-viewport-rendering
 // TODO 2: certain formats, format-combinations, as texture or rendertarget or with multisampling, may not be supported (GL_FRAMEBUFFER_UNSUPPORTED), implement transparent fallback
-// TODO 3: fully implement multiple color attachment handling (esp. in blit (GL can only blit first attachment), clear (currently glClear), invalidate (already invalidates all attachments))
-// TODO 3: handle depth/stencil-blitting to default frame buffer on fallback-blitting
-// TODO 3: save and restore OpenGL states (GL_DEPTH_TEST/GL_BLEND) on fallback-blitting
+// TODO 3: implement multiple color attachment blitting
 // TODO 3: change R and RG targets to RGB if not supported ? also change some other targets if not supported
 // TODO 5: <old comment style>
 // TODO 4: do I still need the name parameter ?
