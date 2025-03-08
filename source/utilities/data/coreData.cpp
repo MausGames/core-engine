@@ -1923,16 +1923,22 @@ coreStatus coreData::DirectoryEnum(const coreChar* pcPath, const coreChar* pcFil
     {
         if(oFile.cFileName[0] != L'.')
         {
+            coreChar acConvert[MAX_PATH];
+
+            // convert file name (on stack, to handle recursion)
+            const coreInt32 iReturn = WideCharToMultiByte(CP_UTF8, 0u, oFile.cFileName, -1, acConvert, MAX_PATH, NULL, NULL);
+            ASSERT(iReturn)
+
             // enter child directory (recursively)
             if(HAS_FLAG(eEnumType, CORE_ENUM_TYPE_TREE) && HAS_FLAG(oFile.dwFileAttributes, FILE_ATTRIBUTE_DIRECTORY))
             {
-                coreData::DirectoryEnum(PRINT("%s/%s", acString, coreData::__ToAnsiChar(oFile.cFileName)), pcFilter, eEnumType, pEnumData, nEnumFunc);
+                coreData::DirectoryEnum(PRINT("%s/%s", acString, acConvert), pcFilter, eEnumType, pEnumData, nEnumFunc);
             }
 
             // check filter pattern
-            if(!HAS_FLAG(eEnumType, CORE_ENUM_TYPE_TREE) || coreData::StrCmpLike(pFile->d_name, pcFilter))
+            if(!HAS_FLAG(eEnumType, CORE_ENUM_TYPE_TREE) || coreData::StrCmpLike(acConvert, pcFilter))
             {
-                const coreChar* pcFullPath = PRINT("%s/%s", acString, coreData::__ToAnsiChar(oFile.cFileName));
+                const coreChar* pcFullPath = PRINT("%s/%s", acString, acConvert);
 
                 // prepare file info
                 coreFileStats oStats = {};

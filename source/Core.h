@@ -258,13 +258,6 @@
     #pragma warning(disable : 5262)   // implicit fall-through
     #pragma warning(disable : 5264)   // const variable not used
 
-    // check for floating-point results stored in memory, causing performance loss
-    #if defined(_CORE_64BIT_)
-        #pragma warning(error : 4738)
-    #else
-        #pragma warning(disable : 4738)
-    #endif
-
 #else
 
     // disable unwanted compiler warnings (with -Wall -Wextra -Wpedantic)

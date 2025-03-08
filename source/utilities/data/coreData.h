@@ -22,6 +22,7 @@
 // TODO 2: implement locked/scoped temp-string return
 // TODO 3: localtime_s/_r and gmtime_s/_r
 // TODO 3: getpwuid_r and getlogin_r
+// TODO 3: see if PRINT and wchar-conversion can be used with stack-only buffers (maybe even custom sized (static)), with the same API as now, but avoid alloca
 
 
 // ****************************************************************

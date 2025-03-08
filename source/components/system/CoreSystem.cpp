@@ -364,6 +364,14 @@ CoreSystem::CoreSystem()noexcept
     // restrict window size
     SDL_SetWindowMinimumSize(m_pWindow, CORE_SYSTEM_WINDOW_MINIMUM, CORE_SYSTEM_WINDOW_MINIMUM);
 
+    // fix screen resolution if necessary
+    coreInt32 iNewX, iNewY;
+    if(SDL_GetWindowSize(m_pWindow, &iNewX, &iNewY) && ((iNewX != iSizeX) || (iNewY != iSizeY)))
+    {
+        m_vResolution = coreVector2(I_TO_F(iNewX), I_TO_F(iNewY));
+        this->__RefreshCanonAspectRatio();
+    }
+
     // remove all events created during initialization
     SDL_PumpEvents();
     SDL_FlushEvents(SDL_EVENT_FIRST, SDL_EVENT_LAST);
