@@ -365,18 +365,18 @@ void CoreInput::ShowCursor(const coreBool bStatus)
 void CoreInput::UseMouseWithKeyboard(const coreInputKey iLeft, const coreInputKey iRight, const coreInputKey iDown, const coreInputKey iUp, const coreInputKey iButton1, const coreInputKey iButton2, const coreFloat fSpeed)
 {
     // get original input
-    coreVector2 vAcc = coreVector2(0.0f,0.0f);
-    if(this->GetKeyboardButton(iLeft,  CORE_INPUT_HOLD)) vAcc.x -= 1.0f;
-    if(this->GetKeyboardButton(iRight, CORE_INPUT_HOLD)) vAcc.x += 1.0f;
-    if(this->GetKeyboardButton(iDown,  CORE_INPUT_HOLD)) vAcc.y -= 1.0f;
-    if(this->GetKeyboardButton(iUp,    CORE_INPUT_HOLD)) vAcc.y += 1.0f;
+    coreVector2 vVelocity = coreVector2(0.0f,0.0f);
+    if(this->GetKeyboardButton(iLeft,  CORE_INPUT_HOLD)) vVelocity.x -= 1.0f;
+    if(this->GetKeyboardButton(iRight, CORE_INPUT_HOLD)) vVelocity.x += 1.0f;
+    if(this->GetKeyboardButton(iDown,  CORE_INPUT_HOLD)) vVelocity.y -= 1.0f;
+    if(this->GetKeyboardButton(iUp,    CORE_INPUT_HOLD)) vVelocity.y += 1.0f;
 
     // move the mouse cursor
-    if(!vAcc.IsNull())
+    if(!vVelocity.IsNull())
     {
         const coreVector2 vPos = this->GetMousePosition() + coreVector2(0.5f,-0.5f);
-        const coreVector2 vNew = (vAcc.Normalized() * Core::System->GetResolution().yx().HighRatio() * (Core::System->GetTime() * fSpeed) + vPos) * Core::System->GetResolution();
-        SDL_WarpMouseInWindow(Core::System->GetWindow(), F_TO_SI(vNew.x + 0.5f), F_TO_SI(-vNew.y + 0.5f));
+        const coreVector2 vNew = (vPos + vVelocity.Normalized() * Core::System->GetResolution().yx().HighRatio() * (Core::System->GetTime() * fSpeed)) * Core::System->GetResolution();
+        SDL_WarpMouseInWindow(Core::System->GetWindow(), vNew.x, -vNew.y);
     }
 
     // press mouse buttons
@@ -400,8 +400,8 @@ void CoreInput::UseMouseWithJoystick(const coreUintW iIndex, const coreUint8 iBu
     if(!vVelocity.IsNull())
     {
         const coreVector2 vPos = this->GetMousePosition() + coreVector2(0.5f,-0.5f);
-        const coreVector2 vNew = (vVelocity * Core::System->GetResolution().yx().HighRatio() * (Core::System->GetTime() * fSpeed) + vPos) * Core::System->GetResolution();
-        SDL_WarpMouseInWindow(Core::System->GetWindow(), F_TO_SI(vNew.x + 0.5f), F_TO_SI(-vNew.y + 0.5f));
+        const coreVector2 vNew = (vPos + vVelocity * Core::System->GetResolution().yx().HighRatio() * (Core::System->GetTime() * fSpeed)) * Core::System->GetResolution();
+        SDL_WarpMouseInWindow(Core::System->GetWindow(), vNew.x, -vNew.y);
     }
 
     // press mouse buttons

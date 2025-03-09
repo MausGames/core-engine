@@ -833,7 +833,7 @@ coreBool coreData::DetectWayland()
 coreBool coreData::DetectGamescope()
 {
     const coreChar* pcVariable = coreData::GetEnvironment("XDG_CURRENT_DESKTOP");
-    return (pcVariable && !std::strcmp(pcVariable, "gamescope"));
+    return (pcVariable && std::strstr(pcVariable, "gamescope"));
 }
 
 

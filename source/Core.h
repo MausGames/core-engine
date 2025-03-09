@@ -248,6 +248,7 @@
     #pragma warning(disable : 4706)   // assignment within conditional expression
     #pragma warning(disable : 4710)   // function not inlined
     #pragma warning(disable : 4711)   // function automatically inlined
+    #pragma warning(disable : 4738)   // floating-point results stored in memory (# possible compiler bug)
     #pragma warning(disable : 4774)   // format string not a string literal
     #pragma warning(disable : 4800)   // implicit conversion to bool
     #pragma warning(disable : 4820)   // padding after data member

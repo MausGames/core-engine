@@ -86,6 +86,8 @@
 
     #pragma warning(push, 3)
 
+    #pragma warning(disable : 5219)   // implicit conversion from int to float
+
 #endif
 
 
