@@ -133,6 +133,7 @@ extern int WINAPI wWinMain(_In_ HINSTANCE pInstance, _In_opt_ HINSTANCE pPrevIns
     // handle command line arguments
     const bool bForce32 = std::wcsstr(pcCmdLine, L"--force-32");
     const bool bForce64 = std::wcsstr(pcCmdLine, L"--force-64");
+    const bool bAngle   = std::wcsstr(pcCmdLine, L"--angle");
 
     // set working directory
     const wchar_t* pcDirectory = ((IsWow64() && IsWindows10OrGreater() && !bForce32) || bForce64) ? L"bin\\windows_x86_64\\" : L"bin\\windows_x86_32\\";
@@ -155,7 +156,16 @@ extern int WINAPI wWinMain(_In_ HINSTANCE pInstance, _In_opt_ HINSTANCE pPrevIns
         return -1;
     }
 
-    // start real application
+    // start specific application
+    for(std::size_t i = 0u, ie = asFile.size(); i < ie; ++i)
+    {
+        if(asFile[i].contain(L"_angle") == bAngle)
+        {
+            return RunCommand(asFile[i].c_str(), pcCmdLine);
+        }
+    }
+
+    // start default application
     return RunCommand(asFile[0].c_str(), pcCmdLine);
 }
 
