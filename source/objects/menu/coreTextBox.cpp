@@ -82,6 +82,20 @@ void coreTextBox::Move()
             m_bReturned = true;
             this->SetInput(false);
         }
+
+        const coreVector2 vLabelPosition = m_pCaption->GetScreenPosition();
+        const coreVector2 vLabelBound    = m_pCaption->GetScreenBound90()      * 0.5f;
+        const coreVector4 vResHalf       = Core::Graphics->GetViewResolution() * 0.5f;
+
+        // create rectangle around label
+        SDL_Rect oRect;
+        oRect.x = F_TO_SI(vResHalf.x + vLabelPosition.x);
+        oRect.y = F_TO_SI(vResHalf.y - vLabelPosition.y);
+        oRect.w = F_TO_SI(vLabelBound.x);
+        oRect.h = F_TO_SI(vLabelBound.y);
+
+        // set text input area
+        SDL_SetTextInputArea(Core::System->GetWindow(), &oRect, F_TO_SI(vLabelBound.x));
     }
     else m_bReturned = false;
 
@@ -91,7 +105,7 @@ void coreTextBox::Move()
         if(m_cReplace)
         {
             // hide text with replacement character
-            const coreString sPassword(m_sText.length(), m_cReplace);
+            const coreString sPassword(SDL_utf8strlen(m_sText.c_str()), m_cReplace);
             m_pCaption->SetText(m_bInput ? PRINT("%s%c", sPassword.c_str(), m_cCursor) : sPassword.c_str());
         }
         else m_pCaption->SetText(m_bInput ? PRINT("%s%c", m_sText.c_str(), m_cCursor) : m_sText.c_str());

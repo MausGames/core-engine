@@ -16,7 +16,6 @@
 // TODO 3: only allow characters which exist in the font (though this may need to be handled by the label) (m_pCaption->GetFont()->IsGlyphProvided(pcText))
 // TODO 3: how to handle length with UTF8 support? there is a difference between storage requirements and characters to display
 // TODO 5: implement partial paste with UTF-8 support ?
-// TODO 3: make use of SDL_SetTextInputArea
 
 
 // ****************************************************************
