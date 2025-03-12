@@ -130,9 +130,9 @@ coreBool CoreInput::ProcessEvent(const SDL_Event& oEvent)
         if(!m_bCursorVisible) SDL_SetWindowRelativeMouseMode(Core::System->GetWindow(), false);
         break;
 
-    // set text-input character
+    // set text-input
     case SDL_EVENT_TEXT_INPUT:
-        this->SetKeyboardCharUTF8(oEvent.text.text);
+        this->SetKeyboardCharText(oEvent.text.text);
         break;
 
     // press keyboard button
@@ -588,8 +588,9 @@ void CoreInput::__UpdateButtonsEnd()
         m_aTouch[i].vRelative = coreVector2(0.0f,0.0f);
     }
 
-    // clear current text-input character
-    std::memset(m_Keyboard.acChar, 0, sizeof(m_Keyboard.acChar));
+    // clear current text-input
+    m_Keyboard.iChar = CORE_INPUT_CHAR(UNKNOWN);
+    m_Keyboard.sText.clear();
 
     // clear status of any available button
     this->ClearAnyButton();

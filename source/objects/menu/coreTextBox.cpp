@@ -193,11 +193,11 @@ coreBool coreTextBox::__Write()
         }
         else
         {
-            const coreChar* pcChar = Core::Input->GetKeyboardCharUTF8();
-            const coreUintW iLen   = std::strlen(pcChar);
+            const coreChar* pcText = Core::Input->GetKeyboardCharText();
+            const coreUintW iLen   = std::strlen(pcText);
 
-            // append new character
-            if(iLen <= m_iLength - m_sText.length()) m_sText.append(pcChar, iLen);
+            // append new characters
+            if(iLen <= m_iLength - m_sText.length()) m_sText.append(pcText, iLen);
         }
 
         m_bDisplay = true;
