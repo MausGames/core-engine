@@ -30,6 +30,7 @@ const coreChar* const CoreApp::Settings::Platform::EpicSandboxID   [3] = {NULL, 
 const coreChar* const CoreApp::Settings::Platform::EpicDeploymentID[3] = {NULL, NULL, NULL};
 const coreChar* const CoreApp::Settings::Platform::EpicClientID        = NULL;
 const coreChar* const CoreApp::Settings::Platform::EpicClientSecret    = NULL;
+const coreUint64      CoreApp::Settings::Platform::DiscordClientID     = 0u;
 
 coreBool CoreApp::Settings::IsDemo() {return false;}
 

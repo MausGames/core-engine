@@ -14,6 +14,7 @@
 // TODO 3: expose more Steam timeline features (e.g. set default rich-text as description) (event priority, durations)
 // TODO 3: add a game state for minimized/out-of-focus
 // TODO 3: implement rate-limits (specifically for leaderboards), copy code from P1
+// TODO 3: handle multiple backends at once (at least 1 primary and multiple non-primary)
 
 
 // ****************************************************************
@@ -171,6 +172,7 @@ public:
 
     /* get backend identifier */
     virtual const coreChar* GetIdentifier()const = 0;
+    virtual coreBool        IsPrimary    ()const = 0;
 };
 
 
@@ -235,6 +237,7 @@ public:
 
     /* get backend identifier */
     inline const coreChar* GetIdentifier()const {return m_pBackend->GetIdentifier();}
+    inline coreBool        IsPrimary    ()const {return m_pBackend->IsPrimary();}
 
 
 private:

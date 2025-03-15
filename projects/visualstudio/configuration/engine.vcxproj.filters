@@ -418,6 +418,9 @@
       <Filter>components\platform\backend</Filter>
     </ClInclude>
     </ClInclude>
+    <ClInclude Include="..\..\..\source\components\platform\backend\discord.h">
+      <Filter>components\platform\backend</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Natvis Include="..\natvis.natvis" />

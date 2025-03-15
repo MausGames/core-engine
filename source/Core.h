@@ -730,6 +730,7 @@ public:
             static const coreChar* const EpicDeploymentID[3];   // Epic deployment ID    (for user-related information)
             static const coreChar* const EpicClientID;          // Epic client ID
             static const coreChar* const EpicClientSecret;      // Epic client secret
+            static const coreUint64      DiscordClientID;       // Discord client ID
         };
 
         /* dynamic project settings */

@@ -1115,7 +1115,7 @@ const coreChar* coreData::UserFolderPrivate(const coreChar* pcPath)
     if(CoreApp::Settings::UserManagement)
     {
         // forward to user-private location
-        const coreChar* pcUserID = Core::Platform->GetUserID();
+        const coreChar* pcUserID = Core::Platform->IsPrimary() ? Core::Platform->GetUserID() : NULL;
         return PRINT("%s%s%s", s_sUserFolder.c_str(), pcUserID ? PRINT("user_%s/", pcUserID) : "default/", pcPath);
     }
     else

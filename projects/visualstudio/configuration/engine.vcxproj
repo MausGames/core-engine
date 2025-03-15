@@ -512,6 +512,7 @@
     <ClInclude Include="..\..\..\source\components\graphics\model\MD3.h" />
     <ClInclude Include="..\..\..\source\components\graphics\model\MD5.h" />
     <ClInclude Include="..\..\..\source\components\input\CoreInput.h" />
+    <ClInclude Include="..\..\..\source\components\platform\backend\discord.h" />
     <ClInclude Include="..\..\..\source\components\platform\backend\epic.h" />
     <ClInclude Include="..\..\..\source\components\platform\backend\steam.h" />
     <ClInclude Include="..\..\..\source\components\platform\backend\windows.h" />

@@ -189,6 +189,7 @@ public:
 
     /* get backend identifier */
     inline const coreChar* GetIdentifier()const final {return "Steam";}
+    inline coreBool        IsPrimary    ()const final {return true;}
 
 
 private:

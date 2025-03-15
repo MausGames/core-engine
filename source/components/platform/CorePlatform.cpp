@@ -13,15 +13,18 @@ coreSet<coreBackend*> coreBackend::s_apBackendSet = {};
 #if defined(_CORE_WINDOWS_)
     #include "backend/steam.h"
     #include "backend/epic.h"
+    #include "backend/discord.h"
     #include "backend/windows.h"
 #elif defined(_CORE_LINUX_)
     #include "backend/steam.h"
+    #include "backend/discord.h"
 #elif defined(_CORE_MACOS_)
     #include "backend/steam.h"
     #include "backend/epic.h"
+    #include "backend/discord.h"
 #endif
 
-static class coreBackendDefault final : public coreBackend {inline const coreChar* GetIdentifier()const final {return "Default";}} s_BackendDefault;
+static class coreBackendDefault final : public coreBackend {inline const coreChar* GetIdentifier()const final {return "Default";} inline coreBool IsPrimary()const final {return true;}} s_BackendDefault;
 
 
 // ****************************************************************
