@@ -13,12 +13,12 @@
 
 // ****************************************************************
 /* Windows backend class */
-class coreWindowsBackend final : public coreBackend
+class coreBackendWindows final : public coreBackend
 {
 public:
-    coreWindowsBackend() = default;
+    coreBackendWindows() = default;
 
-    DISABLE_COPY(coreWindowsBackend)
+    DISABLE_COPY(coreBackendWindows)
 
     /* process general features */
     const coreChar* GetLanguage()const final;
@@ -31,7 +31,7 @@ public:
 
 // ****************************************************************
 /* get language */
-inline const coreChar* coreWindowsBackend::GetLanguage()const
+inline const coreChar* coreBackendWindows::GetLanguage()const
 {
     // retrieve Windows language
     const LANGID iLanguage = GetUserDefaultUILanguage();
@@ -59,7 +59,7 @@ inline const coreChar* coreWindowsBackend::GetLanguage()const
 
 // ****************************************************************
 /* Windows backend instance */
-static coreWindowsBackend s_BackendWindows;
+static coreBackendWindows s_BackendWindows;
 
 
 #endif /* _CORE_GUARD_WINDOWS_H_ */

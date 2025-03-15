@@ -73,7 +73,7 @@ static void DISCORD_API LoggingCallback(void* pData, const EDiscordLogLevel eLev
 
 // ****************************************************************
 /* Discord backend class */
-class coreDiscordBackend final : public coreBackend
+class coreBackendDiscord final : public coreBackend
 {
 private:
     IDiscordCore* m_pCore;                   // main application instance
@@ -90,9 +90,9 @@ private:
 
 
 public:
-    coreDiscordBackend()noexcept;
+    coreBackendDiscord()noexcept;
 
-    DISABLE_COPY(coreDiscordBackend)
+    DISABLE_COPY(coreBackendDiscord)
 
     /* control the backend */
     coreBool Init  ()final;
@@ -123,7 +123,7 @@ private:
 
 // ****************************************************************
 /* constructor */
-inline coreDiscordBackend::coreDiscordBackend()noexcept
+inline coreBackendDiscord::coreBackendDiscord()noexcept
 : coreBackend     ()
 , m_pCore         (NULL)
 , m_pActivity     (NULL)
@@ -139,7 +139,7 @@ inline coreDiscordBackend::coreDiscordBackend()noexcept
 
 // ****************************************************************
 /* init the backend */
-inline coreBool coreDiscordBackend::Init()
+inline coreBool coreBackendDiscord::Init()
 {
     // load Discord library
     if(!CoreApp::Settings::Platform::DiscordClientID || !InitDiscordLibrary())
@@ -148,8 +148,8 @@ inline coreBool coreDiscordBackend::Init()
     }
 
     // set callback handlers
-    m_UserEvents   .on_current_user_update = coreDiscordBackend::__UserOnCurrentUserUpdate;
-    m_OverlayEvents.on_toggle              = coreDiscordBackend::__OverlayOnToggle;
+    m_UserEvents   .on_current_user_update = coreBackendDiscord::__UserOnCurrentUserUpdate;
+    m_OverlayEvents.on_toggle              = coreBackendDiscord::__OverlayOnToggle;
 
     // set init parameters
     DiscordCreateParams oParams;
@@ -217,7 +217,7 @@ inline coreBool coreDiscordBackend::Init()
 
 // ****************************************************************
 /* exit the backend */
-inline void coreDiscordBackend::Exit()
+inline void coreBackendDiscord::Exit()
 {
     if(m_pCore)
     {
@@ -231,7 +231,7 @@ inline void coreDiscordBackend::Exit()
 
 // ****************************************************************
 /* update the backend */
-inline void coreDiscordBackend::Update()
+inline void coreBackendDiscord::Update()
 {
     if(m_pCore)
     {
@@ -243,7 +243,7 @@ inline void coreDiscordBackend::Update()
 
 // ****************************************************************
 /* set full rich presence */
-inline coreBool coreDiscordBackend::SetRichPresence(const corePlatformPresence& oPresence)
+inline coreBool coreBackendDiscord::SetRichPresence(const corePlatformPresence& oPresence)
 {
     if(m_pCore)
     {
@@ -262,12 +262,12 @@ inline coreBool coreDiscordBackend::SetRichPresence(const corePlatformPresence& 
 
 // ****************************************************************
 /* get user identifier */
-inline const coreChar* coreDiscordBackend::GetUserID()const
+inline const coreChar* coreBackendDiscord::GetUserID()const
 {
     if(m_pCore)
     {
         // retrieve Discord player identifier
-        if(m_UserData.id) return PRINT("%lld", coreInt64(m_UserData.id));
+        if(m_UserData.id) return coreData::ToChars(m_UserData.id);
     }
 
     return this->coreBackend::GetUserID();
@@ -276,7 +276,7 @@ inline const coreChar* coreDiscordBackend::GetUserID()const
 
 // ****************************************************************
 /* get user name */
-inline const coreChar* coreDiscordBackend::GetUserName()const
+inline const coreChar* coreBackendDiscord::GetUserName()const
 {
     if(m_pCore)
     {
@@ -290,9 +290,9 @@ inline const coreChar* coreDiscordBackend::GetUserName()const
 
 // ****************************************************************
 /* callback handlers */
-inline void DISCORD_API coreDiscordBackend::__UserOnCurrentUserUpdate(void* pData)
+inline void DISCORD_API coreBackendDiscord::__UserOnCurrentUserUpdate(void* pData)
 {
-    coreDiscordBackend* pThis = s_cast<coreDiscordBackend*>(pData);
+    coreBackendDiscord* pThis = s_cast<coreBackendDiscord*>(pData);
 
     // copy user data
     pThis->m_pUser->get_current_user(pThis->m_pUser, &pThis->m_UserData);
@@ -301,7 +301,7 @@ inline void DISCORD_API coreDiscordBackend::__UserOnCurrentUserUpdate(void* pDat
     ADD_BIT(pThis->m_iState, 0u)
 }
 
-inline void DISCORD_API coreDiscordBackend::__OverlayOnToggle(void* pData, const coreBool bLocked)
+inline void DISCORD_API coreBackendDiscord::__OverlayOnToggle(void* pData, const coreBool bLocked)
 {
     if(bLocked)
     {
@@ -314,7 +314,7 @@ inline void DISCORD_API coreDiscordBackend::__OverlayOnToggle(void* pData, const
 
 // ****************************************************************
 /* exit the base system */
-inline void coreDiscordBackend::__ExitBase()
+inline void coreBackendDiscord::__ExitBase()
 {
     // shut down Discord library
     if(m_pCore) m_pCore->destroy(m_pCore);
@@ -327,7 +327,7 @@ inline void coreDiscordBackend::__ExitBase()
 
 // ****************************************************************
 /* Discord backend instance */
-static coreDiscordBackend s_BackendDiscord;
+static coreBackendDiscord s_BackendDiscord;
 
 
 #endif
