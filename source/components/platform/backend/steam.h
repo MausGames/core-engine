@@ -46,6 +46,8 @@
 /* dynamic library loading */
 static void* s_pSteamLibrary = NULL;   // Steam library handle
 
+S_API ISteamTimeline* SteamAPI_SteamTimeline_v004();
+
 __STEAM_DEFINE_FUNCTION(SteamAPI_GetHSteamPipe)
 __STEAM_DEFINE_FUNCTION(SteamAPI_GetHSteamUser)
 __STEAM_DEFINE_FUNCTION(SteamAPI_InitFlat)
@@ -57,10 +59,8 @@ __STEAM_DEFINE_FUNCTION(SteamAPI_ManualDispatch_RunFrame)
 __STEAM_DEFINE_FUNCTION(SteamAPI_ReleaseCurrentThreadMemory)
 __STEAM_DEFINE_FUNCTION(SteamAPI_RestartAppIfNecessary)
 __STEAM_DEFINE_FUNCTION(SteamAPI_Shutdown)
+__STEAM_DEFINE_FUNCTION(SteamAPI_SteamTimeline_v004)
 __STEAM_DEFINE_FUNCTION(SteamClient)
-
-S_API ISteamTimeline* SteamAPI_SteamTimeline_v001();
-__STEAM_DEFINE_FUNCTION(SteamAPI_SteamTimeline_v001)
 
 static coreBool InitSteamLibrary()
 {
@@ -82,9 +82,8 @@ static coreBool InitSteamLibrary()
         __STEAM_LOAD_FUNCTION(SteamAPI_ReleaseCurrentThreadMemory)
         __STEAM_LOAD_FUNCTION(SteamAPI_RestartAppIfNecessary)
         __STEAM_LOAD_FUNCTION(SteamAPI_Shutdown)
+        __STEAM_LOAD_FUNCTION(SteamAPI_SteamTimeline_v004)
         __STEAM_LOAD_FUNCTION(SteamClient)
-
-        nSteamAPI_SteamTimeline_v001 = r_cast<decltype(SteamAPI_SteamTimeline_v001)*>(coreData::GetAddress(s_pSteamLibrary, "SteamAPI_SteamTimeline_v001"));
 
         return true;
     }
@@ -130,13 +129,12 @@ private:
     ISteamApps*          m_pApps;            // application interface
     ISteamFriends*       m_pFriends;         // friends interface
     ISteamRemoteStorage* m_pRemoteStorage;   // remote storage interface
-    ISteamTimeline*      m_pTimeline;        // timeline interface
     ISteamUser*          m_pUser;            // user interface
     ISteamUserStats*     m_pUserStats;       // achievement, stats and leaderboard interface
     ISteamUtils*         m_pUtils;           // utility interface
+    ISteamTimeline*      m_pTimeline;        // timeline interface
 
-    coreUint8 m_iStatsRequest;               // achievement request status (0 = idle | 1 = send query | 2 = wait on response)
-    coreUint8 m_iStatsStore;                 // achievement store status   (0 = idle | 1 = send query | 2 = wait on response)
+    coreUint8 m_iStatsStore;                 // achievement store status (0 = idle | 1 = send query | 2 = wait on response)
 
     coreLeaderboardMap m_aiLeaderboard;      // leaderboard handles
 
@@ -198,7 +196,6 @@ private:
 
     /* callback handlers */
     void __OnGameOverlayActivated(const GameOverlayActivated_t* pResult);
-    void __OnUserStatsReceived   (const UserStatsReceived_t*    pResult);
     void __OnUserStatsStored     (const UserStatsStored_t*      pResult);
 
     /* exit the base system */
@@ -216,11 +213,10 @@ inline coreBackendSteam::coreBackendSteam()noexcept
 , m_pApps          (NULL)
 , m_pFriends       (NULL)
 , m_pRemoteStorage (NULL)
-, m_pTimeline      (NULL)
 , m_pUser          (NULL)
 , m_pUserStats     (NULL)
 , m_pUtils         (NULL)
-, m_iStatsRequest  (0u)
+, m_pTimeline      (NULL)
 , m_iStatsStore    (0u)
 , m_aiLeaderboard  {}
 , m_anAsyncMap     {}
@@ -283,13 +279,13 @@ inline coreBool coreBackendSteam::Init()
     m_pApps          = m_pClient->GetISteamApps         (m_iUser, m_iPipe, STEAMAPPS_INTERFACE_VERSION);
     m_pFriends       = m_pClient->GetISteamFriends      (m_iUser, m_iPipe, STEAMFRIENDS_INTERFACE_VERSION);
     m_pRemoteStorage = m_pClient->GetISteamRemoteStorage(m_iUser, m_iPipe, STEAMREMOTESTORAGE_INTERFACE_VERSION);
-    m_pTimeline      = nSteamAPI_SteamTimeline_v001 ? nSteamAPI_SteamTimeline_v001() : NULL;   // TODO 1: when final, add NULL check below, and remove checks in functions
     m_pUser          = m_pClient->GetISteamUser         (m_iUser, m_iPipe, STEAMUSER_INTERFACE_VERSION);
     m_pUserStats     = m_pClient->GetISteamUserStats    (m_iUser, m_iPipe, STEAMUSERSTATS_INTERFACE_VERSION);
     m_pUtils         = m_pClient->GetISteamUtils        (m_iPipe,          STEAMUTILS_INTERFACE_VERSION);
+    m_pTimeline      = nSteamAPI_SteamTimeline_v004();
 
     // check for interface errors
-    WARN_IF(!m_pApps || !m_pFriends || !m_pRemoteStorage || !m_pUser || !m_pUserStats || !m_pUtils)
+    WARN_IF(!m_pApps || !m_pFriends || !m_pRemoteStorage || !m_pUser || !m_pUserStats || !m_pUtils || !m_pTimeline)
     {
         this->__ExitBase();
 
@@ -302,10 +298,6 @@ inline coreBool coreBackendSteam::Init()
 
     // enable manual callback dispatch
     nSteamAPI_ManualDispatch_Init();
-
-    // request achievement data
-    m_iStatsRequest = 1u;
-    m_iStatsStore   = 0u;
 
     Core::Log->Info("Steam initialized (app %u, user %s)", m_pUtils->GetAppID(), this->GetUserID());
     return true;
@@ -333,8 +325,7 @@ inline void coreBackendSteam::Update()
     if(m_pClient)
     {
         // update achievement data
-        if(m_iStatsRequest == 1u) if(m_pUserStats->RequestCurrentStats()) m_iStatsRequest = 2u;
-        if(m_iStatsStore   == 1u) if(m_pUserStats->StoreStats         ()) m_iStatsStore   = 2u;
+        if(m_iStatsStore == 1u) if(m_pUserStats->StoreStats()) m_iStatsStore = 2u;
 
         // update manual callback dispatch
         nSteamAPI_ManualDispatch_RunFrame(m_iPipe);
@@ -377,7 +368,6 @@ inline void coreBackendSteam::Update()
                 switch(oMessage.m_iCallback)
                 {
                 __STEAM_CALLBACK(GameOverlayActivated)
-                __STEAM_CALLBACK(UserStatsReceived)
                 __STEAM_CALLBACK(UserStatsStored)
                 }
             }
@@ -398,15 +388,12 @@ inline coreBool coreBackendSteam::UnlockAchievement(const corePlatformAchievemen
 {
     if(m_pClient)
     {
-        if(m_iStatsRequest == 0u)
+        // unlock achievement in Steam
+        if(m_pUserStats->SetAchievement(oEntry.sSteamName.c_str()))
         {
-            // unlock achievement in Steam
-            if(m_pUserStats->SetAchievement(oEntry.sSteamName.c_str()))
-            {
-                m_iStatsStore = 1u;
-            }
-            return true;
+            m_iStatsStore = 1u;
         }
+        return true;
     }
 
     return false;
@@ -419,15 +406,12 @@ inline coreBool coreBackendSteam::ModifyStat(const corePlatformStat& oEntry, con
 {
     if(m_pClient)
     {
-        if(m_iStatsRequest == 0u)
+        // modify stat in Steam
+        if(m_pUserStats->SetStat(oEntry.sSteamName.c_str(), iValue))
         {
-            // modify stat in Steam
-            if(m_pUserStats->SetStat(oEntry.sSteamName.c_str(), iValue))
-            {
-                m_iStatsStore = 1u;
-            }
-            return true;
+            m_iStatsStore = 1u;
         }
+        return true;
     }
 
     return false;
@@ -533,9 +517,9 @@ inline coreBool coreBackendSteam::DownloadLeaderboard(const corePlatformLeaderbo
                             // copy score properties
                             corePlatformScore oNewScore = {};
                             oNewScore.pcName      = m_pFriends->GetFriendPersonaName(oEntry.m_steamIDUser);
-                            oNewScore.iRank       = oEntry.m_nGlobalRank;
-                            oNewScore.iValue      = oEntry.m_nScore;
-                            oNewScore.iDataSize   = oEntry.m_cDetails * sizeof(coreInt32);
+                            oNewScore.iRank       =  oEntry.m_nGlobalRank;
+                            oNewScore.iValue      =  oEntry.m_nScore;
+                            oNewScore.iDataSize   =  oEntry.m_cDetails * sizeof(coreInt32);
                             oNewScore.iFileHandle = (oEntry.m_hUGC != k_UGCHandleInvalid) ? oEntry.m_hUGC : 0u;
 
                             // copy context data
@@ -686,7 +670,7 @@ inline coreBool coreBackendSteam::ProgressFile(const corePlatformFileHandle iFil
 /* set game state */
 inline void coreBackendSteam::SetGameState(const corePlatformState eState)
 {
-    if(m_pClient && m_pTimeline)
+    if(m_pClient)
     {
         // map game state to timeline game mode
         ETimelineGameMode eMode;
@@ -738,10 +722,10 @@ inline coreBool coreBackendSteam::SetRichPresence(const corePlatformPresence& oP
 /* mark specific event */
 inline void coreBackendSteam::MarkEvent(const coreChar* pcIcon, const coreChar* pcTitle)
 {
-    if(m_pClient && m_pTimeline)
+    if(m_pClient)
     {
         // add new timeline event
-        m_pTimeline->AddTimelineEvent(pcIcon, pcTitle, "", 0u, 0.0f, 0.0f, k_ETimelineEventClipPriority_None);
+        m_pTimeline->AddInstantaneousTimelineEvent(pcTitle, "", pcIcon, 0u);
     }
 }
 
@@ -875,15 +859,6 @@ inline void coreBackendSteam::__OnGameOverlayActivated(const GameOverlayActivate
         // notify about focus loss
         SDL_Event oEvent = {SDL_EVENT_USER};
         SDL_PushEvent(&oEvent);
-    }
-}
-
-inline void coreBackendSteam::__OnUserStatsReceived(const UserStatsReceived_t* pResult)
-{
-    if(pResult->m_nGameID == CoreApp::Settings::Platform::SteamAppID[CoreApp::Settings::IsDemo()])
-    {
-        // check for success (or try again)
-        m_iStatsRequest = (pResult->m_eResult == k_EResultOK) ? 0u : 1u;
     }
 }
 
