@@ -260,8 +260,9 @@ CoreAudio::CoreAudio()noexcept
     Core::Log->ListEnd();
 
     // check for errors
-    const ALenum iError = alGetError();
-    WARN_IF(iError != AL_NO_ERROR) Core::Log->Warning("Error initializing Audio Interface (AL Error Code: 0x%08X)", iError);
+    const ALCenum iErrorALC = alcGetError(m_pDevice);
+    const ALenum  iErrorAL  = alGetError();
+    WARN_IF((iErrorALC != ALC_NO_ERROR) || (iErrorAL != AL_NO_ERROR)) Core::Log->Warning("Error initializing Audio Interface (ALC Error Code: 0x%08X, AL Error Code: 0x%08X)", iErrorALC, iErrorAL);
 
     // log Opus library version
     Core::Log->Info("Opus initialized (%s)", opus_get_version_string());
@@ -558,11 +559,19 @@ void CoreAudio::CheckOpenAL()
 {
     if(!Core::Debug->IsEnabled()) return;
 
-    // loop through all recent errors
-    ALenum iError;
-    while((iError = alGetError()) != AL_NO_ERROR)
+    // loop through all recent errors (device)
+    ALCenum iErrorALC;
+    while((iErrorALC = alcGetError(m_pDevice)) != ALC_NO_ERROR)
     {
-        Core::Log->Warning("OpenAL reported an error (AL Error Code: 0x%08X)", iError);
+        Core::Log->Warning("OpenAL reported a device error (ALC Error Code: 0x%08X)", iErrorALC);
+        WARN_IF(true) {}
+    }
+
+    // loop through all recent errors (context)
+    ALenum iErrorAL;
+    while((iErrorAL = alGetError()) != AL_NO_ERROR)
+    {
+        Core::Log->Warning("OpenAL reported a context error (AL Error Code: 0x%08X)", iErrorAL);
         WARN_IF(true) {}
     }
 }
@@ -679,7 +688,7 @@ void CoreAudio::__UpdateDevice()
             }
             else
             {
-                Core::Log->Warning("Audio device could not be reopened (AL Error Code: 0x%08X)", alGetError());
+                Core::Log->Warning("Audio device could not be reopened (ALC Error Code: 0x%08X)", alcGetError(m_pDevice));
             }
         }
     }
