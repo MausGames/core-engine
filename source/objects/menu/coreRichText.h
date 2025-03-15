@@ -19,6 +19,7 @@
 // TODO 3: on rich-text and label, changing rectify inbetween will not update invalidate<>clear handling (only problematic when disabling rectify), which can result in bleeding
 // TODO 3: handle extremely big fonts completely filling out a render pass texture
 // TODO 3: support adding arbitrary 2d-objects into the text
+// TODO 3: implement horizontal text alignment (left, center, right), correct for multiple lines
 
 
 // ****************************************************************
@@ -117,6 +118,7 @@ private:
 
     coreString m_sText;                  // current text
     coreUint8  m_iRectify;               // align texture with screen pixels (X, Y)
+    coreUint16 m_iMinLines;              // minimum number of lines to arrange for (vertically)
     coreUint16 m_iMaxOrder;              // limit number of characters (excluding invisible characters)
     coreFloat  m_fMaxWidth;              // limit horizontal size and continue into next text line
     coreFloat  m_fLineSkip;              // distance between two text lines
@@ -159,6 +161,7 @@ public:
     inline void SetRectifyX    (const coreBool        bRectify)                            {if(HAS_FLAG(m_iRectify, 0x01u) != bRectify) {ADD_FLAG(m_eUpdate,  CORE_OBJECT_UPDATE_TRANSFORM) SET_FLAG(m_iRectify, 0x01u, bRectify)}}
     inline void SetRectifyY    (const coreBool        bRectify)                            {if(HAS_FLAG(m_iRectify, 0x02u) != bRectify) {ADD_FLAG(m_eUpdate,  CORE_OBJECT_UPDATE_TRANSFORM) SET_FLAG(m_iRectify, 0x02u, bRectify)}}
     inline void SetRectify     (const coreBool        bRectify)                            {if(HAS_FLAG(m_iRectify, 0x03u) != bRectify) {ADD_FLAG(m_eUpdate,  CORE_OBJECT_UPDATE_TRANSFORM) SET_FLAG(m_iRectify, 0x03u, bRectify)}}
+    inline void SetMinLines    (const coreUint16&     iMinLines)                           {if(m_iMinLines != iMinLines)                {ADD_FLAG(m_eRefresh, CORE_RICHTEXT_REFRESH_LAYOUT) m_iMinLines = iMinLines;}}
     inline void SetMaxOrder    (const coreUint16&     iMaxOrder)                           {if(m_iMaxOrder != iMaxOrder)                {ADD_FLAG(m_eRefresh, CORE_RICHTEXT_REFRESH_BUFFER) m_iMaxOrder = iMaxOrder;}}
     inline void SetMaxWidth    (const coreFloat&      fMaxWidth)                           {if(m_fMaxWidth != fMaxWidth)                {ADD_FLAG(m_eRefresh, CORE_RICHTEXT_REFRESH_LAYOUT) m_fMaxWidth = fMaxWidth;}}
     inline void SetLineSkip    (const coreFloat&      fLineSkip)                           {if(m_fLineSkip != fLineSkip)                {ADD_FLAG(m_eRefresh, CORE_RICHTEXT_REFRESH_LAYOUT) m_fLineSkip = fLineSkip;}}
@@ -167,6 +170,7 @@ public:
     inline const coreChar*   GetText     ()const {return m_sText.c_str();}
     inline       coreUintW   GetTextLen  ()const {return m_sText.length();}
     inline const coreUint8&  GetRectify  ()const {return m_iRectify;}
+    inline const coreUint16& GetMinLines ()const {return m_iMinLines;}
     inline const coreUint16& GetMaxOrder ()const {return m_iMaxOrder;}
     inline const coreFloat&  GetMaxWidth ()const {return m_fMaxWidth;}
     inline const coreFloat&  GetLineSkip ()const {return m_fLineSkip;}

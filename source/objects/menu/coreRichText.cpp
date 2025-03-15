@@ -33,6 +33,7 @@ coreRichText::coreRichText()noexcept
 , m_avColor            {}
 , m_sText              ("")
 , m_iRectify           (0x03u)
+, m_iMinLines          (0u)
 , m_iMaxOrder          (CORE_RICHTEXT_MAX_ORDER)
 , m_fMaxWidth          (CORE_RICHTEXT_MAX_WIDTH)
 , m_fLineSkip          (0.0f)
@@ -356,6 +357,7 @@ void coreRichText::RegenerateTexture()
         FOR_EACH(et, it->aPass)
         {
             // clear render pass properties
+            et->aCharacter .clear();
             et->avTexParams.clear();
             et->avTexShift .clear();
             et->fHeightFrom = 0.0f;
@@ -380,6 +382,7 @@ void coreRichText::RegenerateTexture(const coreHashString& sStyleName)
     FOR_EACH(et, oStyle.aPass)
     {
         // clear render pass properties
+        et->aCharacter .clear();
         et->avTexParams.clear();
         et->avTexShift .clear();
         et->fHeightFrom = 0.0f;
@@ -622,12 +625,13 @@ void coreRichText::__ParseText()
         // only render visible characters
         if((cGlyph != U' ') && (cGlyph != CORE_FONT_GLYPH_NBSP))
         {
-            const coreFloat fGlyphShift  = I_TO_F(iDescent - iMinY);
-            const coreFloat fGlyphHeight = I_TO_F(MAX(iAscent, iMaxY) - MIN(iDescent, iMinY));
-            const coreFloat fGlyphPitch  = I_TO_F(coreMath::CeilAlign(iAdvance + 2u * iRelOutline, 4u));
+            const coreFloat fBaseHeight = I_TO_F(iAscent - iDescent);
 
             if(!pStyle->aEntry.count_bs(cGlyph))
             {
+                const coreFloat fGlyphHeight = I_TO_F(MAX(iAscent, iMaxY) - MIN(iDescent, iMinY));
+                const coreFloat fGlyphPitch  = I_TO_F(coreMath::CeilAlign(iAdvance + 2u * iRelOutline, 4u));
+
                 // init first render pass
                 if(pStyle->aPass.empty())
                 {
@@ -700,7 +704,7 @@ void coreRichText::__ParseText()
 
             // create new arranged character
             coreCharacter oCharacter;
-            oCharacter.iPosition       = ((vCurPos + coreVector2(I_TO_F(iMinX), -fGlyphShift)) * CORE_LABEL_SIZE_FACTOR).PackFloat2x16();
+            oCharacter.iPosition       = ((vCurPos + coreVector2(I_TO_F(iMinX), I_TO_F(iMinY - iDescent))) * CORE_LABEL_SIZE_FACTOR).PackFloat2x16();
             oCharacter.iColorIndex     = iColorIndex;
             oCharacter.iTexParamsIndex = oEntry.iIndex;
             oCharacter.iOrder          = m_iNumOrders++;
@@ -713,10 +717,10 @@ void coreRichText::__ParseText()
 
             // track total size
             vCurSize.x = MAX(vCurSize.x, vCurPos.x + I_TO_F(iRelOutline) * 2.0f);
-            vCurSize.y = MAX(vCurSize.y, fGlyphHeight - vCurPos.y);
+            vCurSize.y = MAX(vCurSize.y, fBaseHeight - vCurPos.y, fBaseHeight + I_TO_F(m_iMinLines - 1u) * fFullLineSkip);
 
             // track height of the first text line (as it expands top-right)
-            if(m_iNumLines == 1u) m_fTopHeight = MAX(m_fTopHeight, fGlyphHeight);
+            if(m_iNumLines == 1u) m_fTopHeight = MAX(m_fTopHeight, fBaseHeight);
         }
         else
         {
