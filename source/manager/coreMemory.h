@@ -26,7 +26,7 @@
 #define CORE_MEMORY_SHARED  (STRING(__FILE__) ":" STRING(__LINE__))
 #define CORE_MEMORY_UNIQUE  (PRINT(CORE_MEMORY_SHARED ":%p", this))
 
-#define __CHECK_ALLOC(t,c)  ([](const coreUintW iSize) {STATIC_ASSERT(std::is_trivial_v<std::decay_t<t>>) ASSERT(iSize)}(c))
+#define __CHECK_ALLOC(t,c)  ([](const coreUintW iSize) {STATIC_ASSERT(IS_TRIVIAL(std::decay_t<t>)) ASSERT(iSize)}(c))
 
 #define MANAGED_NEW(t,...)  (ASSUME_ALIGNED(new(Core::Manager::Memory->Allocate(sizeof(t))) t(__VA_ARGS__), alignof(t)))
 #define MANAGED_DELETE(p)   {if(p) {CALL_DESTRUCTOR(p) Core::Manager::Memory->Free(sizeof(*(p)), r_cast<void**>(&(p)));}}

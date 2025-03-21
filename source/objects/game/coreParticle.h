@@ -328,7 +328,7 @@ template <typename F> void coreParticleEffect::CreateParticle(const coreUintW iN
 
 // ****************************************************************
 /* additional checks */
-STATIC_ASSERT(std::is_trivial_v<coreParticle>)
+STATIC_ASSERT(IS_TRIVIAL(coreParticle))
 
 
 #endif /* _CORE_GUARD_PARTICLE_H_ */

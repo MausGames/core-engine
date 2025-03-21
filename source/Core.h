@@ -604,6 +604,9 @@ template <typename R,             typename... A> struct INTERFACE coreFunctionTr
 #define TRAIT_ARG_TYPE(f,i)  coreFunctionTraits<f>::template coreArgType<i>
 #define TRAIT_ARITY(f)       coreFunctionTraits<f>::iArity
 
+// retrieve compile-time type properties
+#define IS_TRIVIAL(t) (std::is_trivially_copyable_v<t> && std::is_trivially_default_constructible_v<t> && std::is_trivially_destructible_v<t>)
+
 // safely force compile-time evaluation (without creating symbols)
 template <typename T, T tExpression> struct INTERFACE coreForceCompileTime final
 {

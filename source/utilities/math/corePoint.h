@@ -58,7 +58,7 @@ using coreUint128   = corePoint<coreUint64, 2u>;
 
 // ****************************************************************
 /* additional checks */
-STATIC_ASSERT(std::is_trivial_v<corePoint2U8>)
+STATIC_ASSERT(IS_TRIVIAL(corePoint2U8))
 
 
 #endif /* _CORE_GUARD_POINT_H_ */

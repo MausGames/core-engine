@@ -45,7 +45,7 @@ template <coreUintW iSize> template <typename T> coreVariant<iSize>::coreVariant
 #endif
 {
     STATIC_ASSERT(sizeof(T) <= sizeof(m_aData))
-    STATIC_ASSERT(std::is_trivial_v<T>)
+    STATIC_ASSERT(IS_TRIVIAL(T))
 
     std::memcpy(m_aData, &tValue, sizeof(T));
 }
