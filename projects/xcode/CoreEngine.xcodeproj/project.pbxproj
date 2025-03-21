@@ -13,6 +13,13 @@
 		5B77109B27CD488B00EB424C /* cocoa.h in Headers */ = {isa = PBXBuildFile; fileRef = 5B77109927CD488B00EB424C /* cocoa.h */; };
 		5B77109C27CD488B00EB424C /* cocoa.mm in Sources */ = {isa = PBXBuildFile; fileRef = 5B77109A27CD488B00EB424C /* cocoa.mm */; };
 		5B979FCC2A3C73A200C5292D /* epic.h in Headers */ = {isa = PBXBuildFile; fileRef = 5B979FCB2A3C73A200C5292D /* epic.h */; };
+		5BA975552D8DF01C00D916E6 /* coreBlob.h in Headers */ = {isa = PBXBuildFile; fileRef = 5BA975542D8DF01C00D916E6 /* coreBlob.h */; };
+		5BA975572D8DF06100D916E6 /* discord.h in Headers */ = {isa = PBXBuildFile; fileRef = 5BA975562D8DF06100D916E6 /* discord.h */; };
+		5BA9755A2D8DF08A00D916E6 /* coreRichText.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5BA975592D8DF08A00D916E6 /* coreRichText.cpp */; };
+		5BA9755B2D8DF08A00D916E6 /* coreRichText.h in Headers */ = {isa = PBXBuildFile; fileRef = 5BA975582D8DF08A00D916E6 /* coreRichText.h */; };
+		5BA9755E2D8DF0A400D916E6 /* coreAnimation.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5BA9755D2D8DF0A400D916E6 /* coreAnimation.cpp */; };
+		5BA9755F2D8DF0A400D916E6 /* coreAnimation.h in Headers */ = {isa = PBXBuildFile; fileRef = 5BA9755C2D8DF0A400D916E6 /* coreAnimation.h */; };
+		5BA975612D8DF0DB00D916E6 /* corePoint.h in Headers */ = {isa = PBXBuildFile; fileRef = 5BA975602D8DF0DB00D916E6 /* corePoint.h */; };
 		5BB8C34127C94E4200BBB338 /* coreGL.h in Headers */ = {isa = PBXBuildFile; fileRef = 5BB8C2B927C94E4100BBB338 /* coreGL.h */; };
 		5BB8C34227C94E4200BBB338 /* coreGLES.h in Headers */ = {isa = PBXBuildFile; fileRef = 5BB8C2BA27C94E4100BBB338 /* coreGLES.h */; };
 		5BB8C34327C94E4200BBB338 /* main.c in Sources */ = {isa = PBXBuildFile; fileRef = 5BB8C2BC27C94E4100BBB338 /* main.c */; };
@@ -126,6 +133,13 @@
 		5B77109927CD488B00EB424C /* cocoa.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = cocoa.h; sourceTree = "<group>"; };
 		5B77109A27CD488B00EB424C /* cocoa.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = cocoa.mm; sourceTree = "<group>"; };
 		5B979FCB2A3C73A200C5292D /* epic.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = epic.h; sourceTree = "<group>"; };
+		5BA975542D8DF01C00D916E6 /* coreBlob.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = coreBlob.h; sourceTree = "<group>"; };
+		5BA975562D8DF06100D916E6 /* discord.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = discord.h; sourceTree = "<group>"; };
+		5BA975582D8DF08A00D916E6 /* coreRichText.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = coreRichText.h; sourceTree = "<group>"; };
+		5BA975592D8DF08A00D916E6 /* coreRichText.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = coreRichText.cpp; sourceTree = "<group>"; };
+		5BA9755C2D8DF0A400D916E6 /* coreAnimation.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = coreAnimation.h; sourceTree = "<group>"; };
+		5BA9755D2D8DF0A400D916E6 /* coreAnimation.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = coreAnimation.cpp; sourceTree = "<group>"; };
+		5BA975602D8DF0DB00D916E6 /* corePoint.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = corePoint.h; sourceTree = "<group>"; };
 		5BB8C29827C9489900BBB338 /* libCoreEngine.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libCoreEngine.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		5BB8C2B927C94E4100BBB338 /* coreGL.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = coreGL.h; sourceTree = "<group>"; };
 		5BB8C2BA27C94E4100BBB338 /* coreGLES.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = coreGLES.h; sourceTree = "<group>"; };
@@ -139,7 +153,6 @@
 		5BB8C2C427C94E4100BBB338 /* pre.js */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.javascript; path = pre.js; sourceTree = "<group>"; };
 		5BB8C2C527C94E4100BBB338 /* coreGLEW.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = coreGLEW.c; sourceTree = "<group>"; };
 		5BB8C2C727C94E4100BBB338 /* main.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = main.c; sourceTree = "<group>"; };
-		5BB8C2C927C94E4100BBB338 /* main.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = main.c; sourceTree = "<group>"; };
 		5BB8C2CB27C94E4100BBB338 /* header.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = header.h; sourceTree = "<group>"; };
 		5BB8C2CC27C94E4100BBB338 /* main.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = main.c; sourceTree = "<group>"; };
 		5BB8C2CD27C94E4100BBB338 /* coreCPUID.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = coreCPUID.h; sourceTree = "<group>"; };
@@ -277,11 +290,11 @@
 		5BB8C2B827C94E4100BBB338 /* additional */ = {
 			isa = PBXGroup;
 			children = (
-				5BB8C2C827C94E4100BBB338 /* android */,
 				5BB8C2C027C94E4100BBB338 /* emscripten */,
 				5BB8C2C627C94E4100BBB338 /* linux */,
 				5BB8C2BB27C94E4100BBB338 /* macos */,
 				5BB8C2CA27C94E4100BBB338 /* windows */,
+				5BA975542D8DF01C00D916E6 /* coreBlob.h */,
 				5BB8C2BE27C94E4100BBB338 /* coreCPUID.cpp */,
 				5BB8C2CD27C94E4100BBB338 /* coreCPUID.h */,
 				5BB8C2BF27C94E4100BBB338 /* coreGL.cpp */,
@@ -322,14 +335,6 @@
 				5BB8C2C727C94E4100BBB338 /* main.c */,
 			);
 			path = linux;
-			sourceTree = "<group>";
-		};
-		5BB8C2C827C94E4100BBB338 /* android */ = {
-			isa = PBXGroup;
-			children = (
-				5BB8C2C927C94E4100BBB338 /* main.c */,
-			);
-			path = android;
 			sourceTree = "<group>";
 		};
 		5BB8C2CA27C94E4100BBB338 /* windows */ = {
@@ -377,6 +382,7 @@
 		5BB8C2D327C94E4100BBB338 /* backend */ = {
 			isa = PBXGroup;
 			children = (
+				5BA975562D8DF06100D916E6 /* discord.h */,
 				5B979FCB2A3C73A200C5292D /* epic.h */,
 				5BB8C2D527C94E4100BBB338 /* steam.h */,
 				5BB8C2D427C94E4100BBB338 /* windows.h */,
@@ -424,6 +430,8 @@
 			isa = PBXGroup;
 			children = (
 				5BB8C2F427C94E4100BBB338 /* model */,
+				5BA9755D2D8DF0A400D916E6 /* coreAnimation.cpp */,
+				5BA9755C2D8DF0A400D916E6 /* coreAnimation.h */,
 				5BB8C2F927C94E4100BBB338 /* coreDataBuffer.cpp */,
 				5BB8C2EC27C94E4100BBB338 /* coreDataBuffer.h */,
 				5BB8C2F727C94E4100BBB338 /* coreFont.cpp */,
@@ -493,6 +501,7 @@
 			children = (
 				5BB8C30C27C94E4100BBB338 /* coreMath.h */,
 				5BB8C30D27C94E4100BBB338 /* coreMatrix.h */,
+				5BA975602D8DF0DB00D916E6 /* corePoint.h */,
 				5BB8C30E27C94E4100BBB338 /* coreSpline.h */,
 				5BB8C30B27C94E4100BBB338 /* coreVector.h */,
 			);
@@ -567,6 +576,8 @@
 				5BB8C33527C94E4100BBB338 /* coreLabel.h */,
 				5BB8C33227C94E4100BBB338 /* coreMenu.cpp */,
 				5BB8C32F27C94E4100BBB338 /* coreMenu.h */,
+				5BA975582D8DF08A00D916E6 /* coreRichText.h */,
+				5BA975592D8DF08A00D916E6 /* coreRichText.cpp */,
 				5BB8C33127C94E4100BBB338 /* coreSwitchBox.h */,
 				5BB8C33327C94E4100BBB338 /* coreTextBox.cpp */,
 				5BB8C33027C94E4100BBB338 /* coreTextBox.h */,
@@ -603,8 +614,10 @@
 				5BB8C35E27C94E4200BBB338 /* CoreAudio.h in Headers */,
 				5BB8C34F27C94E4200BBB338 /* CoreInput.h in Headers */,
 				5BB8C39E27C94E4200BBB338 /* coreTextBox.h in Headers */,
+				5BA9755F2D8DF0A400D916E6 /* coreAnimation.h in Headers */,
 				5BB8C37A27C94E4200BBB338 /* coreLanguage.h in Headers */,
 				5BB8C36A27C94E4200BBB338 /* coreFrameBuffer.h in Headers */,
+				5BA975612D8DF0DB00D916E6 /* corePoint.h in Headers */,
 				5BB8C37527C94E4200BBB338 /* CoreDebug.h in Headers */,
 				5BB8C38027C94E4200BBB338 /* coreMatrix.h in Headers */,
 				5BB8C34227C94E4200BBB338 /* coreGLES.h in Headers */,
@@ -630,6 +643,7 @@
 				5BB8C35C27C94E4200BBB338 /* ALAW.h in Headers */,
 				5BB8C3A927C94E4200BBB338 /* coreMemory.h in Headers */,
 				5BB8C36927C94E4200BBB338 /* coreModel.h in Headers */,
+				5BA975552D8DF01C00D916E6 /* coreBlob.h in Headers */,
 				5BB8C39327C94E4200BBB338 /* coreParticle.h in Headers */,
 				5B660CE727E0B7AB009BB1CB /* XXH.h in Headers */,
 				5BB8C38D27C94E4200BBB338 /* coreData.h in Headers */,
@@ -658,8 +672,10 @@
 				5BB8C39B27C94E4200BBB338 /* coreButton.h in Headers */,
 				5BB8C37127C94E4200BBB338 /* coreSync.h in Headers */,
 				5BB8C36727C94E4200BBB338 /* coreTexture.h in Headers */,
+				5BA9755B2D8DF08A00D916E6 /* coreRichText.h in Headers */,
 				5BB8C35627C94E4200BBB338 /* coreTimer.h in Headers */,
 				5BB8C38727C94E4200BBB338 /* CRC32.h in Headers */,
+				5BA975572D8DF06100D916E6 /* discord.h in Headers */,
 				5BB8C37E27C94E4200BBB338 /* coreVector.h in Headers */,
 				5BB8C39F27C94E4200BBB338 /* coreSwitchBox.h in Headers */,
 				5BB8C36327C94E4200BBB338 /* coreFont.h in Headers */,
@@ -694,7 +710,7 @@
 			isa = PBXProject;
 			attributes = {
 				BuildIndependentTargetsInParallel = 1;
-				LastUpgradeCheck = 1410;
+				LastUpgradeCheck = 1620;
 				TargetAttributes = {
 					5BB8C29727C9489900BBB338 = {
 						CreatedOnToolsVersion = 13.2.1;
@@ -751,6 +767,7 @@
 				5BB8C36127C94E4200BBB338 /* CoreAudio.cpp in Sources */,
 				5BB8C35527C94E4200BBB338 /* CoreSystem.cpp in Sources */,
 				5BB8C3A827C94E4200BBB338 /* coreResource.cpp in Sources */,
+				5BA9755A2D8DF08A00D916E6 /* coreRichText.cpp in Sources */,
 				5B5594D12867136000509370 /* coreImGui.cpp in Sources */,
 				5BB8C39C27C94E4200BBB338 /* coreCheckBox.cpp in Sources */,
 				5BB8C37327C94E4200BBB338 /* CoreGraphics.cpp in Sources */,
@@ -766,6 +783,7 @@
 				5BB8C39827C94E4200BBB338 /* coreObject3D.cpp in Sources */,
 				5BB8C37727C94E4200BBB338 /* coreConfig.cpp in Sources */,
 				5BB8C3AB27C94E4200BBB338 /* coreMemory.cpp in Sources */,
+				5BA9755E2D8DF0A400D916E6 /* coreAnimation.cpp in Sources */,
 				5BB8C39227C94E4200BBB338 /* coreString.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -800,7 +818,6 @@
 					"$(inherited)",
 				);
 				GCC_SYMBOLS_PRIVATE_EXTERN = YES;
-				GCC_WARN_64_TO_32_BIT_CONVERSION = NO;
 				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
 				GCC_WARN_FOUR_CHARACTER_CONSTANTS = YES;
 				GCC_WARN_PEDANTIC = YES;
@@ -815,6 +832,7 @@
 				MACOSX_DEPLOYMENT_TARGET = 10.13;
 				MARKETING_VERSION = 1.0.0;
 				ONLY_ACTIVE_ARCH = YES;
+				OTHER_CFLAGS = "-ftrivial-auto-var-init=pattern";
 				PRODUCT_BUNDLE_IDENTIFIER = MausGames.CoreEngine;
 				PRODUCT_NAME = CoreEngine;
 				SDKROOT = macosx;
@@ -828,6 +846,7 @@
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				CLANG_CXX_LANGUAGE_STANDARD = "c++23";
+				CLANG_CXX_STANDARD_LIBRARY_HARDENING = none;
 				CLANG_ENABLE_MODULES = YES;
 				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
 				CLANG_WARN_COMMA = YES;
@@ -849,7 +868,6 @@
 				GCC_NO_COMMON_BLOCKS = YES;
 				GCC_OPTIMIZATION_LEVEL = s;
 				GCC_SYMBOLS_PRIVATE_EXTERN = YES;
-				GCC_WARN_64_TO_32_BIT_CONVERSION = NO;
 				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
 				GCC_WARN_FOUR_CHARACTER_CONSTANTS = YES;
 				GCC_WARN_PEDANTIC = YES;
@@ -864,9 +882,20 @@
 				LLVM_LTO = YES;
 				MACOSX_DEPLOYMENT_TARGET = 10.13;
 				MARKETING_VERSION = 1.0.0;
+				OTHER_CFLAGS = (
+					"-fno-strict-overflow",
+					"-ffinite-math-only",
+					"-fno-signed-zeros",
+					"-fno-trapping-math",
+					"-fno-math-errno",
+					"-ffp-contract=off",
+				);
 				OTHER_CPLUSPLUSFLAGS = (
 					"$(OTHER_CFLAGS)",
 					"-fwhole-program-vtables",
+					"-fvirtual-function-elimination",
+					"-fforce-emit-vtables",
+					"-fstrict-vtable-pointers",
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = MausGames.CoreEngine;
 				PRODUCT_NAME = CoreEngine;
