@@ -15,6 +15,8 @@
 // TODO 5: <old comment style>
 // TODO 3: handle saving config on maximized window, also save last window position ?
 // TODO 2: as of now, setting window position does not work on Wayland and returns false + SDL_GetError (in Wayland_SetWindowPosition)
+// TODO 3: handle high DPI better ? NSHighResolutionCapable (macOS), SDL_PROP_WINDOW_CREATE_HIGH_PIXEL_DENSITY_BOOLEAN
+// TODO 4: SDL_IsMainThread
 
 
 // ****************************************************************

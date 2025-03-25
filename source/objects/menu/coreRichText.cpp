@@ -278,7 +278,7 @@ void coreRichText::Move()
 {
     if(!this->IsEnabled(CORE_OBJECT_ENABLE_MOVE)) return;
 
-    if(m_sText.empty() || !m_iMaxOrder) return;
+    if(m_sText.empty()) return;
 
     if(HAS_FLAG(m_eRefresh, CORE_RICHTEXT_REFRESH_LAYOUT))
     {

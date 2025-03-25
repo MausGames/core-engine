@@ -134,6 +134,9 @@ void coreMemoryPool::Reset()
     // clear memory
     m_apPageList .clear();
     m_apFreeStack.clear();
+
+    // revalidate memory-pool
+    m_bValid = true;
 }
 
 

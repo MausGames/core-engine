@@ -239,6 +239,7 @@ coreStatus coreModel::Load(coreFile* pFile)
         {
             // save number of indices
             m_piClusterNumIndices[i] = aiTempIndex[i].size();
+            ASSERT(m_piClusterNumIndices[i])
 
             // adjust index pointers and store indices
             for(coreUintW j = i + 1u, je = m_iNumClusters; j < je; ++j) m_ppiClusterIndex[j] += m_piClusterNumIndices[i];

@@ -196,7 +196,7 @@ coreBool CoreInput::ProcessEvent(const SDL_Event& oEvent)
             else if(oEvent.jbutton.button == SDL_GAMEPAD_BUTTON_DPAD_UP)    this->SetJoystickHat(iIndex, CORE_INPUT_DIR_UP,    true);
             else
             {
-                const SDL_GamepadButtonLabel eLabel = SDL_GetGamepadButtonLabelForType(m_aJoystick[iIndex].eGamepadType, SDL_GamepadButton(oEvent.jbutton.button));
+                const SDL_GamepadButtonLabel eLabel = SDL_GetGamepadButtonLabelForType(__CORE_INPUT_JOYSTICK(iIndex).eGamepadType, SDL_GamepadButton(oEvent.jbutton.button));
                 this->SetJoystickButton(iIndex, (eLabel != SDL_GAMEPAD_BUTTON_LABEL_UNKNOWN) ? ((eLabel - 1u) % 4u) : oEvent.jbutton.button, true);
             }
         }
@@ -215,7 +215,7 @@ coreBool CoreInput::ProcessEvent(const SDL_Event& oEvent)
             else if(oEvent.jbutton.button == SDL_GAMEPAD_BUTTON_DPAD_UP)    this->SetJoystickHat(iIndex, CORE_INPUT_DIR_UP,    false);
             else
             {
-                const SDL_GamepadButtonLabel eLabel = SDL_GetGamepadButtonLabelForType(m_aJoystick[iIndex].eGamepadType, SDL_GamepadButton(oEvent.jbutton.button));
+                const SDL_GamepadButtonLabel eLabel = SDL_GetGamepadButtonLabelForType(__CORE_INPUT_JOYSTICK(iIndex).eGamepadType, SDL_GamepadButton(oEvent.jbutton.button));
                 this->SetJoystickButton(iIndex, (eLabel != SDL_GAMEPAD_BUTTON_LABEL_UNKNOWN) ? ((eLabel - 1u) % 4u) : oEvent.jbutton.button, false);
             }
         }

@@ -24,7 +24,7 @@ void __coreInitOpenGLES()
     std::memset(&g_CoreContext, 0, sizeof(g_CoreContext));
 
     // get full extension string
-    if(g_sExtensions.empty()) g_sExtensions.assign(r_cast<const coreChar*>(glGetString(GL_EXTENSIONS))).append(1, ' ');
+    g_sExtensions.assign(r_cast<const coreChar*>(glGetString(GL_EXTENSIONS))).append(1, ' ');
 
     // change extension status through configuration file (e.g. GL_EXT_framebuffer_object)
     coreData::StrForEachToken(Core::Config->GetString(CORE_CONFIG_GRAPHICS_DISABLEEXTENSIONS), " ,;", [](const coreChar* pcToken) {g_sExtensions.replace(PRINT("%s ", pcToken), "");});
