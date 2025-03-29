@@ -63,7 +63,7 @@ public:
     coreTranslate& operator = (const coreTranslate& c)noexcept;
 
     /* change associated language file */
-    void ChangeLanguage(coreLanguage* pLanguage);
+    inline void ChangeLanguage(coreLanguage* pLanguage) {this->__ChangeLanguage(pLanguage, true);}
 
     /* manually refresh own string pointers */
     void RefreshLanguage();
@@ -78,6 +78,9 @@ protected:
 private:
     /* update object after modification */
     virtual void __UpdateTranslate() = 0;
+
+    /* change associated language file */
+    void __ChangeLanguage(coreLanguage* pLanguage, const coreBool bUpdate);
 };
 
 

@@ -22,7 +22,7 @@ coreTranslate::coreTranslate(const coreTranslate& c)noexcept
 , m_apsPointer {}
 {
     // associate object with language
-    this->ChangeLanguage(c.m_pLanguage);
+    this->__ChangeLanguage(c.m_pLanguage, false);
 }
 
 
@@ -31,7 +31,7 @@ coreTranslate::coreTranslate(const coreTranslate& c)noexcept
 coreTranslate::~coreTranslate()
 {
     // safely unbind last language file
-    this->ChangeLanguage(NULL);
+    this->__ChangeLanguage(NULL, false);
 
     // clear memory
     m_apsPointer.clear();
@@ -43,37 +43,9 @@ coreTranslate::~coreTranslate()
 coreTranslate& coreTranslate::operator = (const coreTranslate& c)noexcept
 {
     // associate object with language
-    this->ChangeLanguage(c.m_pLanguage);
+    this->__ChangeLanguage(c.m_pLanguage, true);
 
     return *this;
-}
-
-
-// ****************************************************************
-/* change associated language file */
-void coreTranslate::ChangeLanguage(coreLanguage* pLanguage)
-{
-    if(m_pLanguage == pLanguage) return;
-
-    if(m_pLanguage)
-    {
-        // unbind everything from current language
-        FOR_EACH(it, m_apsPointer) m_pLanguage->UnbindForeign(*m_apsPointer.get_key(it));
-        m_pLanguage->__UnbindObject(this);
-    }
-
-    // set new language file
-    m_pLanguage = pLanguage;
-
-    if(m_pLanguage)
-    {
-        // bind everything to new language
-        m_pLanguage->__BindObject(this);
-        FOR_EACH(it, m_apsPointer) m_pLanguage->BindForeign(*m_apsPointer.get_key(it), it->c_str());
-
-        // invoke object update
-        this->__UpdateTranslate();
-    }
 }
 
 
@@ -128,6 +100,34 @@ void coreTranslate::_UnbindString(coreString* psString)
     {
         // unbind from language
         m_pLanguage->UnbindForeign(psString);
+    }
+}
+
+
+// ****************************************************************
+/* change associated language file */
+void coreTranslate::__ChangeLanguage(coreLanguage* pLanguage, const coreBool bUpdate)
+{
+    if(m_pLanguage == pLanguage) return;
+
+    if(m_pLanguage)
+    {
+        // unbind everything from current language
+        FOR_EACH(it, m_apsPointer) m_pLanguage->UnbindForeign(*m_apsPointer.get_key(it));
+        m_pLanguage->__UnbindObject(this);
+    }
+
+    // set new language file
+    m_pLanguage = pLanguage;
+
+    if(m_pLanguage)
+    {
+        // bind everything to new language
+        m_pLanguage->__BindObject(this);
+        FOR_EACH(it, m_apsPointer) m_pLanguage->BindForeign(*m_apsPointer.get_key(it), it->c_str());
+
+        // invoke object update
+        if(bUpdate) this->__UpdateTranslate();
     }
 }
 
