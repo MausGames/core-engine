@@ -19,7 +19,6 @@
 // TODO 3: sorting based on position
 // TODO 3: culling (also on instancing)
 // TODO 5: <old comment style>
-// TODO 3: on frequency particle creation, if frequency is higher than FPS, already offset created particle times to spread them evenly (what about animation?)
 
 
 // ****************************************************************
@@ -69,6 +68,7 @@ public:
     coreParticle() = default;
 
     FRIEND_CLASS(coreParticleSystem)
+    FRIEND_CLASS(coreParticleEffect)
     ENABLE_COPY (coreParticle)
 
     /* check current status */
@@ -112,6 +112,7 @@ private:
     /* control the particle */
     inline void __Prepare(coreParticleEffect* pEffect) {m_pEffect = pEffect; m_fValue = 1.0f;}
     inline void __Update();
+    inline void __Adjust(const coreFloat fTime);
 };
 
 
@@ -260,6 +261,15 @@ inline void coreParticle::__Update()
 
 
 // ****************************************************************
+/* adjust the particle */
+inline void coreParticle::__Adjust(const coreFloat fTime)
+{
+    // adjust current simulation value
+    m_fValue -= m_fSpeed * fTime;
+}
+
+
+// ****************************************************************
 /* update particles with custom simulation */
 template <typename F> void coreParticleSystem::ForEachParticle(const coreParticleEffect* pEffect, F&& nUpdateFunc)
 {
@@ -298,20 +308,28 @@ template <typename F> void coreParticleSystem::ForEachParticleAll(F&& nUpdateFun
 /* create new particles */
 template <typename F> void coreParticleEffect::CreateParticle(const coreUintW iNum, const coreFloat fFrequency, F&& nInitFunc)
 {
-    ASSERT(fFrequency <= 60.0f)
-
     // update and check status value
     m_fCreation.Update(fFrequency, m_iTimeID);
     if(m_fCreation >= 1.0f)
     {
         // adjust status value
-        const coreUintW iComp = MIN(F_TO_UI(m_fCreation), 3u);
+        const coreUintW iSteps = F_TO_UI(m_fCreation);
         m_fCreation = FRACT(m_fCreation);
 
-        // create particles and call init function
-        for(coreUintW i = iNum * iComp; i--; )
+        for(coreUintW j = iSteps; j--; )
         {
-            nInitFunc(this->CreateParticle());
+            // calculate actual creation time
+            const coreFloat fTime = (I_TO_F(j) + m_fCreation) * RCP(fFrequency);
+
+            for(coreUintW i = iNum; i--; )
+            {
+                // create particles and call init function
+                coreParticle* pParticle = this->CreateParticle();
+                nInitFunc(pParticle);
+
+                // adjust simulation value
+                pParticle->__Adjust(fTime);
+            }
         }
     }
 }
