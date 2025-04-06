@@ -64,6 +64,7 @@
 #define CORE_TEXTURE_UNITS_SHADOW (1u)                                                  // number of shadow texture units (sampler2DShadow)
 #define CORE_TEXTURE_UNITS        (CORE_TEXTURE_UNITS_2D + CORE_TEXTURE_UNITS_SHADOW)   // total number of texture units
 #define CORE_TEXTURE_SHADOW       (CORE_TEXTURE_UNITS_2D)                               // first shadow texture unit
+#define CORE_TEXTURE_LOD_BIAS     (-0.2f)                                               // make all textures a little bit sharper (if possible)
 
 enum coreTextureMode : coreUint8
 {
