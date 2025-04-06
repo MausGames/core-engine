@@ -20,7 +20,6 @@
 #define CORE_CONFIG_BASE_LANGUAGE               "Base",     "Language",           ("")
 #define CORE_CONFIG_BASE_DEBUGMODE              "Base",     "DebugMode",          (false)   // enable debug features and extended logging
 #define CORE_CONFIG_BASE_ASYNCMODE              "Base",     "AsyncMode",          (true)    // enable asynchronous processing and resource loading
-#define CORE_CONFIG_BASE_FALLBACKMODE           "Base",     "FallbackMode",       (false)   // disable all possible hardware features
 #define CORE_CONFIG_BASE_PERSISTMODE            "Base",     "PersistMode",        (false)   // load all resources on startup and keep them in memory
 #define CORE_CONFIG_BASE_VERSION                "Base",     "Version",            (0)
 
@@ -38,6 +37,7 @@
 #define CORE_CONFIG_GRAPHICS_TEXTURECOMPRESSION "Graphics", "TextureCompression", (true)
 #define CORE_CONFIG_GRAPHICS_SHADERCACHE        "Graphics", "ShaderCache",        (true)
 #define CORE_CONFIG_GRAPHICS_DISABLEEXTENSIONS  "Graphics", "DisableExtensions",  ("")
+#define CORE_CONFIG_GRAPHICS_COMPATCONTEXT      "Graphics", "CompatContext",      (false)
 
 #define CORE_CONFIG_AUDIO_MODE                  "Audio",    "Mode",               (0)
 #define CORE_CONFIG_AUDIO_HRTFINDEX             "Audio",    "HRTFIndex",          (-1)

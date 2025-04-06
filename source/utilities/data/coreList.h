@@ -10,6 +10,8 @@
 #ifndef _CORE_GUARD_LIST_H_
 #define _CORE_GUARD_LIST_H_
 
+// TODO 3: for list, set, map, string (though is used in copyable_function), remove implicit copy operator and create explicit copy function, std::copy(this->begin(), this->end(), A.begin());
+
 
 // ****************************************************************
 /* base list container type */

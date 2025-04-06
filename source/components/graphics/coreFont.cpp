@@ -51,7 +51,7 @@ coreStatus coreFont::Load(coreFile* pFile)
         return CORE_INVALID_DATA;
     }
 
-    Core::Log->Info("Font (%s, %s, %s, %d faces) loaded", m_sName.c_str(), this->RetrieveFamilyName(), this->RetrieveStyleName(), TTF_GetNumFontFaces(m_aapFont.front().front()));
+    Core::Log->Info("Font (%s, %s, %s %d, %d faces) loaded", m_sName.c_str(), this->RetrieveFamilyName(), this->RetrieveStyleName(), TTF_GetFontWeight(m_aapFont.front().front()), TTF_GetNumFontFaces(m_aapFont.front().front()));
     return CORE_OK;
 }
 

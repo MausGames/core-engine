@@ -243,7 +243,7 @@ CoreSystem::CoreSystem()noexcept
     SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_ES);
 
     // check for highest OpenGL ES version
-    if(!Core::Config->GetBool(CORE_CONFIG_BASE_FALLBACKMODE))
+    if(!Core::Config->GetBool(CORE_CONFIG_GRAPHICS_COMPATCONTEXT))
     {
         // create quick test-window
         m_pWindow = SDL_CreateWindow(NULL, 32, 32, SDL_WINDOW_OPENGL | SDL_WINDOW_HIDDEN);
@@ -274,7 +274,7 @@ CoreSystem::CoreSystem()noexcept
 #else
 
     // check for core profile
-    if(!Core::Config->GetBool(CORE_CONFIG_BASE_FALLBACKMODE))
+    if(!Core::Config->GetBool(CORE_CONFIG_GRAPHICS_COMPATCONTEXT))
     {
         // create quick test-window and test-context
         m_pWindow = SDL_CreateWindow(NULL, 32, 32, SDL_WINDOW_OPENGL | SDL_WINDOW_HIDDEN);

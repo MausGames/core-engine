@@ -104,7 +104,7 @@ public:
     coreBool ProcessEvent(const SDL_Event& oEvent);
 
     /* render textures directly on screen */
-    void DisplayTexture(const coreTexturePtr& pTexture, const coreVector2 vSize = coreVector2(0.2f,0.2f));
+    void DisplayTexture(const coreTexturePtr& pTexture, const coreVector2 vSize = coreVector2(0.4f,0.4f));
 
     /* measure performance between specific points */
     void MeasureStart(const coreHashString& sName);
