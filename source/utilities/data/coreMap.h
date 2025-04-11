@@ -30,12 +30,14 @@ template <typename K, typename I, typename T> class coreMapGen
 {
 protected:
     /* internal types */
-    using coreValueList          = coreList<T>;
-    using coreKeyList            = coreList<K>;
-    using coreValueIterator      = typename coreValueList::iterator;
-    using coreValueConstIterator = typename coreValueList::const_iterator;
-    using coreKeyIterator        = typename coreKeyList  ::iterator;
-    using coreKeyConstIterator   = typename coreKeyList  ::const_iterator;
+    using coreValueList             = coreList<T>;
+    using coreKeyList               = coreList<K>;
+    using coreValueIterator         = typename coreValueList::iterator;
+    using coreValueConstIterator    = typename coreValueList::const_iterator;
+    using coreValueRevIterator      = typename coreValueList::reverse_iterator;
+    using coreValueConstRevIterator = typename coreValueList::const_reverse_iterator;
+    using coreKeyIterator           = typename coreKeyList  ::iterator;
+    using coreKeyConstIterator      = typename coreKeyList  ::const_iterator;
 
 
 protected:
@@ -109,14 +111,18 @@ public:
     inline const T& back ()const {return m_atValueList.back ();}
 
     /* return internal iterator */
-    inline coreValueIterator      begin  ()                   {return m_atValueList.begin();}
-    inline coreValueConstIterator begin  ()const              {return m_atValueList.begin();}
-    inline coreValueIterator      end    ()                   {return m_atValueList.end  ();}
-    inline coreValueConstIterator end    ()const              {return m_atValueList.end  ();}
-    inline coreValueIterator      find   (const I& tKey)      {return this->get_value(this->_retrieve   (tKey));}
-    inline coreValueConstIterator find   (const I& tKey)const {return this->get_value(this->_retrieve   (tKey));}
-    inline coreValueIterator      find_bs(const I& tKey)      {return this->get_value(this->_retrieve_bs(tKey));}
-    inline coreValueConstIterator find_bs(const I& tKey)const {return this->get_value(this->_retrieve_bs(tKey));}
+    inline coreValueIterator         begin  ()                   {return m_atValueList.begin ();}
+    inline coreValueConstIterator    begin  ()const              {return m_atValueList.begin ();}
+    inline coreValueIterator         end    ()                   {return m_atValueList.end   ();}
+    inline coreValueConstIterator    end    ()const              {return m_atValueList.end   ();}
+    inline coreValueRevIterator      rbegin ()                   {return m_atValueList.rbegin();}
+    inline coreValueConstRevIterator rbegin ()const              {return m_atValueList.rbegin();}
+    inline coreValueRevIterator      rend   ()                   {return m_atValueList.rend  ();}
+    inline coreValueConstRevIterator rend   ()const              {return m_atValueList.rend  ();}
+    inline coreValueIterator         find   (const I& tKey)      {return this->get_value(this->_retrieve   (tKey));}
+    inline coreValueConstIterator    find   (const I& tKey)const {return this->get_value(this->_retrieve   (tKey));}
+    inline coreValueIterator         find_bs(const I& tKey)      {return this->get_value(this->_retrieve_bs(tKey));}
+    inline coreValueConstIterator    find_bs(const I& tKey)const {return this->get_value(this->_retrieve_bs(tKey));}
 
     /* operate between values and keys */
     inline coreValueIterator      get_value    (const coreKeyIterator&        it)      {return m_atValueList.begin() + m_atKeyList  .index(it);}
