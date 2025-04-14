@@ -13,6 +13,8 @@
 // TODO 3: resolutions (monitor, textures, framebuffers, etc.) (default res should stay vector, for calculations ?)
 // TODO 3: colors (? + conversion functions)
 
+// NOTE: greater-than and less-than use three-way subobject-wise comparison
+
 
 // ****************************************************************
 /* point class */
@@ -30,8 +32,10 @@ public:
     ENABLE_COMPARISON(corePoint)
 
     /* access specific element */
-    inline          T& operator [] (const coreUintW iIndex)      {ASSERT(iIndex < iSize) return m_atValue[iIndex];}
-    constexpr const T& operator [] (const coreUintW iIndex)const {ASSERT(iIndex < iSize) return m_atValue[iIndex];}
+    constexpr explicit operator coreBool ()const            {for(coreUintW i = 0u; i < iSize; ++i) if(m_atValue[i]) return true; return false;}
+    inline          T& operator [] (const coreUintW i)      {ASSERT(i < iSize) return m_atValue[i];}
+    constexpr const T& operator [] (const coreUintW i)const {ASSERT(i < iSize) return m_atValue[i];}
+    constexpr const T* ptr()const                           {return m_atValue;}
 
     /* operate on all elements */
     constexpr corePoint  operator +  (const corePoint p)const {corePoint P; for(coreUintW i = 0u; i < iSize; ++i) P.m_atValue[i] = m_atValue[i] + p.m_atValue[i]; return P;}
@@ -53,6 +57,9 @@ using corePoint2I32 = corePoint<coreInt32,  2u>;
 using corePoint3U8  = corePoint<coreUint8,  3u>;
 using corePoint3U16 = corePoint<coreUint16, 3u>;
 using corePoint3I32 = corePoint<coreInt32,  3u>;
+using corePoint4U8  = corePoint<coreUint8,  4u>;
+using corePoint4U16 = corePoint<coreUint16, 4u>;
+using corePoint4I32 = corePoint<coreInt32,  4u>;
 using coreUint128   = corePoint<coreUint64, 2u>;
 
 
