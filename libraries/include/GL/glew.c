@@ -1311,7 +1311,6 @@ GLboolean __GLEW_ARB_texture_compression_rgtc = GL_FALSE;
 GLboolean __GLEW_ARB_texture_filter_anisotropic = GL_FALSE;
 GLboolean __GLEW_ARB_texture_float = GL_FALSE;
 GLboolean __GLEW_ARB_texture_multisample = GL_FALSE;
-GLboolean __GLEW_ARB_texture_query_lod = GL_FALSE;
 GLboolean __GLEW_ARB_texture_rg = GL_FALSE;
 GLboolean __GLEW_ARB_texture_stencil8 = GL_FALSE;
 GLboolean __GLEW_ARB_texture_storage = GL_FALSE;
@@ -1485,9 +1484,6 @@ static const char * _glewExtensionLookup[] = {
 #endif
 #ifdef GL_ARB_texture_multisample
   "GL_ARB_texture_multisample",
-#endif
-#ifdef GL_ARB_texture_query_lod
-  "GL_ARB_texture_query_lod",
 #endif
 #ifdef GL_ARB_texture_rg
   "GL_ARB_texture_rg",
@@ -1796,9 +1792,6 @@ static GLboolean* _glewExtensionEnabled[] = {
 #endif
 #ifdef GL_ARB_texture_multisample
   &__GLEW_ARB_texture_multisample,
-#endif
-#ifdef GL_ARB_texture_query_lod
-  &__GLEW_ARB_texture_query_lod,
 #endif
 #ifdef GL_ARB_texture_rg
   &__GLEW_ARB_texture_rg,
@@ -4822,13 +4815,6 @@ GLboolean GLEWAPIENTRY glewIsSupported (const char* name)
         if (_glewStrSame3(&pos, &len, (const GLubyte*)"texture_multisample", 19))
         {
           ret = GLEW_ARB_texture_multisample;
-          continue;
-        }
-#endif
-#ifdef GL_ARB_texture_query_lod
-        if (_glewStrSame3(&pos, &len, (const GLubyte*)"texture_query_lod", 17))
-        {
-          ret = GLEW_ARB_texture_query_lod;
           continue;
         }
 #endif

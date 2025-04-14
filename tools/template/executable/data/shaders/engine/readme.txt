@@ -125,7 +125,7 @@ Input
 
 Output
 
-    // multiple output colors (only with GL >= 130, GLES >= 300)
+    // multiple output colors (only with CORE_GL_draw_buffers or CORE_GL_gpu_shader4)
     vec4 o_av4OutColor[CORE_NUM_OUTPUTS]
 
 
@@ -153,12 +153,13 @@ Definitions
     #define CORE_GL_conservative_depth
     #define CORE_GL_draw_buffers
     #define CORE_GL_gpu_shader4
+    #define CORE_GL_gpu_shader5
+    #define CORE_GL_sample_interpolation
     #define CORE_GL_sample_shading
     #define CORE_GL_shader_image_load_store
     #define CORE_GL_shader_io_blocks
     #define CORE_GL_standard_derivatives
     #define CORE_GL_texture_3D
-    #define CORE_GL_texture_query_lod
     #define CORE_GL_uniform_buffer_object
 
 Functions
@@ -211,7 +212,7 @@ Functions
     vec4  coreTextureBase2D       (in int v1Unit, in vec2 v2TexCoord)    // only use base-level (if possible)
     vec4  coreTextureBaseProj     (in int v1Unit, in vec4 v4ProjCoord)
     float coreTextureBaseShadow   (in int v1Unit, in vec4 v4ProjCoord)
-    vec4  coreTextureSharp2D      (in int v1Unit, in vec2 v2TexCoord, in float v1LodShift)
+    vec4  coreTextureSharp2D      (in int v1Unit, in vec2 v2TexCoord, in float v1LodBias)
 
 Input
 

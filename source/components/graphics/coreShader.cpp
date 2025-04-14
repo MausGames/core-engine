@@ -195,6 +195,24 @@ void coreShader::__LoadGlobalCode()
 
 #endif
 
+#if defined(_CORE_ANGLE_)
+
+    // add ANGLE environment flag
+    s_asGlobalCode[1].append("#define _CORE_ANGLE_ (1) \n");
+
+#endif
+
+    // add GPU vendor flag
+    switch(Core::Graphics->SystemGpuType())
+    {
+    default: UNREACHABLE
+    case CORE_GPU_TYPE_UNKNOWN:                                                                 break;
+    case CORE_GPU_TYPE_AMD:    s_asGlobalCode[1].append("#define _CORE_GPU_AMD_"    " (1) \n"); break;
+    case CORE_GPU_TYPE_NVIDIA: s_asGlobalCode[1].append("#define _CORE_GPU_NVIDIA_" " (1) \n"); break;
+    case CORE_GPU_TYPE_INTEL:  s_asGlobalCode[1].append("#define _CORE_GPU_INTEL_"  " (1) \n"); break;
+    case CORE_GPU_TYPE_APPLE:  s_asGlobalCode[1].append("#define _CORE_GPU_APPLE_"  " (1) \n"); break;
+    }
+
     // prevent instancing if not supported
     if(!CORE_GL_SUPPORT(ARB_instanced_arrays) || !CORE_GL_SUPPORT(ARB_vertex_array_object))
         s_asGlobalCode[1].append("#undef _CORE_OPTION_INSTANCING_ \n");

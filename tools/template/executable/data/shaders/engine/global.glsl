@@ -9,10 +9,12 @@
 
 
 // #version                         (#)   // shader version
-// #define _CORE_*_SHADER_          (1)   // shader type (vertex, fragment, ...)
+// #define _CORE_*_SHADER_          (1)   // shader type (VERTEX, FRAGMENT, ...)
 // #define _CORE_OPTION_*_          (1)   // multiple preprocessor options
 // #define _CORE_QUALITY_           (#)   // quality level
 // #define _CORE_WEBGL_             (1)   // WebGL environment
+// #define _CORE_ANGLE_             (1)   // ANGLE environment
+// #define _CORE_GPU_*_             (1)   // GPU vendor (AMD, NVIDIA, ...)
 // #define CORE_NUM_TEXTURES_2D     (#)   // number of 2d texture units
 // #define CORE_NUM_TEXTURES_SHADOW (#)   // number of shadow texture units
 // #define CORE_NUM_LIGHTS          (#)   // number of light sources
@@ -28,7 +30,6 @@
     #extension GL_EXT_shader_io_blocks                 : enable
     #extension GL_EXT_shader_texture_lod               : enable
     #extension GL_EXT_shadow_samplers                  : enable
-    #extension GL_EXT_texture_query_lod                : enable
     #extension GL_NV_draw_buffers                      : enable
     #extension GL_OES_sample_variables                 : enable
     #extension GL_OES_shader_io_blocks                 : enable
@@ -47,7 +48,6 @@
     #extension GL_ARB_shader_image_load_store          : enable
     #extension GL_ARB_shader_texture_lod               : enable
     #extension GL_ARB_shading_language_packing         : enable
-    #extension GL_ARB_texture_query_lod                : enable
     #extension GL_ARB_uniform_buffer_object            : enable
     #extension GL_EXT_demote_to_helper_invocation      : enable
     #extension GL_EXT_gpu_shader4                      : enable
@@ -97,9 +97,6 @@
 #endif
 #if (defined(GL_OES_texture_3D) || (CORE_GL_VERSION >= 110) || (CORE_GL_ES_VERSION >= 300))
     #define CORE_GL_texture_3D
-#endif
-#if (defined(GL_ARB_texture_query_lod) || defined(GL_EXT_texture_query_lod) || (CORE_GL_VERSION >= 400)) && defined(CORE_GL_MODERN_API)
-    #define CORE_GL_texture_query_lod
 #endif
 #if (defined(GL_ARB_uniform_buffer_object) || (CORE_GL_VERSION >= 140) || (CORE_GL_ES_VERSION >= 300))
     #define CORE_GL_uniform_buffer_object
@@ -237,6 +234,7 @@ uniform mediump sampler2DShadow u_as2TextureShadow[CORE_NUM_TEXTURES_SHADOW];
     #define coreTextureBase2D(u,c)     (textureLod      (u_as2Texture2D    [u], c, 0.0))
     #define coreTextureBaseProj(u,c)   (textureProjLod  (u_as2Texture2D    [u], c, 0.0))
     #define coreTextureBaseShadow(u,c) (textureProjLod  (u_as2TextureShadow[u], c, 0.0))
+    #define coreTextureSharp2D(u,c,s)  (texture         (u_as2Texture2D    [u], c, s))
 #else
     #define coreTexture2D(u,c)         (texture2D       (u_as2Texture2D    [u], c))
     #define coreTextureProj(u,c)       (texture2DProj   (u_as2Texture2D    [u], c))
@@ -244,9 +242,5 @@ uniform mediump sampler2DShadow u_as2TextureShadow[CORE_NUM_TEXTURES_SHADOW];
     #define coreTextureBase2D(u,c)     (texture2DLod    (u_as2Texture2D    [u], c, 0.0))
     #define coreTextureBaseProj(u,c)   (texture2DProjLod(u_as2Texture2D    [u], c, 0.0))
     #define coreTextureBaseShadow(u,c) (shadow2DProjLod (u_as2TextureShadow[u], c, 0.0).r)
-#endif
-#if defined(CORE_GL_texture_query_lod)
-    #define coreTextureSharp2D(u,c,s)  (textureLod(u_as2Texture2D[u], c, textureQueryLod(u_as2Texture2D[u], c).y - (s)))
-#else
-    #define coreTextureSharp2D(u,c,s)  (coreTexture2D(u, c))
+    #define coreTextureSharp2D(u,c,s)  (texture2D       (u_as2Texture2D    [u], c, s))
 #endif

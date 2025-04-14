@@ -189,7 +189,6 @@ void __coreInitOpenGL()
         __IMPROVE(GLEW_ARB_texture_compression_rgtc,         GLEW_VERSION_3_0 || GLEW_EXT_texture_compression_rgtc)
         __IMPROVE(GLEW_ARB_texture_filter_anisotropic,       GLEW_VERSION_4_6 || GLEW_EXT_texture_filter_anisotropic)
         __IMPROVE(GLEW_ARB_texture_float,                    GLEW_VERSION_3_0)
-        __IMPROVE(GLEW_ARB_texture_query_lod,                GLEW_VERSION_4_0)                                       // shader extension
         __IMPROVE(GLEW_ARB_texture_rg,                       GLEW_VERSION_3_0)
         __IMPROVE(GLEW_ARB_texture_stencil8,                 GLEW_VERSION_4_4)
         __IMPROVE(GLEW_ARB_texture_storage,                  GLEW_VERSION_4_2 || GLEW_EXT_texture_storage)

@@ -4168,15 +4168,6 @@ typedef void (GLAPIENTRY * PFNGLTEXIMAGE3DMULTISAMPLEPROC) (GLenum target, GLsiz
 
 #endif /* GL_ARB_texture_multisample */
 
-/* ------------------------ GL_ARB_texture_query_lod ----------------------- */
-
-#ifndef GL_ARB_texture_query_lod
-#define GL_ARB_texture_query_lod 1
-
-#define GLEW_ARB_texture_query_lod GLEW_GET_VAR(__GLEW_ARB_texture_query_lod)
-
-#endif /* GL_ARB_texture_query_lod */
-
 /* --------------------------- GL_ARB_texture_rg --------------------------- */
 
 #ifndef GL_ARB_texture_rg
@@ -6821,7 +6812,6 @@ GLEW_VAR_EXPORT GLboolean __GLEW_ARB_texture_compression_rgtc;
 GLEW_VAR_EXPORT GLboolean __GLEW_ARB_texture_filter_anisotropic;
 GLEW_VAR_EXPORT GLboolean __GLEW_ARB_texture_float;
 GLEW_VAR_EXPORT GLboolean __GLEW_ARB_texture_multisample;
-GLEW_VAR_EXPORT GLboolean __GLEW_ARB_texture_query_lod;
 GLEW_VAR_EXPORT GLboolean __GLEW_ARB_texture_rg;
 GLEW_VAR_EXPORT GLboolean __GLEW_ARB_texture_stencil8;
 GLEW_VAR_EXPORT GLboolean __GLEW_ARB_texture_storage;
