@@ -71,6 +71,8 @@ private:
 
     coreUint64   m_iMemoryStart;                // available graphics memory at the start of the application (in bytes)
     coreUint8    m_iMaxSamples;                 // max multisample anti aliasing level
+    coreUint8    m_aiMaxSamplesEQAA[3];         // max enhanced quality anti aliasing levels (color, depth, storage)
+    coreUint8    m_aiMaxSamplesCSAA[2];         // max coverage sampling anti aliasing levels (coverage, color)
     coreUint8    m_iMaxAnisotropy;              // max anisotropic texture filter level
     coreUint8    m_iMaxTextures;                // max number of texture units (only for fragment shader)
     corePoint2U8 m_VersionOpenGL;               // available OpenGL version
@@ -144,11 +146,13 @@ public:
     inline const coreLight&     GetLight          (const coreUintW iIndex)const {ASSERT(iIndex < CORE_GRAPHICS_LIGHTS) return m_aLight[iIndex];}
 
     /* check OpenGL properties */
-    inline const coreUint8&    GetMaxSamples   ()const {return m_iMaxSamples;}
-    inline const coreUint8&    GetMaxAnisotropy()const {return m_iMaxAnisotropy;}
-    inline const coreUint8&    GetMaxTextures  ()const {return m_iMaxTextures;}
-    inline const corePoint2U8& GetVersionOpenGL()const {return m_VersionOpenGL;}
-    inline const corePoint2U8& GetVersionGLSL  ()const {return m_VersionGLSL;}
+    inline const coreUint8&    GetMaxSamples    ()const                       {return m_iMaxSamples;}
+    inline const coreUint8&    GetMaxSamplesEQAA(const coreUintW iIndex)const {ASSERT(iIndex < ARRAY_SIZE(m_aiMaxSamplesEQAA)) return m_aiMaxSamplesEQAA[iIndex];}
+    inline const coreUint8&    GetMaxSamplesCSAA(const coreUintW iIndex)const {ASSERT(iIndex < ARRAY_SIZE(m_aiMaxSamplesCSAA)) return m_aiMaxSamplesCSAA[iIndex];}
+    inline const coreUint8&    GetMaxAnisotropy ()const                       {return m_iMaxAnisotropy;}
+    inline const coreUint8&    GetMaxTextures   ()const                       {return m_iMaxTextures;}
+    inline const corePoint2U8& GetVersionOpenGL ()const                       {return m_VersionOpenGL;}
+    inline const corePoint2U8& GetVersionGLSL   ()const                       {return m_VersionGLSL;}
 
 
 private:

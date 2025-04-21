@@ -234,7 +234,7 @@ CoreSystem::CoreSystem()noexcept
     SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER,             CoreApp::Settings::Graphics::DoubleBuffer               ? 1 : 0);
     SDL_GL_SetAttribute(SDL_GL_STEREO,                   CoreApp::Settings::Graphics::StereoRender               ? 1 : 0);
     SDL_GL_SetAttribute(SDL_GL_MULTISAMPLEBUFFERS,       Core::Config->GetInt(CORE_CONFIG_GRAPHICS_ANTIALIASING) ? 1 : 0);
-    SDL_GL_SetAttribute(SDL_GL_MULTISAMPLESAMPLES,       Core::Config->GetInt(CORE_CONFIG_GRAPHICS_ANTIALIASING));
+    SDL_GL_SetAttribute(SDL_GL_MULTISAMPLESAMPLES,       CLAMP(Core::Config->GetInt(CORE_CONFIG_GRAPHICS_ANTIALIASING), 0, 8));
     SDL_GL_SetAttribute(SDL_GL_CONTEXT_RELEASE_BEHAVIOR, SDL_GL_CONTEXT_RELEASE_BEHAVIOR_NONE);
 
 #if defined(_CORE_GLES_)

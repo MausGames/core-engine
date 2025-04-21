@@ -33,6 +33,8 @@ CoreGraphics::CoreGraphics()noexcept
 , m_aiScissorData     {}
 , m_iMemoryStart      (0u)
 , m_iMaxSamples       (0u)
+, m_aiMaxSamplesEQAA  {}
+, m_aiMaxSamplesCSAA  {}
 , m_iMaxAnisotropy    (0u)
 , m_iMaxTextures      (0u)
 , m_VersionOpenGL     (corePoint2U8(0u, 0u))
@@ -61,8 +63,31 @@ CoreGraphics::CoreGraphics()noexcept
         GLint iValue = 0; glGetIntegerv(GL_MAX_SAMPLES, &iValue);
         m_iMaxSamples = MAX(iValue, 0);
 
-        // handle coverage extension
-        if(CORE_GL_SUPPORT(NV_framebuffer_multisample_coverage)) m_iMaxSamples = MIN(m_iMaxSamples, 8u);
+        // handle AMD extension (EQAA)
+        if(CORE_GL_SUPPORT(AMD_framebuffer_multisample_advanced))
+        {
+            iValue = 0; glGetIntegerv(GL_MAX_COLOR_FRAMEBUFFER_SAMPLES_AMD,         &iValue); m_aiMaxSamplesEQAA[0] = MAX(iValue, 0);
+            iValue = 0; glGetIntegerv(GL_MAX_DEPTH_STENCIL_FRAMEBUFFER_SAMPLES_AMD, &iValue); m_aiMaxSamplesEQAA[1] = MAX(iValue, 0);
+            iValue = 0; glGetIntegerv(GL_MAX_COLOR_FRAMEBUFFER_STORAGE_SAMPLES_AMD, &iValue); m_aiMaxSamplesEQAA[2] = MAX(iValue, 0);
+        }
+
+        // handle Nvidia extension (CSAA)
+        if(CORE_GL_SUPPORT(NV_framebuffer_multisample_coverage))
+        {
+            m_iMaxSamples = MIN(m_iMaxSamples, 16u);
+
+            iValue = 0; glGetIntegerv(GL_MAX_MULTISAMPLE_COVERAGE_MODES_NV, &iValue);
+            if(iValue > 0)
+            {
+                coreDataScope<corePoint2I32> pModeList = new corePoint2I32[iValue];
+
+                glGetIntegerv(GL_MULTISAMPLE_COVERAGE_MODES_NV, r_cast<GLint*>(pModeList.Get()));
+                std::sort(pModeList.Get(), pModeList.Get() + iValue, std::greater());
+
+                m_aiMaxSamplesCSAA[0] = MAX(pModeList[0][0], 0);
+                m_aiMaxSamplesCSAA[1] = MAX(pModeList[0][1], 0);
+            }
+        }
     }
 
     // get max texture filter level

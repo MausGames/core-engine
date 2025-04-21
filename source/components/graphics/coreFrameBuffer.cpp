@@ -70,12 +70,19 @@ coreStatus coreFrameBuffer::Create(const coreVector2 vResolution, const coreFram
     // check for multisampling
     const coreUint8 iSamples     = CLAMP(Core::Config->GetInt(CORE_CONFIG_GRAPHICS_ANTIALIASING), 0, Core::Graphics->GetMaxSamples());
     const coreBool  bIntelMorph  = CORE_GL_SUPPORT(INTEL_framebuffer_CMAA)               && (eType == CORE_FRAMEBUFFER_CREATE_MULTISAMPLED) && (iSamples == 1u);
-    const coreBool  bAmdAdvanced = CORE_GL_SUPPORT(AMD_framebuffer_multisample_advanced) && (eType == CORE_FRAMEBUFFER_CREATE_MULTISAMPLED) && (iSamples == 8u || iSamples == 4u || iSamples == 2u);
-    const coreBool  bNvCoverage  = CORE_GL_SUPPORT(NV_framebuffer_multisample_coverage)  && (eType == CORE_FRAMEBUFFER_CREATE_MULTISAMPLED) && (iSamples == 8u || iSamples == 4u);
+    const coreBool  bAmdAdvanced = CORE_GL_SUPPORT(AMD_framebuffer_multisample_advanced) && (eType == CORE_FRAMEBUFFER_CREATE_MULTISAMPLED) && (iSamples >= 2u);
+    const coreBool  bNvCoverage  = CORE_GL_SUPPORT(NV_framebuffer_multisample_coverage)  && (eType == CORE_FRAMEBUFFER_CREATE_MULTISAMPLED) && (iSamples >= 4u);
     const coreBool  bMultisample = CORE_GL_SUPPORT(EXT_framebuffer_multisample)          && (eType == CORE_FRAMEBUFFER_CREATE_MULTISAMPLED) && (iSamples >= 1u);
 
     // set additional properties
     m_bIntelMorph = bIntelMorph;
+
+    // handle additional restrictions
+    UNUSED const coreUint8 iAmdSamplesColor   = MIN(iSamples * 2u, Core::Graphics->GetMaxSamplesEQAA(0u));
+    UNUSED const coreUint8 iAmdSamplesDepth   = MIN(iSamples,      Core::Graphics->GetMaxSamplesEQAA(1u));
+    UNUSED const coreUint8 iAmdSamplesStorage = MIN(iSamples,      Core::Graphics->GetMaxSamplesEQAA(2u));
+    UNUSED const coreUint8 iNvSamplesCoverage = MIN(iSamples * 2u, Core::Graphics->GetMaxSamplesCSAA(0u));
+    UNUSED const coreUint8 iNvSamplesColor    = MIN(iSamples,      Core::Graphics->GetMaxSamplesCSAA(1u));
 
     // loop through all render targets
     __CORE_FRAMEBUFFER_ALL_TARGETS(apTarget)
@@ -109,11 +116,11 @@ coreStatus coreFrameBuffer::Create(const coreVector2 vResolution, const coreFram
             glBindRenderbuffer(GL_RENDERBUFFER, pTarget->iBuffer);
 
             // allocate buffer memory
-                 if(bIntelMorph)  glRenderbufferStorage                      (GL_RENDERBUFFER,                                             pTarget->oSpec.iInternal, iWidth, iHeight);
-            else if(bAmdAdvanced) glRenderbufferStorageMultisampleAdvancedAMD(GL_RENDERBUFFER, iSamples * ((i >= 2u) ? 2u : 1u), iSamples, pTarget->oSpec.iInternal, iWidth, iHeight);
-            else if(bNvCoverage)  glRenderbufferStorageMultisampleCoverageNV (GL_RENDERBUFFER, iSamples * 2u,                    iSamples, pTarget->oSpec.iInternal, iWidth, iHeight);
-            else if(bMultisample) glRenderbufferStorageMultisample           (GL_RENDERBUFFER,                                   iSamples, pTarget->oSpec.iInternal, iWidth, iHeight);
-            else                  glRenderbufferStorage                      (GL_RENDERBUFFER,                                             pTarget->oSpec.iInternal, iWidth, iHeight);
+                 if(bIntelMorph)  glRenderbufferStorage                      (GL_RENDERBUFFER,                                                                      pTarget->oSpec.iInternal, iWidth, iHeight);
+            else if(bAmdAdvanced) glRenderbufferStorageMultisampleAdvancedAMD(GL_RENDERBUFFER, (i >= 2u) ? iAmdSamplesColor : iAmdSamplesDepth, iAmdSamplesStorage, pTarget->oSpec.iInternal, iWidth, iHeight);
+            else if(bNvCoverage)  glRenderbufferStorageMultisampleCoverageNV (GL_RENDERBUFFER, iNvSamplesCoverage,                              iNvSamplesColor,    pTarget->oSpec.iInternal, iWidth, iHeight);
+            else if(bMultisample) glRenderbufferStorageMultisample           (GL_RENDERBUFFER,                                                  iSamples,           pTarget->oSpec.iInternal, iWidth, iHeight);
+            else                  glRenderbufferStorage                      (GL_RENDERBUFFER,                                                                      pTarget->oSpec.iInternal, iWidth, iHeight);
 
             // attach render target buffer to frame buffer
             glFramebufferRenderbuffer(GL_FRAMEBUFFER, iAttachment, GL_RENDERBUFFER, pTarget->iBuffer);
