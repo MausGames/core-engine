@@ -34,7 +34,7 @@
 
 #define CORE_INPUT_BUTTONS_KEYBOARD     (287u)   // number of handled keyboard buttons (# SDL_SCANCODE_COUNT)
 #define CORE_INPUT_BUTTONS_MOUSE        (16u)    // number of handled mouse buttons
-#define CORE_INPUT_BUTTONS_JOYSTICK     (32u)    // number of handled joystick buttons
+#define CORE_INPUT_BUTTONS_JOYSTICK     (32u)    // number of handled joystick buttons (# SDL_GAMEPAD_BUTTON_COUNT)
 #define CORE_INPUT_AXIS                 (8u)     // number of handled joystick axis
 #define CORE_INPUT_DIRECTIONS           (4u)     // number of handled joystick (hat) directions
 #define CORE_INPUT_TYPES                (4u)     // number of different status types

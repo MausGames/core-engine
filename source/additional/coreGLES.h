@@ -237,7 +237,7 @@ using PFNGLTEXSTORAGE2DPROC = void (GL_APIENTRY *) (GLenum target, GLsizei level
 /* GL_INTEL_framebuffer_CMAA */
 #define CORE_GL_INTEL_framebuffer_CMAA (__CORE_GLES_VAR(GL_INTEL_framebuffer_CMAA) && !DEFINED(_CORE_EMSCRIPTEN_))
 
-using PFNGLAPPLYFRAMEBUFFERATTACHMENTCMAAPROC = void (GL_APIENTRY *) (void);
+using PFNGLAPPLYFRAMEBUFFERATTACHMENTCMAAPROC = void (GL_APIENTRY *) ();
 #define glApplyFramebufferAttachmentCMAAINTEL __CORE_GLES_FUNC(glApplyFramebufferAttachmentCMAA)
 
 

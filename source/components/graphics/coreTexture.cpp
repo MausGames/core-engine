@@ -186,10 +186,10 @@ void coreTexture::Create(const coreUint32 iWidth, const coreUint32 iHeight, cons
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T,     iWrapMode);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_BASE_LEVEL, 0);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAX_LEVEL,  m_iLevels - 1);
-    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_LOD_BIAS,   CORE_TEXTURE_LOD_BIAS);
-    if(bAnisotropic) glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAX_ANISOTROPY, I_TO_F(CLAMP(Core::Config->GetInt(CORE_CONFIG_GRAPHICS_TEXTUREANISOTROPY), 1, Core::Graphics->GetMaxAnisotropy())));
-    if(bMipMapOld)   glTexParameteri(GL_TEXTURE_2D, GL_GENERATE_MIPMAP,        GL_TRUE);
-    if(bTarget)      glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_USAGE_ANGLE,    GL_FRAMEBUFFER_ATTACHMENT_ANGLE);
+    if(bAnisotropic)          glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAX_ANISOTROPY, I_TO_F(CLAMP(Core::Config->GetInt(CORE_CONFIG_GRAPHICS_TEXTUREANISOTROPY), 1, Core::Graphics->GetMaxAnisotropy())));
+    if(bMipMap || bMipMapOld) glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_LOD_BIAS,       CORE_TEXTURE_LOD_BIAS);
+    if(bMipMapOld)            glTexParameteri(GL_TEXTURE_2D, GL_GENERATE_MIPMAP,        GL_TRUE);
+    if(bTarget)               glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_USAGE_ANGLE,    GL_FRAMEBUFFER_ATTACHMENT_ANGLE);
 
     if(CORE_GL_SUPPORT(ARB_texture_storage))
     {

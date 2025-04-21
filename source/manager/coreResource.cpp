@@ -111,11 +111,12 @@ coreResourceManager::coreResourceManager()noexcept
     // configure resource thread
     this->SetFrequency(120.0f);
 
-    // start up the resource manager
-    this->Reset(CORE_RESOURCE_RESET_INIT);
-
     // load all relevant default resources
     this->__LoadDefault();
+    ASSERT(!m_apHandle.empty())
+
+    // start up the resource manager
+    this->Reset(CORE_RESOURCE_RESET_INIT);
 
     Core::Log->Info(CORE_LOG_BOLD("Resource Manager created"));
 }
@@ -162,7 +163,7 @@ void coreResourceManager::UpdateResources(const coreFloat fBudgetSec)
         m_ResourceLock.Lock();
         {
             // loop through all resource handles
-            for(coreUintW i = 0u; i < m_apHandle.size(); ++i)   // # size may change
+            for(coreUintW i = 0u; i < LOOP_NONZERO(m_apHandle.size()); ++i)   // # size may change
             {
                 coreResourceHandle* pCurHandle = m_apHandle[i];
 
