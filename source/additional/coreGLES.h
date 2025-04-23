@@ -17,6 +17,7 @@
 // TODO 3: static functions for WebGL (removing GetProcAddress, extension-checks could be enough, how to merge extensions-functions?)
 // TODO 4: add all missing "shader extensions"
 // TODO 3: CORE_CONFIG_GRAPHICS_DISABLEEXTENSIONS does not work for static version-checked extensions
+// TODO 3: EGL_ANGLE_memory_usage_report
 
 
 // ****************************************************************
@@ -107,7 +108,7 @@ using PFNGLCLEARTEXIMAGEPROC = void (GL_APIENTRY *) (GLuint texture, GLint level
 using PFNGLDISCARDFRAMEBUFFERPROC = void (GL_APIENTRY *) (GLenum target, GLsizei numAttachments, const GLenum* attachments);
 #define glInvalidateBufferData(...)
 #define glInvalidateBufferSubData(...) __CORE_GLES_UNUSED_ARGS(__VA_ARGS__)
-#define glInvalidateFramebuffer        __CORE_GLES_FUNC(glDiscardFramebuffer)
+#define glInvalidateFramebuffer(...)   (__CORE_GLES_VAR(bES30) ? glInvalidateFramebuffer(__VA_ARGS__) : __CORE_GLES_FUNC(glDiscardFramebuffer)(__VA_ARGS__))
 #define glInvalidateSubFramebuffer(...)
 #define glInvalidateTexImage(...)
 #define glInvalidateTexSubImage(...)
@@ -134,7 +135,7 @@ using PFNGLQUERYCOUNTERPROC        = void (GL_APIENTRY *) (GLuint id, GLenum tar
 #define CORE_GL_EXT_draw_buffers (__CORE_GLES_VAR(GL_EXT_draw_buffers))
 
 using PFNGLDRAWBUFFERSPROC = void (GL_APIENTRY *) (GLsizei n, const GLenum* bufs);
-#define glDrawBuffers __CORE_GLES_FUNC(glDrawBuffers)
+#define glDrawBuffers(...) __CORE_GLES_FUNC_STATIC(bES30, glDrawBuffers, __VA_ARGS__)
 
 
 // ****************************************************************
@@ -144,9 +145,9 @@ using PFNGLDRAWBUFFERSPROC = void (GL_APIENTRY *) (GLsizei n, const GLenum* bufs
 using PFNGLDRAWARRAYSINSTANCEDARBPROC   = void (GL_APIENTRY *) (GLenum mode, GLint first, GLsizei count, GLsizei primcount);
 using PFNGLDRAWELEMENTSINSTANCEDARBPROC = void (GL_APIENTRY *) (GLenum mode, GLsizei count, GLenum type, const void* indices, GLsizei primcount);
 using PFNGLVERTEXATTRIBDIVISORARBPROC   = void (GL_APIENTRY *) (GLuint index, GLuint divisor);
-#define glDrawArraysInstanced   __CORE_GLES_FUNC(glDrawArraysInstanced)
-#define glDrawElementsInstanced __CORE_GLES_FUNC(glDrawElementsInstanced)
-#define glVertexAttribDivisor   __CORE_GLES_FUNC(glVertexAttribDivisor)
+#define glDrawArraysInstanced(...)   __CORE_GLES_FUNC_STATIC(bES30, glDrawArraysInstanced,   __VA_ARGS__)
+#define glDrawElementsInstanced(...) __CORE_GLES_FUNC_STATIC(bES30, glDrawElementsInstanced, __VA_ARGS__)
+#define glVertexAttribDivisor(...)   __CORE_GLES_FUNC_STATIC(bES30, glVertexAttribDivisor,   __VA_ARGS__)
 
 
 // ****************************************************************
@@ -218,7 +219,7 @@ using PFNGLREADNPIXELSPROC            = void   (GL_APIENTRY *) (GLint x, GLint y
 #define CORE_GL_ARB_texture_storage (__CORE_GLES_VAR(GL_EXT_texture_storage))
 
 using PFNGLTEXSTORAGE2DPROC = void (GL_APIENTRY *) (GLenum target, GLsizei levels, GLenum internalformat, GLsizei width, GLsizei height);
-#define glTexStorage2D __CORE_GLES_FUNC(glTexStorage2D)
+#define glTexStorage2D(...) __CORE_GLES_FUNC_STATIC(bES30, glTexStorage2D, __VA_ARGS__)
 
 
 // ****************************************************************
@@ -275,7 +276,7 @@ using PFNGLMAXSHADERCOMPILERTHREADSPROC = void (GL_APIENTRY *) (GLuint count);
 #define CORE_GL_ARB_copy_buffer (__CORE_GLES_VAR(GL_NV_copy_buffer))
 
 using PFNGLCOPYBUFFERSUBDATAPROC = void (GL_APIENTRY *) (GLenum readtarget, GLenum writetarget, GLintptr readoffset, GLintptr writeoffset, GLsizeiptr size);
-#define glCopyBufferSubData __CORE_GLES_FUNC(glCopyBufferSubData)
+#define glCopyBufferSubData(...) __CORE_GLES_FUNC_STATIC(bES30, glCopyBufferSubData, __VA_ARGS__)
 
 
 // ****************************************************************
@@ -283,7 +284,7 @@ using PFNGLCOPYBUFFERSUBDATAPROC = void (GL_APIENTRY *) (GLenum readtarget, GLen
 #define CORE_GL_EXT_framebuffer_blit (__CORE_GLES_VAR(GL_NV_framebuffer_blit))
 
 using PFNGLBLITFRAMEBUFFERPROC = void (GL_APIENTRY *) (GLint srcX0, GLint srcY0, GLint srcX1, GLint srcY1, GLint dstX0, GLint dstY0, GLint dstX1, GLint dstY1, GLbitfield mask, GLenum filter);
-#define glBlitFramebuffer __CORE_GLES_FUNC(glBlitFramebuffer)
+#define glBlitFramebuffer(...) __CORE_GLES_FUNC_STATIC(bES30, glBlitFramebuffer, __VA_ARGS__)
 
 
 // ****************************************************************
@@ -291,7 +292,7 @@ using PFNGLBLITFRAMEBUFFERPROC = void (GL_APIENTRY *) (GLint srcX0, GLint srcY0,
 #define CORE_GL_EXT_framebuffer_multisample (__CORE_GLES_VAR(GL_NV_framebuffer_multisample))
 
 using PFNGLRENDERBUFFERSTORAGEMULTISAMPLEPROC = void (GL_APIENTRY *) (GLenum target, GLsizei samples, GLenum internalformat, GLsizei width, GLsizei height);
-#define glRenderbufferStorageMultisample __CORE_GLES_FUNC(glRenderbufferStorageMultisample)
+#define glRenderbufferStorageMultisample(...) __CORE_GLES_FUNC_STATIC(bES30, glRenderbufferStorageMultisample, __VA_ARGS__)
 
 
 // ****************************************************************
@@ -331,8 +332,8 @@ using PFNGLCOPYIMAGESUBDATAPROC = void (GL_APIENTRY *) (GLuint srcName, GLenum s
 
 using PFNGLGETPROGRAMBINARYPROC = void (GL_APIENTRY *) (GLuint program, GLsizei bufSize, GLsizei* length, GLenum *binaryFormat, void* binary);
 using PFNGLPROGRAMBINARYPROC    = void (GL_APIENTRY *) (GLuint program, GLenum binaryFormat, const void* binary, GLsizei length);
-#define glGetProgramBinary __CORE_GLES_FUNC(glGetProgramBinary)
-#define glProgramBinary    __CORE_GLES_FUNC(glProgramBinary)
+#define glGetProgramBinary(...) __CORE_GLES_FUNC_STATIC(bES30, glGetProgramBinary, __VA_ARGS__)
+#define glProgramBinary(...)    __CORE_GLES_FUNC_STATIC(bES30, glProgramBinary,    __VA_ARGS__)
 #define glProgramParameteri(...)
 
 
@@ -360,8 +361,8 @@ using PFNGLMINSAMPLESHADINGPROC = void (GL_APIENTRY *) (GLclampf value);
 
 using PFNGLTEXIMAGE3DPROC    = void (GL_APIENTRY *) (GLenum target, GLint level, GLint internalFormat, GLsizei width, GLsizei height, GLsizei depth, GLint border, GLenum format, GLenum type, const void* pixels);
 using PFNGLTEXSUBIMAGE3DPROC = void (GL_APIENTRY *) (GLenum target, GLint level, GLint xoffset, GLint yoffset, GLint zoffset, GLsizei width, GLsizei height, GLsizei depth, GLenum format, GLenum type, const void* pixels);
-#define glTexImage3D    __CORE_GLES_FUNC(glTexImage3D)
-#define glTexSubImage3D __CORE_GLES_FUNC(glTexSubImage3D)
+#define glTexImage3D(...)    __CORE_GLES_FUNC_STATIC(bES30, glTexImage3D,    __VA_ARGS__)
+#define glTexSubImage3D(...) __CORE_GLES_FUNC_STATIC(bES30, glTexSubImage3D, __VA_ARGS__)
 
 
 // ****************************************************************
@@ -376,9 +377,9 @@ using PFNGLTEXSUBIMAGE3DPROC = void (GL_APIENTRY *) (GLenum target, GLint level,
 using PFNGLBINDVERTEXARRAYPROC    = void (GL_APIENTRY *) (GLuint array);
 using PFNGLDELETEVERTEXARRAYSPROC = void (GL_APIENTRY *) (GLsizei n, const GLuint* arrays);
 using PFNGLGENVERTEXARRAYSPROC    = void (GL_APIENTRY *) (GLsizei n, GLuint* arrays);
-#define glBindVertexArray    __CORE_GLES_FUNC(glBindVertexArray)
-#define glDeleteVertexArrays __CORE_GLES_FUNC(glDeleteVertexArrays)
-#define glGenVertexArrays    __CORE_GLES_FUNC(glGenVertexArrays)
+#define glBindVertexArray(...)    __CORE_GLES_FUNC_STATIC(bES30, glBindVertexArray,    __VA_ARGS__)
+#define glDeleteVertexArrays(...) __CORE_GLES_FUNC_STATIC(bES30, glDeleteVertexArrays, __VA_ARGS__)
+#define glGenVertexArrays(...)    __CORE_GLES_FUNC_STATIC(bES30, glGenVertexArrays,    __VA_ARGS__)
 
 
 // ****************************************************************
@@ -393,8 +394,8 @@ using PFNGLGENVERTEXARRAYSPROC    = void (GL_APIENTRY *) (GLsizei n, GLuint* arr
 /* other remapped identifiers */
 #define glClearDepth                     glClearDepthf
 #define glDepthRange                     glDepthRangef
-#define glDrawBuffer(a)                  CALL(const GLenum A = (a); glDrawBuffers(1, &A);)
-#define glDrawRangeElements(a,b,c,d,e,f) CALL(if(__CORE_GLES_VAR(bES30)) glDrawRangeElements(a, b, c, d, e, f); else glDrawElements(a, d, e, f);)
+#define glDrawBuffer(a)                  ([](const GLenum A) {glDrawBuffers(1, &A);}(a))
+#define glDrawRangeElements(a,b,c,d,e,f) (__CORE_GLES_VAR(bES30) ? glDrawRangeElements(a, b, c, d, e, f) : glDrawElements(a, d, e, f))
 
 using PFNGLGETBUFFERSUBDATAPROC = void (GL_APIENTRY *) (GLenum target, GLintptr offset, GLsizeiptr size, void* data);
 #define glGetBufferSubData __CORE_GLES_FUNC(glGetBufferSubData)
@@ -410,12 +411,15 @@ using PFNGLGETBUFFERSUBDATAPROC = void (GL_APIENTRY *) (GLenum target, GLintptr 
 #define GL_GPU_MEMORY_INFO_DEDICATED_VIDMEM_NVX         0x9047
 #define GL_LUMINANCE8                                   0x8040
 #define GL_LUMINANCE16                                  0x8042
+#define GL_MAX_MULTISAMPLE_COVERAGE_MODES_NV            0x8E11
 #define GL_MULTISAMPLE                                  0x809D
+#define GL_MULTISAMPLE_COVERAGE_MODES_NV                0x8E12
 #define GL_MULTISAMPLE_FILTER_HINT_NV                   0x8534
 #define GL_PERSPECTIVE_CORRECTION_HINT                  0x0C50
 #define GL_PRIMITIVES_SUBMITTED                         0x82EF
 #define GL_TEXTURE_COMPRESSION_HINT                     0x84EF
 #define GL_TEXTURE_CUBE_MAP_SEAMLESS                    0x884F
+#define GL_TEXTURE_LOD_BIAS                             0x8501
 #define GL_VERTEX_SHADER_INVOCATIONS                    0x82F0
 
 #define glBindFragDataLocation(...)
@@ -564,10 +568,11 @@ struct coreContext final
 extern coreString  g_sExtensions;   // full extension string
 extern coreContext g_CoreContext;   // context object
 
-#define __CORE_GLES_CHECK(x,b)        (g_CoreContext.__ ## x = ((b) || g_sExtensions.contains(#x " ")))
-#define __CORE_GLES_FUNC(f)           (g_CoreContext.__ ## f)
-#define __CORE_GLES_FUNC_FETCH(f,a,b) {g_CoreContext.__ ## f = r_cast<decltype(g_CoreContext.__ ## f)>(eglGetProcAddress((b) ? #f : #f #a));}
-#define __CORE_GLES_VAR(v)            (g_CoreContext.__ ## v)
+#define __CORE_GLES_CHECK(x,b)           (g_CoreContext.__ ## x = ((b) || g_sExtensions.contains(#x " ")))
+#define __CORE_GLES_FUNC(f)              (g_CoreContext.__ ## f)
+#define __CORE_GLES_FUNC_STATIC(v,f,...) (__CORE_GLES_VAR(v) ? f(__VA_ARGS__) : __CORE_GLES_FUNC(f)(__VA_ARGS__))
+#define __CORE_GLES_FUNC_FETCH(f,a,b)    {g_CoreContext.__ ## f = r_cast<decltype(g_CoreContext.__ ## f)>(eglGetProcAddress((b) ? #f : #f #a));}
+#define __CORE_GLES_VAR(v)               (g_CoreContext.__ ## v)
 
 template <typename... A> void __UNUSED_ARGS(A...) {}
 #define __CORE_GLES_UNUSED_ARGS(...) {if(false) __UNUSED_ARGS(__VA_ARGS__);}
