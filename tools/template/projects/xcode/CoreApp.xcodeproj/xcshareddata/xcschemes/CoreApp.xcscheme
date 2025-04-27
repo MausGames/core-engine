@@ -17,7 +17,7 @@
                BlueprintIdentifier = "5BB8C29727C9489900BBB338"
                BuildableName = "libCoreEngine.a"
                BlueprintName = "CoreEngine"
-               ReferencedContainer = "container:../../../CoreEngine/projects/xcode/CoreEngine.xcodeproj">
+               ReferencedContainer = "container:../../../core-engine/projects/xcode/CoreEngine.xcodeproj">
             </BuildableReference>
          </BuildActionEntry>
          <BuildActionEntry

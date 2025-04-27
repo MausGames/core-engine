@@ -55,12 +55,12 @@
 		5B42D8E827D3A01F0075F2A6 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		5B42D8E927D3A01F0075F2A6 /* Entitlements.entitlements */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.entitlements; path = Entitlements.entitlements; sourceTree = "<group>"; };
 		5B42D8EB27D3F7C20075F2A6 /* data */ = {isa = PBXFileReference; lastKnownFileType = folder; name = data; path = ../../executable/data; sourceTree = "<group>"; };
-		5B5B7C7C27D2A145003FD836 /* libzstd.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libzstd.dylib; path = ../../../CoreEngine/libraries/bin/macos/libzstd.dylib; sourceTree = "<group>"; };
-		5B5B7C7F27D2A146003FD836 /* libopenal.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libopenal.dylib; path = ../../../CoreEngine/libraries/bin/macos/libopenal.dylib; sourceTree = "<group>"; };
-		5BA975892D8DFEFB00D916E6 /* libSDL3.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libSDL3.dylib; path = ../../../CoreEngine/libraries/bin/macos/libSDL3.dylib; sourceTree = "<group>"; };
-		5BA9758A2D8DFEFB00D916E6 /* libSDL3_image.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libSDL3_image.dylib; path = ../../../CoreEngine/libraries/bin/macos/libSDL3_image.dylib; sourceTree = "<group>"; };
-		5BA9758B2D8DFEFB00D916E6 /* libSDL3_ttf.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libSDL3_ttf.dylib; path = ../../../CoreEngine/libraries/bin/macos/libSDL3_ttf.dylib; sourceTree = "<group>"; };
-		5BBB44E92BB057E300A229F2 /* libopusfile.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libopusfile.dylib; path = ../../../CoreEngine/libraries/bin/macos/libopusfile.dylib; sourceTree = "<group>"; };
+		5B5B7C7C27D2A145003FD836 /* libzstd.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libzstd.dylib; path = ../../../core-engine/libraries/bin/macos/libzstd.dylib; sourceTree = "<group>"; };
+		5B5B7C7F27D2A146003FD836 /* libopenal.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libopenal.dylib; path = ../../../core-engine/libraries/bin/macos/libopenal.dylib; sourceTree = "<group>"; };
+		5BA975892D8DFEFB00D916E6 /* libSDL3.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libSDL3.dylib; path = ../../../core-engine/libraries/bin/macos/libSDL3.dylib; sourceTree = "<group>"; };
+		5BA9758A2D8DFEFB00D916E6 /* libSDL3_image.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libSDL3_image.dylib; path = ../../../core-engine/libraries/bin/macos/libSDL3_image.dylib; sourceTree = "<group>"; };
+		5BA9758B2D8DFEFB00D916E6 /* libSDL3_ttf.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libSDL3_ttf.dylib; path = ../../../core-engine/libraries/bin/macos/libSDL3_ttf.dylib; sourceTree = "<group>"; };
+		5BBB44E92BB057E300A229F2 /* libopusfile.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libopusfile.dylib; path = ../../../core-engine/libraries/bin/macos/libopusfile.dylib; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -230,7 +230,7 @@
 				DEBUG_INFORMATION_FORMAT = dwarf;
 				DEVELOPMENT_TEAM = 8GQ7BP7X6B;
 				ENABLE_HARDENED_RUNTIME = YES;
-				FRAMEWORK_SEARCH_PATHS = ../../../CoreEngine/libraries/bin/macos;
+				FRAMEWORK_SEARCH_PATHS = ../../../core-engine/libraries/bin/macos;
 				GCC_C_LANGUAGE_STANDARD = c17;
 				GCC_ENABLE_OBJC_EXCEPTIONS = NO;
 				GCC_NO_COMMON_BLOCKS = YES;
@@ -250,13 +250,13 @@
 				GENERATE_INFOPLIST_FILE = YES;
 				GENERATE_PKGINFO_FILE = NO;
 				HEADER_SEARCH_PATHS = (
-					../../../CoreEngine/libraries/include,
-					../../../CoreEngine/source,
+					../../../core-engine/libraries/include,
+					../../../core-engine/source,
 				);
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.games";
 				INFOPLIST_KEY_NSHumanReadableCopyright = "Copyright (c) XXXX Martin Mauersics";
 				LD_RUNPATH_SEARCH_PATHS = "@executable_path/../Frameworks";
-				LIBRARY_SEARCH_PATHS = ../../../CoreEngine/libraries/bin/macos;
+				LIBRARY_SEARCH_PATHS = ../../../core-engine/libraries/bin/macos;
 				MACOSX_DEPLOYMENT_TARGET = 10.13;
 				MARKETING_VERSION = 0.0.1;
 				ONLY_ACTIVE_ARCH = YES;
@@ -303,7 +303,7 @@
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				DEVELOPMENT_TEAM = 8GQ7BP7X6B;
 				ENABLE_HARDENED_RUNTIME = YES;
-				FRAMEWORK_SEARCH_PATHS = ../../../CoreEngine/libraries/bin/macos;
+				FRAMEWORK_SEARCH_PATHS = ../../../core-engine/libraries/bin/macos;
 				GCC_C_LANGUAGE_STANDARD = c17;
 				GCC_ENABLE_CPP_EXCEPTIONS = NO;
 				GCC_ENABLE_CPP_RTTI = NO;
@@ -321,13 +321,13 @@
 				GENERATE_INFOPLIST_FILE = YES;
 				GENERATE_PKGINFO_FILE = NO;
 				HEADER_SEARCH_PATHS = (
-					../../../CoreEngine/libraries/include,
-					../../../CoreEngine/source,
+					../../../core-engine/libraries/include,
+					../../../core-engine/source,
 				);
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.games";
 				INFOPLIST_KEY_NSHumanReadableCopyright = "Copyright (c) XXXX Martin Mauersics";
 				LD_RUNPATH_SEARCH_PATHS = "@executable_path/../Frameworks";
-				LIBRARY_SEARCH_PATHS = ../../../CoreEngine/libraries/bin/macos;
+				LIBRARY_SEARCH_PATHS = ../../../core-engine/libraries/bin/macos;
 				LLVM_LTO = YES;
 				MACOSX_DEPLOYMENT_TARGET = 10.13;
 				MARKETING_VERSION = 0.0.1;

@@ -145,8 +145,8 @@ else()
 
     if(NOT CORE_DEBUG)
 
-        set(LIBCXX_DIRECTORY ${BASE_DIRECTORY}/../CoreLibrary/output/libcxx)
-        set(GLIBC_DIRECTORY ${BASE_DIRECTORY}/../CoreLibrary/output/glibc)
+        set(LIBCXX_DIRECTORY ${BASE_DIRECTORY}/../core-library/output/libcxx)
+        set(GLIBC_DIRECTORY ${BASE_DIRECTORY}/../core-library/output/glibc)
 
         target_sources(
             CoreEngine INTERFACE

@@ -49,4 +49,4 @@ def __lldb_init_module(debugger, internal_dict):
     debugger.HandleCommand("type summary   add coreHashString               --inline-children --omit-names")
 
 
-# command script import <path>/CoreEngine/projects/cmake/visualizer.py
+# command script import <path>/core-engine/projects/cmake/visualizer.py

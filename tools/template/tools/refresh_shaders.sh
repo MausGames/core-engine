@@ -1,3 +1,3 @@
 #!/bin/bash
 
-../../CoreEngine/tools/scripts/update_template.sh "$PWD/.." shaders
+../../core-engine/tools/scripts/update_template.sh "$PWD/.." shaders
