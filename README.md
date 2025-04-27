@@ -21,7 +21,9 @@ It is **designed to be supportive, versatile and powerful**, and to dynamically 
 > - Menu Objects (Labels (simple, rich), Buttons, Check Boxes, Selection Boxes, Text Boxes, View/Scroll Boxes)
 > - Tools (Blender Export, Shader Validation, Texture Optimization), Project Template, Launcher (Windows, Linux, Browser)
 
-*Please understand that pull requests are currently not accepted, as this is mainly a personal project and learning experience.*
+Please understand that pull requests are currently not accepted, as this is mainly a (public) personal project and learning experience. There is no guarantee that everything will always work out-of-the-box on other peoples machines.
+
+Pre-built dependencies can be downloaded with **tools/complete_repository.bat/.sh** or manually built from the **Core Library** ([GitHub](https://github.com/MausGames/core-library), [GitLab](https://gitlab.com/MausGames/core-library)).
 
 #
 
