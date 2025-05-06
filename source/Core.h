@@ -384,7 +384,6 @@
 #define CONCAT(a,b)                 __CONCAT(a, b)
 #define __DEFINED(a,b)              !!FORCE_COMPILE_TIME(coreStrCmpConst(#a, b))
 #define DEFINED(a)                  __DEFINED(a, #a)
-#define CALL(...)                   do {__VA_ARGS__} while(false)
 
 #define SAFE_DELETE(p)              {delete   (p); (p) = NULL;}
 #define SAFE_DELETE_ARRAY(p)        {delete[] (p); (p) = NULL;}

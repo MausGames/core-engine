@@ -94,7 +94,7 @@ private:
 
 
 public:
-    constexpr coreRecursiveLock()noexcept : m_State (), m_iCount (0u) {}
+    coreRecursiveLock()noexcept : m_State (), m_iCount (0u) {}
 
     DISABLE_COPY(coreRecursiveLock)
 

@@ -108,7 +108,7 @@ private:
 class coreArchive final
 {
 private:
-    coreString m_sPath;               // relative path of the archive
+    coreString            m_sPath;    // relative path of the archive
     coreMapStr<coreFile*> m_apFile;   // file objects
 
 
