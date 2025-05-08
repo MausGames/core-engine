@@ -8,6 +8,7 @@
 ///////////////////////////////////////////////////////////
 #include "Core.h"
 #include <stb_dxt.h>
+#include <bc7enc.h>
 
 coreUintW    coreTexture::s_iActiveUnit                 = 0u;
 coreTexture* coreTexture::s_apBound[CORE_TEXTURE_UNITS] = {};
@@ -20,7 +21,7 @@ coreTexture::coreTexture(const coreTextureLoad eLoad)noexcept
 , m_iIdentifier (0u)
 , m_vResolution (coreVector2(0.0f,0.0f))
 , m_iLevels     (0u)
-, m_bCompressed (false)
+, m_iCompressed (0u)
 , m_eMode       (CORE_TEXTURE_MODE_DEFAULT)
 , m_Spec        (coreTextureSpec(0u, 0u, 0u, 0u, 0u))
 , m_eLoad       (eLoad)
@@ -78,9 +79,9 @@ coreStatus coreTexture::Load(coreFile* pFile)
     ASSERT(iComponents && iDataSize)
 
     // check load configuration
-    const coreTextureMode eMode = ((!HAS_FLAG(m_eLoad, CORE_TEXTURE_LOAD_NO_COMPRESS) && coreMath::IsPot(pData->w) && coreMath::IsPot(pData->h)) ? CORE_TEXTURE_MODE_COMPRESS : CORE_TEXTURE_MODE_DEFAULT) |
-                                  ((!HAS_FLAG(m_eLoad, CORE_TEXTURE_LOAD_NO_FILTER))                                                             ? CORE_TEXTURE_MODE_FILTER   : CORE_TEXTURE_MODE_DEFAULT) |
-                                  ((!HAS_FLAG(m_eLoad, CORE_TEXTURE_LOAD_NEAREST))                                                               ? CORE_TEXTURE_MODE_DEFAULT  : CORE_TEXTURE_MODE_NEAREST);
+    const coreTextureMode eMode = ((!HAS_FLAG(m_eLoad, CORE_TEXTURE_LOAD_NO_COMPRESS) && coreMath::IsPot(pData->w) && coreMath::IsPot(pData->h)) ? (HAS_FLAG(m_eLoad, CORE_TEXTURE_LOAD_COMPRESS_HIGH) ? CORE_TEXTURE_MODE_COMPRESS_HIGH : CORE_TEXTURE_MODE_COMPRESS) : CORE_TEXTURE_MODE_DEFAULT) |
+                                  ((!HAS_FLAG(m_eLoad, CORE_TEXTURE_LOAD_NO_FILTER)) ? CORE_TEXTURE_MODE_FILTER  : CORE_TEXTURE_MODE_DEFAULT) |
+                                  ((!HAS_FLAG(m_eLoad, CORE_TEXTURE_LOAD_NEAREST))   ? CORE_TEXTURE_MODE_DEFAULT : CORE_TEXTURE_MODE_NEAREST);
 
     // create texture
     this->Create(pData->w, pData->h, CORE_TEXTURE_SPEC_COMPONENTS(iComponents), eMode | CORE_TEXTURE_MODE_REPEAT);
@@ -89,7 +90,7 @@ coreStatus coreTexture::Load(coreFile* pFile)
     // add debug label
     Core::Graphics->LabelOpenGL(GL_TEXTURE, m_iIdentifier, m_sName.c_str());
 
-    Core::Log->Info("Texture (%s, %.0f x %.0f, %u components, %u levels, %s) loaded", m_sName.c_str(), m_vResolution.x, m_vResolution.y, iComponents, m_iLevels, m_bCompressed ? "compressed" : "standard");
+    Core::Log->Info("Texture (%s, %.0f x %.0f, %u components, %u levels, %s) loaded", m_sName.c_str(), m_vResolution.x, m_vResolution.y, iComponents, m_iLevels, m_iCompressed ? "compressed" : "standard");
     return m_Sync.Create(CORE_SYNC_CREATE_FLUSHED) ? CORE_BUSY : CORE_OK;
 }
 
@@ -115,7 +116,7 @@ coreStatus coreTexture::Unload()
     m_iIdentifier = 0u;
     m_vResolution = coreVector2(0.0f,0.0f);
     m_iLevels     = 0u;
-    m_bCompressed = false;
+    m_iCompressed = 0u;
     m_eMode       = CORE_TEXTURE_MODE_DEFAULT;
     m_Spec        = coreTextureSpec(0u, 0u, 0u, 0u, 0u);
 
@@ -159,18 +160,30 @@ void coreTexture::Create(const coreUint32 iWidth, const coreUint32 iHeight, cons
         WARN_IF(!coreMath::IsPot(iWidth) || !coreMath::IsPot(iHeight) || (iWidth < 4u) || (iHeight < 4u)) {}
         else
         {
-            // overwrite with appropriate compressed texture format (RGTC or S3TC)
-            coreTextureSpec iNewSpec = coreTextureSpec(0u, 0u, 0u, 0u, 0u);
-            switch(m_Spec.iInternal)
+            if(HAS_FLAG(eMode, CORE_TEXTURE_MODE_COMPRESS_HIGH))
             {
-            default: UNREACHABLE
-            case GL_LUMINANCE8:
-            case GL_R8:    if(CORE_GL_SUPPORT(ARB_texture_compression_rgtc)) {iNewSpec = CORE_TEXTURE_SPEC_COMPRESSED_RGTC1;} break;
-            case GL_RG8:   if(CORE_GL_SUPPORT(ARB_texture_compression_rgtc)) {iNewSpec = CORE_TEXTURE_SPEC_COMPRESSED_RGTC2;} break;
-            case GL_RGB8:  if(CORE_GL_SUPPORT(EXT_texture_compression_s3tc)) {iNewSpec = CORE_TEXTURE_SPEC_COMPRESSED_DXT1;}  break;
-            case GL_RGBA8: if(CORE_GL_SUPPORT(EXT_texture_compression_s3tc)) {iNewSpec = CORE_TEXTURE_SPEC_COMPRESSED_DXT5;}  break;
+                // overwrite with appropriate compressed texture format (BPTC)
+                switch(m_Spec.iInternal)
+                {
+                default: UNREACHABLE
+                case GL_RGB8:  if(CORE_GL_SUPPORT(ARB_texture_compression_bptc)) {m_Spec = CORE_TEXTURE_SPEC_COMPRESSED_BPTC3; m_iCompressed = 2u;} break;
+                case GL_RGBA8: if(CORE_GL_SUPPORT(ARB_texture_compression_bptc)) {m_Spec = CORE_TEXTURE_SPEC_COMPRESSED_BPTC4; m_iCompressed = 2u;} break;
+                }
             }
-            if(iNewSpec.iInternal) {m_Spec = iNewSpec; m_bCompressed = true; if((bMipMap || bMipMapOld) && !CORE_GL_SUPPORT(CORE_es2_restriction)) m_iLevels = F_TO_UI(LOG2(m_vResolution.Min())) - 1u;}
+            else
+            {
+                // overwrite with appropriate compressed texture format (RGTC or S3TC)
+                switch(m_Spec.iInternal)
+                {
+                default: UNREACHABLE
+                case GL_LUMINANCE8:
+                case GL_R8:    if(CORE_GL_SUPPORT(ARB_texture_compression_rgtc)) {m_Spec = CORE_TEXTURE_SPEC_COMPRESSED_RGTC1; m_iCompressed = 1u;} break;
+                case GL_RG8:   if(CORE_GL_SUPPORT(ARB_texture_compression_rgtc)) {m_Spec = CORE_TEXTURE_SPEC_COMPRESSED_RGTC2; m_iCompressed = 1u;} break;
+                case GL_RGB8:  if(CORE_GL_SUPPORT(EXT_texture_compression_s3tc)) {m_Spec = CORE_TEXTURE_SPEC_COMPRESSED_DXT1;  m_iCompressed = 1u;} break;
+                case GL_RGBA8: if(CORE_GL_SUPPORT(EXT_texture_compression_s3tc)) {m_Spec = CORE_TEXTURE_SPEC_COMPRESSED_DXT5;  m_iCompressed = 1u;} break;
+                }
+            }
+            if(m_iCompressed) {if((bMipMap || bMipMapOld) && !CORE_GL_SUPPORT(CORE_es2_restriction)) m_iLevels = F_TO_UI(LOG2(m_vResolution.Min())) - 1u;}
         }
     }
 
@@ -199,9 +212,9 @@ void coreTexture::Create(const coreUint32 iWidth, const coreUint32 iHeight, cons
     else
     {
         // allocate mutable texture memory
-        if(m_bCompressed)
+        if(m_iCompressed)
         {
-            const coreUint32 iBlockSize = stb_dxt_blocksize(m_Spec.iComponents);
+            const coreUint32 iBlockSize = (m_iCompressed == 2u) ? bc7enc_blocksize(m_Spec.iComponents) : stb_dxt_blocksize(m_Spec.iComponents);
 
             for(coreUintW i = 0u, ie = LOOP_NONZERO(m_iLevels); i < ie; ++i)
             {
@@ -237,7 +250,7 @@ void coreTexture::Modify(const coreUint32 iOffsetX, const coreUint32 iOffsetY, c
     const coreUint32 iUnaligned = (iDataSize / iHeight) % 4u;
     if(iUnaligned) glPixelStorei(GL_UNPACK_ALIGNMENT, (iUnaligned == 2u) ? 2 : 1);
 
-    if(m_bCompressed)
+    if(m_iCompressed)
     {
         ASSERT((iWidth == F_TO_UI(m_vResolution.x)) && (iHeight == F_TO_UI(m_vResolution.y)) && iDataSize && pData)
 
@@ -247,7 +260,7 @@ void coreTexture::Modify(const coreUint32 iOffsetX, const coreUint32 iOffsetY, c
 
         // calculate components and compressed size
         const coreUint32 iComponents = iDataSize / (iWidth * iHeight);
-        const coreUint32 iPackedSize = iDataSize / stb_dxt_ratio(iComponents);
+        const coreUint32 iPackedSize = iDataSize / ((m_iCompressed == 2u) ? bc7enc_ratio(iComponents) : stb_dxt_ratio(iComponents));
         ASSERT(iComponents == m_Spec.iComponents)
 
         // allocate required image memory
@@ -267,7 +280,8 @@ void coreTexture::Modify(const coreUint32 iOffsetX, const coreUint32 iOffsetY, c
             const coreUint32 iCurSize   = iPackedSize >> i >> i;
 
             // create compressed image
-            coreTexture::CreateCompressed(iCurWidth, iCurHeight, iComponents, pData, pPackedData);
+            if(m_iCompressed == 2u) coreTexture::CreateCompressedBC7(iCurWidth, iCurHeight, iComponents, pData, pPackedData);
+                               else coreTexture::CreateCompressedDXT(iCurWidth, iCurHeight, iComponents, pData, pPackedData);
 
             // upload image to texture
             coreDataBuffer oBuffer;
@@ -620,7 +634,7 @@ void coreTexture::CreateNextLevel(const coreUintW iInWidth, const coreUintW iInH
 
 // ****************************************************************
 /* create compressed image */
-void coreTexture::CreateCompressed(const coreUintW iInWidth, const coreUintW iInHeight, const coreUintW iComponents, const coreByte* pInput, coreByte* OUTPUT pOutput)
+void coreTexture::CreateCompressedDXT(const coreUintW iInWidth, const coreUintW iInHeight, const coreUintW iComponents, const coreByte* pInput, coreByte* OUTPUT pOutput)
 {
     ASSERT(coreMath::IsPot(iInWidth)  && (iInWidth  >= 4u) &&
            coreMath::IsPot(iInHeight) && (iInHeight >= 4u) &&
@@ -650,6 +664,47 @@ void coreTexture::CreateCompressed(const coreUintW iInWidth, const coreUintW iIn
 
             // compress block (R -> RGTC1/BC4, RG -> RGTC2/BC5, RGB -> DXT1/BC1, RGBA -> DXT5/BC3)
             stb_compress_dxt_block(pOutput, aBlock, iComponents, STB_DXT_HIGHQUAL);
+
+            // increment pointers
+            pInput  += iInOffsetX;
+            pOutput += iOutOffset;
+        }
+
+        // skip already processed texture lines
+        pInput += iInOffsetY;
+    }
+}
+
+void coreTexture::CreateCompressedBC7(const coreUintW iInWidth, const coreUintW iInHeight, const coreUintW iComponents, const coreByte* pInput, coreByte* OUTPUT pOutput)
+{
+    ASSERT(coreMath::IsPot(iInWidth)  && (iInWidth  >= 4u) &&
+           coreMath::IsPot(iInHeight) && (iInHeight >= 4u) &&
+           (iComponents >= 3u) && (iComponents <= 4u) && pInput && pOutput)
+
+    // assume pointer alignment
+    pInput  = ASSUME_ALIGNED(pInput,  ALIGNMENT_NEW);
+    pOutput = ASSUME_ALIGNED(pOutput, ALIGNMENT_NEW);
+
+    // save memory offsets
+    const coreUintW iInOffsetX =  4u * iComponents;
+    const coreUintW iInOffsetY =  3u * iComponents * iInWidth;
+    const coreUintW iOutOffset = 16u * iComponents / bc7enc_ratio(iComponents);   // size per block
+
+    // loop through all input texels
+    for(coreUintW y = 0u; y < LOOP_NONZERO(iInHeight); y += 4u)
+    {
+        for(coreUintW x = 0u; x < LOOP_NONZERO(iInWidth); x += 4u)
+        {
+            alignas(ALIGNMENT_CACHE) coreByte aBlock[64];
+
+            // copy data into 4x4 RGBA block
+            for(coreUintW i = 0u; i < 4u; ++i) std::memcpy(aBlock + (i)       * 4u, pInput + (i)               * iComponents, 4u);
+            for(coreUintW i = 0u; i < 4u; ++i) std::memcpy(aBlock + (i +  4u) * 4u, pInput + (i + 1u*iInWidth) * iComponents, 4u);
+            for(coreUintW i = 0u; i < 4u; ++i) std::memcpy(aBlock + (i +  8u) * 4u, pInput + (i + 2u*iInWidth) * iComponents, 4u);
+            for(coreUintW i = 0u; i < 4u; ++i) std::memcpy(aBlock + (i + 12u) * 4u, pInput + (i + 3u*iInWidth) * iComponents, iComponents);
+
+            // compress block (RGB -> BPTC/BC7, RGBA -> BPTC/BC7)
+            bc7enc_compress_block(pOutput, aBlock, iComponents);
 
             // increment pointers
             pInput  += iInOffsetX;

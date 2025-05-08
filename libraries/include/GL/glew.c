@@ -1307,6 +1307,7 @@ GLboolean __GLEW_ARB_shader_texture_lod = GL_FALSE;
 GLboolean __GLEW_ARB_shading_language_packing = GL_FALSE;
 GLboolean __GLEW_ARB_sync = GL_FALSE;
 GLboolean __GLEW_ARB_tessellation_shader = GL_FALSE;
+GLboolean __GLEW_ARB_texture_compression_bptc = GL_FALSE;
 GLboolean __GLEW_ARB_texture_compression_rgtc = GL_FALSE;
 GLboolean __GLEW_ARB_texture_filter_anisotropic = GL_FALSE;
 GLboolean __GLEW_ARB_texture_float = GL_FALSE;
@@ -1472,6 +1473,9 @@ static const char * _glewExtensionLookup[] = {
 #endif
 #ifdef GL_ARB_tessellation_shader
   "GL_ARB_tessellation_shader",
+#endif
+#ifdef GL_ARB_texture_compression_bptc
+  "GL_ARB_texture_compression_bptc",
 #endif
 #ifdef GL_ARB_texture_compression_rgtc
   "GL_ARB_texture_compression_rgtc",
@@ -1780,6 +1784,9 @@ static GLboolean* _glewExtensionEnabled[] = {
 #endif
 #ifdef GL_ARB_tessellation_shader
   &__GLEW_ARB_tessellation_shader,
+#endif
+#ifdef GL_ARB_texture_compression_bptc
+  &__GLEW_ARB_texture_compression_bptc,
 #endif
 #ifdef GL_ARB_texture_compression_rgtc
   &__GLEW_ARB_texture_compression_rgtc,
@@ -4787,6 +4794,13 @@ GLboolean GLEWAPIENTRY glewIsSupported (const char* name)
         if (_glewStrSame3(&pos, &len, (const GLubyte*)"tessellation_shader", 19))
         {
           ret = GLEW_ARB_tessellation_shader;
+          continue;
+        }
+#endif
+#ifdef GL_ARB_texture_compression_bptc
+        if (_glewStrSame3(&pos, &len, (const GLubyte*)"texture_compression_bptc", 24))
+        {
+          ret = GLEW_ARB_texture_compression_bptc;
           continue;
         }
 #endif

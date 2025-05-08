@@ -73,9 +73,9 @@ coreStatus coreAnimation::Load(coreFile* pFile)
     }
 
     // check load configuration
-    const coreTextureMode eMode = ((!HAS_FLAG(m_eLoad, CORE_TEXTURE_LOAD_NO_COMPRESS) && coreMath::IsPot(pAnim->w) && coreMath::IsPot(pAnim->h)) ? CORE_TEXTURE_MODE_COMPRESS : CORE_TEXTURE_MODE_DEFAULT) |
-                                  ((!HAS_FLAG(m_eLoad, CORE_TEXTURE_LOAD_NO_FILTER))                                                             ? CORE_TEXTURE_MODE_FILTER   : CORE_TEXTURE_MODE_DEFAULT) |
-                                  ((!HAS_FLAG(m_eLoad, CORE_TEXTURE_LOAD_NEAREST))                                                               ? CORE_TEXTURE_MODE_DEFAULT  : CORE_TEXTURE_MODE_NEAREST);
+    const coreTextureMode eMode = ((!HAS_FLAG(m_eLoad, CORE_TEXTURE_LOAD_NO_COMPRESS) && coreMath::IsPot(pAnim->w) && coreMath::IsPot(pAnim->h)) ? (HAS_FLAG(m_eLoad, CORE_TEXTURE_LOAD_COMPRESS_HIGH) ? CORE_TEXTURE_MODE_COMPRESS_HIGH : CORE_TEXTURE_MODE_COMPRESS) : CORE_TEXTURE_MODE_DEFAULT) |
+                                  ((!HAS_FLAG(m_eLoad, CORE_TEXTURE_LOAD_NO_FILTER)) ? CORE_TEXTURE_MODE_FILTER  : CORE_TEXTURE_MODE_DEFAULT) |
+                                  ((!HAS_FLAG(m_eLoad, CORE_TEXTURE_LOAD_NEAREST))   ? CORE_TEXTURE_MODE_DEFAULT : CORE_TEXTURE_MODE_NEAREST);
 
     if(Core::Config->GetBool(CORE_CONFIG_GRAPHICS_TEXTURECOMPRESSION) && HAS_FLAG(eMode, CORE_TEXTURE_MODE_COMPRESS))
     {

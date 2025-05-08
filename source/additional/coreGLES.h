@@ -176,6 +176,13 @@ using PFNGLREADNPIXELSPROC            = void   (GL_APIENTRY *) (GLint x, GLint y
 
 
 // ****************************************************************
+/* GL_EXT_texture_compression_bptc (mapped on GL_ARB_texture_compression_bptc) */
+#define CORE_GL_ARB_texture_compression_bptc (__CORE_GLES_VAR(GL_EXT_texture_compression_bptc))
+
+#define GL_COMPRESSED_RGBA_BPTC_UNORM_ARB 0x8E8C
+
+
+// ****************************************************************
 /* GL_EXT_texture_compression_rgtc (mapped on GL_ARB_texture_compression_rgtc) */
 #define CORE_GL_ARB_texture_compression_rgtc (__CORE_GLES_VAR(GL_EXT_texture_compression_rgtc))
 
@@ -494,6 +501,7 @@ struct coreContext final
     coreBool __GL_EXT_instanced_arrays;
     coreBool __GL_EXT_robustness;
     coreBool __GL_EXT_sRGB_write_control;
+    coreBool __GL_EXT_texture_compression_bptc;
     coreBool __GL_EXT_texture_compression_rgtc;
     coreBool __GL_EXT_texture_compression_s3tc;
     coreBool __GL_EXT_texture_filter_anisotropic;

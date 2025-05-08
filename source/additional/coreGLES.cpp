@@ -163,6 +163,9 @@ void __coreInitOpenGLES()
     // implement GL_EXT_sRGB_write_control
     __CORE_GLES_CHECK(GL_EXT_sRGB_write_control, false);
 
+    // implement GL_EXT_texture_compression_bptc
+    __CORE_GLES_CHECK(GL_EXT_texture_compression_bptc, false);
+
     // implement GL_EXT_texture_compression_rgtc
     __CORE_GLES_CHECK(GL_EXT_texture_compression_rgtc, false);
 

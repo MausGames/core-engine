@@ -186,6 +186,7 @@ void __coreInitOpenGL()
         __IMPROVE(GLEW_ARB_shading_language_packing,         GLEW_VERSION_4_2)                                       // shader extension
         __IMPROVE(GLEW_ARB_sync,                             GLEW_VERSION_3_2)
         __IMPROVE(GLEW_ARB_tessellation_shader,              GLEW_VERSION_4_0)
+        __IMPROVE(GLEW_ARB_texture_compression_bptc,         GLEW_VERSION_4_2)
         __IMPROVE(GLEW_ARB_texture_compression_rgtc,         GLEW_VERSION_3_0 || GLEW_EXT_texture_compression_rgtc)
         __IMPROVE(GLEW_ARB_texture_filter_anisotropic,       GLEW_VERSION_4_6 || GLEW_EXT_texture_filter_anisotropic)
         __IMPROVE(GLEW_ARB_texture_float,                    GLEW_VERSION_3_0)

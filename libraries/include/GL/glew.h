@@ -4071,6 +4071,20 @@ typedef void (GLAPIENTRY * PFNGLPATCHPARAMETERIPROC) (GLenum pname, GLint value)
 
 #endif /* GL_ARB_tessellation_shader */
 
+/* -------------------- GL_ARB_texture_compression_bptc -------------------- */
+
+#ifndef GL_ARB_texture_compression_bptc
+#define GL_ARB_texture_compression_bptc 1
+
+#define GL_COMPRESSED_RGBA_BPTC_UNORM_ARB 0x8E8C
+#define GL_COMPRESSED_SRGB_ALPHA_BPTC_UNORM_ARB 0x8E8D
+#define GL_COMPRESSED_RGB_BPTC_SIGNED_FLOAT_ARB 0x8E8E
+#define GL_COMPRESSED_RGB_BPTC_UNSIGNED_FLOAT_ARB 0x8E8F
+
+#define GLEW_ARB_texture_compression_bptc GLEW_GET_VAR(__GLEW_ARB_texture_compression_bptc)
+
+#endif /* GL_ARB_texture_compression_bptc */
+
 /* -------------------- GL_ARB_texture_compression_rgtc -------------------- */
 
 #ifndef GL_ARB_texture_compression_rgtc
@@ -6808,6 +6822,7 @@ GLEW_VAR_EXPORT GLboolean __GLEW_ARB_shader_texture_lod;
 GLEW_VAR_EXPORT GLboolean __GLEW_ARB_shading_language_packing;
 GLEW_VAR_EXPORT GLboolean __GLEW_ARB_sync;
 GLEW_VAR_EXPORT GLboolean __GLEW_ARB_tessellation_shader;
+GLEW_VAR_EXPORT GLboolean __GLEW_ARB_texture_compression_bptc;
 GLEW_VAR_EXPORT GLboolean __GLEW_ARB_texture_compression_rgtc;
 GLEW_VAR_EXPORT GLboolean __GLEW_ARB_texture_filter_anisotropic;
 GLEW_VAR_EXPORT GLboolean __GLEW_ARB_texture_float;
