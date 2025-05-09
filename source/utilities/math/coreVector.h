@@ -107,12 +107,18 @@ public:
     static constexpr coreVector2 StepRotated90X      (const coreUint8   iStep)      {ASSERT(iStep < 4u) return coreVector2::UnpackWay8(iStep * 2u + 1u);}
 
     /* constrain vector */
-    inline coreVector2 AlongWay4       ()const {return (this->IsHorizontal() ? coreVector2(SIGN(x), 0.0f) : coreVector2(0.0f, SIGN(y))) * this->Length();}
-    inline coreVector2 AlongWay4Normal ()const {return (this->IsHorizontal() ? coreVector2(SIGN(x), 0.0f) : coreVector2(0.0f, SIGN(y)));}
-    inline coreVector2 AlongWay4X      ()const {return -this->Rotated45().AlongWay4      ().Rotated135();}
-    inline coreVector2 AlongWay4XNormal()const {return -this->Rotated45().AlongWay4Normal().Rotated135();}
-    inline coreVector2 AlongWay8       ()const {return UnpackWay8(this->PackWay8()) * this->Length();}
-    inline coreVector2 AlongWay8Normal ()const {return UnpackWay8(this->PackWay8());}
+    inline coreVector2 AlongWay4        ()const                        {return (this->IsHorizontal() ? coreVector2(SIGN(x), 0.0f) : coreVector2(0.0f, SIGN(y))) * this->Length();}
+    inline coreVector2 AlongWay4Normal  ()const                        {return (this->IsHorizontal() ? coreVector2(SIGN(x), 0.0f) : coreVector2(0.0f, SIGN(y)));}
+    inline coreVector2 AlongWay4X       ()const                        {return -this->Rotated45().AlongWay4      ().Rotated135();}
+    inline coreVector2 AlongWay4XNormal ()const                        {return -this->Rotated45().AlongWay4Normal().Rotated135();}
+    inline coreVector2 AlongWay8        ()const                        {return UnpackWay8(this->PackWay8()) * this->Length();}
+    inline coreVector2 AlongWay8Normal  ()const                        {return UnpackWay8(this->PackWay8());}
+    inline coreVector2 AlongAxis4       (const coreVector2 vAxis)const {return (this->MapToAxisInv(vAxis).AlongWay4       ().MapToAxis(vAxis));}
+    inline coreVector2 AlongAxis4Normal (const coreVector2 vAxis)const {return (this->MapToAxisInv(vAxis).AlongWay4Normal ().MapToAxis(vAxis));}
+    inline coreVector2 AlongAxis4X      (const coreVector2 vAxis)const {return (this->MapToAxisInv(vAxis).AlongWay4X      ().MapToAxis(vAxis));}
+    inline coreVector2 AlongAxis4XNormal(const coreVector2 vAxis)const {return (this->MapToAxisInv(vAxis).AlongWay4XNormal().MapToAxis(vAxis));}
+    inline coreVector2 AlongAxis8       (const coreVector2 vAxis)const {return (this->MapToAxisInv(vAxis).AlongWay8       ().MapToAxis(vAxis));}
+    inline coreVector2 AlongAxis8Normal (const coreVector2 vAxis)const {return (this->MapToAxisInv(vAxis).AlongWay8Normal ().MapToAxis(vAxis));}
 
     /* normalize vector */
     constexpr coreVector2 Normalized             (const coreVector2 vFallback = coreVector2(0.0f,1.0f))const {ASSERT(vFallback.IsNormalized()) WARN_IF(this->IsNull()) return vFallback; return this->NormalizedUnsafe();}
@@ -266,6 +272,10 @@ public:
     constexpr coreVector3 RotatedZ90 ()const {return coreVector3(this->xy().Rotated90 (), z);}
     constexpr coreVector3 RotatedZ45 ()const {return coreVector3(this->xy().Rotated45 (), z);}
     constexpr coreVector3 RotatedZ135()const {return coreVector3(this->xy().Rotated135(), z);}
+
+    /* constrain vector */
+    inline coreVector3 AlongWay6      ()const {const coreUintW A = this->Processed(ABS).MaxDimension(); return ((A == 0u) ? coreVector3(SIGN(x), 0.0f, 0.0f) : (A == 1u) ? coreVector3(0.0f, SIGN(y), 0.0f) : coreVector3(0.0f, 0.0f, SIGN(z))) * this->Length();}
+    inline coreVector3 AlongWay6Normal()const {const coreUintW A = this->Processed(ABS).MaxDimension(); return ((A == 0u) ? coreVector3(SIGN(x), 0.0f, 0.0f) : (A == 1u) ? coreVector3(0.0f, SIGN(y), 0.0f) : coreVector3(0.0f, 0.0f, SIGN(z)));}
 
     /* normalize vector */
     constexpr coreVector3 Normalized             (const coreVector3 vFallback = coreVector3(0.0f,0.0f,1.0f))const {ASSERT(vFallback.IsNormalized()) WARN_IF(this->IsNull()) return vFallback; return this->NormalizedUnsafe();}
