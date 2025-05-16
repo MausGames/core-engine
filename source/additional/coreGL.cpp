@@ -149,7 +149,6 @@ void __coreInitOpenGL()
     {
         coreString A, B, C;
 
-        __IMPROVE(GLEW_AMD_conservative_depth,               false)                                                  // shader extension
         __IMPROVE(GLEW_AMD_framebuffer_multisample_advanced, false)
         __IMPROVE(GLEW_AMD_gpu_shader_half_float,            false)                                                  // shader extension
         __IMPROVE(GLEW_AMD_shader_trinary_minmax,            false)                                                  // shader extension
@@ -157,7 +156,7 @@ void __coreInitOpenGL()
         __IMPROVE(GLEW_ARB_clear_buffer_object,              GLEW_VERSION_4_3)
         __IMPROVE(GLEW_ARB_clear_texture,                    GLEW_VERSION_4_4)
         __IMPROVE(GLEW_ARB_compute_shader,                   GLEW_VERSION_4_3)
-        __IMPROVE(GLEW_ARB_conservative_depth,               GLEW_VERSION_4_2)                                       // shader extension
+        __IMPROVE(GLEW_ARB_conservative_depth,               GLEW_VERSION_4_2 || GLEW_AMD_conservative_depth)        // shader extension
         __IMPROVE(GLEW_ARB_copy_buffer,                      GLEW_VERSION_3_1)
         __IMPROVE(GLEW_ARB_copy_image,                       GLEW_VERSION_4_3 || GLEW_NV_copy_image)
         __IMPROVE(GLEW_ARB_depth_buffer_float,               GLEW_VERSION_3_0)

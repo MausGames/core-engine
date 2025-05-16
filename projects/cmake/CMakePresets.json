@@ -93,24 +93,35 @@
     "buildPresets":
     [
         {
+            "name": "base",
+            "configurePreset": "base",
+            "hidden": true,
+            "nativeToolOptions": ["-k0"]
+        },
+        {
             "name": "linux_x86_64 (debug)",
-            "configurePreset": "linux-x86-64-debug"
+            "configurePreset": "linux-x86-64-debug",
+            "inherits": "base"
         },
         {
             "name": "linux_x86_64 (release)",
-            "configurePreset": "linux-x86-64-release"
+            "configurePreset": "linux-x86-64-release",
+            "inherits": "base"
         },
         {
             "name": "linux_x86_64 (test)",
-            "configurePreset": "linux-x86-64-test"
+            "configurePreset": "linux-x86-64-test",
+            "inherits": "base"
         },
         {
             "name": "emscripten (debug)",
-            "configurePreset": "emscripten-debug"
+            "configurePreset": "emscripten-debug",
+            "inherits": "base"
         },
         {
             "name": "emscripten (release)",
-            "configurePreset": "emscripten-release"
+            "configurePreset": "emscripten-release",
+            "inherits": "base"
         }
     ]
 }

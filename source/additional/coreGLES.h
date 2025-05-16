@@ -179,7 +179,7 @@ using PFNGLREADNPIXELSPROC            = void   (GL_APIENTRY *) (GLint x, GLint y
 /* GL_EXT_texture_compression_bptc (mapped on GL_ARB_texture_compression_bptc) */
 #define CORE_GL_ARB_texture_compression_bptc (__CORE_GLES_VAR(GL_EXT_texture_compression_bptc))
 
-#define GL_COMPRESSED_RGBA_BPTC_UNORM_ARB 0x8E8C
+#define GL_COMPRESSED_RGBA_BPTC_UNORM 0x8E8C
 
 
 // ****************************************************************

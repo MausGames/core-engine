@@ -322,7 +322,7 @@ template <typename T, typename... A> T coreData::FromChars(const coreChar* pcStr
     return tValue;
 }
 
-#if defined(_CORE_MACOS_)
+#if defined(_CORE_MACOS_) || defined(_CORE_EMSCRIPTEN_)
     template <> inline coreFloat coreData::FromChars(const coreChar* pcString, const coreUintW iLen) {ASSERT(pcString) return coreFloat(std::atof(pcString));}
 #endif
 
