@@ -197,7 +197,13 @@ coreBool CoreInput::ProcessEvent(const SDL_Event& oEvent)
             else
             {
                 const SDL_GamepadButtonLabel eLabel = SDL_GetGamepadButtonLabelForType(__CORE_INPUT_JOYSTICK(iIndex).eGamepadType, SDL_GamepadButton(oEvent.jbutton.button));
-                this->SetJoystickButton(iIndex, (eLabel != SDL_GAMEPAD_BUTTON_LABEL_UNKNOWN) ? ((eLabel - 1u) % 4u) : oEvent.jbutton.button, true);
+
+                     if((eLabel == SDL_GAMEPAD_BUTTON_LABEL_A) || (eLabel == SDL_GAMEPAD_BUTTON_LABEL_CROSS))    this->SetJoystickButton(iIndex, CORE_INPUT_BUTTON_A, true);
+                else if((eLabel == SDL_GAMEPAD_BUTTON_LABEL_B) || (eLabel == SDL_GAMEPAD_BUTTON_LABEL_CIRCLE))   this->SetJoystickButton(iIndex, CORE_INPUT_BUTTON_B, true);
+                else if((eLabel == SDL_GAMEPAD_BUTTON_LABEL_X) || (eLabel == SDL_GAMEPAD_BUTTON_LABEL_SQUARE))   this->SetJoystickButton(iIndex, CORE_INPUT_BUTTON_X, true);
+                else if((eLabel == SDL_GAMEPAD_BUTTON_LABEL_Y) || (eLabel == SDL_GAMEPAD_BUTTON_LABEL_TRIANGLE)) this->SetJoystickButton(iIndex, CORE_INPUT_BUTTON_Y, true);
+
+                this->SetJoystickButton(iIndex, oEvent.jbutton.button, true);   // # after label handling
             }
         }
         break;
@@ -216,7 +222,13 @@ coreBool CoreInput::ProcessEvent(const SDL_Event& oEvent)
             else
             {
                 const SDL_GamepadButtonLabel eLabel = SDL_GetGamepadButtonLabelForType(__CORE_INPUT_JOYSTICK(iIndex).eGamepadType, SDL_GamepadButton(oEvent.jbutton.button));
-                this->SetJoystickButton(iIndex, (eLabel != SDL_GAMEPAD_BUTTON_LABEL_UNKNOWN) ? ((eLabel - 1u) % 4u) : oEvent.jbutton.button, false);
+
+                     if((eLabel == SDL_GAMEPAD_BUTTON_LABEL_A) || (eLabel == SDL_GAMEPAD_BUTTON_LABEL_CROSS))    this->SetJoystickButton(iIndex, CORE_INPUT_BUTTON_A, false);
+                else if((eLabel == SDL_GAMEPAD_BUTTON_LABEL_B) || (eLabel == SDL_GAMEPAD_BUTTON_LABEL_CIRCLE))   this->SetJoystickButton(iIndex, CORE_INPUT_BUTTON_B, false);
+                else if((eLabel == SDL_GAMEPAD_BUTTON_LABEL_X) || (eLabel == SDL_GAMEPAD_BUTTON_LABEL_SQUARE))   this->SetJoystickButton(iIndex, CORE_INPUT_BUTTON_X, false);
+                else if((eLabel == SDL_GAMEPAD_BUTTON_LABEL_Y) || (eLabel == SDL_GAMEPAD_BUTTON_LABEL_TRIANGLE)) this->SetJoystickButton(iIndex, CORE_INPUT_BUTTON_Y, false);
+
+                this->SetJoystickButton(iIndex, oEvent.jbutton.button, false);   // # after label handling
             }
         }
         break;
@@ -291,16 +303,6 @@ coreBool CoreInput::ProcessEvent(const SDL_Event& oEvent)
         __COMPARE(SDL_JoyAxisEvent,   SDL_GamepadAxisEvent,   which)
         __COMPARE(SDL_JoyAxisEvent,   SDL_GamepadAxisEvent,   axis)
         __COMPARE(SDL_JoyAxisEvent,   SDL_GamepadAxisEvent,   value)
-    }
-    #undef __COMPARE
-
-    // test if button remapping is possible
-    #define __COMPARE(a,x,y) STATIC_ASSERT(((a) == (x) - 1u) && ((a) == (y) - 5u))
-    {
-        __COMPARE(SDL_GAMEPAD_BUTTON_SOUTH, SDL_GAMEPAD_BUTTON_LABEL_A, SDL_GAMEPAD_BUTTON_LABEL_CROSS)
-        __COMPARE(SDL_GAMEPAD_BUTTON_EAST,  SDL_GAMEPAD_BUTTON_LABEL_B, SDL_GAMEPAD_BUTTON_LABEL_CIRCLE)
-        __COMPARE(SDL_GAMEPAD_BUTTON_WEST,  SDL_GAMEPAD_BUTTON_LABEL_X, SDL_GAMEPAD_BUTTON_LABEL_SQUARE)
-        __COMPARE(SDL_GAMEPAD_BUTTON_NORTH, SDL_GAMEPAD_BUTTON_LABEL_Y, SDL_GAMEPAD_BUTTON_LABEL_TRIANGLE)
     }
     #undef __COMPARE
 

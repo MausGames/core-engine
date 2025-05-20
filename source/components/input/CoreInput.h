@@ -23,6 +23,7 @@
 // TODO 4: should cursor handling go into CoreSystem ?
 // TODO 3: add option to flip confirm and cancel gamepad buttons for menu
 // TODO 3: implement haptics again
+// TODO 3: ABXY, ACCEPT and CANCEL cannot be detected with iLast (only NORTH, EAST, etc.), and are also added to aiCount
 
 
 // ****************************************************************
@@ -51,12 +52,12 @@
 
 #define CORE_INPUT_JOYSTICK_ANY         (Core::Input->GetJoystickNum())
 
-#define CORE_INPUT_BUTTON_A             (SDL_GAMEPAD_BUTTON_SOUTH)
-#define CORE_INPUT_BUTTON_B             (SDL_GAMEPAD_BUTTON_EAST)
-#define CORE_INPUT_BUTTON_X             (SDL_GAMEPAD_BUTTON_WEST)
-#define CORE_INPUT_BUTTON_Y             (SDL_GAMEPAD_BUTTON_NORTH)
 #define CORE_INPUT_BUTTON_LEFT_TRIGGER  (SDL_GamepadButton(SDL_GAMEPAD_BUTTON_COUNT + 0u))
 #define CORE_INPUT_BUTTON_RIGHT_TRIGGER (SDL_GamepadButton(SDL_GAMEPAD_BUTTON_COUNT + 1u))
+#define CORE_INPUT_BUTTON_A             (SDL_GamepadButton(SDL_GAMEPAD_BUTTON_COUNT + 2u))
+#define CORE_INPUT_BUTTON_B             (SDL_GamepadButton(SDL_GAMEPAD_BUTTON_COUNT + 3u))
+#define CORE_INPUT_BUTTON_X             (SDL_GamepadButton(SDL_GAMEPAD_BUTTON_COUNT + 4u))
+#define CORE_INPUT_BUTTON_Y             (SDL_GamepadButton(SDL_GAMEPAD_BUTTON_COUNT + 5u))
 #define CORE_INPUT_BUTTON_ACCEPT        (CORE_INPUT_BUTTON_A)
 #define CORE_INPUT_BUTTON_CANCEL        (CORE_INPUT_BUTTON_B)
 
