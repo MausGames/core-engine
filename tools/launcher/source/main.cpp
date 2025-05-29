@@ -159,7 +159,7 @@ extern int WINAPI wWinMain(_In_ HINSTANCE pInstance, _In_opt_ HINSTANCE pPrevIns
     // start specific application
     for(std::size_t i = 0u, ie = asFile.size(); i < ie; ++i)
     {
-        if(asFile[i].contain(L"_angle") == bAngle)
+        if(asFile[i].contains(L"_angle") == bAngle)
         {
             return RunCommand(asFile[i].c_str(), pcCmdLine);
         }

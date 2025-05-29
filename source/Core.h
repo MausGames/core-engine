@@ -467,7 +467,7 @@
 #endif
 
 #if defined(_CORE_DEBUG_)
-    #define LOOP_NONZERO(c)         ([](auto iNum) {ASSERT(iNum > 0) return iNum;}(c))
+    #define LOOP_NONZERO(c)         ([](const auto iNum) {ASSERT(iNum > 0) return iNum;}(c))
 #else
     #if defined(_CORE_MSVC_)
         #define LOOP_NONZERO(c)     (__assume((c) > 0), (c))

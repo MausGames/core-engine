@@ -226,7 +226,7 @@ void __coreInitOpenGL()
     }
     #undef __IMPROVE
 
-    #define __REMAP(x,y) {if(!(x)) {(x) = (y); Core::Log->Info("Remapped function (" #x ")");}}
+    #define __REMAP(x,y) {if(!(x) && (y)) {(x) = (y); Core::Log->Info("Remapped function (" #x ")");}}
     {
         // remap GL_ARB_instanced_arrays to OpenGL 3.1 and 3.3
         __REMAP(glDrawArraysInstanced,   glDrawArraysInstancedARB)

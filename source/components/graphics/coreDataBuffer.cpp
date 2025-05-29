@@ -498,7 +498,9 @@ void coreVertexBuffer::DefineAttribute(const coreUint8 iLocation, const coreUint
 
     // check for duplicate vertex attribute arrays
     FOR_EACH(it, m_aAttribute)
+    {
         ASSERT(it->iLocation != iLocation)
+    }
 
 #endif
 
