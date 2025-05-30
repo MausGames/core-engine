@@ -984,5 +984,5 @@ void coreProgram::__WriteInterface()const
 /* calculate shader-cache verification value */
 coreUint32 coreProgram::__GetShaderCacheCheck()
 {
-    return coreHashXXH32(PRINT("%s %s %s", glGetString(GL_RENDERER), glGetString(GL_VERSION), CoreApp::Settings::Version));
+    return coreHashXXH32(PRINT("%s %s %s %d", glGetString(GL_RENDERER), glGetString(GL_VERSION), CoreApp::Settings::Version, DEFINED(_CORE_64BIT_)));
 }

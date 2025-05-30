@@ -21,9 +21,10 @@
 
 // ****************************************************************
 /* shader definitions */
-#define CORE_SHADER_CACHE_NAME                    "shader.cache"           // file name of the shader-cache
-#define CORE_SHADER_CACHE_MAGIC                   (UINT_LITERAL("CSC0"))   // magic number of the shader-cache
-#define CORE_SHADER_CACHE_VERSION                 (0x00000001u)            // current file version of the shader-cache
+
+#define CORE_SHADER_CACHE_NAME                    (DEFINED(_CORE_DEBUG_) ? "shader_debug.cache" : "shader.cache")   // file name of the shader-cache
+#define CORE_SHADER_CACHE_MAGIC                   (UINT_LITERAL("CSC0"))                                            // magic number of the shader-cache
+#define CORE_SHADER_CACHE_VERSION                 (0x00000001u)                                                     // current file version of the shader-cache
 
 #define CORE_SHADER_BUFFER_TRANSFORM3D            "b_Transform3D"
 #define CORE_SHADER_BUFFER_TRANSFORM2D            "b_Transform2D"
