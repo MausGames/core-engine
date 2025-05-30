@@ -53,7 +53,6 @@ CoreSystem::CoreSystem()noexcept
         // set SDL behavior hints
         SDL_SetHint(SDL_HINT_EVENT_LOGGING,                      DEFINED(_CORE_DEBUG_) ? "1" : "0");
         SDL_SetHint(SDL_HINT_JOYSTICK_ALLOW_BACKGROUND_EVENTS,   "1");
-        SDL_SetHint(SDL_HINT_MOUSE_AUTO_CAPTURE,                 "0");
         SDL_SetHint(SDL_HINT_MOUSE_RELATIVE_MODE_CENTER,         "0");
         SDL_SetHint(SDL_HINT_OPENGL_ES_DRIVER,                   "1");
         SDL_SetHint(SDL_HINT_VIDEO_DOUBLE_BUFFER,                "1");
@@ -109,6 +108,10 @@ CoreSystem::CoreSystem()noexcept
         // disable unwanted events
         constexpr coreUint32 aiDisable[] = {SDL_EVENT_DROP_FILE, SDL_EVENT_DROP_TEXT, SDL_EVENT_DROP_BEGIN, SDL_EVENT_DROP_COMPLETE, SDL_EVENT_DROP_POSITION, SDL_EVENT_KEYMAP_CHANGED, SDL_EVENT_CLIPBOARD_UPDATE};
         for(coreUintW i = 0u; i < ARRAY_SIZE(aiDisable); ++i) SDL_SetEventEnabled(aiDisable[i], false);
+
+        // remove all events created during initialization
+        SDL_PumpEvents();
+        SDL_FlushEvents(SDL_EVENT_FIRST, SDL_EVENT_LAST);
 
         // automatically shut down SDL libraries on exit
         WARN_IF(std::atexit([]() {SDL_GL_UnloadLibrary(); TTF_Quit(); SDL_Quit();})) {}
@@ -372,9 +375,8 @@ CoreSystem::CoreSystem()noexcept
         this->__RefreshCanonAspectRatio();
     }
 
-    // remove all events created during initialization
-    SDL_PumpEvents();
-    SDL_FlushEvents(SDL_EVENT_FIRST, SDL_EVENT_LAST);
+    // ignore code-generated window events
+    SDL_FlushEvents(SDL_EVENT_WINDOW_FIRST, SDL_EVENT_WINDOW_LAST);
 
     // init high-precision time
     m_dPerfFrequency = 1.0 / coreDouble(SDL_GetPerformanceFrequency());
@@ -549,7 +551,7 @@ void CoreSystem::SetWindowResolution(const coreVector2 vResolution)
             // sync window (# and pump events)
             SDL_SyncWindow(m_pWindow);
 
-            // ignore code-generated events
+            // ignore code-generated window events
             SDL_FlushEvent(SDL_EVENT_WINDOW_MOVED);
             SDL_FlushEvent(SDL_EVENT_WINDOW_RESIZED);
         }
@@ -695,7 +697,7 @@ void CoreSystem::__UpdateWindow()
         // change fullscreen mode and resolution to fit desktop (always)
         this->SetWindowAll(m_iDisplayIndex, coreVector2(0.0f,0.0f), m_fRefreshRate, m_eMode ? CORE_SYSTEM_MODE_WINDOWED : CORE_SYSTEM_MODE_BORDERLESS);
 
-        // handle as user-generated events
+        // handle as user-generated window events
         m_bWinPosChanged  = true;
         m_bWinSizeChanged = true;
     }

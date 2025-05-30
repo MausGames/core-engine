@@ -164,10 +164,17 @@ void Core::Reset()
     Manager::Object->__Reset(CORE_RESOURCE_RESET_INIT);
     Manager::Resource->Reset(CORE_RESOURCE_RESET_INIT);
 
-    // apply project settings
+    // re-apply project settings
     System->SetWindowTitle(CoreApp::Settings::Name);
     System->SetWindowIcon (CoreApp::Settings::IconPath);
     Input ->SetCursor     (CoreApp::Settings::CursorPath);
+
+    // re-hide mouse cursor
+    if(!Input->IsCursorVisible())
+    {
+        Input->ShowCursor(true);
+        Input->ShowCursor(false);
+    }
 
     Log->Header("Reset finished");
 }
