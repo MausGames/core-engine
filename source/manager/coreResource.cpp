@@ -156,6 +156,8 @@ coreResourceManager::~coreResourceManager()
 /* update the resource manager */
 void coreResourceManager::UpdateResources(const coreFloat fBudgetSec)
 {
+    ASSERT(SDL_GL_GetCurrentContext())
+
     if(m_bActive)
     {
         const coreUint64 iStart = SDL_GetPerformanceCounter();
@@ -498,7 +500,9 @@ coreStatus coreResourceManager::__InitThread()
 
     // enable parallel shader compilation
     if(CORE_GL_SUPPORT(ARB_parallel_shader_compile))
+    {
         glMaxShaderCompilerThreadsARB(0xFFFFFFFFu);
+    }
 
     return CORE_OK;
 }

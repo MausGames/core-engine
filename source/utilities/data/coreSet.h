@@ -34,10 +34,10 @@ public:
 
     /* insert new unique item */
     using coreList<T>::insert;
-    constexpr void insert        (const T& tItem) {ASSERT(!this->count   (tItem)) this->push_back(tItem);}
-    constexpr void insert_bs     (const T& tItem) {ASSERT(!this->count_bs(tItem)) this->insert(this->__retrieve_bs(tItem), tItem);}
-    constexpr void insert_once   (const T& tItem) {    if(!this->count   (tItem)) this->push_back(tItem);}
-    constexpr void insert_once_bs(const T& tItem) {    if(!this->count_bs(tItem)) this->insert(this->__retrieve_bs(tItem), tItem);}
+    constexpr void     insert        (const T& tItem) {ASSERT(!this->count   (tItem)) {this->push_back(tItem);}}
+    constexpr void     insert_bs     (const T& tItem) {ASSERT(!this->count_bs(tItem)) {this->insert(this->__retrieve_bs(tItem), tItem);}}
+    constexpr coreBool insert_once   (const T& tItem) {    if(!this->count   (tItem)) {this->push_back(tItem);                          return true;} return false;}
+    constexpr coreBool insert_once_bs(const T& tItem) {    if(!this->count_bs(tItem)) {this->insert(this->__retrieve_bs(tItem), tItem); return true;} return false;}
 
     /* remove existing item */
     using coreList<T>::erase;

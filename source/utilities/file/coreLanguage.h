@@ -52,11 +52,13 @@ private:
     coreMap<coreString*, coreString> m_apsPointer;   // own string pointers connected with keys <own, key>
 
 
-public:
+protected:
     coreTranslate()noexcept;
     coreTranslate(const coreTranslate& c)noexcept;
-    virtual ~coreTranslate();
+    ~coreTranslate();
 
+
+public:
     FRIEND_CLASS(coreLanguage)
 
     /* assignment operations */

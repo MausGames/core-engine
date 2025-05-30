@@ -559,20 +559,18 @@ void CoreAudio::CheckOpenAL()
 {
     if(!Core::Debug->IsEnabled()) return;
 
-    // loop through all recent errors (device)
-    ALCenum iErrorALC;
-    while((iErrorALC = alcGetError(m_pDevice)) != ALC_NO_ERROR)
+    // get recent device error
+    const ALCenum iErrorALC = alcGetError(m_pDevice);
+    WARN_IF(iErrorALC != ALC_NO_ERROR)
     {
         Core::Log->Warning("OpenAL reported a device error (ALC Error Code: 0x%08X)", iErrorALC);
-        WARN_IF(true) {}
     }
 
-    // loop through all recent errors (context)
-    ALenum iErrorAL;
-    while((iErrorAL = alGetError()) != AL_NO_ERROR)
+    // get recent context error
+    const ALenum iErrorAL = alGetError();
+    WARN_IF(iErrorAL != AL_NO_ERROR)
     {
         Core::Log->Warning("OpenAL reported a context error (AL Error Code: 0x%08X)", iErrorAL);
-        WARN_IF(true) {}
     }
 }
 

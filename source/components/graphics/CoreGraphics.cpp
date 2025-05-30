@@ -180,11 +180,15 @@ CoreGraphics::CoreGraphics()noexcept
 
     // enable maximum sample shading rate
     if(CORE_GL_SUPPORT(ARB_sample_shading))
+    {
         glMinSampleShading(1.0f);
+    }
 
     // enable parallel shader compilation
     if(CORE_GL_SUPPORT(ARB_parallel_shader_compile))
+    {
         glMaxShaderCompilerThreadsARB(0xFFFFFFFFu);
+    }
 
     // create uniform buffer objects
     m_Transform3DBuffer.Create(CORE_SHADER_BUFFER_TRANSFORM3D_NUM, CORE_GRAPHICS_UNIFORM_BUFFERS, CORE_GRAPHICS_UNIFORM_TRANSFORM3D_SIZE);

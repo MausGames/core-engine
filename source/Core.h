@@ -497,7 +497,7 @@
 
 // enable per-member comparison-operations with the defined class
 #define ENABLE_COMPARISON(c) \
-    constexpr auto operator <=> (const c&)const = default;
+    RETURN_NODISCARD constexpr auto operator <=> (const c&)const = default;
 
 // disable heap-operations with the defined class
 #define DISABLE_HEAP                                \
@@ -507,18 +507,18 @@
     void  operator delete[] (void*)       = delete;
 
 // enable bitwise-operations with the defined enumeration
-#define ENABLE_BITWISE(e)                                                                                                                               \
-    constexpr e  operator ~  (const e   a)            {return s_cast<e>(~s_cast<std::underlying_type_t<e>>(a));}                                        \
-    constexpr e  operator &  (const e   a, const e b) {return s_cast<e>( s_cast<std::underlying_type_t<e>>(a) & s_cast<std::underlying_type_t<e>>(b));} \
-    constexpr e  operator |  (const e   a, const e b) {return s_cast<e>( s_cast<std::underlying_type_t<e>>(a) | s_cast<std::underlying_type_t<e>>(b));} \
-    constexpr e  operator ^  (const e   a, const e b) {return s_cast<e>( s_cast<std::underlying_type_t<e>>(a) ^ s_cast<std::underlying_type_t<e>>(b));} \
-    inline    e& operator &= (e& OUTPUT a, const e b) {return (a = a & b);}                                                                             \
-    inline    e& operator |= (e& OUTPUT a, const e b) {return (a = a | b);}                                                                             \
-    inline    e& operator ^= (e& OUTPUT a, const e b) {return (a = a ^ b);}
+#define ENABLE_BITWISE(e)                                                                                                                                                \
+    RETURN_NODISCARD constexpr e  operator ~  (const e   a)            {return s_cast<e>(~s_cast<std::underlying_type_t<e>>(a));}                                        \
+    RETURN_NODISCARD constexpr e  operator &  (const e   a, const e b) {return s_cast<e>( s_cast<std::underlying_type_t<e>>(a) & s_cast<std::underlying_type_t<e>>(b));} \
+    RETURN_NODISCARD constexpr e  operator |  (const e   a, const e b) {return s_cast<e>( s_cast<std::underlying_type_t<e>>(a) | s_cast<std::underlying_type_t<e>>(b));} \
+    RETURN_NODISCARD constexpr e  operator ^  (const e   a, const e b) {return s_cast<e>( s_cast<std::underlying_type_t<e>>(a) ^ s_cast<std::underlying_type_t<e>>(b));} \
+    inline                     e& operator &= (e& OUTPUT a, const e b) {return (a = a & b);}                                                                             \
+    inline                     e& operator |= (e& OUTPUT a, const e b) {return (a = a | b);}                                                                             \
+    inline                     e& operator ^= (e& OUTPUT a, const e b) {return (a = a ^ b);}
 
 // safely convert pointers and references along the inheritance hierarchy
 #if defined(_CORE_RTTI_)
-    template <typename T, typename S> inline T coreDynamicCast(S a) {T b = dynamic_cast<T>(a); ASSERT(!a || b) return b;}
+    template <typename T, typename S> RETURN_NODISCARD inline T coreDynamicCast(S a) {T b = dynamic_cast<T>(a); ASSERT(!a || b) return b;}
 #else
     #define coreDynamicCast static_cast
 #endif
@@ -573,8 +573,8 @@ STATIC_ASSERT(sizeof(coreByte)   == 1u)
 
 
 // retrieve compile-time string properties
-constexpr coreUintW coreStrLenConst(const coreChar* s)                    {ASSERT(s)      if(std::is_constant_evaluated()) {coreUintW i = 0u; while(s[i]) ++i; return i;}                return std::strlen(s);}
-constexpr coreInt32 coreStrCmpConst(const coreChar* s, const coreChar* t) {ASSERT(s && t) if(std::is_constant_evaluated()) {while((*s) == (*t) && (*s)) {++s; ++t;} return (*s) - (*t);} return std::strcmp(s, t);}
+RETURN_NODISCARD constexpr coreUintW coreStrLenConst(const coreChar* s)                    {ASSERT(s)      if(std::is_constant_evaluated()) {coreUintW i = 0u; while(s[i]) ++i; return i;}                return std::strlen(s);}
+RETURN_NODISCARD constexpr coreInt32 coreStrCmpConst(const coreChar* s, const coreChar* t) {ASSERT(s && t) if(std::is_constant_evaluated()) {while((*s) == (*t) && (*s)) {++s; ++t;} return (*s) - (*t);} return std::strcmp(s, t);}
 
 // retrieve compile-time pointer-safe array size
 template <typename T, coreUintW iSize> coreByte (&__ARRAY_SIZE(T (&)[iSize]))[iSize];

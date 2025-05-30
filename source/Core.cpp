@@ -187,11 +187,11 @@ void Core::Reshape()
     // reset view frustum
     Graphics->SetView(System->m_vResolution, Graphics->m_fFOV, Graphics->m_fNearClip, Graphics->m_fFarClip, Graphics->m_fAspectRatio);
 
+    // refresh all existing 2d-objects
+    Manager::Object->RefreshSprites();   // # before reshape
+
     // reshape resources
     Manager::Resource->Reshape();
-
-    // refresh all existing 2d-objects
-    Manager::Object->RefreshSprites();
 
     // apply project settings
     System->SetWindowTitle(CoreApp::Settings::Name);
