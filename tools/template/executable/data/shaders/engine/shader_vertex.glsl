@@ -85,31 +85,36 @@
     void VertexMain();
     void ShaderMain()
     {
-    #if defined(GL_ES)
-        #define CORE_OVERFLOW_GUARD(i, n) (i)
-    #else
-        #define CORE_OVERFLOW_GUARD(i, n) (min(i, (n) - 1))   // # Intel hotfix: prevent compiler-generated overflow
-    #endif
-
-        // compatibility for Intel and macOS
-        v_v4VarColor   = vec4(0.0);
-        for(int i = 0; i < CORE_NUM_TEXTURES_2D; ++i) v_av2TexCoord[CORE_OVERFLOW_GUARD(i, CORE_NUM_TEXTURES_2D)] = vec2(0.0);
-        for(int i = 0; i < CORE_NUM_LIGHTS;      ++i) v_av4LightPos[CORE_OVERFLOW_GUARD(i, CORE_NUM_LIGHTS)]      = vec4(0.0);
-        for(int i = 0; i < CORE_NUM_LIGHTS;      ++i) v_av4LightDir[CORE_OVERFLOW_GUARD(i, CORE_NUM_LIGHTS)]      = vec4(0.0);
-        v_v3TangentPos = vec3(0.0);
-        v_v3TangentCam = vec3(0.0);
+        // prevent unused output variable errors
+        if(false)
+        {
+            v_v4VarColor   = vec4(0.0);
+            for(int i = 0; i < CORE_NUM_TEXTURES_2D; ++i) v_av2TexCoord[i] = vec2(0.0);
+            for(int i = 0; i < CORE_NUM_LIGHTS;      ++i) v_av4LightPos[i] = vec4(0.0);
+            for(int i = 0; i < CORE_NUM_LIGHTS;      ++i) v_av4LightDir[i] = vec4(0.0);
+            v_v3TangentPos = vec3(0.0);
+            v_v3TangentCam = vec3(0.0);
+        }
 
     #if defined(_CORE_OPTION_INSTANCING_)
+
+        // forward instancing attribute to fragment shader (# before main function)
         v_v4VarColor = a_v4DivColor;
+
     #endif
 
+        // set low-memory model attributes
         a_v2LowPosition = a_v3RawPosition.xy;
         a_v2LowTexCoord = vec2(0.5 + a_v3RawPosition.x, 0.5 - a_v3RawPosition.y);
 
+        // execute main function
         VertexMain();
 
     #if defined(GL_ES)
+
+        // pre-calculate view-direction to reduce shader outputs
         v_v3TangentPos = v_v3TangentCam - v_v3TangentPos;
+
     #endif
     }
 
