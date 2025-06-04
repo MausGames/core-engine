@@ -15,15 +15,17 @@
 
 // ****************************************************************
 /* scope definitions */
-#define CORE_SCOPE_CLASS(c,t,f,g)                                    \
-    class c final : public coreScope<t>                              \
-    {                                                                \
-    public:                                                          \
-        constexpr c(t* pObject)noexcept : coreScope<t> (pObject) {f} \
-        ~c() {g}                                                     \
-                                                                     \
-        ENABLE_COPY(c)                                               \
+#define CORE_SCOPE_CLASS(c,t,f,g)                          \
+    class c final : public coreScope<t>                    \
+    {                                                      \
+    public:                                                \
+        c(t* pObject)noexcept : coreScope<t> (pObject) {f} \
+        ~c()                                           {g} \
+                                                           \
+        ENABLE_COPY(c)                                     \
     };
+
+#define DEFER(x) const coreDefer CONCAT(__d, __LINE__)([&]() {x});
 
 
 // ****************************************************************
@@ -53,6 +55,23 @@ public:
     constexpr explicit operator coreBool ()const {return m_ptObject != NULL;}
     constexpr T*       operator ->       ()const {return  this->Get();}
     constexpr T&       operator *        ()const {return *this->Get();}
+};
+
+
+// ****************************************************************
+/* deferred execution helper */
+template <typename F> class coreDefer final
+{
+private:
+    F m_nFunc;   // deferred function
+
+
+public:
+    constexpr coreDefer(F&& nFunc)noexcept;
+    ~coreDefer();
+
+    DISABLE_COPY(coreDefer)
+    DISABLE_HEAP
 };
 
 
@@ -101,6 +120,22 @@ template <typename T> coreScope<T>& coreScope<T>::operator = (coreScope&& m)noex
     if(m_ptObject == m.m_ptObject) m.m_ptObject = NULL;
 
     return *this;
+}
+
+
+// ****************************************************************
+/* constructor */
+template <typename F> constexpr coreDefer<F>::coreDefer(F&& nFunc)noexcept
+: m_nFunc (std::forward<F>(nFunc))
+{
+}
+
+
+// ****************************************************************
+/* destructor */
+template <typename F> coreDefer<F>::~coreDefer()
+{
+    m_nFunc();
 }
 
 
