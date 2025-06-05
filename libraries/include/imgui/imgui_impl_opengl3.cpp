@@ -302,6 +302,7 @@ bool    ImGui_ImplOpenGL3_Init(const char* glsl_version)
 
     // Query for GL version (e.g. 320 for GL 3.2)
     const char* gl_version_str = (const char*)glGetString(GL_VERSION);
+    IM_UNUSED(gl_version_str);
 #if defined(IMGUI_IMPL_OPENGL_ES2)
     // GLES 2
     bd->GlVersion = 200;

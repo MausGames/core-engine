@@ -193,7 +193,7 @@ void Core::Reshape()
     // reshape resources
     Manager::Resource->Reshape();
 
-    // apply project settings
+    // re-apply project settings
     System->SetWindowTitle(CoreApp::Settings::Name);
 }
 

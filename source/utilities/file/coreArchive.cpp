@@ -339,7 +339,8 @@ void coreFile::FlushFilesystem()
 #if defined(_CORE_EMSCRIPTEN_)
 
     // write in-memory data to persistent data store
-    EM_ASM(
+    EM_ASM
+    (
         FS.syncfs(false, function(sError)
         {
             if(sError) console.error(sError);
