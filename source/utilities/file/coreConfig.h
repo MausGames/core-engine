@@ -78,6 +78,10 @@ public:
     coreStatus Load();
     coreStatus Save();
 
+    /* apply configuration overrides */
+    void ApplyCommandline();
+    void ApplyGlobalFile();
+
     /* set configuration values */
     inline void SetBool  (const coreHashString& sSection, const coreHashString& sKey, const coreBool,  const coreBool  bValue)  {this->SetBool      (sSection, sKey, bValue);}
     inline void SetInt   (const coreHashString& sSection, const coreHashString& sKey, const coreInt32, const coreInt32 iValue)  {this->SetInt       (sSection, sKey, iValue);}

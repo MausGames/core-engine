@@ -182,6 +182,64 @@ coreStatus coreConfig::Save()
 
 
 // ****************************************************************
+/* apply command line overrides */
+void coreConfig::ApplyCommandline()
+{
+    // get command line argument
+    const coreChar* pcOverride = coreData::GetCommandLine("config-override");
+    if(pcOverride)
+    {
+        coreString sSection, sKey, sValue;
+
+        // iterate over all overrides
+        coreData::StrForEachToken(pcOverride, ";", [&](coreChar* pcToken)
+        {
+            // find delimiters
+            coreChar* pcDelim1 = std::strchr(pcToken, '.');
+            coreChar* pcDelim2 = std::strchr(pcToken, ':');
+
+            if(pcDelim1 && pcDelim2 && (pcDelim1 < pcDelim2))
+            {
+                // separate individual strings
+                (*pcDelim1) = (*pcDelim2) = '\0';
+
+                // trim possible whitespaces
+                sSection.assign(pcToken)      .trim();
+                sKey    .assign(pcDelim1 + 1u).trim();
+                sValue  .assign(pcDelim2 + 1u).trim();
+
+                // override configuration entry
+                m_aasSection[sSection.c_str()][sKey.c_str()] = sValue;
+            }
+        });
+    }
+}
+
+
+// ****************************************************************
+/* apply global configuration file overrides (useful for hotfixes) */
+void coreConfig::ApplyGlobalFile()
+{
+    // load global configuration file
+    if(!coreData::FileExists("data/other/config.ini")) return;
+    const coreConfig oOverride("data/other/config.ini");
+
+    FOR_EACH(it, oOverride.m_aasSection)
+    {
+        FOR_EACH(et, *it)
+        {
+            // retrieve section an key
+            const coreChar* pcSection = oOverride.m_aasSection.get_string(it);
+            const coreChar* pcKey     = it->get_string(et);
+
+            // override configuration entry
+            m_aasSection[pcSection][pcKey] = (*et);
+        }
+    }
+}
+
+
+// ****************************************************************
 /* retrieve configuration entry */
 coreBool coreConfig::__RetrieveEntry(const coreHashString& sSection, const coreHashString& sKey, coreString** OUTPUT ppsEntry)
 {

@@ -235,8 +235,8 @@ public:
     template <typename T> static constexpr coreUint32 TypeId();
 
     /* operate with string data */
-    template <typename F> static const coreChar* StrProcess     (const coreChar* pcInput,                              F&& nFunction);   // [](const coreChar  cChar)   -> coreChar
-    template <typename F> static void            StrForEachToken(const coreChar* pcInput, const coreChar* pcDelimiter, F&& nFunction);   // [](const coreChar* pcToken) -> void
+    template <typename F> static const coreChar* StrProcess     (const coreChar* pcInput,                              F&& nFunction);   // [](const coreChar cChar)   -> coreChar
+    template <typename F> static void            StrForEachToken(const coreChar* pcInput, const coreChar* pcDelimiter, F&& nFunction);   // [](coreChar*      pcToken) -> void
     static inline       coreBool  StrCmpLike  (const coreChar* s, const coreChar* t) {return ((*t) == '*') ? StrCmpLike(s, t+1u) || ((*s) && StrCmpLike(s+1u, t)) : (*s) ? (((*t) == '?') || (TO_LOWER(*s) == TO_LOWER(*t))) && StrCmpLike(s+1u, t+1u) : !(*t);}
     static inline const coreChar* StrToUpper  (const coreChar* pcInput)              {return coreData::StrProcess(pcInput, [](const coreChar c) {return TO_UPPER(c);});}
     static inline const coreChar* StrToLower  (const coreChar* pcInput)              {return coreData::StrProcess(pcInput, [](const coreChar c) {return TO_LOWER(c);});}
@@ -411,7 +411,7 @@ template <typename F> void coreData::StrForEachToken(const coreChar* pcInput, co
     coreData::StrCopy(acString, ARRAY_SIZE(acString), pcInput);
 
     // tokenize string and forward to function
-    const coreChar* pcToken = strtok_r(acString, pcDelimiter, &pcContext);
+    coreChar* pcToken = strtok_r(acString, pcDelimiter, &pcContext);
     while(pcToken != NULL)
     {
         nFunction(pcToken);

@@ -41,6 +41,8 @@ Core::Core()noexcept
     STATIC_NEW(Config, coreData::UserFolderPrivate("config.ini"))
     STATIC_NEW(Language)
     STATIC_NEW(Rand)
+    Config->ApplyCommandline();
+    Config->ApplyGlobalFile();
     coreData::LogCommandLine();
     coreData::LogEnvironment();
 
