@@ -11,7 +11,6 @@
 #define _CORE_GUARD_DATA_H_
 
 // TODO 3: implement constexpr strright
-// TODO 3: --headless
 // TODO 3: add ToChars float precision parameter (+ search for 'PRINT("%f' and 'PRINT("%.')
 // TODO 3: make !temp and !appdata replace instead
 // TODO 3: add compiled/included Windows SDK version to BuildLibrary string

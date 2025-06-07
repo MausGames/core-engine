@@ -33,7 +33,7 @@
 // TODO 5: path/url class
 // TODO 5: stack-allocator
 // TODO 3: fix constexpr msvc bug (or confirm already fixed) (constexpr-results are not saved after compilation, functions often re-evaluated at run-time)
-// TODO 3: disallow two instances (or create yes/no message box) of the same application
+// TODO 3: disallow two instances (or create yes/no message box) of the same application (not for commands/headless)
 // TODO 3: improve MSVC debug allocator usage, #define new new(_NORMAL_BLOCK, __FILE__, __LINE__)
 // TODO 5: check out NVAPI and ADLX/AGS
 // TODO 4: handle implicit conversions, (enable MSVC warnings 4242, 4244, 4267 4365 again)
@@ -806,9 +806,12 @@ public:
 
 
 private:
-    /* run engine */
+    /* main function */
     friend coreInt32 SDLCALL coreMain(coreInt32 argc, coreChar** argv);
-    static coreStatus Run();
+
+    /* run engine or command */
+    static coreStatus RunEngine();
+    static coreStatus RunCommand();
 
     /* perform deferred application restart */
     static void __PerformRestart();

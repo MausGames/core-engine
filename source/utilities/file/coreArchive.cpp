@@ -561,7 +561,7 @@ coreFile* coreArchive::CreateFile(const coreChar* pcPath, coreByte* pData, const
 
 // ****************************************************************
 /* add file object */
-coreStatus coreArchive::AddFile(const coreChar* pcPath)
+coreStatus coreArchive::AddFile(const coreChar* pcPath, const coreChar* pcNewPath)
 {
     // check already existing file
     WARN_IF(m_apFile.count_bs(pcPath))
@@ -571,10 +571,10 @@ coreStatus coreArchive::AddFile(const coreChar* pcPath)
     }
 
     // open and add new file object
-    return this->AddFile(new coreFile(pcPath));
+    return this->AddFile(new coreFile(pcPath), pcNewPath);
 }
 
-coreStatus coreArchive::AddFile(coreFile* pFile)
+coreStatus coreArchive::AddFile(coreFile* pFile, const coreChar* pcNewPath)
 {
     if(pFile->m_pArchive) return CORE_INVALID_INPUT;
 
@@ -587,6 +587,9 @@ coreStatus coreArchive::AddFile(coreFile* pFile)
 
     // cache missing file data
     pFile->LoadData();
+
+    // override internal path
+    if(pcNewPath) pFile->m_sPath = pcNewPath;
 
     // add new file object
     m_apFile.emplace_bs(pFile->GetPath(), pFile);

@@ -225,14 +225,18 @@ coreInt32 SDLCALL coreMain(coreInt32 argc, coreChar** argv)
     coreMath::EnableRoundToNearest();
     coreMath::DisableDenormals();
 
+    // run command
+    const coreStatus eStatus = Core::RunCommand();
+    if(eStatus != CORE_BUSY) return eStatus;
+
     // run engine
-    return Core::Run();
+    return Core::RunEngine();
 }
 
 
 // ****************************************************************
 /* run engine */
-coreStatus Core::Run()
+coreStatus Core::RunEngine()
 {
     // create engine instance
     Core Engine;
@@ -318,6 +322,184 @@ coreStatus Core::Run()
     Log->SetLevel(CORE_LOG_LEVEL_ALL);
 
     return CORE_OK;
+}
+
+
+// ****************************************************************
+/* run command */
+coreStatus Core::RunCommand()
+{
+#if !defined(_CORE_EMSCRIPTEN_) && !defined(_CORE_SWITCH_)
+
+    const auto nStartFunc = []()
+    {
+        // init SDL library
+        WARN_IF(!SDL_Init(0u)) {}
+
+        // init log file
+        STATIC_NEW(Log, coreData::UserFolderShared("log.html"))
+    };
+
+    const auto nEndFunc = []()
+    {
+        // delete log file
+        STATIC_DELETE(Log)
+
+        // shut down SDL library
+        SDL_Quit();
+    };
+
+    // return available parameters
+    if(coreData::GetCommandLine("help"))
+    {
+        std::puts(PRINT("%s %s", CoreApp::Settings::Name, CoreApp::Settings::Version));
+        std::puts("Options:");
+        std::puts("  --user-folder-path <value>   set path for storing user-specific files (needs write permission)");
+        std::puts("  --config-override <value>    override config values (e.g. \"Base.AsyncMode:false;System.Width:1024\")");
+        std::puts("  --input <value>              input file or directory for some commands");
+        std::puts("  --output <value>             output file or directory for some commands");
+        std::puts("Commands:");
+        std::puts("  --compress                   compress <input> file into custom Zstandard file .{ext}z");
+        std::puts("  --pack                       pack <input> directory into <output> Core file archive");
+        std::puts("  --help                       display available parameters");
+        std::puts("  --version                    display simple version string");
+        return CORE_OK;
+    }
+
+    // return simple version string
+    if(coreData::GetCommandLine("version"))
+    {
+        std::puts(CoreApp::Settings::Version);
+        return CORE_OK;
+    }
+
+    // compress file
+    if(coreData::GetCommandLine("compress"))
+    {
+        // handle required components
+        nStartFunc();
+        DEFER(nEndFunc();)
+
+        // retrieve command options
+        const coreChar* pcInput = coreData::GetCommandLine("input");
+        if(!pcInput)
+        {
+            std::puts("<input> parameter missing or invalid");
+            return CORE_INVALID_DATA;
+        }
+
+        // open input file
+        coreFile oFile(pcInput);
+        if(!oFile.GetSize())
+        {
+            std::printf("File (%s) could not be opened\n", pcInput);
+            return CORE_ERROR_FILE;
+        }
+
+        const coreUint32 iSizeBefore = oFile.GetSize();
+
+        // check if already compressed (useful after library update)
+        const coreChar* pcOutput;
+        if(coreData::StrRight(pcInput, 1u)[0] == 'z')
+        {
+            // recompress as strong as possible
+            oFile.Decompress();
+            oFile.Compress(ZSTD_maxCLevel());
+
+            // write to same location
+            pcOutput = NULL;
+
+            // check for efficacy
+            if(oFile.GetSize() >= iSizeBefore)
+            {
+                std::printf("File (%s) already compressed same or better\n", pcOutput);
+                return CORE_OK;
+            }
+        }
+        else
+        {
+            // compress as strong as possible
+            oFile.Compress(ZSTD_maxCLevel());
+
+            // write to new location
+            pcOutput = PRINT("%sz", pcInput);
+        }
+
+        const coreUint32 iSizeAfter = oFile.GetSize();
+
+        // save output file
+        if(oFile.Save(pcOutput) != CORE_OK)
+        {
+            std::printf("File (%s) could not be saved\n", pcOutput);
+            return CORE_ERROR_FILE;
+        }
+
+        std::printf("File (%s, %.1f KB -> %.1f KB, %.1f%%) compressed\n", pcInput, I_TO_F(iSizeBefore) / 1024.0f, I_TO_F(iSizeAfter) / 1024.0f, (I_TO_F(iSizeAfter) / I_TO_F(iSizeBefore)) * 100.0f);
+        return CORE_OK;
+    }
+
+    // pack directory
+    if(coreData::GetCommandLine("pack"))
+    {
+        // handle required components
+        nStartFunc();
+        DEFER(nEndFunc();)
+
+        // retrieve command options
+        const coreChar* pcInput  = coreData::GetCommandLine("input");
+        const coreChar* pcOutput = coreData::GetCommandLine("output");
+        if(!pcInput || !pcOutput)
+        {
+            std::puts("<input> or <output> parameter missing or invalid");
+            return CORE_INVALID_DATA;
+        }
+
+        // scan input directory
+        coreList<coreString> asFileList;
+        if(coreData::DirectoryScanTree(pcInput, "*", &asFileList) != CORE_OK)
+        {
+            std::printf("Directory (%s) could not be scanned\n", pcInput);
+            return CORE_ERROR_FILE;
+        }
+
+        // cut off common path
+        const coreUintW iLen = std::strlen(pcInput) + 1u;
+
+        // add all files to the archive
+        coreArchive oArchive;
+        FOR_EACH(it, asFileList)
+        {
+            oArchive.AddFile(it->c_str(), it->c_str() + iLen);
+        }
+
+        // save output file
+        if(oArchive.Save(pcOutput) != CORE_OK)
+        {
+            std::printf("Archive (%s) could not be saved\n", pcOutput);
+            return CORE_ERROR_FILE;
+        }
+
+        std::printf("Directory (%s, %zu files) packed into archive (%s, %.1f KB)\n", pcInput, asFileList.size(), pcOutput, I_TO_F(coreData::FileSize(pcOutput)) / 1024.0f);
+        return CORE_OK;
+    }
+
+    // run as thin as possible (hidden command)
+    if(coreData::GetCommandLine("headless"))
+    {
+        // handle required components
+        nStartFunc();
+        DEFER(nEndFunc();)
+
+        // quickly init and delete application
+        STATIC_NEW   (Application)
+        STATIC_DELETE(Application)
+
+        return CORE_OK;
+    }
+
+#endif
+
+    return CORE_BUSY;
 }
 
 

@@ -960,24 +960,6 @@ void coreData::SetCommandLine(const coreInt32 iArgc, const coreChar* const* ppcA
             }
         }
     }
-
-    // return available options
-    if(coreData::GetCommandLine("help"))
-    {
-        std::puts(PRINT("%s %s", CoreApp::Settings::Name, CoreApp::Settings::Version));
-        std::puts("Options:");
-        std::puts("  --user-folder-path <value>   set path for storing user-specific files (needs write permission)");
-        std::puts("  --help                       display available options");
-        std::puts("  --version                    display simple version string");
-        std::exit(EXIT_SUCCESS);
-    }
-
-    // return simple version string
-    if(coreData::GetCommandLine("version"))
-    {
-        std::puts(CoreApp::Settings::Version);
-        std::exit(EXIT_SUCCESS);
-    }
 }
 
 

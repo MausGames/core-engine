@@ -124,8 +124,8 @@ public:
 
     /* manage file objects */
     coreFile*  CreateFile(const coreChar* pcPath, coreByte* pData, const coreUint32 iSize);
-    coreStatus AddFile   (const coreChar* pcPath);
-    coreStatus AddFile   (coreFile*       pFile);
+    coreStatus AddFile   (const coreChar* pcPath, const coreChar* pcNewPath = NULL);
+    coreStatus AddFile   (coreFile*       pFile,  const coreChar* pcNewPath = NULL);
     coreStatus DeleteFile(const coreUintW iIndex);
     coreStatus DeleteFile(const coreChar* pcPath);
     coreStatus DeleteFile(coreFile*       pFile);
