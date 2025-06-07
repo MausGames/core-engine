@@ -250,7 +250,8 @@ public:
     static coreUintW              StrCopy     (coreChar* OUTPUT pcOutput, const coreUintW iOutputSize, const coreChar* pcInput, const coreUintW iNum = 0u);
 
     /* operate with containers */
-    template <typename T> static inline void Shuffle(const T& tBegin, const T& tEnd, const coreUint32 iSeed = std::time(NULL)) {std::shuffle(tBegin, tEnd, std::minstd_rand(iSeed));}
+    template <typename T>             static inline void RangeShuffle(const T& tBegin, const T& tEnd, const coreUint64 iSeed = CORE_RAND_SEED_ALWAYS) {coreRand oRand(iSeed); for(coreUintW i = tEnd - tBegin; i-- > 1u; ) std::swap(tBegin[i], tBegin[oRand.Uint(i)]);}
+    template <typename T, typename S> static inline T    RangeClosest(const T& tBegin, const T& tEnd, const S& tValue)                                {return std::min_element(tBegin, tEnd, [&](const S& A, const S& B) {return (ABS(A - tValue) < ABS(B - tValue));});}
 
 
 private:
