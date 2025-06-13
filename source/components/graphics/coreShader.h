@@ -95,6 +95,7 @@
 #define CORE_SHADER_OPTION_INSTANCING             "#define _CORE_OPTION_INSTANCING_"     " (1) \n"
 #define CORE_SHADER_OPTION_NO_ROTATION            "#define _CORE_OPTION_NO_ROTATION_"    " (1) \n"
 #define CORE_SHADER_OPTION_NO_EARLY_DEPTH         "#define _CORE_OPTION_NO_EARLY_DEPTH_" " (1) \n"
+#define CORE_SHADER_OPTION_NO_PERSPECTIVE         "#define _CORE_OPTION_NO_PERSPECTIVE_" " (1) \n"
 
 enum coreProgramStatus : coreUint8
 {

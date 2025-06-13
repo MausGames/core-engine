@@ -154,6 +154,7 @@ Definitions
     #define CORE_GL_draw_buffers
     #define CORE_GL_gpu_shader4
     #define CORE_GL_gpu_shader5
+    #define CORE_GL_noperspective_interpolation
     #define CORE_GL_sample_interpolation
     #define CORE_GL_sample_shading
     #define CORE_GL_shader_image_load_store

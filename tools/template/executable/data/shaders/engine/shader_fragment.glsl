@@ -16,23 +16,23 @@
         // shader input
         in b_Varying
         {
-            flat vec4 v_v4VarColor;
-            vec2 v_av2TexCoord[CORE_NUM_TEXTURES_2D];
-            vec4 v_av4LightPos[CORE_NUM_LIGHTS];
-            vec4 v_av4LightDir[CORE_NUM_LIGHTS];
-            vec3 v_v3TangentPos;
-            vec3 v_v3TangentCam;
+            flat     vec4 v_v4VarColor;
+            smoothEx vec2 v_av2TexCoord[CORE_NUM_TEXTURES_2D];
+            smoothEx vec4 v_av4LightPos[CORE_NUM_LIGHTS];
+            smoothEx vec4 v_av4LightDir[CORE_NUM_LIGHTS];
+            smoothEx vec3 v_v3TangentPos;
+            smoothEx vec3 v_v3TangentCam;
         };
 
     #else
 
         // shader input
-        flat varying vec4 v_v4VarColor;
-        varying vec2 v_av2TexCoord[CORE_NUM_TEXTURES_2D];
-        varying vec4 v_av4LightPos[CORE_NUM_LIGHTS];
-        varying vec4 v_av4LightDir[CORE_NUM_LIGHTS];
-        varying vec3 v_v3TangentPos;
-        varying vec3 v_v3TangentCam;
+        flat     varying vec4 v_v4VarColor;
+        smoothEx varying vec2 v_av2TexCoord[CORE_NUM_TEXTURES_2D];
+        smoothEx varying vec4 v_av4LightPos[CORE_NUM_LIGHTS];
+        smoothEx varying vec4 v_av4LightDir[CORE_NUM_LIGHTS];
+        smoothEx varying vec3 v_v3TangentPos;
+        smoothEx varying vec3 v_v3TangentCam;
 
     #endif
 
