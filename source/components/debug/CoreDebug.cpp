@@ -282,7 +282,7 @@ const coreBool& CoreDebug::IsEnabled()
     ASSERT(STATIC_ISVALID(Core::Config))
 
     // only check once
-    static const coreBool s_bEnabled = Core::Config->GetBool(CORE_CONFIG_BASE_DEBUGMODE) || DEFINED(_CORE_DEBUG_);
+    static const coreBool s_bEnabled = (Core::Config->GetBool(CORE_CONFIG_BASE_DEBUGMODE) && !DEFINED(_CORE_EMSCRIPTEN_) && !DEFINED(_CORE_SWITCH_)) || DEFINED(_CORE_DEBUG_);
     return s_bEnabled;
 }
 
