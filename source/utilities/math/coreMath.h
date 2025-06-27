@@ -110,6 +110,8 @@
     namespace std {template <typename T, typename S> FORCE_INLINE constexpr T bit_cast(const S& tValue) {return __builtin_bit_cast(T, tValue);}}
 #endif
 
+template <typename T> concept coreFloatingPoint = std::floating_point<T> || (std::is_class_v<T> && std::is_convertible_v<T, coreFloat>);
+
 
 // ****************************************************************
 /* math utility collection */
@@ -119,78 +121,78 @@ public:
     DISABLE_CONSTRUCTION(coreMath)
 
     /* special operations */
-    template <typename T, typename... A>         static constexpr T Min         (const T& x, const t_ident<T>& y, const t_ident<T>& z, A&&... vArgs) {return MIN(x, MIN(y, z, std::forward<A>(vArgs)...));}
-    template <typename T, typename... A>         static constexpr T Max         (const T& x, const t_ident<T>& y, const t_ident<T>& z, A&&... vArgs) {return MAX(x, MAX(y, z, std::forward<A>(vArgs)...));}
-    template <typename T>                        static constexpr T Min         (const T& x, const t_ident<T>& y)                                    {return (x < y) ? x : y;}
-    template <typename T>                        static constexpr T Max         (const T& x, const t_ident<T>& y)                                    {return (x > y) ? x : y;}
-    template <typename T>                        static constexpr T Med         (const T& x, const t_ident<T>& y, const t_ident<T>& z)               {return MAX(MIN(MAX(x, y), z), MIN(x, y));}
-    template <typename T>                        static constexpr T Clamp       (const T& x, const t_ident<T>& a, const t_ident<T>& b)               {return MIN(MAX(x, a), b);}
-    template <typename T>                        static constexpr T Sign        (const T& x)                                                         {return (x < T(0)) ? T(-1) : T(1);}                 // never return 0
-    template <typename T>                        static constexpr T Signum      (const T& x)                                                         {return (x) ? SIGN(x) : T(0);}
-    template <std::floating_point  T>            static inline    T Abs         (const T& x)                                                         {return std::abs(x);}
-    template <std::signed_integral T>            static inline    T Abs         (const T& x)                                                         {return std::abs(MAX(x, -std::numeric_limits<T>::max()));}
-    template <typename T>                        static constexpr T Pow2        (const T& x)                                                         {return x * x;}
-    template <typename T>                        static constexpr T Pow3        (const T& x)                                                         {return x * x * x;}
-    template <typename T, std::floating_point S> static constexpr T Lerp        (const T& x, const T& y, const S& s)                                 {return x * (S(1) - s) + y * s;}                    // better precision than (x + (y - x) * s)
-    template <typename T, std::floating_point S> static inline    T LerpSmooth  (const T& x, const T& y, const S& s)                                 {return LERP(x, y, S(0.5) - S(0.5) * COS(s * S(PI_D)));}
-    template <typename T, std::floating_point S> static inline    T LerpBreak   (const T& x, const T& y, const S& s)                                 {return LERP(x, y, SIN(s * (S(PI_D) * S(0.5))));}
-    template <typename T, std::floating_point S> static inline    T LerpBreakRev(const T& x, const T& y, const S& s)                                 {return LERP(y, x, COS(s * (S(PI_D) * S(0.5))));}   // (y, x)
-    template <typename T, std::floating_point S> static constexpr T LerpHermite3(const T& x, const T& y, const S& s)                                 {return LERP(x, y, (S(3) - S(2) * s) * s * s);}
-    template <typename T, std::floating_point S> static constexpr T LerpHermite5(const T& x, const T& y, const S& s)                                 {return LERP(x, y, (S(10) + (S(-15) + S(6) * s) * s) * s * s * s);}
-    template <typename T, std::floating_point S> static inline    T LerpExp     (const T& x, const T& y, const S& s)                                 {return POW(x, S(1) - s) * POW(y, s);}
-    template <typename T, std::floating_point S> static inline    T LerpPow     (const T& x, const T& y, const S& s, const S& k)                     {return LERP(x, y, POW(s, k));}                     // inverted curve with (k < 1)
-    static constexpr coreFloat                                      Step        (const coreFloat a, const coreFloat b, const coreFloat x)            {return CLAMP01((x - a) * RCP(b - a));}             // linearstep
-    static inline    coreFloat                                      StepSmooth  (const coreFloat a, const coreFloat b, const coreFloat x)            {return BLENDS (STEP(a, b, x));}
-    static inline    coreFloat                                      StepBreak   (const coreFloat a, const coreFloat b, const coreFloat x)            {return BLENDB (STEP(a, b, x));}
-    static inline    coreFloat                                      StepBreakRev(const coreFloat a, const coreFloat b, const coreFloat x)            {return BLENDBR(STEP(a, b, x));}
-    static constexpr coreFloat                                      StepHermite3(const coreFloat a, const coreFloat b, const coreFloat x)            {return BLENDH3(STEP(a, b, x));}                    // smoothstep
-    static constexpr coreFloat                                      StepHermite5(const coreFloat a, const coreFloat b, const coreFloat x)            {return BLENDH5(STEP(a, b, x));}                    // smootherstep
+    template <typename T, typename... A>       static constexpr T Min         (const T& x, const t_ident<T>& y, const t_ident<T>& z, A&&... vArgs) {return MIN(x, MIN(y, z, std::forward<A>(vArgs)...));}
+    template <typename T, typename... A>       static constexpr T Max         (const T& x, const t_ident<T>& y, const t_ident<T>& z, A&&... vArgs) {return MAX(x, MAX(y, z, std::forward<A>(vArgs)...));}
+    template <typename T>                      static constexpr T Min         (const T& x, const t_ident<T>& y)                                    {return (x < y) ? x : y;}
+    template <typename T>                      static constexpr T Max         (const T& x, const t_ident<T>& y)                                    {return (x > y) ? x : y;}
+    template <typename T>                      static constexpr T Med         (const T& x, const t_ident<T>& y, const t_ident<T>& z)               {return MAX(MIN(MAX(x, y), z), MIN(x, y));}
+    template <typename T>                      static constexpr T Clamp       (const T& x, const t_ident<T>& a, const t_ident<T>& b)               {return MIN(MAX(x, a), b);}
+    template <typename T>                      static constexpr T Sign        (const T& x)                                                         {return (x < T(0)) ? T(-1) : T(1);}                 // never return 0
+    template <typename T>                      static constexpr T Signum      (const T& x)                                                         {return (x) ? SIGN(x) : T(0);}
+    template <coreFloatingPoint    T>          static inline    T Abs         (const T& x)                                                         {return std::abs(x);}
+    template <std::signed_integral T>          static inline    T Abs         (const T& x)                                                         {return std::abs(MAX(x, -std::numeric_limits<T>::max()));}
+    template <typename T>                      static constexpr T Pow2        (const T& x)                                                         {return x * x;}
+    template <typename T>                      static constexpr T Pow3        (const T& x)                                                         {return x * x * x;}
+    template <typename T, coreFloatingPoint S> static constexpr T Lerp        (const T& x, const T& y, const S& s)                                 {return x * (S(1) - s) + y * s;}                    // better precision than (x + (y - x) * s)
+    template <typename T, coreFloatingPoint S> static inline    T LerpSmooth  (const T& x, const T& y, const S& s)                                 {return LERP(x, y, S(0.5) - S(0.5) * COS(s * S(PI_D)));}
+    template <typename T, coreFloatingPoint S> static inline    T LerpBreak   (const T& x, const T& y, const S& s)                                 {return LERP(x, y, SIN(s * (S(PI_D) * S(0.5))));}
+    template <typename T, coreFloatingPoint S> static inline    T LerpBreakRev(const T& x, const T& y, const S& s)                                 {return LERP(y, x, COS(s * (S(PI_D) * S(0.5))));}   // (y, x)
+    template <typename T, coreFloatingPoint S> static constexpr T LerpHermite3(const T& x, const T& y, const S& s)                                 {return LERP(x, y, (S(3) - S(2) * s) * s * s);}
+    template <typename T, coreFloatingPoint S> static constexpr T LerpHermite5(const T& x, const T& y, const S& s)                                 {return LERP(x, y, (S(10) + (S(-15) + S(6) * s) * s) * s * s * s);}
+    template <typename T, coreFloatingPoint S> static inline    T LerpExp     (const T& x, const T& y, const S& s)                                 {return POW(x, S(1) - s) * POW(y, s);}
+    template <typename T, coreFloatingPoint S> static inline    T LerpPow     (const T& x, const T& y, const S& s, const S& k)                     {return LERP(x, y, POW(s, k));}                     // inverted curve with (k < 1)
+    static constexpr coreFloat                                    Step        (const coreFloat a, const coreFloat b, const coreFloat x)            {return CLAMP01((x - a) * RCP(b - a));}             // linearstep
+    static inline    coreFloat                                    StepSmooth  (const coreFloat a, const coreFloat b, const coreFloat x)            {return BLENDS (STEP(a, b, x));}
+    static inline    coreFloat                                    StepBreak   (const coreFloat a, const coreFloat b, const coreFloat x)            {return BLENDB (STEP(a, b, x));}
+    static inline    coreFloat                                    StepBreakRev(const coreFloat a, const coreFloat b, const coreFloat x)            {return BLENDBR(STEP(a, b, x));}
+    static constexpr coreFloat                                    StepHermite3(const coreFloat a, const coreFloat b, const coreFloat x)            {return BLENDH3(STEP(a, b, x));}                    // smoothstep
+    static constexpr coreFloat                                    StepHermite5(const coreFloat a, const coreFloat b, const coreFloat x)            {return BLENDH5(STEP(a, b, x));}                    // smootherstep
 
     /* base operations */
-    template <std::floating_point T> static inline    T FmodRange(const T& tNum, const t_ident<T>& tFrom, const t_ident<T>& tTo);
-    template <std::floating_point T> static inline    T Fmod     (const T& tNum, const t_ident<T>& tDenom) {return std::fmod (tNum, tDenom);}
-    template <std::floating_point T> static inline    T Trunc    (const T& tInput)                         {return std::trunc(tInput);}
-    template <std::floating_point T> static inline    T Fract    (const T& tInput)                         {return tInput - TRUNC(tInput);}   // FMOD(x, 1)
-    template <std::floating_point T> static inline    T Cbrt     (const T& tInput)                         {return std::cbrt (tInput);}
-    template <std::floating_point T> static inline    T Sqrt     (const T& tInput)                         {return std::sqrt (tInput);}
-    template <std::floating_point T> static inline    T Rsqrt    (const T& tInput)                         {return T(1) / SQRT(tInput);}
-    template <std::floating_point T> static constexpr T Rcp      (const T& tInput)                         {return T(1) / tInput;}
-    static constexpr coreFloat                          Sqrt     (const coreFloat fInput);
-    static constexpr coreFloat                          Rsqrt    (const coreFloat fInput);
-    static constexpr coreFloat                          Rcp      (const coreFloat fInput);
+    template <coreFloatingPoint T> static inline    T FmodRange(const T& tNum, const t_ident<T>& tFrom, const t_ident<T>& tTo);
+    template <coreFloatingPoint T> static inline    T Fmod     (const T& tNum, const t_ident<T>& tDenom) {return std::fmod (tNum, tDenom);}
+    template <coreFloatingPoint T> static inline    T Trunc    (const T& tInput)                         {return std::trunc(tInput);}
+    template <coreFloatingPoint T> static inline    T Fract    (const T& tInput)                         {return tInput - TRUNC(tInput);}   // FMOD(x, 1)
+    template <coreFloatingPoint T> static inline    T Cbrt     (const T& tInput)                         {return std::cbrt (tInput);}
+    template <coreFloatingPoint T> static inline    T Sqrt     (const T& tInput)                         {return std::sqrt (tInput);}
+    template <coreFloatingPoint T> static inline    T Rsqrt    (const T& tInput)                         {return T(1) / SQRT(tInput);}
+    template <coreFloatingPoint T> static constexpr T Rcp      (const T& tInput)                         {return T(1) / tInput;}
+    static constexpr coreFloat                        Sqrt     (const coreFloat fInput);
+    static constexpr coreFloat                        Rsqrt    (const coreFloat fInput);
+    static constexpr coreFloat                        Rcp      (const coreFloat fInput);
 
     /* exponential operations */
-    template <std::floating_point T> static inline T Pow  (const T& tBase,  const t_ident<T>& tExp)  {return std::pow  (tBase, tExp);}
-    template <std::floating_point T> static inline T LogB (const T& tValue, const t_ident<T>& tBase) {return LOG(tValue) * RCP(LOG(tBase));}
-    template <std::floating_point T> static inline T Log  (const T& tInput)                          {return std::log  (tInput);}
-    template <std::floating_point T> static inline T Log2 (const T& tInput)                          {return std::log2 (tInput);}
-    template <std::floating_point T> static inline T Log10(const T& tInput)                          {return std::log10(tInput);}
-    template <std::floating_point T> static inline T Exp  (const T& tInput)                          {return std::exp  (tInput);}
-    template <std::floating_point T> static inline T Exp2 (const T& tInput)                          {return std::exp2 (tInput);}
-    template <std::floating_point T> static inline T Exp10(const T& tInput)                          {return POW(T(10), tInput);}
+    template <coreFloatingPoint T> static inline T Pow  (const T& tBase,  const t_ident<T>& tExp)  {return std::pow  (tBase, tExp);}
+    template <coreFloatingPoint T> static inline T LogB (const T& tValue, const t_ident<T>& tBase) {return LOG(tValue) * RCP(LOG(tBase));}
+    template <coreFloatingPoint T> static inline T Log  (const T& tInput)                          {return std::log  (tInput);}
+    template <coreFloatingPoint T> static inline T Log2 (const T& tInput)                          {return std::log2 (tInput);}
+    template <coreFloatingPoint T> static inline T Log10(const T& tInput)                          {return std::log10(tInput);}
+    template <coreFloatingPoint T> static inline T Exp  (const T& tInput)                          {return std::exp  (tInput);}
+    template <coreFloatingPoint T> static inline T Exp2 (const T& tInput)                          {return std::exp2 (tInput);}
+    template <coreFloatingPoint T> static inline T Exp10(const T& tInput)                          {return POW(T(10), tInput);}
 
     /* trigonometric operations */
-    template <std::floating_point T> static inline T Sin (const T& tInput) {return std::sin (tInput);}
-    template <std::floating_point T> static inline T Cos (const T& tInput) {return std::cos (tInput);}
-    template <std::floating_point T> static inline T Tan (const T& tInput) {return std::tan (tInput);}
-    template <std::floating_point T> static inline T Asin(const T& tInput) {return std::asin(tInput);}
-    template <std::floating_point T> static inline T Acos(const T& tInput) {return std::acos(tInput);}
-    template <std::floating_point T> static inline T Atan(const T& tInput) {return std::atan(tInput);}
-    template <std::floating_point T> static inline T Cot (const T& tInput) {return TAN(T(PI_D) / T(2) - tInput);}
+    template <coreFloatingPoint T> static inline T Sin (const T& tInput) {return std::sin (tInput);}
+    template <coreFloatingPoint T> static inline T Cos (const T& tInput) {return std::cos (tInput);}
+    template <coreFloatingPoint T> static inline T Tan (const T& tInput) {return std::tan (tInput);}
+    template <coreFloatingPoint T> static inline T Asin(const T& tInput) {return std::asin(tInput);}
+    template <coreFloatingPoint T> static inline T Acos(const T& tInput) {return std::acos(tInput);}
+    template <coreFloatingPoint T> static inline T Atan(const T& tInput) {return std::atan(tInput);}
+    template <coreFloatingPoint T> static inline T Cot (const T& tInput) {return TAN(T(PI_D) / T(2) - tInput);}
 
     /* rounding operations */
-    template <std::floating_point T> static inline    T  Ceil         (const T& tInput)                          {return std::ceil     (tInput);}
-    template <std::floating_point T> static inline    T  Floor        (const T& tInput)                          {return std::floor    (tInput);}
-    template <std::floating_point T> static inline    T  Round        (const T& tInput)                          {return std::round    (tInput);}
-    template <std::floating_point T> static inline    T  CeilFactor   (const T& tInput, const T& tFactor)        {return CEIL (tInput * RCP(tFactor)) * tFactor;}
-    template <std::floating_point T> static inline    T  FloorFactor  (const T& tInput, const T& tFactor)        {return FLOOR(tInput * RCP(tFactor)) * tFactor;}
-    template <std::floating_point T> static inline    T  RoundFactor  (const T& tInput, const T& tFactor)        {return ROUND(tInput * RCP(tFactor)) * tFactor;}
-    template <std::integral       T> static constexpr T  CeilPot      (const T& tInput)                          {ASSERT(tInput >= T(0)) return std::bit_ceil (std::make_unsigned_t<T>(tInput));}
-    template <std::integral       T> static constexpr T  FloorPot     (const T& tInput)                          {ASSERT(tInput >= T(0)) return std::bit_floor(std::make_unsigned_t<T>(tInput));}
-    template <std::integral       T> static constexpr T  CeilAlign    (const T& tInput,  const coreUintW iAlign) {ASSERT(tInput >= T(0)) const T k = tInput + iAlign - T(1); return k - (k % iAlign);}
-    template <std::integral       T> static constexpr T  FloorAlign   (const T& tInput,  const coreUintW iAlign) {ASSERT(tInput >= T(0)) const T k = tInput;                 return k - (k % iAlign);}
-    template <typename            T> static constexpr T* CeilAlignPtr (const T* ptInput, const coreUintW iAlign) {ASSERT(coreMath::IsPot(iAlign)) const coreUintW k = iAlign - 1u; return s_cast<T*>(I_TO_P((P_TO_UI(ptInput) + k) & ~k));}
-    template <typename            T> static constexpr T* FloorAlignPtr(const T* ptInput, const coreUintW iAlign) {ASSERT(coreMath::IsPot(iAlign)) const coreUintW k = iAlign - 1u; return s_cast<T*>(I_TO_P((P_TO_UI(ptInput))     & ~k));}
+    template <coreFloatingPoint T> static inline    T  Ceil         (const T& tInput)                          {return std::ceil     (tInput);}
+    template <coreFloatingPoint T> static inline    T  Floor        (const T& tInput)                          {return std::floor    (tInput);}
+    template <coreFloatingPoint T> static inline    T  Round        (const T& tInput)                          {return std::round    (tInput);}
+    template <coreFloatingPoint T> static inline    T  CeilFactor   (const T& tInput, const T& tFactor)        {return CEIL (tInput * RCP(tFactor)) * tFactor;}
+    template <coreFloatingPoint T> static inline    T  FloorFactor  (const T& tInput, const T& tFactor)        {return FLOOR(tInput * RCP(tFactor)) * tFactor;}
+    template <coreFloatingPoint T> static inline    T  RoundFactor  (const T& tInput, const T& tFactor)        {return ROUND(tInput * RCP(tFactor)) * tFactor;}
+    template <std::integral     T> static constexpr T  CeilPot      (const T& tInput)                          {ASSERT(tInput >= T(0)) return std::bit_ceil (std::make_unsigned_t<T>(tInput));}
+    template <std::integral     T> static constexpr T  FloorPot     (const T& tInput)                          {ASSERT(tInput >= T(0)) return std::bit_floor(std::make_unsigned_t<T>(tInput));}
+    template <std::integral     T> static constexpr T  CeilAlign    (const T& tInput,  const coreUintW iAlign) {ASSERT(tInput >= T(0)) const T k = tInput + iAlign - T(1); return k - (k % iAlign);}
+    template <std::integral     T> static constexpr T  FloorAlign   (const T& tInput,  const coreUintW iAlign) {ASSERT(tInput >= T(0)) const T k = tInput;                 return k - (k % iAlign);}
+    template <typename          T> static constexpr T* CeilAlignPtr (const T* ptInput, const coreUintW iAlign) {ASSERT(coreMath::IsPot(iAlign)) const coreUintW k = iAlign - 1u; return s_cast<T*>(I_TO_P((P_TO_UI(ptInput) + k) & ~k));}
+    template <typename          T> static constexpr T* FloorAlignPtr(const T* ptInput, const coreUintW iAlign) {ASSERT(coreMath::IsPot(iAlign)) const coreUintW k = iAlign - 1u; return s_cast<T*>(I_TO_P((P_TO_UI(ptInput))     & ~k));}
 
     /* analyzing operations */
     template <std::integral T> static constexpr coreBool IsPot    (const T& tInput)                                                           {ASSERT(tInput >= T(0)) return (tInput && !(tInput & (tInput - T(1))));}
@@ -232,7 +234,7 @@ public:
 
 // ****************************************************************
 /* loop value within specific range */
-template <std::floating_point T> inline T coreMath::FmodRange(const T& tNum, const t_ident<T>& tFrom, const t_ident<T>& tTo)
+template <coreFloatingPoint T> inline T coreMath::FmodRange(const T& tNum, const t_ident<T>& tFrom, const t_ident<T>& tTo)
 {
     ASSERT(tFrom < tTo)
 
