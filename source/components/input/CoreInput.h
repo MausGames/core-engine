@@ -195,6 +195,7 @@ public:
     inline coreUint8       GetJoystickGamepadType (const coreUintW iIndex)const {return __CORE_INPUT_JOYSTICK(iIndex).eGamepadType;}
     inline coreUint8       GetJoystickJoystickType(const coreUintW iIndex)const {return __CORE_INPUT_JOYSTICK(iIndex).eJoystickType;}
     inline coreUintW       GetJoystickNum         ()const                       {return m_aJoystick.size() - 1u;}
+    inline coreUintW       GetJoystickNumAll      ()const                       {return m_aJoystick.size();}
 
     /* create joystick feedback */
     void JoystickRumble   (const coreUintW iIndex, const coreFloat fStrengthLow, const coreFloat fStrengthHigh, const coreUint32 iLengthMs);

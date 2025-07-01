@@ -628,7 +628,8 @@ void CoreGraphics::LabelOpenGL(const GLenum iType, const GLuint iIdentifier, con
     if(CORE_GL_SUPPORT(KHR_debug))
     {
         // assign string to identifier
-        glObjectLabel(iType, iIdentifier, -1, pcLabel);
+        if(pcLabel && pcLabel[0]) glObjectLabel(iType, iIdentifier, -1, pcLabel);
+                             else glObjectLabel(iType, iIdentifier,  0, NULL);
     }
 }
 

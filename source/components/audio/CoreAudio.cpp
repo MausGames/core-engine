@@ -50,12 +50,12 @@ CoreAudio::CoreAudio()noexcept
         coreData::SetEnvironment("ALSOFT_LOGFILE",    coreData::UserFolderShared("log_openal.txt"));
     }
 
-#endif
-
     // include additional config file
     const coreChar* pcUserFile = coreData::UserFolderPrivate("config_openal.ini");
     const coreChar* pcDataFile = "data/other/config_openal.ini";
     coreData::SetEnvironment("ALSOFT_CONF", coreData::FileExists(pcUserFile) ? pcUserFile : pcDataFile);
+
+#endif
 
     // open audio device and create OpenAL context
     m_pDevice  = alcOpenDevice(NULL);
@@ -213,7 +213,7 @@ CoreAudio::CoreAudio()noexcept
     // init format extensions
     if(alIsExtensionPresent("AL_EXT_ALAW"))    m_bSupportALAW  = true;
     if(alIsExtensionPresent("AL_EXT_MULAW"))   m_bSupportMULAW = true;
-    if(alIsExtensionPresent("AL_EXT_FLOAT32")) m_bSupportFloat = true;
+    if(alIsExtensionPresent("AL_EXT_float32")) m_bSupportFloat = true;
 
     // init length-query extension
     if(alIsExtensionPresent("AL_SOFT_buffer_length_query")) m_bSupportQuery = true;
