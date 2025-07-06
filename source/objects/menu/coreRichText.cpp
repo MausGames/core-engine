@@ -619,6 +619,10 @@ void coreRichText::__ParseText()
         coreInt32 iMinX, iMaxX, iMinY, iMaxY, iAdvance;
         pFont->RetrieveGlyphMetrics(cGlyph, iRelHeight, iRelOutline, &iMinX, &iMaxX, &iMinY, &iMaxY, &iAdvance, NULL);
 
+        // fix negative coordinates
+        coreInt32 iCorrection = 0;
+        if(iMinX < 0) {iCorrection = iMinX; iMaxX -= iMinX; iMinX = 0;}
+
         // retrieve kerning
         const coreInt32 iKerning = pFont->RetrieveGlyphKerning(cPrevGlyph, cGlyph, iRelHeight, iRelOutline);
 
@@ -630,7 +634,7 @@ void coreRichText::__ParseText()
             if(!pStyle->aEntry.count_bs(cGlyph))
             {
                 const coreFloat fGlyphHeight = I_TO_F(MAX(iAscent, iMaxY) - MIN(iDescent, iMinY));
-                const coreFloat fGlyphPitch  = I_TO_F(coreMath::CeilAlign(iAdvance + 2u * iRelOutline, 4u));
+                const coreFloat fGlyphPitch  = I_TO_F(coreMath::CeilAlign(MAX(iAdvance + 2u * iRelOutline - iCorrection, iMaxX), 4u));
 
                 // init first render pass
                 if(pStyle->aPass.empty())
