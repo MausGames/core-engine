@@ -391,6 +391,8 @@
 
 #define BIT(n)                      (1ull << (n))
 #define BITLINE(n)                  (BIT((n) - 1ull) * 2ull - 1ull)
+#define BITSOF(o)                   (sizeof(o) * 8uz)
+
 #define ADD_BIT(o,n)                {__CHECK_BIT (o, n);  (o) |=  BIT(n);}
 #define ADD_FLAG(o,n)               {__CHECK_FLAG(o, n);  (o) |=     (n);}
 #define REMOVE_BIT(o,n)             {__CHECK_BIT (o, n);  (o) &= ~BIT(n);}
@@ -401,6 +403,12 @@
 #define SET_FLAG(o,n,t)             {__CHECK_FLAG(o, n);  (o) ^=     (n) & ((o) ^ ((t) ? ~0ull : 0ull));}
 #define HAS_BIT(o,n)                (__CHECK_BIT (o, n), ((o) &   BIT(n)) != 0ull)
 #define HAS_FLAG(o,n)               (__CHECK_FLAG(o, n), ((o) &      (n)) == (n))
+
+#define ADD_BIT_EX(o,n)             {__CHECK_BIT_EX(o, n); ADD_BIT   ((o)[(n) / BITSOF((o)[0])], (n) % BITSOF((o)[0]))}
+#define REMOVE_BIT_EX(o,n)          {__CHECK_BIT_EX(o, n); REMOVE_BIT((o)[(n) / BITSOF((o)[0])], (n) % BITSOF((o)[0]))}
+#define TOGGLE_BIT_EX(o,n)          {__CHECK_BIT_EX(o, n); TOGGLE_BIT((o)[(n) / BITSOF((o)[0])], (n) % BITSOF((o)[0]))}
+#define SET_BIT_EX(o,n,t)           {__CHECK_BIT_EX(o, n); SET_BIT   ((o)[(n) / BITSOF((o)[0])], (n) % BITSOF((o)[0]), (t))}
+#define HAS_BIT_EX(o,n)             (__CHECK_BIT_EX(o, n), HAS_BIT   ((o)[(n) / BITSOF((o)[0])], (n) % BITSOF((o)[0])))
 
 #define BITVALUE(n,s,v)             (__CHECK_BITVALUE(n, v),              ((v) & BITLINE(n)) << (s))
 #define SET_BITVALUE(o,n,s,v)       {__CHECK_FLAG(o, BITLINE((n) + (s)));  (o) = BITVALUE(n, s, v) | ((o) & ~(BITLINE(n) << (s)));}
@@ -413,9 +421,10 @@
 #define DYN_KEEP(i,c)               {__CHECK_ITERATOR(i ## __e, c); ++i;}
 #define DYN_REMOVE(i,c)             {__CHECK_ITERATOR(i ## __e, c); i = (c).erase(i); i ## __e = (c).end();}
 
-#define __CHECK_BIT(o,n)            ([&]() {ASSERT(coreUint64(n) <         (sizeof(o) * 8u))}())
-#define __CHECK_FLAG(o,n)           ([&]() {ASSERT(coreUint64(n) <= BITLINE(sizeof(o) * 8u) && ((n) != 0u))}())
-#define __CHECK_BITVALUE(n,v)       ([&]() {ASSERT(coreUint64(v) <= BITLINE(n)              && ((n) != 0u))}())
+#define __CHECK_BIT(o,n)            ([&]() {ASSERT(coreUint64(n) <          BITSOF((o)))}())
+#define __CHECK_BIT_EX(o,n)         ([&]() {ASSERT(coreUint64(n) <          BITSOF((o)[0]) * ARRAY_SIZE(o))}())
+#define __CHECK_FLAG(o,n)           ([&]() {ASSERT(coreUint64(n) <= BITLINE(BITSOF((o))) && ((n) != 0u))}())
+#define __CHECK_BITVALUE(n,v)       ([&]() {ASSERT(coreUint64(v) <= BITLINE(n)           && ((n) != 0u))}())
 #define __CHECK_ITERATOR(e,c)       ([&]() {ASSERT((e) == (c).end ())}())
 #define __CHECK_ITERATOR_REV(e,c)   ([&]() {ASSERT((e) == (c).rend())}())
 

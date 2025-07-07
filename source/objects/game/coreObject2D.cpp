@@ -278,7 +278,7 @@ void coreObject2D::Interact()
         }
     });
 
-    STATIC_ASSERT(CORE_INPUT_FINGERS <= sizeof(m_iFinger)*8u)
+    STATIC_ASSERT(CORE_INPUT_FINGERS <= BITSOF(m_iFinger))
 
 #else
 

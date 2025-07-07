@@ -677,7 +677,7 @@ void coreBatchList::__RenderDefault(const coreProgramPtr& pProgramInstanced, con
         if(!HAS_BIT(m_iFilled, m_aiVertexArray.index()))
         {
             ADD_BIT(m_iFilled, m_aiVertexArray.index())
-            STATIC_ASSERT(sizeof(m_iFilled)*8u >= CORE_BATCHLIST_INSTANCE_BUFFERS)
+            STATIC_ASSERT(CORE_BATCHLIST_INSTANCE_BUFFERS <= BITSOF(m_iFilled))
 
             // set vertex data (model only)
             for(coreUintW i = 0u, ie = pModel->GetNumVertexBuffers(); i < ie; ++i)
