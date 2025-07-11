@@ -43,7 +43,7 @@ coreStatus coreFont::Load(coreFile* pFile)
     coreFile::InternalNew(&m_pFile, pFile);
 
     // create test sub-font
-    if(!this->__InitHeight(1u, 0u))
+    WARN_IF(!this->__InitHeight(1u, 0u))
     {
         Core::Log->Warning("Font (%s) could not be loaded", m_sName.c_str());
         coreFile::InternalDelete(&m_pFile);

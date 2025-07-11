@@ -63,7 +63,7 @@ coreStatus coreSound::Load(coreFile* pFile)
 
             // open sound stream
             m_pDeferStream = op_open_callbacks(new coreOpusStream(pFile), &g_OpusCallbacks, NULL, 0u, &iError);
-            if(!m_pDeferStream)
+            WARN_IF(!m_pDeferStream)
             {
                 Core::Log->Warning("Sound (%s) is not a valid OPUS-file (OP Error Code: %d)", pFile->GetPath(), iError);
                 return CORE_INVALID_DATA;
@@ -110,7 +110,7 @@ coreStatus coreSound::Load(coreFile* pFile)
         const coreByte* pEnd  = pData + pFile->GetSize();
 
         // check file header
-        if(std::memcmp(pData, "RIFF", 4u) || std::memcmp(pData + 8u, "WAVE", 4u))
+        WARN_IF(std::memcmp(pData, "RIFF", 4u) || std::memcmp(pData + 8u, "WAVE", 4u))
         {
             Core::Log->Warning("Sound (%s) is not a valid WAVE-file", m_sName.c_str());
             return CORE_INVALID_DATA;
@@ -173,7 +173,7 @@ coreStatus coreSound::Load(coreFile* pFile)
 
     // check for errors
     const ALenum iError = alGetError();
-    if(iError != AL_NO_ERROR)
+    WARN_IF(iError != AL_NO_ERROR)
     {
         Core::Log->Warning("Sound (%s) could not be loaded (AL Error Code: 0x%08X)", m_sName.c_str(), iError);
         return CORE_INVALID_DATA;

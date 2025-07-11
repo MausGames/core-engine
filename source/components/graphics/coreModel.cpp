@@ -92,7 +92,7 @@ coreStatus coreModel::Load(coreFile* pFile)
     }
 
     // check for success
-    if(oImport.aVertexData.empty())
+    WARN_IF(oImport.aVertexData.empty())
     {
         Core::Log->Warning("Model (%s) could not be loaded", m_sName.c_str());
         return CORE_INVALID_DATA;

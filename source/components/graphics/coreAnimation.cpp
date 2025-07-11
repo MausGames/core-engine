@@ -56,7 +56,7 @@ coreStatus coreAnimation::Load(coreFile* pFile)
 
     // decompress file to animation data
     coreAnimationScope pAnim = IMG_LoadAnimationTyped_IO(pFile->CreateReadStream(), true, coreData::StrExtension(pFile->GetPath()));
-    if(!pAnim || !pAnim->w || !pAnim->h || !pAnim->count)
+    WARN_IF(!pAnim || !pAnim->w || !pAnim->h || !pAnim->count)
     {
         Core::Log->Warning("Animation (%s) could not be loaded (SDL: %s)", m_sName.c_str(), SDL_GetError());
         return CORE_INVALID_DATA;

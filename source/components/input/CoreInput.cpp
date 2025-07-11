@@ -320,7 +320,7 @@ void CoreInput::SetCursor(const coreChar* pcPath)
 
         // decompress file to plain pixel data
         coreSurfaceScope pData = IMG_LoadTyped_IO(pFile->CreateReadStream(), true, coreData::StrExtension(pcPath));
-        if(!pData)
+        WARN_IF(!pData)
         {
             Core::Log->Warning("Cursor (%s) could not be loaded (SDL: %s)", pcPath, SDL_GetError());
             return;

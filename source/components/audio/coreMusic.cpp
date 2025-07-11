@@ -89,7 +89,7 @@ coreMusic::coreMusic(coreFile* pFile)noexcept
 
         // open music stream (Opus)
         m_pOpusStream = op_open_callbacks(new coreOpusStream(m_pFile), &g_OpusCallbacks, NULL, 0u, &iError);
-        if(!m_pOpusStream)
+        WARN_IF(!m_pOpusStream)
         {
             Core::Log->Warning("Music (%s) is not a valid OPUS-file (OP Error Code: %d)", pFile->GetPath(), iError);
             coreFile::InternalDelete(&m_pFile);
@@ -114,7 +114,7 @@ coreMusic::coreMusic(coreFile* pFile)noexcept
 
         // open music stream (Vorbis)
         m_pVorbisStream = stb_vorbis_open_file_section(m_pFile->CreateReadStream(), 1, &iError, NULL, pFile->GetSize());
-        if(!m_pVorbisStream)
+        WARN_IF(!m_pVorbisStream)
         {
             Core::Log->Warning("Music (%s) is not a valid VORBIS-file (STB Error Code: %d)", pFile->GetPath(), iError);
             coreFile::InternalDelete(&m_pFile);

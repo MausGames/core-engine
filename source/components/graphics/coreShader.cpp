@@ -360,7 +360,7 @@ coreStatus coreProgram::Load(coreFile* pFile)
         FOR_EACH(it, m_apShader)
         {
             it->GetHandle()->Update();
-            if(!it->GetHandle()->IsSuccessful())
+            WARN_IF(!it->GetHandle()->IsSuccessful())
             {
                 m_apShader.clear();
                 return CORE_INVALID_DATA;
