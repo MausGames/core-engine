@@ -697,7 +697,7 @@ RETURN_RESTRICT coreByte* coreUniformBuffer::MapWriteNext()
     // synchronize and switch to next sync object
     m_aSync.current().Create(CORE_SYNC_CREATE_NORMAL);
     m_aSync.next();
-    m_aSync.current().Check(CORE_SYNC_WAIT_FOREVER);
+    WARN_IF(m_aSync.current().Check(CORE_SYNC_WAIT_FOREVER) == CORE_BUSY) {}
 
     // bind next buffer range
     const coreUint32 iNewOffset = m_aSync.index() * coreMath::CeilAlign(m_iRangeSize, 256u);   // new

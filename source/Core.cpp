@@ -509,6 +509,11 @@ void Core::__PerformRestart()
 {
     Log->Warning("Application Restart");
 
+    // reset certain state
+    System->m_dTotalTime       = 0.0;
+    System->m_dTotalTimeBefore = 0.0;
+    System->m_iCurFrame        = 0u;
+
     // restart application
     Application->Exit();
     Application->Init();

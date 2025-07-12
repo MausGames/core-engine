@@ -11,7 +11,7 @@
 #define _CORE_GUARD_FONT_H_
 
 // TODO 3: distance fields for sharper text (TTF_SetFontSDF + TTF_RenderGlyph_Blended)
-// TODO 5: clear-type font rendering (TTF_RenderGlyph_LCD)
+// TODO 5: clear-type font rendering (TTF_RenderGlyph_LCD) -> 4 channel, but how to add (clear-type) outlines?
 // TODO 5: <old comment style>
 // TODO 3: TTF_AddFallbackFont
 // TODO 3: check support for color emojis

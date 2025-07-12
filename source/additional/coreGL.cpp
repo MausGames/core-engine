@@ -105,7 +105,7 @@ void coreGenVertexArrays(coreUintW iCount, GLuint* OUTPUT pNames)
 {
     ASSERT(SDL_GetCurrentThreadID() == Core::System->GetMainThread())
 
-    // generate vertex array names (without lock, because only executed on main-thread)
+    // generate vertex array names (without lock)
     CORE_GL_POOL_GENERATE(s_PoolVertexArrays, glCreateVertexArrays, glGenVertexArrays)
 }
 

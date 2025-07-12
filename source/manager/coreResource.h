@@ -110,6 +110,7 @@ public:
     /* access resource object and status */
     inline coreResource* GetRawResource()const {return m_pResource;}
     inline coreBool      IsAutomatic   ()const {return m_bAutomatic;}
+    inline coreBool      IsProxy       ()const {return m_bProxy;}
     inline coreBool      IsSuccessful  ()const {return (m_eStatus == CORE_OK);}
     inline coreBool      IsLoaded      ()const {return (m_eStatus != CORE_BUSY);}
     inline coreBool      IsLoading     ()const {return (!this->IsLoaded() && m_iRefCount);}
@@ -279,11 +280,12 @@ public:
     coreResourcePtr& operator = (coreResourcePtr o)noexcept;
 
     /* access resource object and resource handle */
-    inline T*                  GetResource()const {return d_cast<T*>(coreResourceManager::FetchResource(m_iIndex));}
-    inline coreResourceHandle* GetHandle  ()const {return coreResourceManager::FetchHandle(m_iIndex);}
-    inline explicit operator coreBool     ()const {return m_iIndex;}
-    inline T*       operator ->           ()const {return  this->GetResource();}
-    inline T&       operator *            ()const {return *this->GetResource();}
+    inline T*                       GetResource()const {return d_cast<T*>(coreResourceManager::FetchResource(m_iIndex));}
+    inline coreResourceHandle*      GetHandle  ()const {return coreResourceManager::FetchHandle(m_iIndex);}
+    inline const coreResourceIndex& GetIndex   ()const {return m_iIndex;}
+    inline explicit operator coreBool          ()const {return m_iIndex;}
+    inline T*       operator ->                ()const {return  this->GetResource();}
+    inline T&       operator *                 ()const {return *this->GetResource();}
 
     /* check for usable resource object */
     inline coreBool IsUsable()const {return (m_iIndex && this->GetHandle()->IsSuccessful());}
