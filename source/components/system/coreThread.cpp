@@ -18,6 +18,7 @@ coreThread::coreThread(const coreChar* pcName)noexcept
 , m_bActive      (false)
 , m_anFuncNew    {}
 , m_anFuncActive {}
+, m_iFuncNum     (0u)
 , m_LockNew      ()
 , m_LockActive   ()
 , m_iTokenCount  (0u)
@@ -106,6 +107,8 @@ coreBool coreThread::DetachFunction(const coreUint32 iToken)
             {
                 // remove function from list
                 m_anFuncNew.erase(it);
+                this->__FuncDecrease();
+
                 return true;
             }
         }
@@ -122,6 +125,8 @@ coreBool coreThread::DetachFunction(const coreUint32 iToken)
             {
                 // remove function from list
                 m_anFuncActive.erase(it);
+                this->__FuncDecrease();
+
                 return true;
             }
         }
@@ -149,9 +154,12 @@ void coreThread::UpdateFunctions()
     // loop trough all functions
     FOR_EACH_DYN(it, m_anFuncActive)
     {
+        // execute only after dependency finished
+        if(it->iDependency && std::any_of(m_anFuncActive.begin(), it, [&](const coreCustomFunc& A) {return (A.iToken == it->iDependency);})) continue;
+
         // call function and remove when finished
-        if(it->nFunction() == CORE_BUSY) DYN_KEEP  (it, m_anFuncActive)
-                                    else DYN_REMOVE(it, m_anFuncActive)
+        if(it->nFunction() == CORE_BUSY) {DYN_KEEP  (it, m_anFuncActive)}
+                                    else {DYN_REMOVE(it, m_anFuncActive) this->__FuncDecrease();}
     }
 }
 

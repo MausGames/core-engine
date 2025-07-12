@@ -127,7 +127,7 @@ public:
     template <typename F> inline void LockResource(F&& nFunction) {const coreSpinLocker oLocker(&m_UpdateLock); nFunction(d_cast<typename TRAIT_ARG_TYPE(F, 0u)>(m_pResource));}   // [](coreResource* OUTPUT pResource) -> void
 
     /* attach asynchronous callbacks */
-    template <typename F> coreUint32 OnLoadedOnce(F&& nFunction)const;   // [](void) -> void
+    template <typename F> coreUint32 OnLoadedOnce(F&& nFunction, const coreUint32 iDependency = 0u)const;   // [](void) -> void
 
     /* get object properties */
     inline const coreChar*          GetName    ()const {return m_sName.c_str();}
@@ -289,7 +289,7 @@ public:
     inline coreBool IsUsable()const {return (m_iIndex && this->GetHandle()->IsSuccessful());}
 
     /* attach asynchronous callbacks */
-    template <typename F> coreUint32 OnUsableOnce(F&& nFunction)const {ASSERT(m_iIndex) const coreResourceHandle* pHandle = this->GetHandle(); return pHandle->OnLoadedOnce([=, nFunction = std::forward<F>(nFunction)]() {if(pHandle->IsSuccessful()) nFunction();});}   // [](void) -> void
+    template <typename F> coreUint32 OnUsableOnce(F&& nFunction, const coreUint32 iDependency = 0u)const {WARN_IF(!m_iIndex) return 0u; const coreResourceHandle* pHandle = this->GetHandle(); return pHandle->OnLoadedOnce([=, nFunction = std::forward<F>(nFunction)]() {if(pHandle->IsSuccessful()) nFunction();}, iDependency);}   // [](void) -> void
 };
 
 
@@ -300,9 +300,9 @@ using coreDummyPtr = coreResourcePtr<coreResourceDummy>;
 
 // ****************************************************************
 /* attach asynchronous callbacks */
-template <typename F> coreUint32 coreResourceHandle::OnLoadedOnce(F&& nFunction)const
+template <typename F> coreUint32 coreResourceHandle::OnLoadedOnce(F&& nFunction, const coreUint32 iDependency)const
 {
-    if(this->IsLoaded())
+    if(this->IsLoaded() && (!iDependency || !Core::Manager::Resource->GetNumFunctions()))
     {
         // call function immediately
         nFunction();
@@ -325,7 +325,8 @@ template <typename F> coreUint32 coreResourceHandle::OnLoadedOnce(F&& nFunction)
                 return CORE_OK;
             }
             return CORE_BUSY;
-        });
+        },
+        iDependency);
     }
 }
 

@@ -430,11 +430,12 @@ void CoreDebug::__UpdateOutput()
     }
 
     // move loading indicator
-    const coreUintW iLoadingNum = Core::Manager::Resource->IsLoadingNum();
-    if(iLoadingNum)
+    const coreUintW  iResourceNum = Core::Manager::Resource->IsLoadingNum();
+    const coreUint16 iFunctionNum = Core::Manager::Resource->GetNumFunctions();
+    if(iResourceNum || iFunctionNum)
     {
         m_Loading.SetPosition(coreVector2(0.0f, I_TO_F(--iCurLine)*0.023f));
-        m_Loading.SetText(PRINT("Loading (%zu)", iLoadingNum));
+        m_Loading.SetText(PRINT("Loading (%zu / %u)", iResourceNum, iFunctionNum));
         m_Loading.Move();
     }
 
