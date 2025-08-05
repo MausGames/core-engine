@@ -75,7 +75,7 @@ alignas(ALIGNMENT_CACHE) static constexpr coreInt16 g_aiTableDecodeMULAW[] =
 
 // ****************************************************************
 /* MU-law sample encoding function */
-inline coreUint8 coreEncodeSampleMULAW(const coreInt16 iSample)
+constexpr coreUint8 coreEncodeSampleMULAW(const coreInt16 iSample)
 {
     const coreUint16 iValue    = MIN(ABS(iSample), 0x7F7B) + 0x84;
     const coreUint8  iSign     = HAS_BIT(iSample,  15u);

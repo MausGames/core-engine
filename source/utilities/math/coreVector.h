@@ -107,18 +107,18 @@ public:
     static constexpr coreVector2 StepRotated90X      (const coreUint8   iStep)      {ASSERT(iStep < 4u) return coreVector2::UnpackWay8(iStep * 2u + 1u);}
 
     /* constrain vector */
-    inline coreVector2 AlongWay4        ()const                        {return (this->IsHorizontal() ? coreVector2(SIGN(x), 0.0f) : coreVector2(0.0f, SIGN(y))) * this->Length();}
-    inline coreVector2 AlongWay4Normal  ()const                        {return (this->IsHorizontal() ? coreVector2(SIGN(x), 0.0f) : coreVector2(0.0f, SIGN(y)));}
-    inline coreVector2 AlongWay4X       ()const                        {return -this->Rotated45().AlongWay4      ().Rotated135();}
-    inline coreVector2 AlongWay4XNormal ()const                        {return -this->Rotated45().AlongWay4Normal().Rotated135();}
-    inline coreVector2 AlongWay8        ()const                        {return UnpackWay8(this->PackWay8()) * this->Length();}
-    inline coreVector2 AlongWay8Normal  ()const                        {return UnpackWay8(this->PackWay8());}
-    inline coreVector2 AlongAxis4       (const coreVector2 vAxis)const {return (this->MapToAxisInv(vAxis).AlongWay4       ().MapToAxis(vAxis));}
-    inline coreVector2 AlongAxis4Normal (const coreVector2 vAxis)const {return (this->MapToAxisInv(vAxis).AlongWay4Normal ().MapToAxis(vAxis));}
-    inline coreVector2 AlongAxis4X      (const coreVector2 vAxis)const {return (this->MapToAxisInv(vAxis).AlongWay4X      ().MapToAxis(vAxis));}
-    inline coreVector2 AlongAxis4XNormal(const coreVector2 vAxis)const {return (this->MapToAxisInv(vAxis).AlongWay4XNormal().MapToAxis(vAxis));}
-    inline coreVector2 AlongAxis8       (const coreVector2 vAxis)const {return (this->MapToAxisInv(vAxis).AlongWay8       ().MapToAxis(vAxis));}
-    inline coreVector2 AlongAxis8Normal (const coreVector2 vAxis)const {return (this->MapToAxisInv(vAxis).AlongWay8Normal ().MapToAxis(vAxis));}
+    constexpr coreVector2 AlongWay4        ()const                        {return (this->IsHorizontal() ? coreVector2(SIGN(x), 0.0f) : coreVector2(0.0f, SIGN(y))) * this->Length();}
+    constexpr coreVector2 AlongWay4Normal  ()const                        {return (this->IsHorizontal() ? coreVector2(SIGN(x), 0.0f) : coreVector2(0.0f, SIGN(y)));}
+    constexpr coreVector2 AlongWay4X       ()const                        {return -this->Rotated45().AlongWay4      ().Rotated135();}
+    constexpr coreVector2 AlongWay4XNormal ()const                        {return -this->Rotated45().AlongWay4Normal().Rotated135();}
+    inline    coreVector2 AlongWay8        ()const                        {return UnpackWay8(this->PackWay8()) * this->Length();}
+    inline    coreVector2 AlongWay8Normal  ()const                        {return UnpackWay8(this->PackWay8());}
+    constexpr coreVector2 AlongAxis4       (const coreVector2 vAxis)const {return (this->MapToAxisInv(vAxis).AlongWay4       ().MapToAxis(vAxis));}
+    constexpr coreVector2 AlongAxis4Normal (const coreVector2 vAxis)const {return (this->MapToAxisInv(vAxis).AlongWay4Normal ().MapToAxis(vAxis));}
+    constexpr coreVector2 AlongAxis4X      (const coreVector2 vAxis)const {return (this->MapToAxisInv(vAxis).AlongWay4X      ().MapToAxis(vAxis));}
+    constexpr coreVector2 AlongAxis4XNormal(const coreVector2 vAxis)const {return (this->MapToAxisInv(vAxis).AlongWay4XNormal().MapToAxis(vAxis));}
+    inline    coreVector2 AlongAxis8       (const coreVector2 vAxis)const {return (this->MapToAxisInv(vAxis).AlongWay8       ().MapToAxis(vAxis));}
+    inline    coreVector2 AlongAxis8Normal (const coreVector2 vAxis)const {return (this->MapToAxisInv(vAxis).AlongWay8Normal ().MapToAxis(vAxis));}
 
     /* normalize vector */
     constexpr coreVector2 Normalized             (const coreVector2 vFallback = coreVector2(0.0f,1.0f))const {ASSERT(vFallback.IsNormalized()) WARN_IF(this->IsNull()) return vFallback; return this->NormalizedUnsafe();}
@@ -146,7 +146,7 @@ public:
     constexpr coreBool    IsNormalized()const {return (coreMath::IsNear(this->LengthSq(), 1.0f));}
     constexpr coreBool    IsAligned   ()const {return (x*y == 0.0f);}
     constexpr coreBool    IsNull      ()const {return (this->LengthSq() == 0.0f);}
-    inline    coreBool    IsHorizontal()const {return (ABS(x) > ABS(y));}
+    constexpr coreBool    IsHorizontal()const {return (ABS(x) > ABS(y));}
     constexpr coreBool    IsUnorm     ()const {return (x >=  0.0f) && (x <= 1.0f) && (y >=  0.0f) && (y <= 1.0f);}
     constexpr coreBool    IsSnorm     ()const {return (x >= -1.0f) && (x <= 1.0f) && (y >= -1.0f) && (y <= 1.0f);}
 
@@ -322,12 +322,12 @@ public:
     constexpr        coreUint16  PackSnorm565   ()const;
     constexpr        coreUint32  PackUnorm011   ()const;
     constexpr        coreUint32  PackSnorm011   ()const;
-    inline           coreVector2 PackSnormOcta  ()const;
+    constexpr        coreVector2 PackSnormOcta  ()const;
     static constexpr coreVector3 UnpackUnorm565 (const coreUint16  iNumber);
     static constexpr coreVector3 UnpackSnorm565 (const coreUint16  iNumber);
     static constexpr coreVector3 UnpackUnorm011 (const coreUint32  iNumber);
     static constexpr coreVector3 UnpackSnorm011 (const coreUint32  iNumber);
-    static inline    coreVector3 UnpackSnormOcta(const coreVector2 vVector);
+    static constexpr coreVector3 UnpackSnormOcta(const coreVector2 vVector);
 
     /* color functions */
     constexpr coreVector3 RgbToHsv  ()const;
@@ -968,7 +968,7 @@ constexpr coreUint32 coreVector3::PackSnorm011()const
 
 // ****************************************************************
 /* compress regular normal-vector into octahedron normal-vector */
-inline coreVector2 coreVector3::PackSnormOcta()const
+constexpr coreVector2 coreVector3::PackSnormOcta()const
 {
     ASSERT(this->IsNormalized())
 
@@ -1034,7 +1034,7 @@ constexpr coreVector3 coreVector3::UnpackSnorm011(const coreUint32 iNumber)
 
 // ****************************************************************
 /* uncompress octahedron normal-vector into regular normal-vector */
-inline coreVector3 coreVector3::UnpackSnormOcta(const coreVector2 vVector)
+constexpr coreVector3 coreVector3::UnpackSnormOcta(const coreVector2 vVector)
 {
     coreVector3 A = coreVector3(vVector, 1.0f - ABS(vVector.x) - ABS(vVector.y));
 
