@@ -610,13 +610,13 @@ inline void coreBackendSteam::DownloadFile(const corePlatformFileHandle iFileHan
 
                 if(pStruct->m_eResult == k_EResultOK)
                 {
-                    coreByte* pBuffer = new coreByte[pStruct->m_nSizeInBytes];
+                    coreByte* pBuffer = TEMP_NEW(coreByte, pStruct->m_nSizeInBytes);
                     coreInt32 iOffset = 0u;
 
                     do
                     {
                         // copy file into memory
-                        const coreInt32 iResult = m_pRemoteStorage->UGCRead(pStruct->m_hFile, pBuffer + iOffset, 0x4000, iOffset, k_EUGCRead_ContinueReadingUntilFinished);
+                        const coreInt32 iResult = m_pRemoteStorage->UGCRead(pStruct->m_hFile, pBuffer + iOffset, MIN(pStruct->m_nSizeInBytes - iOffset, 0x4000), iOffset, k_EUGCRead_ContinueReadingUntilFinished);
 
                         WARN_IF(iResult <= 0) break;
                         iOffset += iResult;
@@ -625,7 +625,7 @@ inline void coreBackendSteam::DownloadFile(const corePlatformFileHandle iFileHan
 
                     // return results
                     nCallback(pStruct->m_hFile, pBuffer, MIN(iOffset, pStruct->m_nSizeInBytes), pResult);
-                    SAFE_DELETE_ARRAY(pBuffer)
+                    TEMP_DELETE(pBuffer)
                 }
                 else
                 {

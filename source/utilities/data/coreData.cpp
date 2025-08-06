@@ -303,7 +303,7 @@ const coreChar* coreData::SystemOsName()
         if(iDataSize)
         {
             // get file version info
-            coreByte* pData = new coreByte[iDataSize];
+            coreByte* pData = TEMP_NEW(coreByte, iDataSize);
             if(GetFileVersionInfoW(acPath, 0u, iDataSize, pData))
             {
                 // access root block
@@ -318,7 +318,7 @@ const coreChar* coreData::SystemOsName()
                     iRevision = LOWORD(pInfo->dwProductVersionLS);
                 }
             }
-            SAFE_DELETE_ARRAY(pData)
+            TEMP_DELETE(pData)
         }
     }
 

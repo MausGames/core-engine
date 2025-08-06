@@ -212,8 +212,8 @@ inline coreStatus coreImportMD5(const coreByte* pData, coreModel::coreImport* OU
     // allocate required vertex memory
     pOutput->aVertexData.resize(iNumVertices);
     coreModel::coreVertex* pVertex = pOutput->aVertexData.data();
-    coreVector3* pvOrtho1 = ZERO_NEW(coreVector3, iNumVertices);
-    coreVector3* pvOrtho2 = ZERO_NEW(coreVector3, iNumVertices);
+    coreVector3* pvOrtho1 = TEMP_ZERO_NEW(coreVector3, iNumVertices);
+    coreVector3* pvOrtho2 = TEMP_ZERO_NEW(coreVector3, iNumVertices);
 
     // loop through all vertices
     for(coreUintW i = 0u; i < iNumVertices; ++i)
@@ -278,8 +278,8 @@ inline coreStatus coreImportMD5(const coreByte* pData, coreModel::coreImport* OU
     std::memcpy(pOutput->aiIndexData.data(), oMesh.aTriangle.data(), sizeof(coreUint16) * iNumIndices);
 
     // free required vertex memory
-    ZERO_DELETE(pvOrtho1)
-    ZERO_DELETE(pvOrtho2)
+    TEMP_ZERO_DELETE(pvOrtho1)
+    TEMP_ZERO_DELETE(pvOrtho2)
 
     return CORE_OK;
 }

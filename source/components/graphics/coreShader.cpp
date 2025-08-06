@@ -879,12 +879,12 @@ void coreProgram::__WriteLog()const
         if(iLength)
         {
             // get shader-program info-log
-            coreChar* pcLog = new coreChar[iLength];
+            coreChar* pcLog = TEMP_NEW(coreChar, iLength);
             glGetProgramInfoLog(m_iIdentifier, iLength, NULL, pcLog);
 
             // write shader-program info-log
             Core::Log->ListAdd(pcLog);
-            SAFE_DELETE_ARRAY(pcLog)
+            TEMP_DELETE(pcLog)
         }
 
         // loop through all attached shader objects
@@ -898,12 +898,12 @@ void coreProgram::__WriteLog()const
                 if(iLength)
                 {
                     // get shader info-log
-                    coreChar* pcLog = new coreChar[iLength];
+                    coreChar* pcLog = TEMP_NEW(coreChar, iLength);
                     glGetShaderInfoLog((*it)->GetIdentifier(), iLength, NULL, pcLog);
 
                     // write shader info-log
                     Core::Log->ListAdd(pcLog);
-                    SAFE_DELETE_ARRAY(pcLog)
+                    TEMP_DELETE(pcLog)
                 }
             }
             Core::Log->ListEnd();

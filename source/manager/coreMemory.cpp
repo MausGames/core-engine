@@ -8,6 +8,78 @@
 ///////////////////////////////////////////////////////////
 #include "Core.h"
 
+alignas(ALIGNMENT_PAGE) static coreByte s_aaTempBuffer [CORE_MEMORY_TEMP_NUM][CORE_MEMORY_TEMP_SIZE] = {};
+static coreUintW                        s_aiTempPointer[CORE_MEMORY_TEMP_NUM]                        = {};
+static THREAD_LOCAL coreUintW           s_iTempIndex                                                 = SIZE_MAX;
+
+
+// ****************************************************************
+/* initialize temp-storage */
+void coreTempStorageInit(const coreUintW iIndex)
+{
+    ASSERT(iIndex < CORE_MEMORY_TEMP_NUM)
+    s_iTempIndex = iIndex;
+}
+
+
+// ****************************************************************
+/* allocate memory from the temp-storage */
+void* coreTempStorageAllocate(const coreUintW iSize, const coreUintW iAlign)
+{
+    ASSERT(s_iTempIndex != SIZE_MAX)
+    ASSERT(iSize && iAlign)
+
+    const coreUintW I = s_iTempIndex;
+
+    // select assigned temp-storage
+    coreByte*  B = s_aaTempBuffer [I];
+    coreUintW& P = s_aiTempPointer[I];
+
+    // calculate address range
+    const coreUintW iStart = coreMath::CeilAlign(P, iAlign);
+    const coreUintW iEnd   = iStart + iSize;
+
+    // check if allocation fits into the temp-storage
+    if(iEnd <= CORE_MEMORY_TEMP_SIZE)
+    {
+        // adjust temp-storage pointer
+        P = iEnd;
+        return B + iStart;
+    }
+
+    return NULL;
+}
+
+
+// ****************************************************************
+/* free memory from the temp-storage */
+coreBool coreTempStorageFree(void** pPointer)
+{
+    ASSERT(s_iTempIndex != SIZE_MAX)
+    ASSERT(pPointer && (*pPointer))
+
+    const coreUintW I = s_iTempIndex;
+
+    // select assigned temp-storage
+    coreByte*  B = s_aaTempBuffer [I];
+    coreUintW& P = s_aiTempPointer[I];
+
+    // calculate address range
+    const coreUintW iStart = P_TO_UI(*pPointer) - P_TO_UI(B);
+
+    // check if allocation is from the temp-storage
+    if(iStart <= CORE_MEMORY_TEMP_SIZE)
+    {
+        // adjust temp-storage pointer
+        P = MIN(P, iStart);
+        (*pPointer) = NULL;
+
+        return true;
+    }
+
+    return false;
+}
+
 
 #if defined(_CORE_WINDOWS_) || defined(_CORE_EMSCRIPTEN_) || defined(_CORE_SWITCH_)
 

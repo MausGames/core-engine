@@ -65,7 +65,7 @@ It is **designed to be supportive, versatile and powerful**, and to dynamically 
 - **Memory Management**
   - **Memory Pools:** batch allocations, address sorting, memory arenas/heaps
   - **Static Allocations:** dynamically construct objects in predefined memory buffers without pointer-dereferencing on access
-  - **Special Allocations:** zeroed, aligned, dynamic (realloc)
+  - **Special Allocations:** zeroed, aligned, dynamic (realloc), temporary (very fast)
 - **Configuration**
   - **Simple and Fast INI Files**
   - **Command Line Handling**

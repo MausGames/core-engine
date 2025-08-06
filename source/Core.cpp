@@ -225,6 +225,9 @@ coreInt32 SDLCALL coreMain(coreInt32 argc, coreChar** argv)
     coreMath::EnableRoundToNearest();
     coreMath::DisableDenormals();
 
+    // initialize temp-storage
+    coreTempStorageInit(0u);
+
     // run command
     const coreStatus eStatus = Core::RunCommand();
     if(eStatus != CORE_BUSY) return eStatus;

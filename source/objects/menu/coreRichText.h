@@ -20,6 +20,7 @@
 // TODO 3: handle extremely big fonts completely filling out a render pass texture
 // TODO 3: support adding arbitrary 2d-objects into the text
 // TODO 3: implement horizontal text alignment (left, center, right), correct for multiple lines
+// TODO 3: use temp-allocation for merge buffer (currently DYNAMIC_RESIZE)
 
 
 // ****************************************************************

@@ -264,12 +264,12 @@ void coreTexture::Modify(const coreUint32 iOffsetX, const coreUint32 iOffsetY, c
         ASSERT(iComponents == m_Spec.iComponents)
 
         // allocate required image memory
-        coreByte* pPackedData  = new coreByte[iPackedSize];
+        coreByte* pPackedData  = TEMP_NEW(coreByte, iPackedSize);
         coreByte* apMipData[2] = {NULL, NULL};
         if(bMipMap)
         {
-            apMipData[0] = new coreByte[iDataSize >> 2u];
-            apMipData[1] = new coreByte[iDataSize >> 4u];
+            apMipData[0] = TEMP_NEW(coreByte, iDataSize >> 2u);
+            apMipData[1] = TEMP_NEW(coreByte, iDataSize >> 4u);
         }
 
         // process all available texture levels
@@ -297,9 +297,9 @@ void coreTexture::Modify(const coreUint32 iOffsetX, const coreUint32 iOffsetY, c
         }
 
         // free required image memory
-        SAFE_DELETE_ARRAY(pPackedData)
-        SAFE_DELETE_ARRAY(apMipData[0])
-        SAFE_DELETE_ARRAY(apMipData[1])
+        TEMP_DELETE(pPackedData)
+        TEMP_DELETE(apMipData[0])
+        TEMP_DELETE(apMipData[1])
     }
     else
     {
@@ -544,7 +544,7 @@ void coreTexture::Clear(const coreUint8 iLevel)
     }
     else
     {
-        coreByte* pEmpty = ZERO_NEW(coreByte, F_TO_UI(m_vResolution.x) * F_TO_UI(m_vResolution.y) * (m_Spec.iBytes ? m_Spec.iBytes : 4u));
+        coreByte* pEmpty = TEMP_ZERO_NEW(coreByte, F_TO_UI(m_vResolution.x) * F_TO_UI(m_vResolution.y) * (m_Spec.iBytes ? m_Spec.iBytes : 4u));
 
         if(CORE_GL_SUPPORT(ARB_direct_state_access))
         {
@@ -563,7 +563,7 @@ void coreTexture::Clear(const coreUint8 iLevel)
             glTexSubImage2D(GL_TEXTURE_2D, iLevel, 0, 0, F_TO_UI(m_vResolution.x), F_TO_UI(m_vResolution.y), m_Spec.iFormat, m_Spec.iType, pEmpty);
         }
 
-        ZERO_DELETE(pEmpty)
+        TEMP_ZERO_DELETE(pEmpty)
     }
 }
 

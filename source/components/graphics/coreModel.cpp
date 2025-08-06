@@ -108,7 +108,7 @@ coreStatus coreModel::Load(coreFile* pFile)
     for(coreUintW i = 0u, ie = m_iNumVertices; i < ie; ++i) s_aiMap[i] = i & 0xFFFFu;
 
     // apply post-transform vertex cache optimization to index data
-    coreUint16* piOptimizedData = new coreUint16[m_iNumIndices];
+    coreUint16* piOptimizedData = TEMP_NEW(coreUint16, m_iNumIndices);
     Forsyth::OptimizeFaces(oImport.aiIndexData.data(), m_iNumIndices, m_iNumVertices, piOptimizedData);
 
     // apply pre-transform vertex cache optimization to vertex data
@@ -276,7 +276,7 @@ coreStatus coreModel::Load(coreFile* pFile)
         if(CORE_GL_SUPPORT(ARB_vertex_type_2_10_10_10_rev) && CORE_GL_SUPPORT(ARB_half_float_vertex))
         {
             // reduce total vertex size (high quality compression, de-interleaved)
-            coreByte* pPackedData = new coreByte[20u * m_iNumVertices];
+            coreByte* pPackedData = TEMP_NEW(coreByte, 20u * m_iNumVertices);
             for(coreUintW i = 0u, ie = m_iNumVertices; i < ie; ++i)
             {
                 const coreVertex& oVertex = oImport.aVertexData[i];
@@ -294,12 +294,12 @@ coreStatus coreModel::Load(coreFile* pFile)
             pBuffer->DefineAttribute(CORE_SHADER_ATTRIBUTE_TEXCOORD_NUM, 2u, GL_UNSIGNED_SHORT,     4u, false, 8u,  0u);
             pBuffer->DefineAttribute(CORE_SHADER_ATTRIBUTE_NORMAL_NUM,   4u, GL_INT_2_10_10_10_REV, 4u, false, 12u, 0u);
             pBuffer->DefineAttribute(CORE_SHADER_ATTRIBUTE_TANGENT_NUM,  4u, GL_INT_2_10_10_10_REV, 4u, false, 16u, 0u);
-            SAFE_DELETE_ARRAY(pPackedData)
+            TEMP_DELETE(pPackedData)
         }
         else
         {
             // reduce total vertex size (low quality compression, de-interleaved)
-            coreByte* pPackedData = new coreByte[24u * m_iNumVertices];
+            coreByte* pPackedData = TEMP_NEW(coreByte, 24u * m_iNumVertices);
             for(coreUintW i = 0u, ie = m_iNumVertices; i < ie; ++i)
             {
                 const coreVertex& oVertex = oImport.aVertexData[i];
@@ -317,7 +317,7 @@ coreStatus coreModel::Load(coreFile* pFile)
             pBuffer->DefineAttribute(CORE_SHADER_ATTRIBUTE_TEXCOORD_NUM, 2u, GL_UNSIGNED_SHORT, 4u,  false, 12u, 0u);
             pBuffer->DefineAttribute(CORE_SHADER_ATTRIBUTE_NORMAL_NUM,   4u, GL_BYTE,           4u,  false, 16u, 0u);
             pBuffer->DefineAttribute(CORE_SHADER_ATTRIBUTE_TANGENT_NUM,  4u, GL_BYTE,           4u,  false, 20u, 0u);
-            SAFE_DELETE_ARRAY(pPackedData)
+            TEMP_DELETE(pPackedData)
         }
 
         // create index buffer
@@ -329,7 +329,7 @@ coreStatus coreModel::Load(coreFile* pFile)
     }
 
     // free index data
-    SAFE_DELETE_ARRAY(piOptimizedData)
+    TEMP_DELETE(piOptimizedData)
 
     Core::Log->Info("Model (%s, %u vertices, %u indices, %u clusters, %.5f x %.5f x %.5f range, %.5f radius) loaded", m_sName.c_str(), m_iNumVertices, m_iNumIndices, m_iNumClusters, m_vBoundingRange.x, m_vBoundingRange.y, m_vBoundingRange.z, m_fBoundingRadius);
     return m_Sync.Create(CORE_SYNC_CREATE_FLUSHED) ? CORE_BUSY : CORE_OK;

@@ -170,8 +170,8 @@ inline coreStatus coreImportMD3(const coreByte* pData, coreModel::coreImport* OU
     const coreBool bVersion16 = (oFile.oHeader.iVersion == 16);
 
     // allocate frame and surface memory
-    oFile.pFrame   = new md3Frame  [oFile.oHeader.iNumFrames];
-    oFile.pSurface = new md3Surface[oFile.oHeader.iNumSurfaces];
+    oFile.pFrame   = TEMP_NEW(md3Frame,   oFile.oHeader.iNumFrames);
+    oFile.pSurface = TEMP_NEW(md3Surface, oFile.oHeader.iNumSurfaces);
 
     // read frame data (not used)
     std::memcpy(oFile.pFrame, pData + oFile.oHeader.iOffsetFrames, sizeof(md3Frame) * oFile.oHeader.iNumFrames);
@@ -187,10 +187,10 @@ inline coreStatus coreImportMD3(const coreByte* pData, coreModel::coreImport* OU
         std::memcpy(&oMesh, pCursor, sizeof(md3Mesh));
 
         // allocate vertex memory
-        oSurface.pTriangle = new md3Triangle[oMesh.iNumTriangles];
-        oSurface.pTexture  = new md3Texture [oMesh.iNumVertices];
-        if(bVersion16) oSurface.pVertexV16 = new md3VertexV16[oMesh.iNumVertices];
-                  else oSurface.pVertex    = new md3Vertex   [oMesh.iNumVertices];
+        oSurface.pTriangle = TEMP_NEW(md3Triangle, oMesh.iNumTriangles);
+        oSurface.pTexture  = TEMP_NEW(md3Texture,  oMesh.iNumVertices);
+        if(bVersion16) oSurface.pVertexV16 = TEMP_NEW(md3VertexV16, oMesh.iNumVertices);
+                  else oSurface.pVertex    = TEMP_NEW(md3Vertex,    oMesh.iNumVertices);
 
         // read vertex data
         std::memcpy(oSurface.pTriangle, pCursor + oMesh.iOffsetTriangles, sizeof(md3Triangle) * oMesh.iNumTriangles);
@@ -213,8 +213,8 @@ inline coreStatus coreImportMD3(const coreByte* pData, coreModel::coreImport* OU
     // allocate required vertex memory
     pOutput->aVertexData.resize(iNumVertices);
     coreModel::coreVertex* pVertex = pOutput->aVertexData.data();
-    coreVector3* pvOrtho1 = ZERO_NEW(coreVector3, iNumVertices);
-    coreVector3* pvOrtho2 = ZERO_NEW(coreVector3, iNumVertices);
+    coreVector3* pvOrtho1 = TEMP_ZERO_NEW(coreVector3, iNumVertices);
+    coreVector3* pvOrtho2 = TEMP_ZERO_NEW(coreVector3, iNumVertices);
 
     if(bVersion16)
     {
@@ -302,19 +302,19 @@ inline coreStatus coreImportMD3(const coreByte* pData, coreModel::coreImport* OU
     }
 
     // free required vertex memory
-    ZERO_DELETE(pvOrtho1)
-    ZERO_DELETE(pvOrtho2)
+    TEMP_ZERO_DELETE(pvOrtho1)
+    TEMP_ZERO_DELETE(pvOrtho2)
 
     // free model file memory
     for(coreUintW i = 0u, ie = oFile.oHeader.iNumSurfaces; i < ie; ++i)
     {
-        SAFE_DELETE_ARRAY(oFile.pSurface[i].pTriangle)
-        SAFE_DELETE_ARRAY(oFile.pSurface[i].pTexture)
-        if(bVersion16) SAFE_DELETE_ARRAY(oFile.pSurface[i].pVertexV16)
-                  else SAFE_DELETE_ARRAY(oFile.pSurface[i].pVertex)
+        TEMP_DELETE(oFile.pSurface[i].pTriangle)
+        TEMP_DELETE(oFile.pSurface[i].pTexture)
+        if(bVersion16) TEMP_DELETE(oFile.pSurface[i].pVertexV16)
+                  else TEMP_DELETE(oFile.pSurface[i].pVertex)
     }
-    SAFE_DELETE_ARRAY(oFile.pFrame)
-    SAFE_DELETE_ARRAY(oFile.pSurface)
+    TEMP_DELETE(oFile.pFrame)
+    TEMP_DELETE(oFile.pSurface)
 
     return CORE_OK;
 }

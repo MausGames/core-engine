@@ -504,6 +504,9 @@ coreStatus coreResourceManager::__InitThread()
         glMaxShaderCompilerThreadsARB(0xFFFFFFFFu);
     }
 
+    // initialize temp-storage
+    coreTempStorageInit(1u);
+
     return CORE_OK;
 }
 

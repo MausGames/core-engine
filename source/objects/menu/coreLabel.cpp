@@ -238,7 +238,7 @@ void coreLabel::__GenerateTexture(const coreChar* pcText)
     const coreUintW  iSize       = iPitch * iHeight * iComponents;
 
     // allocate buffer to merge or transform pixels
-    pData = ZERO_NEW(coreByte, iSize);
+    pData = TEMP_ZERO_NEW(coreByte, iSize);
 
     if(pOutline)
     {
@@ -314,7 +314,7 @@ void coreLabel::__GenerateTexture(const coreChar* pcText)
     ASSERT((this->GetTexSize().x <= 1.0f) && (this->GetTexSize().y <= 1.0f))
 
     // delete merge buffer
-    ZERO_DELETE(pData)
+    TEMP_ZERO_DELETE(pData)
 }
 
 
