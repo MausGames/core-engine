@@ -319,7 +319,7 @@ template <typename F> void coreParticleEffect::CreateParticle(const coreUintW iN
         for(coreUintW j = iSteps; j--; )
         {
             // calculate actual creation time
-            const coreFloat fTime = (I_TO_F(j) + m_fCreation) * RCP(fFrequency);
+            const coreFloat fTime = (I_TO_F(j) + m_fCreation) / fFrequency;
 
             for(coreUintW i = iNum; i--; )
             {

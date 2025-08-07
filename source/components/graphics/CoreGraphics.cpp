@@ -297,7 +297,7 @@ void CoreGraphics::SetView(coreVector2 vResolution, const coreFloat fFOV, const 
     {
         // save viewport resolution
         m_vViewResolution.xy(vResolution);
-        m_vViewResolution.zw(coreVector2(1.0f / vResolution.x, 1.0f / vResolution.y));   // # normal division
+        m_vViewResolution.zw(coreVector2(1.0f,1.0f) / vResolution);
 
         // set viewport
         glViewport(0, 0, F_TO_SI(vResolution.x), F_TO_SI(vResolution.y));

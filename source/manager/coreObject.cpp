@@ -122,7 +122,7 @@ coreBool coreObjectManager::TestCollision(const coreObject3D* pObject1, const co
     // return intersection between two simple volumes
     if(!bPrecise1 && !bPrecise2)
     {
-        (*pvIntersection) = pObject2->GetPosition() + vDiff * (pObject2->GetCollisionRadius() * RCP(fTotalRadius));
+        (*pvIntersection) = pObject2->GetPosition() + vDiff * (pObject2->GetCollisionRadius() / fTotalRadius);
         return true;
     }
 
@@ -159,7 +159,7 @@ coreBool coreObjectManager::TestCollision(const coreObject3D* pObject1, const co
             if(vClusterDiff.LengthSq() > POW2(fClusterRadius))
                 continue;
 
-            (*pvIntersection) = pObject2->GetPosition() + pObject2->GetRotation().QuatApply(vPosition2 + vClusterDiff * (fRadius2 * RCP(fClusterRadius)));
+            (*pvIntersection) = pObject2->GetPosition() + pObject2->GetRotation().QuatApply(vPosition2 + vClusterDiff * (fRadius2 / fClusterRadius));
             return true;
         }
 
@@ -386,7 +386,7 @@ coreBool coreObjectManager::TestCollision(const coreObject3D* pObject, const cor
                 if(coreMath::IsNear(B, 0.0f))
                     continue;
 
-                const coreFloat   C = RCP(B);
+                const coreFloat   C = 1.0f / B;
                 const coreVector3 D = vRelRayPos - V1;
                 const coreFloat   E = coreVector3::Dot(D, A) * C;
 

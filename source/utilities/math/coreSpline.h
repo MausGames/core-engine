@@ -277,7 +277,7 @@ template <typename T> void coreSpline<T>::Refine()
         oCurNode.fDistance = ((E - D).Length() +
                               (D - C).Length() +
                               (C - B).Length() +
-                              (B - A).Length()) * RCP(fModifier);
+                              (B - A).Length()) / fModifier;
         m_fTotalDistance  += oCurNode.fDistance;
     }
 
@@ -334,12 +334,12 @@ template <typename T> void coreSpline<T>::TranslateRelative(const coreFloat fDis
     }
 
     // calculate relative time to the next node (normalized linear difference)
-    coreFloat fCurTime = (fMaxDistance - fCurDistance) * RCP(m_apNode[iCurIndex].fDistance);
+    coreFloat fCurTime = (fMaxDistance - fCurDistance) / m_apNode[iCurIndex].fDistance;
 
     // apply speed interpolation
     const coreFloat A = m_apNode[iCurIndex]     .fSpeed;
     const coreFloat B = m_apNode[iCurIndex + 1u].fSpeed;
-    fCurTime *= (A + LERP(A, B, fCurTime)) * RCP(A + B);
+    fCurTime *= (A + LERP(A, B, fCurTime)) / (A + B);
 
     // save index and time
     (*piRelIndex) = iCurIndex;
@@ -404,7 +404,7 @@ template <typename T> void coreSpline<T>::__RefreshDistances(const coreUintW iIn
 template <typename T> coreFloat coreSpline<T>::__GetDistance(const coreNode& oFrom, const coreNode& oTo)
 {
     ASSERT((oFrom.fSpeed >= 0.0f) && (oTo.fSpeed >= 0.0f) && (oFrom.fSpeed || oTo.fSpeed))
-    return (oFrom.tPosition - oTo.tPosition).Length() * RCP((oFrom.fSpeed + oTo.fSpeed) * 0.5f);
+    return (oFrom.tPosition - oTo.tPosition).Length() / ((oFrom.fSpeed + oTo.fSpeed) * 0.5f);
 }
 
 

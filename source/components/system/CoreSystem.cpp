@@ -727,7 +727,7 @@ void CoreSystem::__UpdateTime()
 
         // smooth and round last frame time and increase total time
         m_dLastTimeFull = (dNewLastTime > 0.1) ? 0.001 : LERP(m_dLastTimeFull, dNewLastTime, 0.15);
-        m_fLastTime     = RCP(coreMath::RoundFactor(RCP(m_dLastTimeFull), 0.1));
+        m_fLastTime     = 1.0 / coreMath::RoundFactor(1.0 / m_dLastTimeFull, 0.1);
         m_dTotalTime   += coreDouble(m_fLastTime);
     }
 

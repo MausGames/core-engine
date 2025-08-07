@@ -45,7 +45,7 @@ public:
     constexpr coreVector2  operator +  (const coreVector2 v)const {return coreVector2(x + v.x, y + v.y);}
     constexpr coreVector2  operator -  (const coreVector2 v)const {return coreVector2(x - v.x, y - v.y);}
     constexpr coreVector2  operator *  (const coreVector2 v)const {return coreVector2(x * v.x, y * v.y);}
-    constexpr coreVector2  operator /  (const coreVector2 v)const {return  *this * coreVector2(RCP(v.x), RCP(v.y));}
+    constexpr coreVector2  operator /  (const coreVector2 v)const {return coreVector2(x / v.x, y / v.y);}
     inline    coreVector2& operator += (const coreVector2 v)      {return (*this = *this + v);}
     inline    coreVector2& operator -= (const coreVector2 v)      {return (*this = *this - v);}
     inline    coreVector2& operator *= (const coreVector2 v)      {return (*this = *this * v);}
@@ -55,7 +55,7 @@ public:
     constexpr coreVector2  operator +  (const coreFloat f)const {return coreVector2(x + f, y + f);}
     constexpr coreVector2  operator -  (const coreFloat f)const {return coreVector2(x - f, y - f);}
     constexpr coreVector2  operator *  (const coreFloat f)const {return coreVector2(x * f, y * f);}
-    constexpr coreVector2  operator /  (const coreFloat f)const {return  *this * RCP(f);}
+    constexpr coreVector2  operator /  (const coreFloat f)const {return coreVector2(x / f, y / f);}
     inline    coreVector2& operator += (const coreFloat f)      {return (*this = *this + f);}
     inline    coreVector2& operator -= (const coreFloat f)      {return (*this = *this - f);}
     inline    coreVector2& operator *= (const coreFloat f)      {return (*this = *this * f);}
@@ -83,8 +83,8 @@ public:
 
     /* rotate vector */
     constexpr coreVector2 Rotated90 ()const {return coreVector2(y,   -x);}
-    constexpr coreVector2 Rotated45 ()const {return coreVector2(y+x, -x+y) * (1.0f / SQRT2);}
-    constexpr coreVector2 Rotated135()const {return coreVector2(y-x, -x-y) * (1.0f / SQRT2);}
+    constexpr coreVector2 Rotated45 ()const {return coreVector2(y+x, -x+y) / SQRT2;}
+    constexpr coreVector2 Rotated135()const {return coreVector2(y-x, -x-y) / SQRT2;}
     constexpr coreVector2 Rotated30 ()const {return coreVector2( y, -x) * 0.5f + coreVector2( x,  y) * 0.8660254037844386467637231707529f;}
     constexpr coreVector2 Rotated60 ()const {return coreVector2( x,  y) * 0.5f + coreVector2( y, -x) * 0.8660254037844386467637231707529f;}
     constexpr coreVector2 Rotated120()const {return coreVector2(-x, -y) * 0.5f + coreVector2( y, -x) * 0.8660254037844386467637231707529f;}
@@ -121,9 +121,9 @@ public:
     inline    coreVector2 AlongAxis8Normal (const coreVector2 vAxis)const {return (this->MapToAxisInv(vAxis).AlongWay8Normal ().MapToAxis(vAxis));}
 
     /* normalize vector */
-    constexpr coreVector2 Normalized             (const coreVector2 vFallback = coreVector2(0.0f,1.0f))const {ASSERT(vFallback.IsNormalized()) WARN_IF(this->IsNull()) return vFallback; return this->NormalizedUnsafe();}
-    constexpr coreVector2 NormalizedUnsafe       ()const                                                     {ASSERT(!this->IsNull())          return coreVector2(x, y) * RSQRT(this->LengthSq());}
-    constexpr coreVector2 NormalizedUnsafePrecise()const                                                     {ASSERT(!this->IsNull())          return coreVector2(x, y) * (1.0f / this->Length());}
+    constexpr coreVector2 Normalized      (const coreVector2 vFallback = coreVector2(0.0f,1.0f))const {ASSERT(vFallback.IsNormalized()) WARN_IF(this->IsNull()) return vFallback; return this->NormalizedUnsafe();}
+    constexpr coreVector2 NormalizedUnsafe()const                                                     {ASSERT(!this->IsNull())          return coreVector2(x, y) / this->Length();}
+    constexpr coreVector2 NormalizedFast  ()const                                                     {ASSERT(!this->IsNull())          return coreVector2(x, y) * RSQRT(this->LengthSq());}
 
     /* process vector */
     template <typename F, typename... A> inline coreVector2 Processed(F&& nFunction, A&&... vArgs)const                                                      {return coreVector2(nFunction(x, std::forward<A>(vArgs)...), nFunction(y, std::forward<A>(vArgs)...));}
@@ -138,9 +138,9 @@ public:
     constexpr coreFloat   Max         ()const {return MAX(x, y);}
     constexpr coreUintW   MinDimension()const {return (x < y) ? 0u : 1u;}
     constexpr coreUintW   MaxDimension()const {return (x > y) ? 0u : 1u;}
-    inline    coreVector2 LowRatio    ()const {return ((*this) * RCP(this->Processed(ABS).Max()));}
-    inline    coreVector2 HighRatio   ()const {return ((*this) * RCP(this->Processed(ABS).Min()));}
-    constexpr coreFloat   AspectRatio ()const {return (x * RCP(y));}
+    inline    coreVector2 LowRatio    ()const {return ((*this) / this->Processed(ABS).Max());}
+    inline    coreVector2 HighRatio   ()const {return ((*this) / this->Processed(ABS).Min());}
+    constexpr coreFloat   AspectRatio ()const {return (x / y);}
     constexpr coreVector2 AspectRatio2()const;
     inline    coreFloat   Angle       ()const {return (-std::atan2(x, y));}   // (x, y)
     constexpr coreBool    IsNormalized()const {return (coreMath::IsNear(this->LengthSq(), 1.0f));}
@@ -211,7 +211,7 @@ public:
     constexpr coreVector3  operator +  (const coreVector3 v)const {return coreVector3(x + v.x, y + v.y, z + v.z);}
     constexpr coreVector3  operator -  (const coreVector3 v)const {return coreVector3(x - v.x, y - v.y, z - v.z);}
     constexpr coreVector3  operator *  (const coreVector3 v)const {return coreVector3(x * v.x, y * v.y, z * v.z);}
-    constexpr coreVector3  operator /  (const coreVector3 v)const {return  *this * coreVector3(RCP(v.x), RCP(v.y), RCP(v.z));}
+    constexpr coreVector3  operator /  (const coreVector3 v)const {return coreVector3(x / v.x, y / v.y, z / v.z);}
     inline    coreVector3& operator += (const coreVector3 v)      {return (*this = *this + v);}
     inline    coreVector3& operator -= (const coreVector3 v)      {return (*this = *this - v);}
     inline    coreVector3& operator *= (const coreVector3 v)      {return (*this = *this * v);}
@@ -221,7 +221,7 @@ public:
     constexpr coreVector3  operator +  (const coreFloat f)const {return coreVector3(x + f, y + f, z + f);}
     constexpr coreVector3  operator -  (const coreFloat f)const {return coreVector3(x - f, y - f, z - f);}
     constexpr coreVector3  operator *  (const coreFloat f)const {return coreVector3(x * f, y * f, z * f);}
-    constexpr coreVector3  operator /  (const coreFloat f)const {return  *this * RCP(f);}
+    constexpr coreVector3  operator /  (const coreFloat f)const {return coreVector3(x / f, y / f, z / f);}
     inline    coreVector3& operator += (const coreFloat f)      {return (*this = *this + f);}
     inline    coreVector3& operator -= (const coreFloat f)      {return (*this = *this - f);}
     inline    coreVector3& operator *= (const coreFloat f)      {return (*this = *this * f);}
@@ -278,9 +278,9 @@ public:
     inline coreVector3 AlongWay6Normal()const {const coreUintW A = this->Processed(ABS).MaxDimension(); return ((A == 0u) ? coreVector3(SIGN(x), 0.0f, 0.0f) : (A == 1u) ? coreVector3(0.0f, SIGN(y), 0.0f) : coreVector3(0.0f, 0.0f, SIGN(z)));}
 
     /* normalize vector */
-    constexpr coreVector3 Normalized             (const coreVector3 vFallback = coreVector3(0.0f,0.0f,1.0f))const {ASSERT(vFallback.IsNormalized()) WARN_IF(this->IsNull()) return vFallback; return this->NormalizedUnsafe();}
-    constexpr coreVector3 NormalizedUnsafe       ()const                                                          {ASSERT(!this->IsNull())          return coreVector3(x, y, z) * RSQRT(this->LengthSq());}
-    constexpr coreVector3 NormalizedUnsafePrecise()const                                                          {ASSERT(!this->IsNull())          return coreVector3(x, y, z) * (1.0f / this->Length());}
+    constexpr coreVector3 Normalized      (const coreVector3 vFallback = coreVector3(0.0f,0.0f,1.0f))const {ASSERT(vFallback.IsNormalized()) WARN_IF(this->IsNull()) return vFallback; return this->NormalizedUnsafe();}
+    constexpr coreVector3 NormalizedUnsafe()const                                                          {ASSERT(!this->IsNull())          return coreVector3(x, y, z) / this->Length();}
+    constexpr coreVector3 NormalizedFast  ()const                                                          {ASSERT(!this->IsNull())          return coreVector3(x, y, z) * RSQRT(this->LengthSq());}
 
     /* process vector */
     template <typename F, typename... A> inline coreVector3 Processed(F&& nFunction, A&&... vArgs)const                                                      {return coreVector3(nFunction(x, std::forward<A>(vArgs)...), nFunction(y, std::forward<A>(vArgs)...), nFunction(z, std::forward<A>(vArgs)...));}
@@ -295,8 +295,8 @@ public:
     constexpr coreFloat   Max         ()const {return MAX(x, y, z);}
     constexpr coreUintW   MinDimension()const {return (x < y) ? ((x < z) ? 0u : 2u) : ((y < z) ? 1u : 2u);}
     constexpr coreUintW   MaxDimension()const {return (x > y) ? ((x > z) ? 0u : 2u) : ((y > z) ? 1u : 2u);}
-    inline    coreVector3 LowRatio    ()const {return ((*this) * RCP(this->Processed(ABS).Max()));}
-    inline    coreVector3 HighRatio   ()const {return ((*this) * RCP(this->Processed(ABS).Min()));}
+    inline    coreVector3 LowRatio    ()const {return ((*this) / this->Processed(ABS).Max());}
+    inline    coreVector3 HighRatio   ()const {return ((*this) / this->Processed(ABS).Min());}
     constexpr coreBool    IsNormalized()const {return (coreMath::IsNear(this->LengthSq(), 1.0f));}
     constexpr coreBool    IsAligned   ()const {return (x*y == 0.0f) && (x*z == 0.0f) && (y*z == 0.0f);}
     constexpr coreBool    IsNull      ()const {return (this->LengthSq() == 0.0f);}
@@ -373,7 +373,7 @@ public:
     constexpr coreVector4  operator +  (const coreVector4 v)const {return coreVector4(x + v.x, y + v.y, z + v.z, w + v.w);}
     constexpr coreVector4  operator -  (const coreVector4 v)const {return coreVector4(x - v.x, y - v.y, z - v.z, w - v.w);}
     constexpr coreVector4  operator *  (const coreVector4 v)const {return coreVector4(x * v.x, y * v.y, z * v.z, w * v.w);}
-    constexpr coreVector4  operator /  (const coreVector4 v)const {return  *this * coreVector4(RCP(v.x), RCP(v.y), RCP(v.z), RCP(v.w));}
+    constexpr coreVector4  operator /  (const coreVector4 v)const {return coreVector4(x / v.x, y / v.y, z / v.z, w / v.w);}
     inline    coreVector4& operator += (const coreVector4 v)      {return (*this = *this + v);}
     inline    coreVector4& operator -= (const coreVector4 v)      {return (*this = *this - v);}
     inline    coreVector4& operator *= (const coreVector4 v)      {return (*this = *this * v);}
@@ -383,7 +383,7 @@ public:
     constexpr coreVector4  operator +  (const coreFloat f)const {return coreVector4(x + f, y + f, z + f, w + f);}
     constexpr coreVector4  operator -  (const coreFloat f)const {return coreVector4(x - f, y - f, z - f, w - f);}
     constexpr coreVector4  operator *  (const coreFloat f)const {return coreVector4(x * f, y * f, z * f, w * f);}
-    constexpr coreVector4  operator /  (const coreFloat f)const {return  *this * RCP(f);}
+    constexpr coreVector4  operator /  (const coreFloat f)const {return coreVector4(x / f, y / f, z / f, w / f);}
     inline    coreVector4& operator += (const coreFloat f)      {return (*this = *this + f);}
     inline    coreVector4& operator -= (const coreFloat f)      {return (*this = *this - f);}
     inline    coreVector4& operator *= (const coreFloat f)      {return (*this = *this * f);}
@@ -436,9 +436,9 @@ public:
     constexpr coreVector4 InvertedW  ()const {return coreVector4( x,  y,  z, -w);}
 
     /* normalize vector */
-    constexpr coreVector4 Normalized             (const coreVector4 vFallback = coreVector4(0.0f,0.0f,0.0f,1.0f))const {ASSERT(vFallback.IsNormalized()) WARN_IF(this->IsNull()) return vFallback; return this->NormalizedUnsafe();}
-    constexpr coreVector4 NormalizedUnsafe       ()const                                                               {ASSERT(!this->IsNull())          return coreVector4(x, y, z, w) * RSQRT(this->LengthSq());}
-    constexpr coreVector4 NormalizedUnsafePrecise()const                                                               {ASSERT(!this->IsNull())          return coreVector4(x, y, z, w) * (1.0f / this->Length());}
+    constexpr coreVector4 Normalized      (const coreVector4 vFallback = coreVector4(0.0f,0.0f,0.0f,1.0f))const {ASSERT(vFallback.IsNormalized()) WARN_IF(this->IsNull()) return vFallback; return this->NormalizedUnsafe();}
+    constexpr coreVector4 NormalizedUnsafe()const                                                               {ASSERT(!this->IsNull())          return coreVector4(x, y, z, w) / this->Length();}
+    constexpr coreVector4 NormalizedFast  ()const                                                               {ASSERT(!this->IsNull())          return coreVector4(x, y, z, w) * RSQRT(this->LengthSq());}
 
     /* process vector */
     template <typename F, typename... A> inline coreVector4 Processed(F&& nFunction, A&&... vArgs)const                                                      {return coreVector4(nFunction(x, std::forward<A>(vArgs)...), nFunction(y, std::forward<A>(vArgs)...), nFunction(z, std::forward<A>(vArgs)...), nFunction(w, std::forward<A>(vArgs)...));}
@@ -453,8 +453,8 @@ public:
     constexpr coreFloat   Max         ()const {return MAX(x, y, z, w);}
     constexpr coreUintW   MinDimension()const {return (x < y) ? ((x < z) ? ((x < w) ? 0u : 3u) : ((z < w) ? 2u : 3u)) : ((y < z) ? ((y < w) ? 1u : 3u) : ((z < w) ? 2u : 3u));}
     constexpr coreUintW   MaxDimension()const {return (x > y) ? ((x > z) ? ((x > w) ? 0u : 3u) : ((z > w) ? 2u : 3u)) : ((y > z) ? ((y > w) ? 1u : 3u) : ((z > w) ? 2u : 3u));}
-    inline    coreVector4 LowRatio    ()const {return ((*this) * RCP(this->Processed(ABS).Max()));}
-    inline    coreVector4 HighRatio   ()const {return ((*this) * RCP(this->Processed(ABS).Min()));}
+    inline    coreVector4 LowRatio    ()const {return ((*this) / this->Processed(ABS).Max());}
+    inline    coreVector4 HighRatio   ()const {return ((*this) / this->Processed(ABS).Min());}
     constexpr coreBool    IsNormalized()const {return (coreMath::IsNear(this->LengthSq(), 1.0f));}
     constexpr coreBool    IsAligned   ()const {return (x*y == 0.0f) && (x*z == 0.0f) && (x*w == 0.0f) && (y*z == 0.0f) && (y*w == 0.0f) && (z*w == 0.0f);}
     constexpr coreBool    IsNull      ()const {return (this->LengthSq() == 0.0f);}
@@ -489,7 +489,7 @@ public:
     static inline    coreVector4 QuatSlerp    (const coreVector4 v1, const coreVector4 v2, const coreFloat t);
     static constexpr coreVector4 QuatIdentity ()      {return coreVector4(0.0f,0.0f,0.0f,1.0f);}
     constexpr        coreVector4 QuatConjugate()const {return coreVector4(-x, -y, -z, w);}
-    constexpr        coreVector4 QuatInvert   ()const {return coreVector4(-x, -y, -z, w) * RCP(this->LengthSq());}
+    constexpr        coreVector4 QuatInvert   ()const {return coreVector4(-x, -y, -z, w) / this->LengthSq();}
     constexpr        coreVector3 QuatApply    (const coreVector3 v)const;
 };
 
@@ -666,7 +666,7 @@ inline coreBool coreVector2::Intersect(const coreVector2 vPosition1, const coreV
 
     // calculate distance to intersection
     const coreVector2 vDiff = vPosition2 - vPosition1;
-    const coreFloat   fLen  = coreVector2::Dot(vDiff.Rotated90(), vDirection2) * RCP(fDet);
+    const coreFloat   fLen  = coreVector2::Dot(vDiff.Rotated90(), vDirection2) / fDet;
 
     // return intersection point
     (*pvIntersection) = vPosition1 + vDirection1 * fLen;
@@ -750,13 +750,13 @@ constexpr coreVector2 coreVector2::UnpackWay8(const coreUint8 iNumber)
     {
     default: UNREACHABLE
     case 0u: return coreVector2( 0.0f, 1.0f);
-    case 1u: return coreVector2(-1.0f, 1.0f) * (1.0f/SQRT2);
+    case 1u: return coreVector2(-1.0f, 1.0f) / SQRT2;
     case 2u: return coreVector2(-1.0f, 0.0f);
-    case 3u: return coreVector2(-1.0f,-1.0f) * (1.0f/SQRT2);
+    case 3u: return coreVector2(-1.0f,-1.0f) / SQRT2;
     case 4u: return coreVector2( 0.0f,-1.0f);
-    case 5u: return coreVector2( 1.0f,-1.0f) * (1.0f/SQRT2);
+    case 5u: return coreVector2( 1.0f,-1.0f) / SQRT2;
     case 6u: return coreVector2( 1.0f, 0.0f);
-    case 7u: return coreVector2( 1.0f, 1.0f) * (1.0f/SQRT2);
+    case 7u: return coreVector2( 1.0f, 1.0f) / SQRT2;
     case 8u: return coreVector2( 0.0f, 0.0f);
     }
 }
@@ -767,7 +767,7 @@ constexpr coreVector2 coreVector2::UnpackWay8(const coreUint8 iNumber)
 constexpr coreVector2 coreVector2::UnpackUnorm2x8(const coreUint16 iNumber)
 {
     return coreVector2(I_TO_F( iNumber        & 0xFFu),
-                       I_TO_F((iNumber >> 8u) & 0xFFu)) * 3.921568627e-3f;
+                       I_TO_F((iNumber >> 8u) & 0xFFu)) / 255.0f;
 }
 
 
@@ -788,7 +788,7 @@ constexpr coreVector2 coreVector2::UnpackSnorm2x8(const coreUint16 iNumber)
 constexpr coreVector2 coreVector2::UnpackUnorm2x16(const coreUint32 iNumber)
 {
     return coreVector2(I_TO_F( iNumber         & 0xFFFFu),
-                       I_TO_F((iNumber >> 16u) & 0xFFFFu)) * 1.525902189e-5f;
+                       I_TO_F((iNumber >> 16u) & 0xFFFFu)) / 65535.0f;
 }
 
 
@@ -988,9 +988,9 @@ constexpr coreVector2 coreVector3::PackSnormOcta()const
 /* uncompress 5_6_5_rev packed uint16 into 0.0 to 1.0 vector */
 constexpr coreVector3 coreVector3::UnpackUnorm565(const coreUint16 iNumber)
 {
-    return coreVector3(I_TO_F( iNumber         & 0x1Fu) * 3.225806452e-2f,
-                       I_TO_F((iNumber >>  5u) & 0x3Fu) * 1.587301587e-2f,
-                       I_TO_F((iNumber >> 11u) & 0x1Fu) * 3.225806452e-2f);
+    return coreVector3(I_TO_F( iNumber         & 0x1Fu) / 31.0f,
+                       I_TO_F((iNumber >>  5u) & 0x3Fu) / 63.0f,
+                       I_TO_F((iNumber >> 11u) & 0x1Fu) / 31.0f);
 }
 
 
@@ -1012,9 +1012,9 @@ constexpr coreVector3 coreVector3::UnpackSnorm565(const coreUint16 iNumber)
 /* uncompress (own) 10_11_11_rev packed uint32 into 0.0 to 1.0 vector */
 constexpr coreVector3 coreVector3::UnpackUnorm011(const coreUint32 iNumber)
 {
-    return coreVector3(coreVector2(I_TO_F( iNumber         & 0x7FFu),
-                                   I_TO_F((iNumber >> 11u) & 0x7FFu)) * 4.885197850e-4f,
-                                   I_TO_F((iNumber >> 22u) & 0x3FFu)  * 9.775171065e-4f);
+    return coreVector3(I_TO_F( iNumber         & 0x7FFu) / 2047.0f,
+                       I_TO_F((iNumber >> 11u) & 0x7FFu) / 2047.0f,
+                       I_TO_F((iNumber >> 22u) & 0x3FFu) / 1023.0f);
 }
 
 
@@ -1061,11 +1061,11 @@ constexpr coreVector3 coreVector3::RgbToHsv()const
 
     if(!d) return coreVector3(0.0f, 0.0f, v);
 
-    const coreFloat s = d * RCP(v);
+    const coreFloat s = d / v;
 
-    if(R == v) return coreVector3((0.0f + (G - B) * RCP(d)) / 6.0f, s, v);
-    if(G == v) return coreVector3((2.0f + (B - R) * RCP(d)) / 6.0f, s, v);
-               return coreVector3((4.0f + (R - G) * RCP(d)) / 6.0f, s, v);
+    if(R == v) return coreVector3((0.0f + (G - B) / d) / 6.0f, s, v);
+    if(G == v) return coreVector3((2.0f + (B - R) / d) / 6.0f, s, v);
+               return coreVector3((4.0f + (R - G) / d) / 6.0f, s, v);
 }
 
 
@@ -1236,10 +1236,10 @@ constexpr coreUint64 coreVector4::PackFloat4x16()const
 /* uncompress 2_10_10_10_rev packed uint32 into 0.0 to 1.0 vector */
 constexpr coreVector4 coreVector4::UnpackUnorm210(const coreUint32 iNumber)
 {
-    return coreVector4(coreVector3(I_TO_F( iNumber         & 0x3FFu),
-                                   I_TO_F((iNumber >> 10u) & 0x3FFu),
-                                   I_TO_F((iNumber >> 20u) & 0x3FFu)) * 9.775171065e-4f,
-                                   I_TO_F((iNumber >> 30u) & 0x003u)  * 3.333333333e-1f);
+    return coreVector4(I_TO_F( iNumber         & 0x3FFu) / 1023.0f,
+                       I_TO_F((iNumber >> 10u) & 0x3FFu) / 1023.0f,
+                       I_TO_F((iNumber >> 20u) & 0x3FFu) / 1023.0f,
+                       I_TO_F((iNumber >> 30u) & 0x003u) /    3.0f);
 }
 
 
@@ -1266,7 +1266,7 @@ constexpr coreVector4 coreVector4::UnpackUnorm4x8(const coreUint32 iNumber)
     return coreVector4(I_TO_F( iNumber         & 0xFFu),
                        I_TO_F((iNumber >>  8u) & 0xFFu),
                        I_TO_F((iNumber >> 16u) & 0xFFu),
-                       I_TO_F((iNumber >> 24u) & 0xFFu)) * 3.921568627e-3f;
+                       I_TO_F((iNumber >> 24u) & 0xFFu)) / 255.0f;
 }
 
 
@@ -1293,7 +1293,7 @@ constexpr coreVector4 coreVector4::UnpackUnorm4x16(const coreUint64 iNumber)
     return coreVector4(I_TO_F( iNumber         & 0xFFFFu),
                        I_TO_F((iNumber >> 16u) & 0xFFFFu),
                        I_TO_F((iNumber >> 32u) & 0xFFFFu),
-                       I_TO_F((iNumber >> 48u) & 0xFFFFu)) * 1.525902190e-5f;
+                       I_TO_F((iNumber >> 48u) & 0xFFFFu)) / 65535.0f;
 }
 
 

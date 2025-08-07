@@ -16,7 +16,6 @@
 // TODO 5: use std::common_type for return values
 // TODO 4: should HashCombine be moved to coreData? hashes are all defined in data-category
 // TODO 3: std::byteswap (e.g. for MSVC constexpr)
-// TODO 3: [CORE2] IsNear: (ABS(tValue1 - tValue2) <= tRange) ?
 // TODO 3: constexpr <cmath> with C++23
 
 // NOTE: {(x < y) ? x : y} -> int: cmp,cmovl -> float: _mm_min_ss
@@ -141,7 +140,7 @@ public:
     template <typename T, coreFloatingPoint S> static constexpr T LerpHermite5(const T& x, const T& y, const S& s)                                 {return LERP(x, y, (S(10) + (S(-15) + S(6) * s) * s) * s * s * s);}
     template <typename T, coreFloatingPoint S> static inline    T LerpExp     (const T& x, const T& y, const S& s)                                 {return POW(x, S(1) - s) * POW(y, s);}
     template <typename T, coreFloatingPoint S> static inline    T LerpPow     (const T& x, const T& y, const S& s, const S& k)                     {return LERP(x, y, POW(s, k));}                     // inverted curve with (k < 1)
-    static constexpr coreFloat                                    Step        (const coreFloat a, const coreFloat b, const coreFloat x)            {return CLAMP01((x - a) * RCP(b - a));}             // linearstep
+    static constexpr coreFloat                                    Step        (const coreFloat a, const coreFloat b, const coreFloat x)            {return CLAMP01((x - a) / (b - a));}                // linearstep
     static inline    coreFloat                                    StepSmooth  (const coreFloat a, const coreFloat b, const coreFloat x)            {return BLENDS (STEP(a, b, x));}
     static inline    coreFloat                                    StepBreak   (const coreFloat a, const coreFloat b, const coreFloat x)            {return BLENDB (STEP(a, b, x));}
     static inline    coreFloat                                    StepBreakRev(const coreFloat a, const coreFloat b, const coreFloat x)            {return BLENDBR(STEP(a, b, x));}
@@ -149,21 +148,19 @@ public:
     static constexpr coreFloat                                    StepHermite5(const coreFloat a, const coreFloat b, const coreFloat x)            {return BLENDH5(STEP(a, b, x));}                    // smootherstep
 
     /* base operations */
-    template <coreFloatingPoint T> static inline    T FmodRange(const T& tNum, const t_ident<T>& tFrom, const t_ident<T>& tTo);
-    template <coreFloatingPoint T> static inline    T Fmod     (const T& tNum, const t_ident<T>& tDenom) {return std::fmod (tNum, tDenom);}
-    template <coreFloatingPoint T> static inline    T Trunc    (const T& tInput)                         {return std::trunc(tInput);}
-    template <coreFloatingPoint T> static inline    T Fract    (const T& tInput)                         {return tInput - TRUNC(tInput);}   // FMOD(x, 1)
-    template <coreFloatingPoint T> static inline    T Cbrt     (const T& tInput)                         {return std::cbrt (tInput);}
-    template <coreFloatingPoint T> static inline    T Sqrt     (const T& tInput)                         {return std::sqrt (tInput);}
-    template <coreFloatingPoint T> static inline    T Rsqrt    (const T& tInput)                         {return T(1) / SQRT(tInput);}
-    template <coreFloatingPoint T> static constexpr T Rcp      (const T& tInput)                         {return T(1) / tInput;}
-    static constexpr coreFloat                        Sqrt     (const coreFloat fInput);
-    static constexpr coreFloat                        Rsqrt    (const coreFloat fInput);
-    static constexpr coreFloat                        Rcp      (const coreFloat fInput);
+    template <coreFloatingPoint T> static inline T FmodRange(const T& tNum, const t_ident<T>& tFrom, const t_ident<T>& tTo);
+    template <coreFloatingPoint T> static inline T Fmod     (const T& tNum, const t_ident<T>& tDenom) {return std::fmod (tNum, tDenom);}
+    template <coreFloatingPoint T> static inline T Trunc    (const T& tInput)                         {return std::trunc(tInput);}
+    template <coreFloatingPoint T> static inline T Fract    (const T& tInput)                         {return tInput - TRUNC(tInput);}   // FMOD(x, 1)
+    template <coreFloatingPoint T> static inline T Cbrt     (const T& tInput)                         {return std::cbrt (tInput);}
+    template <coreFloatingPoint T> static inline T Sqrt     (const T& tInput)                         {return std::sqrt (tInput);}
+    static constexpr coreFloat                     Sqrt     (const coreFloat fInput);
+    static constexpr coreFloat                     Rsqrt    (const coreFloat fInput);
+    static constexpr coreFloat                     Rcp      (const coreFloat fInput);
 
     /* exponential operations */
     template <coreFloatingPoint T> static inline T Pow  (const T& tBase,  const t_ident<T>& tExp)  {return std::pow  (tBase, tExp);}
-    template <coreFloatingPoint T> static inline T LogB (const T& tValue, const t_ident<T>& tBase) {return LOG(tValue) * RCP(LOG(tBase));}
+    template <coreFloatingPoint T> static inline T LogB (const T& tValue, const t_ident<T>& tBase) {return LOG(tValue) / LOG(tBase);}
     template <coreFloatingPoint T> static inline T Log  (const T& tInput)                          {return std::log  (tInput);}
     template <coreFloatingPoint T> static inline T Log2 (const T& tInput)                          {return std::log2 (tInput);}
     template <coreFloatingPoint T> static inline T Log10(const T& tInput)                          {return std::log10(tInput);}
@@ -181,12 +178,12 @@ public:
     template <coreFloatingPoint T> static inline T Cot (const T& tInput) {return TAN(T(PI_D) / T(2) - tInput);}
 
     /* rounding operations */
-    template <coreFloatingPoint T> static inline    T  Ceil         (const T& tInput)                          {return std::ceil     (tInput);}
-    template <coreFloatingPoint T> static inline    T  Floor        (const T& tInput)                          {return std::floor    (tInput);}
-    template <coreFloatingPoint T> static inline    T  Round        (const T& tInput)                          {return std::round    (tInput);}
-    template <coreFloatingPoint T> static inline    T  CeilFactor   (const T& tInput, const T& tFactor)        {return CEIL (tInput * RCP(tFactor)) * tFactor;}
-    template <coreFloatingPoint T> static inline    T  FloorFactor  (const T& tInput, const T& tFactor)        {return FLOOR(tInput * RCP(tFactor)) * tFactor;}
-    template <coreFloatingPoint T> static inline    T  RoundFactor  (const T& tInput, const T& tFactor)        {return ROUND(tInput * RCP(tFactor)) * tFactor;}
+    template <coreFloatingPoint T> static inline    T  Ceil         (const T& tInput)                          {return std::ceil (tInput);}
+    template <coreFloatingPoint T> static inline    T  Floor        (const T& tInput)                          {return std::floor(tInput);}
+    template <coreFloatingPoint T> static inline    T  Round        (const T& tInput)                          {return std::round(tInput);}
+    template <coreFloatingPoint T> static inline    T  CeilFactor   (const T& tInput, const T& tFactor)        {return CEIL (tInput / tFactor) * tFactor;}
+    template <coreFloatingPoint T> static inline    T  FloorFactor  (const T& tInput, const T& tFactor)        {return FLOOR(tInput / tFactor) * tFactor;}
+    template <coreFloatingPoint T> static inline    T  RoundFactor  (const T& tInput, const T& tFactor)        {return ROUND(tInput / tFactor) * tFactor;}
     template <std::integral     T> static constexpr T  CeilPot      (const T& tInput)                          {ASSERT(tInput >= T(0)) return std::bit_ceil (std::make_unsigned_t<T>(tInput));}
     template <std::integral     T> static constexpr T  FloorPot     (const T& tInput)                          {ASSERT(tInput >= T(0)) return std::bit_floor(std::make_unsigned_t<T>(tInput));}
     template <std::integral     T> static constexpr T  CeilAlign    (const T& tInput,  const coreUintW iAlign) {ASSERT(tInput >= T(0)) const T k = tInput + iAlign - T(1); return k - (k % iAlign);}
@@ -197,7 +194,7 @@ public:
     /* analyzing operations */
     template <std::integral T> static constexpr coreBool IsPot    (const T& tInput)                                                           {ASSERT(tInput >= T(0)) return (tInput && !(tInput & (tInput - T(1))));}
     template <std::integral T> static constexpr coreBool IsAligned(const T& tInput,  const coreUintW iAlign)                                  {ASSERT(tInput >= T(0)) return ((coreUintW(tInput) % iAlign) == 0u);}
-    template <typename      T> static constexpr coreBool IsNear   (const T& tValue1, const T& tValue2, const T& tRange = CORE_MATH_PRECISION) {ASSERT(tRange >  T(0)) return (POW2(tValue1 - tValue2) <= POW2(tRange));}
+    template <typename      T> static constexpr coreBool IsNear   (const T& tValue1, const T& tValue2, const T& tRange = CORE_MATH_PRECISION) {ASSERT(tRange >  T(0)) return (ABS(tValue1 - tValue2) <= tRange);}
 
     /* bit operations */
     static constexpr coreUint32 PopCount      (const coreUint64 iInput);
@@ -284,57 +281,53 @@ constexpr coreFloat coreMath::Sqrt(const coreFloat fInput)
 
 
 // ****************************************************************
-/* calculate approximate inverse square root */
+/* calculate approximate inverse square root (without Newton-Raphson) */
 constexpr coreFloat coreMath::Rsqrt(const coreFloat fInput)
 {
     ASSERT(fInput > 0.0f)
 
     if(!std::is_constant_evaluated())
     {
-#if defined(_CORE_SSE_) && defined(_CORE_FASTMATH_)
+#if defined(_CORE_SSE_)
 
         // optimized calculation with SSE
-        const coreFloat A = _mm_cvtss_f32(_mm_rsqrt_ss(_mm_set_ss(fInput)));
-        return 0.5f * A * (3.0f - (fInput * A) * A);
+        return _mm_cvtss_f32(_mm_rsqrt_ss(_mm_set_ss(fInput)));
 
-#elif defined(_CORE_NEON_) && defined(_CORE_FASTMATH_)
+#elif defined(_CORE_NEON_)
 
         // optimized calculation with NEON
-        const coreFloat A = vrsqrtes_f32(fInput);
-        return 0.5f * A * (3.0f - (fInput * A) * A);
+        return vrsqrtes_f32(fInput);
 
 #endif
     }
 
-    // normal calculation
+    // normal calculation (# this is worse than dividing directly)
     return 1.0f / SQRT(fInput);
 }
 
 
 // ****************************************************************
-/* calculate approximate reciprocal */
+/* calculate approximate reciprocal (without Newton-Raphson) */
 constexpr coreFloat coreMath::Rcp(const coreFloat fInput)
 {
     ASSERT(fInput)
 
     if(!std::is_constant_evaluated())
     {
-#if defined(_CORE_SSE_) && defined(_CORE_FASTMATH_)
+#if defined(_CORE_SSE_)
 
         // optimized calculation with SSE
-        const coreFloat A = _mm_cvtss_f32(_mm_rcp_ss(_mm_set_ss(fInput)));
-        return A * (2.0f - fInput * A);
+        return _mm_cvtss_f32(_mm_rcp_ss(_mm_set_ss(fInput)));
 
-#elif defined(_CORE_NEON_) && defined(_CORE_FASTMATH_)
+#elif defined(_CORE_NEON_)
 
         // optimized calculation with NEON
-        const coreFloat A = vrecpes_f32(fInput);
-        return A * (2.0f - fInput * A);
+        return vrecpes_f32(fInput);
 
 #endif
     }
 
-    // normal calculation
+    // normal calculation (# this is worse than dividing directly)
     return 1.0f / fInput;
 }
 
