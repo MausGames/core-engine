@@ -346,6 +346,9 @@
 #define GLEW_NO_GLU
 #define GLEW_STATIC
 #define AL_DISABLE_NOEXCEPT
+#define STB_VORBIS_HEADER_ONLY
+#define STB_VORBIS_NO_PUSHDATA_API
+#define STB_VORBIS_MAX_CHANNELS 2
 #if defined(_CORE_MSVC_)
     #define ZSTD_DLL_IMPORT 1
 #endif
@@ -364,6 +367,7 @@
 #include <AL/alext.h>
 #include <zstd/zstd.h>
 #include <opus/opusfile.h>
+#include <stb_vorbis.h>
 
 
 // ****************************************************************

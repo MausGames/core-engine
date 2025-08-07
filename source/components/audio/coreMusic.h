@@ -58,16 +58,21 @@ extern const OpusFileCallbacks g_OpusCallbacks;
 class coreMusic final
 {
 private:
-    coreFile* m_pFile;           // file object with streaming data
+    coreFile* m_pFile;                    // file object with streaming data
 
-    OggOpusFile*    m_pStream;   // music stream object
-    const OpusHead* m_pHead;     // format of the music file
-    const OpusTags* m_pTags;     // meta-information
+    OggOpusFile*    m_pOpusStream;        // music stream object      (Opus)
+    const OpusHead* m_pOpusHead;          // format of the music file (Opus)
+    const OpusTags* m_pOpusTags;          // meta-information         (Opus)
 
-    coreUint32 m_iMaxSample;     // length of the music stream (in samples)
-    coreFloat  m_fMaxTime;       // length of the music stream (in seconds)
+    stb_vorbis*        m_pVorbisStream;   // music stream object      (Vorbis)
+    stb_vorbis_info    m_VorbisInfo;      // format of the music file (Vorbis)
+    stb_vorbis_comment m_VorbisComment;   // meta-information         (Vorbis)
 
-    coreBool m_bLoop;            // individual loop status
+    coreUint32 m_iMaxSample;              // length of the music stream (in samples)
+    coreFloat  m_fMaxTime;                // length of the music stream (in seconds)
+    coreBool   m_bOpus;                   // Opus instead of Vorbis
+
+    coreBool m_bLoop;                     // individual loop status
 
 
 public:
@@ -79,11 +84,11 @@ public:
     DISABLE_COPY(coreMusic)
 
     /* change and retrieve current music stream position */
-    inline void Rewind    ()                          {op_raw_seek(m_pStream, 0);}
-    inline void SeekSample(const coreUint32 iSamples) {op_pcm_seek(m_pStream, iSamples); ASSERT(iSamples <= m_iMaxSample)}
+    inline void Rewind    ()                          {if(m_bOpus) op_raw_seek(m_pOpusStream, 0);        else stb_vorbis_seek_start(m_pVorbisStream);}
+    inline void SeekSample(const coreUint32 iSamples) {if(m_bOpus) op_pcm_seek(m_pOpusStream, iSamples); else stb_vorbis_seek      (m_pVorbisStream, iSamples); ASSERT(iSamples <= m_iMaxSample)}
     inline void SeekFactor(const coreDouble dFactor)  {this->SeekSample(F_TO_UI   (dFactor   * coreDouble(m_iMaxSample)));}
     inline void SeekTime  (const coreFloat  fSeconds) {this->SeekFactor(coreDouble(fSeconds) / coreDouble(m_fMaxTime));}
-    inline coreUint32 TellSample()const               {return op_pcm_tell(m_pStream);}
+    inline coreUint32 TellSample()const               {if(m_bOpus) return op_pcm_tell(m_pOpusStream);    else return stb_vorbis_get_sample_offset(m_pVorbisStream);}
     inline coreDouble TellFactor()const               {return coreDouble(this->TellSample()) / coreDouble(m_iMaxSample);}
     inline coreFloat  TellTime  ()const               {return coreFloat (this->TellFactor()  * coreDouble(m_fMaxTime));}
 

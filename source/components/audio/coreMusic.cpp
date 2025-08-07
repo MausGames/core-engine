@@ -8,6 +8,9 @@
 ///////////////////////////////////////////////////////////
 #include "Core.h"
 
+#undef STB_VORBIS_HEADER_ONLY
+#include <stb_vorbis.h>
+
 
 // ****************************************************************
 /* constructor */
@@ -58,13 +61,17 @@ coreMusic::coreMusic(const coreChar* pcPath)noexcept
 }
 
 coreMusic::coreMusic(coreFile* pFile)noexcept
-: m_pFile      (NULL)
-, m_pStream    (NULL)
-, m_pHead      (NULL)
-, m_pTags      (NULL)
-, m_iMaxSample (0u)
-, m_fMaxTime   (0.0f)
-, m_bLoop      (false)
+: m_pFile         (NULL)
+, m_pOpusStream   (NULL)
+, m_pOpusHead     (NULL)
+, m_pOpusTags     (NULL)
+, m_pVorbisStream (NULL)
+, m_VorbisInfo    {}
+, m_VorbisComment {}
+, m_iMaxSample    (0u)
+, m_fMaxTime      (0.0f)
+, m_bOpus         (false)
+, m_bLoop         (false)
 {
     if(!pFile)            return;
     if(!pFile->GetSize()) return;   // do not load file data
@@ -80,9 +87,9 @@ coreMusic::coreMusic(coreFile* pFile)noexcept
     {
         coreInt32 iError;
 
-        // open music stream
-        m_pStream = op_open_callbacks(new coreOpusStream(m_pFile), &g_OpusCallbacks, NULL, 0u, &iError);
-        WARN_IF(!m_pStream)
+        // open music stream (Opus)
+        m_pOpusStream = op_open_callbacks(new coreOpusStream(m_pFile), &g_OpusCallbacks, NULL, 0u, &iError);
+        WARN_IF(!m_pOpusStream)
         {
             Core::Log->Warning("Music (%s) is not a valid OPUS-file (OP Error Code: %d)", pFile->GetPath(), iError);
             coreFile::InternalDelete(&m_pFile);
@@ -90,19 +97,43 @@ coreMusic::coreMusic(coreFile* pFile)noexcept
             return;
         }
 
-        ASSERT(op_seekable(m_pStream))
+        ASSERT(op_seekable(m_pOpusStream))
 
         // retrieve music file information
-        m_pHead      = op_head     (m_pStream, -1);
-        m_pTags      = op_tags     (m_pStream, -1);
-        m_iMaxSample = op_pcm_total(m_pStream, -1);
+        m_pOpusHead  = op_head     (m_pOpusStream, -1);
+        m_pOpusTags  = op_tags     (m_pOpusStream, -1);
+        m_iMaxSample = op_pcm_total(m_pOpusStream, -1);
         m_fMaxTime   = coreFloat(coreDouble(m_iMaxSample) / coreDouble(CORE_MUSIC_OPUS_RATE));
+        m_bOpus      = true;
 
-        Core::Log->Info("Music (%s, %.2f seconds, %.1f KB/s, %d channels, %d rate) loaded", pFile->GetPath(), m_fMaxTime, I_TO_F(op_bitrate(m_pStream, -1)) / 1000.0f, m_pHead->channel_count, m_pHead->input_sample_rate);
+        Core::Log->Info("Music (%s, %.2f seconds, %.1f KB/s, %d channels, %d rate) loaded", pFile->GetPath(), m_fMaxTime, I_TO_F(op_bitrate(m_pOpusStream, -1)) / 1000.0f, m_pOpusHead->channel_count, m_pOpusHead->input_sample_rate);
+    }
+    else if(!std::memcmp(pcExtension, "ogg", 3u))
+    {
+        coreInt32 iError;
+
+        // open music stream (Vorbis)
+        m_pVorbisStream = stb_vorbis_open_file_section(m_pFile->CreateReadStream(), 1, &iError, NULL, pFile->GetSize());
+        WARN_IF(!m_pVorbisStream)
+        {
+            Core::Log->Warning("Music (%s) is not a valid VORBIS-file (STB Error Code: %d)", pFile->GetPath(), iError);
+            coreFile::InternalDelete(&m_pFile);
+
+            return;
+        }
+
+        // retrieve music file information
+        m_VorbisInfo    = stb_vorbis_get_info                (m_pVorbisStream);
+        m_VorbisComment = stb_vorbis_get_comment             (m_pVorbisStream);
+        m_iMaxSample    = stb_vorbis_stream_length_in_samples(m_pVorbisStream);
+        m_fMaxTime      = stb_vorbis_stream_length_in_seconds(m_pVorbisStream);
+        m_bOpus         = false;
+
+        Core::Log->Info("Music (%s, %.2f seconds, %.1f KB/s, %d channels, %d rate) loaded", pFile->GetPath(), m_fMaxTime, I_TO_F(m_VorbisInfo.bit_rate) / 1000.0f, m_VorbisInfo.channels, m_VorbisInfo.sample_rate);
     }
     else
     {
-        Core::Log->Warning("Music (%s) could not be identified (valid extensions: opus)", pFile->GetPath());
+        Core::Log->Warning("Music (%s) could not be identified (valid extensions: opus, ogg)", pFile->GetPath());
         coreFile::InternalDelete(&m_pFile);
     }
 }
@@ -113,7 +144,8 @@ coreMusic::coreMusic(coreFile* pFile)noexcept
 coreMusic::~coreMusic()
 {
     // close music stream
-    op_free(m_pStream);
+    op_free         (m_pOpusStream);
+    stb_vorbis_close(m_pVorbisStream);
     if(m_pFile) Core::Log->Info("Music (%s) unloaded", m_pFile->GetPath());
 
     // delete file object
@@ -127,9 +159,9 @@ const coreChar* coreMusic::GetComment(const coreChar* pcName)const
 {
     const coreUintW iLen = std::strlen(pcName);
 
-    // cache properties
-    const coreUintW  iCount     = m_pTags->comments;
-    coreChar** const ppcComment = m_pTags->user_comments;
+    // select audio format
+    const coreUintW  iCount     = m_bOpus ? m_pOpusTags->comments      : m_VorbisComment.comment_list_length;
+    coreChar** const ppcComment = m_bOpus ? m_pOpusTags->user_comments : m_VorbisComment.comment_list;
 
     // loop through all comments
     for(coreUintW i = 0u; i < iCount; ++i)
@@ -545,9 +577,10 @@ coreBool coreMusicPlayer::__Stream(const ALuint iBuffer)
     const coreInt32 iChunkSize = MIN(F_TO_UI(m_fPitch * I_TO_F(CORE_MUSIC_CHUNK)), F_TO_UI(CORE_AUDIO_MAX_PITCH) * CORE_MUSIC_CHUNK);
     coreInt32       iReadSize  = 0;
 
-    // cache properties
-    const coreInt32 iChannels = m_pCurMusic->m_pHead->channel_count;
-    const coreInt32 iRate     = CORE_MUSIC_OPUS_RATE;
+    // select audio format
+    const coreBool  bOpus     = m_pCurMusic->m_bOpus;
+    const coreInt32 iChannels = bOpus ? m_pCurMusic->m_pOpusHead->channel_count : m_pCurMusic->m_VorbisInfo.channels;
+    const coreInt32 iRate     = bOpus ? CORE_MUSIC_OPUS_RATE                    : m_pCurMusic->m_VorbisInfo.sample_rate;
     ASSERT(iChannels <= 2)
 
     do
@@ -555,8 +588,16 @@ coreBool coreMusicPlayer::__Stream(const ALuint iBuffer)
         coreInt32 iResult;
 
         // read and decode data from the music stream
-        if(CORE_AL_SUPPORT(EXT_float32)) iResult = op_read_float(m_pCurMusic->m_pStream, r_cast<coreFloat*>(s_aData) + iReadSize, iChunkSize - iReadSize, NULL) * iChannels;
-                                    else iResult = op_read      (m_pCurMusic->m_pStream, r_cast<coreInt16*>(s_aData) + iReadSize, iChunkSize - iReadSize, NULL) * iChannels;
+        if(bOpus)
+        {
+            if(CORE_AL_SUPPORT(EXT_float32)) iResult = op_read_float(m_pCurMusic->m_pOpusStream, r_cast<coreFloat*>(s_aData) + iReadSize, iChunkSize - iReadSize, NULL) * iChannels;
+                                        else iResult = op_read      (m_pCurMusic->m_pOpusStream, r_cast<coreInt16*>(s_aData) + iReadSize, iChunkSize - iReadSize, NULL) * iChannels;
+        }
+        else
+        {
+            if(CORE_AL_SUPPORT(EXT_float32)) iResult = stb_vorbis_get_samples_float_interleaved(m_pCurMusic->m_pVorbisStream, iChannels, r_cast<coreFloat*>(s_aData) + iReadSize, iChunkSize - iReadSize) * iChannels;
+                                        else iResult = stb_vorbis_get_samples_short_interleaved(m_pCurMusic->m_pVorbisStream, iChannels, r_cast<coreInt16*>(s_aData) + iReadSize, iChunkSize - iReadSize) * iChannels;
+        }
 
         WARN_IF(iResult <  0) break;
              if(iResult == 0) break;
