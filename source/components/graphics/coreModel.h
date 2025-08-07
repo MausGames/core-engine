@@ -15,6 +15,7 @@
 // TODO 4: Nullify is in main-thread because of VAOs, check for other dependencies and try to fix this
 // TODO 5: <old comment style>
 // TODO 3: separate compression checks between ARB_vertex_type_2_10_10_10_rev and ARB_half_float_vertex
+// TODO 3: share one vertex and index buffer among multiple models (may require staging buffer) (buffer references)
 
 
 // ****************************************************************

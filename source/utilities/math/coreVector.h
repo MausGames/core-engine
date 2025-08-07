@@ -18,6 +18,7 @@
 
 // NOTE: normalization needs to be safe by default, because an accidental null-normalization is hard to predict or detect in gameplay-code and can be fatal
 // NOTE: 2d-vectors start at the top and rotate CCW
+// NOTE: SNORM packing is done [MIN,0) for [-1.0f,0.0f) and [0,MAX] for [0.0f,1.0f], this seems to work best for both [MIN,MAX] and [-MAX,MAX] (GL 4.2, ES 3.0)
 
 
 // ****************************************************************

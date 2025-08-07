@@ -165,11 +165,11 @@ public:
     FORCE_INLINE T Exchange(const T& tValue) {return m_tValue.exchange (tValue, std::memory_order::relaxed);}
 
     /* change atomic value with operator */
-    FORCE_INLINE T operator += (const T& tValue) {return this->AddFetch(tValue);}   // do not return reference
-    FORCE_INLINE T operator -= (const T& tValue) {return this->SubFetch(tValue);}
-    FORCE_INLINE T operator &= (const T& tValue) {return this->AndFetch(tValue);}
-    FORCE_INLINE T operator |= (const T& tValue) {return this->OrFetch (tValue);}
-    FORCE_INLINE T operator ^= (const T& tValue) {return this->XorFetch(tValue);}
+    FORCE_INLINE void operator += (const T& tValue) {this->FetchAdd(tValue);}   // do not return anything
+    FORCE_INLINE void operator -= (const T& tValue) {this->FetchSub(tValue);}
+    FORCE_INLINE void operator &= (const T& tValue) {this->FetchAnd(tValue);}
+    FORCE_INLINE void operator |= (const T& tValue) {this->FetchOr (tValue);}
+    FORCE_INLINE void operator ^= (const T& tValue) {this->FetchXor(tValue);}
 };
 
 

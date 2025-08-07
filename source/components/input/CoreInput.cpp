@@ -376,7 +376,7 @@ void CoreInput::UseMouseWithKeyboard(const coreInputKey iLeft, const coreInputKe
     if(!vVelocity.IsNull())
     {
         const coreVector2 vPos = this->GetMousePosition() + coreVector2(0.5f,-0.5f);
-        const coreVector2 vNew = (vPos + vVelocity.Normalized() * Core::System->GetResolution().yx().HighRatio() * (Core::System->GetTime() * fSpeed)) * Core::System->GetResolution();
+        const coreVector2 vNew = (vPos + vVelocity.Normalized() * Core::System->GetCanonSize().yx() * (Core::System->GetTime() * fSpeed)) * Core::System->GetResolution();
         SDL_WarpMouseInWindow(Core::System->GetWindow(), vNew.x, -vNew.y);
     }
 
@@ -401,7 +401,7 @@ void CoreInput::UseMouseWithJoystick(const coreUintW iIndex, const coreUint8 iBu
     if(!vVelocity.IsNull())
     {
         const coreVector2 vPos = this->GetMousePosition() + coreVector2(0.5f,-0.5f);
-        const coreVector2 vNew = (vPos + vVelocity * Core::System->GetResolution().yx().HighRatio() * (Core::System->GetTime() * fSpeed)) * Core::System->GetResolution();
+        const coreVector2 vNew = (vPos + vVelocity * Core::System->GetCanonSize().yx() * (Core::System->GetTime() * fSpeed)) * Core::System->GetResolution();
         SDL_WarpMouseInWindow(Core::System->GetWindow(), vNew.x, -vNew.y);
     }
 

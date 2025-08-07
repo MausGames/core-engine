@@ -481,7 +481,7 @@ void CoreDebug::__UpdateOutput()
             m_Background.Render();
             FOR_EACH(it, m_apMeasure) (*it)->oOutput.Render();
             FOR_EACH(it, m_apInspect) (*it)->oOutput.Render();
-            if(iLoadingNum) m_Loading.Render();
+            if(iResourceNum || iFunctionNum) m_Loading.Render();
 
             // render statistic text output
             if(CORE_GL_SUPPORT(ARB_pipeline_statistics_query))
