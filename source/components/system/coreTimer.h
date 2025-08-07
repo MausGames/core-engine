@@ -70,7 +70,7 @@ public:
 
     /* get object properties */
     constexpr       coreFloat   GetValue   (const coreTimerGet eReversed)const {return eReversed ? (m_fEnd - m_fValue) : m_fValue;}
-    constexpr       coreFloat   GetValuePct(const coreTimerGet eReversed)const {return this->GetValue(eReversed) / m_fEnd;}
+    constexpr       coreFloat   GetValuePct(const coreTimerGet eReversed)const {return this->GetValue(eReversed) * RCP(m_fEnd);}
     constexpr const coreFloat&  GetEnd     ()const                             {return m_fEnd;}
     constexpr const coreFloat&  GetSpeed   ()const                             {return m_fSpeed;}
     constexpr const coreUint16& GetMaxLoops()const                             {return m_iMaxLoops;}

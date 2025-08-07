@@ -220,7 +220,7 @@ void coreObject3D::Move()
 
             // calculate extent and correction
             const coreVector3 vExtent     = m_vSize * m_vCollisionModifier;
-            const coreVector3 vCorrection = pVolume->GetBoundingRange() / MAX(pVolume->GetBoundingRange().Max(), CORE_MATH_PRECISION);
+            const coreVector3 vCorrection = pVolume->GetBoundingRange() * RCP(MAX(pVolume->GetBoundingRange().Max(), CORE_MATH_PRECISION));
 
             // update collision range and radius
             m_vCollisionRange  = pVolume->GetBoundingRange () * (vExtent);
@@ -232,7 +232,7 @@ void coreObject3D::Move()
             if(!m_pModel.IsUsable()) return;
 
             // calculate correction
-            const coreVector3 vCorrection = m_pModel->GetBoundingRange() / MAX(m_pModel->GetBoundingRange().Max(), CORE_MATH_PRECISION);
+            const coreVector3 vCorrection = m_pModel->GetBoundingRange() * RCP(MAX(m_pModel->GetBoundingRange().Max(), CORE_MATH_PRECISION));
 
             // update visual range and radius
             m_vVisualRange  = m_pModel->GetBoundingRange () * (m_vSize);

@@ -288,7 +288,7 @@ void CoreAudio::SetListener(const coreFloat fSpeed, const coreInt8 iTimeID)
 {
     // calculate velocity as relative camera movement
     const coreFloat   fTime     =  Core::System->GetTime(iTimeID);
-    const coreVector3 vVelocity = (Core::Graphics->GetCamPosition() - m_vPosition) * (fTime ? (fSpeed / fTime) : 0.0f);
+    const coreVector3 vVelocity = (Core::Graphics->GetCamPosition() - m_vPosition) * (fTime ? (fSpeed * RCP(fTime)) : 0.0f);
 
     // adjust listener with camera properties
     this->SetListener(Core::Graphics->GetCamPosition(),
