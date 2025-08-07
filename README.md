@@ -32,7 +32,7 @@ It is **designed to be supportive, versatile and powerful**, and to dynamically 
   - **Async Screenshots**
 - **Audio**
   - **OpenAL:** spatial mixing, state caching, operation batching, audio modes (mono, speakers, headphones), [HRTF](https://en.wikipedia.org/wiki/Head-related_transfer_function), resampler handling, device change and error recovery
-  - **Music Files:** [Opus](https://opus-codec.org/), Vorbis (deprecated), threaded streaming, seamless transitioning and looping, music player system, pitch/speed controls
+  - **Music Files:** [Opus](https://opus-codec.org/), threaded streaming, seamless transitioning and looping, music player system, pitch/speed controls
   - **Sound Effects:** Opus, Wave, [A-law](https://en.wikipedia.org/wiki/A-law_algorithm) and [μ-law](https://en.wikipedia.org/wiki/%CE%9C-law_algorithm) memory compression, sound categorization, pause and resume
 - **Input**
   - **Mouse:** cursor graphics, visibility, keyboard and gamepad controls

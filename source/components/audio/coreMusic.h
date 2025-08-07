@@ -15,8 +15,7 @@
 // TODO 4: split up: coreMusicFile.cpp, coreMusicPlayer.cpp
 // TODO 5: <old comment style>
 // TODO 3: on play, only stream first buffer, and move streaming other buffers to next iterations (queue them empty ?) (on update still keep loop, to handle possible catch-up, to not decay to single-buffering and stuttering if chunks-per-iteration > 1.0)
-// TODO 3: in the end of a track, if sound-buffers are not re-queued anymore (on norepeat, last track), and then switching to a different track, buffering-chain is broken which can cause stuttering
-// TODO 1: [CORE2] Ogg Vorbis is obsolete (coreLegacy ? wrap into Opus API ? (rate cannot be wrapped))
+// TODO 2: in the end of a track, if sound-buffers are not re-queued anymore (on norepeat, last track), and then switching to a different track, buffering-chain is broken which can cause stuttering
 
 // NOTE: changing pitch during playback in Emscripten is very expensive and can cause crackling (even on a single change)
 
@@ -58,21 +57,16 @@ extern const OpusFileCallbacks g_OpusCallbacks;
 class coreMusic final
 {
 private:
-    coreFile* m_pFile;                    // file object with streaming data
+    coreFile* m_pFile;           // file object with streaming data
 
-    OggOpusFile*    m_pOpusStream;        // music stream object      (Opus)
-    const OpusHead* m_pOpusHead;          // format of the music file (Opus)
-    const OpusTags* m_pOpusTags;          // meta-information         (Opus)
+    OggOpusFile*    m_pStream;   // music stream object
+    const OpusHead* m_pHead;     // format of the music file
+    const OpusTags* m_pTags;     // meta-information
 
-    stb_vorbis*        m_pVorbisStream;   // music stream object      (Vorbis)
-    stb_vorbis_info    m_VorbisInfo;      // format of the music file (Vorbis)
-    stb_vorbis_comment m_VorbisComment;   // meta-information         (Vorbis)
+    coreUint32 m_iMaxSample;     // length of the music stream (in samples)
+    coreFloat  m_fMaxTime;       // length of the music stream (in seconds)
 
-    coreUint32 m_iMaxSample;              // length of the music stream (in samples)
-    coreFloat  m_fMaxTime;                // length of the music stream (in seconds)
-    coreBool   m_bOpus;                   // Opus instead of Vorbis
-
-    coreBool m_bLoop;                     // individual loop status
+    coreBool m_bLoop;            // individual loop status
 
 
 public:
@@ -84,11 +78,11 @@ public:
     DISABLE_COPY(coreMusic)
 
     /* change and retrieve current music stream position */
-    inline void Rewind    ()                          {if(m_bOpus) op_raw_seek(m_pOpusStream, 0);        else stb_vorbis_seek_start(m_pVorbisStream);}
-    inline void SeekSample(const coreUint32 iSamples) {if(m_bOpus) op_pcm_seek(m_pOpusStream, iSamples); else stb_vorbis_seek      (m_pVorbisStream, iSamples); ASSERT(iSamples <= m_iMaxSample)}
+    inline void Rewind    ()                          {op_raw_seek(m_pStream, 0);}
+    inline void SeekSample(const coreUint32 iSamples) {op_pcm_seek(m_pStream, iSamples); ASSERT(iSamples <= m_iMaxSample)}
     inline void SeekFactor(const coreDouble dFactor)  {this->SeekSample(F_TO_UI   (dFactor   * coreDouble(m_iMaxSample)));}
     inline void SeekTime  (const coreFloat  fSeconds) {this->SeekFactor(coreDouble(fSeconds) / coreDouble(m_fMaxTime));}
-    inline coreUint32 TellSample()const               {if(m_bOpus) return op_pcm_tell(m_pOpusStream);    else return stb_vorbis_get_sample_offset(m_pVorbisStream);}
+    inline coreUint32 TellSample()const               {return op_pcm_tell(m_pStream);}
     inline coreDouble TellFactor()const               {return coreDouble(this->TellSample()) / coreDouble(m_iMaxSample);}
     inline coreFloat  TellTime  ()const               {return coreFloat (this->TellFactor()  * coreDouble(m_fMaxTime));}
 
