@@ -13,7 +13,6 @@
 // TODO 3: improve vertex attribute array enable/disable for OGL (ES) 2.0 without vertex array objects, cache current enabled arrays, may need reset
 // TODO 5: <old comment style>
 // TODO 5: check for GL_ARB_map_buffer_alignment and ASSUME_ALIGNED
-// TODO 4: why do I need CORE_VERTEXBUFFER_ATTRIBUTES ? was this an OpenGL hard limit ?
 // TODO 3: something like RGBA16F could handle all of {iComponents, iType, iSize, bInteger (UNORM, SNORM, not)}
 
 // NOTE: superior objects have to handle resource-resets, to refill the buffers
@@ -21,7 +20,7 @@
 
 // ****************************************************************
 /* data buffer definitions */
-#define CORE_VERTEXBUFFER_ATTRIBUTES (16u)   // max number of vertex attribute locations
+#define CORE_VERTEXBUFFER_ATTRIBUTES (16u)   // max number of vertex attribute locations (OpenGL minimum, and same as vertex buffer binding point indices)
 
 enum coreDataBufferStorage : coreUint8
 {

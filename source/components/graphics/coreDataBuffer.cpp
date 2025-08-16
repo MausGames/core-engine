@@ -518,7 +518,7 @@ void coreVertexBuffer::DefineAttribute(const coreUint8 iLocation, const coreUint
 
     // accumulate vertex stream
     coreStream& oStream = m_aStream[iBufferOffset];
-    oStream.iBinding = iLocation;   // any
+    oStream.iBinding = iLocation;   // use any attribute location as binding point index
     oStream.iStride += iSize;
 }
 
@@ -527,14 +527,46 @@ void coreVertexBuffer::DefineAttribute(const coreUint8 iLocation, const coreUint
 /* activate the vertex structure */
 void coreVertexBuffer::Activate(const coreUint8 iDivisor)
 {
-    ASSERT(this->GetIdentifier() && !m_aAttribute.empty())
+    ASSERT(this->GetIdentifier() && !m_aAttribute.empty() && !m_aStream.empty())
 
     if(CORE_GL_SUPPORT(ARB_vertex_attrib_binding))
     {
-        FOR_EACH(it, m_aStream)
+        if((m_aStream.size() > 1u) && CORE_GL_SUPPORT(ARB_multi_bind))
         {
-            // bind the vertex buffer
-            glBindVertexBuffer(it->iBinding, this->GetIdentifier(), (*m_aStream.get_key(it)) * m_iNumVertices, it->iStride);
+            GLuint   aiBuffer[CORE_VERTEXBUFFER_ATTRIBUTES] = {};
+            GLintptr aiOffset[CORE_VERTEXBUFFER_ATTRIBUTES] = {};
+            GLsizei  aiStride[CORE_VERTEXBUFFER_ATTRIBUTES] = {};
+
+            coreUint8 iStart = UINT8_MAX;
+            coreUint8 iEnd   = 0u;
+
+            // loop through all vertex streams
+            FOR_EACH(it, m_aStream)
+            {
+                const coreUint8 iBinding = it->iBinding;
+                ASSERT(iBinding < CORE_VERTEXBUFFER_ATTRIBUTES)
+
+                // insert vertex stream properties
+                aiBuffer[iBinding] = this->GetIdentifier();
+                aiOffset[iBinding] = (*m_aStream.get_key(it)) * m_iNumVertices;
+                aiStride[iBinding] = it->iStride;
+
+                // set range of binding point indices
+                iStart = MIN(iStart, iBinding);
+                iEnd   = MAX(iEnd,   iBinding);
+            }
+
+            // bind all at once
+            ASSERT(iStart <= iEnd)
+            glBindVertexBuffers(iStart, iEnd - iStart + 1u, aiBuffer + iStart, aiOffset + iStart, aiStride + iStart);
+        }
+        else
+        {
+            FOR_EACH(it, m_aStream)
+            {
+                // bind the vertex buffer
+                glBindVertexBuffer(it->iBinding, this->GetIdentifier(), (*m_aStream.get_key(it)) * m_iNumVertices, it->iStride);
+            }
         }
 
         FOR_EACH(it, m_aAttribute)

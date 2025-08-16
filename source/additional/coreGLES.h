@@ -433,6 +433,7 @@ using PFNGLGETBUFFERSUBDATAPROC = void (GL_APIENTRY *) (GLenum target, GLintptr 
 #define glBindMultiTextureEXT(...)
 #define glBindTextures(...) __CORE_GLES_UNUSED_ARGS(__VA_ARGS__)
 #define glBindTextureUnit(...)
+#define glBindVertexBuffers(...)
 #define glBlitNamedFramebuffer(...)
 #define glClearBufferData(...)
 #define glClearNamedBufferData(...)
