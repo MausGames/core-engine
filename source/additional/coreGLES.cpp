@@ -50,6 +50,22 @@ void __coreInitOpenGLES()
     __CORE_GLES_CHECK(GL_ANDROID_extension_pack_es31a, false);
     const coreBool bAndroidPack = g_CoreContext.__GL_ANDROID_extension_pack_es31a;
 
+    // implement GL_ANGLE_polygon_mode
+    if(__CORE_GLES_CHECK(GL_ANGLE_polygon_mode, false))
+    {
+        __CORE_GLES_FUNC_FETCH(glPolygonMode, ANGLE, false)
+    }
+    else if(g_sExtensions.contains("GL_NV_polygon_mode "))
+    {
+        g_CoreContext.__GL_ANGLE_polygon_mode = true;
+        __CORE_GLES_FUNC_FETCH(glPolygonMode, NV, false)
+    }
+    else if(g_sExtensions.contains("GL_WEBGL_polygon_mode "))
+    {
+        g_CoreContext.__GL_ANGLE_polygon_mode = true;
+        __CORE_GLES_FUNC_FETCH(glPolygonMode, WEBGL, false)
+    }
+
     // implement GL_ANGLE_texture_usage
     __CORE_GLES_CHECK(GL_ANGLE_texture_usage, false);
 

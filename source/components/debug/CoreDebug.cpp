@@ -56,12 +56,16 @@ CoreDebug::CoreDebug()noexcept
 , m_apMeasure   {}
 , m_apInspect   {}
 , m_pOverall    (NULL)
+, m_DebugCube   ()
+, m_DebugSphere ()
+, m_DebugVolume ()
 , m_Background  ()
 , m_Loading     ()
 , m_aStat       {}
 , m_aStatOutput ()
 , m_bEnabled    (false)
-, m_bVisible    (false)
+, m_bOverlay    (false)
+, m_bRendering  (false)
 , m_bHolding    (false)
 {
     if(!CoreDebug::IsEnabled()) return;
@@ -73,6 +77,23 @@ CoreDebug::CoreDebug()noexcept
     this->MeasureStart(CORE_DEBUG_OVERALL_NAME);
     m_pOverall = m_apMeasure.front();
     m_pOverall->oOutput.SetColor3(COLOR_WHITE);
+
+    // create debug cube
+    m_DebugCube.DefineTexture(0u, "default_white.webp");
+    m_DebugCube.DefineProgram("default_3d_raw_program");
+    m_DebugCube.DefineModel  ("default_cube.md3z");
+    m_DebugCube.SetAlpha     (0.5f);
+
+    // create debug sphere
+    m_DebugSphere.DefineTexture(0u, "default_white.webp");
+    m_DebugSphere.DefineProgram("default_3d_raw_program");
+    m_DebugSphere.DefineModel  ("default_sphere.md3z");
+    m_DebugSphere.SetAlpha     (0.5f);
+
+    // create debug collision volume
+    m_DebugVolume.DefineTexture(0u, "default_white.webp");
+    m_DebugVolume.DefineProgram("default_3d_raw_program");
+    m_DebugVolume.SetAlpha     (0.5f);
 
     // create background object
     m_Background.DefineTexture(0u, "default_black.webp");
@@ -276,6 +297,95 @@ void CoreDebug::MeasureEnd(const coreHashString& sName)
 
 
 // ****************************************************************
+/* render debug cube */
+void CoreDebug::RenderCube(const coreVector3 vPosition, const coreVector3 vSize, const coreVector3 vDirection, const coreVector3 vOrientation)
+{
+    if(!m_bEnabled)   return;
+    if(!m_bRendering) return;
+
+    // set object properties
+    m_DebugCube.SetPosition   (vPosition);
+    m_DebugCube.SetSize       (vSize * 2.0f);
+    m_DebugCube.SetDirection  (vDirection);
+    m_DebugCube.SetOrientation(vOrientation);
+    m_DebugCube.Move();
+
+    // render as wireframe
+    CoreDebug::__RenderWireframe([this]()
+    {
+        m_DebugCube.Render();
+    });
+}
+
+void CoreDebug::RenderCube(const coreObject3D* pObject)
+{
+    // use default properties
+    this->RenderCube(pObject->GetPosition(), pObject->GetVisualRange(), pObject->GetDirection(), pObject->GetOrientation());
+}
+
+
+// ****************************************************************
+/* render debug sphere */
+void CoreDebug::RenderSphere(const coreVector3 vPosition, const coreFloat fRadius)
+{
+    if(!m_bEnabled)   return;
+    if(!m_bRendering) return;
+
+    // set object properties
+    m_DebugSphere.SetPosition(vPosition);
+    m_DebugSphere.SetSize    (coreVector3(1.0f,1.0f,1.0f) * fRadius);
+    m_DebugSphere.Move();
+
+    // render as wireframe
+    CoreDebug::__RenderWireframe([this]()
+    {
+        m_DebugSphere.Render();
+    });
+}
+
+void CoreDebug::RenderSphere(const coreObject3D* pObject)
+{
+    // use default properties
+    this->RenderSphere(pObject->GetPosition(), pObject->GetVisualRadius());
+}
+
+
+// ****************************************************************
+/* render debug collision volume */
+void CoreDebug::RenderCollision(const coreObject3D* pObject)
+{
+    if(!m_bEnabled)   return;
+    if(!m_bRendering) return;
+
+    // get collision volume
+    const coreModelPtr& pVolume = pObject->GetVolume();
+
+    // check if clusters are available for precise collision detection
+    if(pVolume->GetNumClusters())
+    {
+        // set object properties
+        m_DebugVolume.DefineModel   (pVolume);
+        m_DebugVolume.SetPosition   (pObject->GetPosition      ());
+        m_DebugVolume.SetSize       (pObject->GetCollisionRange());
+        m_DebugVolume.SetDirection  (pObject->GetDirection     ());
+        m_DebugVolume.SetOrientation(pObject->GetOrientation   ());
+        m_DebugVolume.Move();
+
+        // render as wireframe
+        CoreDebug::__RenderWireframe([this]()
+        {
+            m_DebugVolume.Render();
+        });
+    }
+    else
+    {
+        // render enclosing cube
+        this->RenderCube(pObject->GetPosition(), pObject->GetCollisionRange(), pObject->GetDirection(), pObject->GetOrientation());
+    }
+}
+
+
+// ****************************************************************
 /* check for debug status */
 const coreBool& CoreDebug::IsEnabled()
 {
@@ -352,14 +462,16 @@ void CoreDebug::__StatEnd()
 
 
 // ****************************************************************
-/* update and display debug output */
+/* update and display debug overlay */
 void CoreDebug::__UpdateOutput()
 {
     if(!m_bEnabled) return;
 
-    // toggle output visibility
+    // toggle debug overlay visibility
     if(Core::Input->GetKeyboardButton(CORE_INPUT_KEY(F1), CORE_INPUT_PRESS) || Core::Input->GetJoystickButton(CORE_INPUT_JOYSTICK_ANY, SDL_GAMEPAD_BUTTON_LEFT_STICK, CORE_INPUT_PRESS))
-        m_bVisible = !m_bVisible;
+    {
+        m_bOverlay = !m_bOverlay;
+    }
 
     // toggle vertical synchronization
     if(Core::Input->GetKeyboardButton(CORE_INPUT_KEY(F2), CORE_INPUT_PRESS))
@@ -367,15 +479,27 @@ void CoreDebug::__UpdateOutput()
         SDL_GL_SetSwapInterval(SDL_GL_GetSwapIntervalInline() ? 0 : 1);
     }
 
+    // toggle debug rendering visibility
+    if(Core::Input->GetKeyboardButton(CORE_INPUT_KEY(F3), CORE_INPUT_PRESS))
+    {
+        m_bRendering = !m_bRendering;
+    }
+
     // hold and skip frame
     if(Core::Input->GetKeyboardButton(CORE_INPUT_KEY(F5), CORE_INPUT_PRESS))
+    {
         m_bHolding = !m_bHolding;
+    }
     if(m_bHolding && !Core::Input->GetKeyboardButton(CORE_INPUT_KEY(F6), CORE_INPUT_PRESS))
+    {
         Core::System->SkipFrame();
+    }
 
     // reset language
     if(Core::Input->GetKeyboardButton(CORE_INPUT_KEY(F9), CORE_INPUT_PRESS))
+    {
         Core::Language->Load(Core::Language->GetPath());
+    }
 
     // reset resources
     if(Core::Input->GetKeyboardButton(CORE_INPUT_KEY(F10), CORE_INPUT_PRESS))
@@ -391,7 +515,7 @@ void CoreDebug::__UpdateOutput()
         return;
     }
 
-    if(!m_bVisible) return;
+    if(!m_bOverlay) return;
 
     // loop through all objects
     coreInt8  iCurLine  = 1;

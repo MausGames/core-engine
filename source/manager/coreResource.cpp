@@ -549,11 +549,13 @@ void coreResourceManager::__LoadDefault()
         s_cast<coreResourceManager*>(pData)->RetrieveArchive(pcPath);
     });
 
-    this->Load<coreTexture>("default_black.webp",             CORE_RESOURCE_UPDATE_AUTO,   "data/textures/default_black.webp",  CORE_TEXTURE_LOAD_NO_COMPRESS | CORE_TEXTURE_LOAD_NO_FILTER | CORE_TEXTURE_LOAD_NEAREST);
-    this->Load<coreTexture>("default_normal.webp",            CORE_RESOURCE_UPDATE_AUTO,   "data/textures/default_normal.webp", CORE_TEXTURE_LOAD_NO_COMPRESS | CORE_TEXTURE_LOAD_NO_FILTER | CORE_TEXTURE_LOAD_NEAREST);
-    this->Load<coreTexture>("default_white.webp",             CORE_RESOURCE_UPDATE_AUTO,   "data/textures/default_white.webp",  CORE_TEXTURE_LOAD_NO_COMPRESS | CORE_TEXTURE_LOAD_NO_FILTER | CORE_TEXTURE_LOAD_NEAREST);
-    this->Load<coreShader> ("default_2d.vert",                CORE_RESOURCE_UPDATE_MANUAL, "data/shaders/default_2d.vert", CORE_SHADER_OPTION_NO_PERSPECTIVE);
-    this->Load<coreShader> ("default_2d.frag",                CORE_RESOURCE_UPDATE_MANUAL, "data/shaders/default_2d.frag", CORE_SHADER_OPTION_NO_PERSPECTIVE);
+    this->Load<coreModel>  ("default_cube.md3z",              CORE_RESOURCE_UPDATE_AUTO,   "data/models/default_cube.md3z");
+    this->Load<coreModel>  ("default_sphere.md3z",            CORE_RESOURCE_UPDATE_AUTO,   "data/models/default_sphere.md3z");
+    this->Load<coreTexture>("default_black.webp",             CORE_RESOURCE_UPDATE_AUTO,   "data/textures/default_black.webp",       CORE_TEXTURE_LOAD_NO_COMPRESS | CORE_TEXTURE_LOAD_NO_FILTER | CORE_TEXTURE_LOAD_NEAREST);
+    this->Load<coreTexture>("default_normal.webp",            CORE_RESOURCE_UPDATE_AUTO,   "data/textures/default_normal.webp",      CORE_TEXTURE_LOAD_NO_COMPRESS | CORE_TEXTURE_LOAD_NO_FILTER | CORE_TEXTURE_LOAD_NEAREST);
+    this->Load<coreTexture>("default_white.webp",             CORE_RESOURCE_UPDATE_AUTO,   "data/textures/default_white.webp",       CORE_TEXTURE_LOAD_NO_COMPRESS | CORE_TEXTURE_LOAD_NO_FILTER | CORE_TEXTURE_LOAD_NEAREST);
+    this->Load<coreShader> ("default_2d.vert",                CORE_RESOURCE_UPDATE_MANUAL, "data/shaders/default_2d.vert",           CORE_SHADER_OPTION_NO_PERSPECTIVE);
+    this->Load<coreShader> ("default_2d.frag",                CORE_RESOURCE_UPDATE_MANUAL, "data/shaders/default_2d.frag",           CORE_SHADER_OPTION_NO_PERSPECTIVE);
     this->Load<coreShader> ("default_3d_low.vert",            CORE_RESOURCE_UPDATE_MANUAL, "data/shaders/default_3d_low.vert");
     this->Load<coreShader> ("default_3d_raw.vert",            CORE_RESOURCE_UPDATE_MANUAL, "data/shaders/default_3d_raw.vert");
     this->Load<coreShader> ("default_3d.frag",                CORE_RESOURCE_UPDATE_MANUAL, "data/shaders/default_3d.frag");

@@ -175,6 +175,7 @@ CoreGraphics::CoreGraphics()noexcept
     glHint(GL_FRAGMENT_SHADER_DERIVATIVE_HINT, GL_NICEST);
     glDisable(GL_DITHER);
     glDisable(GL_SCISSOR_TEST);
+    glLineWidth(2.0f);
     glColorMask(true, true, true, true);
     glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
 

@@ -45,15 +45,26 @@
 
 
 // ****************************************************************
-/* GL_ANGLE_texture_usage */
+/* GL_AMD_framebuffer_multisample_advanced */
 #define CORE_GL_AMD_framebuffer_multisample_advanced (__CORE_GLES_VAR(GL_AMD_framebuffer_multisample_advanced) && !DEFINED(_CORE_EMSCRIPTEN_))
 
 #define GL_MAX_COLOR_FRAMEBUFFER_SAMPLES_AMD         0x91B3
 #define GL_MAX_COLOR_FRAMEBUFFER_STORAGE_SAMPLES_AMD 0x91B4
 #define GL_MAX_DEPTH_STENCIL_FRAMEBUFFER_SAMPLES_AMD 0x91B5
 
-using PFNGLRENDERBUFFERSTORAGEMULTISAMPLEADVANCEDAMDPROC = void (GL_APIENTRY *) (GLenum target, GLsizei samples, GLsizei storageSamples, GLenum internalformat, GLsizei width, GLsizei height);
+using PFNGLRENDERBUFFERSTORAGEMULTISAMPLEADVANCEDPROC = void (GL_APIENTRY *) (GLenum target, GLsizei samples, GLsizei storageSamples, GLenum internalformat, GLsizei width, GLsizei height);
 #define glRenderbufferStorageMultisampleAdvancedAMD __CORE_GLES_FUNC(glRenderbufferStorageMultisampleAdvanced)
+
+
+// ****************************************************************
+/* GL_ANGLE_polygon_mode */
+#define CORE_GL_ANGLE_polygon_mode (__CORE_GLES_VAR(GL_ANGLE_polygon_mode))
+
+#define GL_FILL 0x1B02
+#define GL_LINE 0x1B01
+
+using PFNGLPOLYGONMODEPROC = void (GL_APIENTRY *) (GLenum face, GLenum mode);
+#define glPolygonMode __CORE_GLES_FUNC(glPolygonMode)
 
 
 // ****************************************************************
@@ -142,9 +153,9 @@ using PFNGLDRAWBUFFERSPROC = void (GL_APIENTRY *) (GLsizei n, const GLenum* bufs
 /* GL_EXT_instanced_arrays (mapped on GL_ARB_instanced_arrays) */
 #define CORE_GL_ARB_instanced_arrays (__CORE_GLES_VAR(GL_EXT_instanced_arrays))
 
-using PFNGLDRAWARRAYSINSTANCEDARBPROC   = void (GL_APIENTRY *) (GLenum mode, GLint first, GLsizei count, GLsizei primcount);
-using PFNGLDRAWELEMENTSINSTANCEDARBPROC = void (GL_APIENTRY *) (GLenum mode, GLsizei count, GLenum type, const void* indices, GLsizei primcount);
-using PFNGLVERTEXATTRIBDIVISORARBPROC   = void (GL_APIENTRY *) (GLuint index, GLuint divisor);
+using PFNGLDRAWARRAYSINSTANCEDPROC   = void (GL_APIENTRY *) (GLenum mode, GLint first, GLsizei count, GLsizei primcount);
+using PFNGLDRAWELEMENTSINSTANCEDPROC = void (GL_APIENTRY *) (GLenum mode, GLsizei count, GLenum type, const void* indices, GLsizei primcount);
+using PFNGLVERTEXATTRIBDIVISORPROC   = void (GL_APIENTRY *) (GLuint index, GLuint divisor);
 #define glDrawArraysInstanced(...)   __CORE_GLES_FUNC_STATIC(bES30, glDrawArraysInstanced,   __VA_ARGS__)
 #define glDrawElementsInstanced(...) __CORE_GLES_FUNC_STATIC(bES30, glDrawElementsInstanced, __VA_ARGS__)
 #define glVertexAttribDivisor(...)   __CORE_GLES_FUNC_STATIC(bES30, glVertexAttribDivisor,   __VA_ARGS__)
@@ -488,6 +499,7 @@ struct coreContext final
 
     coreBool __GL_AMD_framebuffer_multisample_advanced;
     coreBool __GL_ANDROID_extension_pack_es31a;
+    coreBool __GL_ANGLE_polygon_mode;
     coreBool __GL_ANGLE_texture_usage;
     coreBool __GL_CORE_texture_float;
     coreBool __GL_CORE_vertex_type_2_10_10_10_rev;
@@ -537,41 +549,42 @@ struct coreContext final
     coreBool __GL_OES_vertex_half_float;
     coreBool __GL_WEBGL_color_buffer_float;
 
-    PFNGLRENDERBUFFERSTORAGEMULTISAMPLEADVANCEDAMDPROC __glRenderbufferStorageMultisampleAdvanced;
-    PFNGLBUFFERSTORAGEPROC                             __glBufferStorage;
-    PFNGLCLEARTEXIMAGEPROC                             __glClearTexImage;
-    PFNGLDISCARDFRAMEBUFFERPROC                        __glDiscardFramebuffer;
-    PFNGLDELETEQUERIESPROC                             __glDeleteQueries;
-    PFNGLGENQUERIESPROC                                __glGenQueries;
-    PFNGLGETQUERYOBJECTUI64VPROC                       __glGetQueryObjectui64v;
-    PFNGLQUERYCOUNTERPROC                              __glQueryCounter;
-    PFNGLDRAWBUFFERSPROC                               __glDrawBuffers;
-    PFNGLDRAWARRAYSINSTANCEDARBPROC                    __glDrawArraysInstanced;
-    PFNGLDRAWELEMENTSINSTANCEDARBPROC                  __glDrawElementsInstanced;
-    PFNGLVERTEXATTRIBDIVISORARBPROC                    __glVertexAttribDivisor;
-    PFNGLGETGRAPHICSRESETSTATUSPROC                    __glGetGraphicsResetStatus;
-    PFNGLGETNUNIFORMFVPROC                             __glGetnUniformfv;
-    PFNGLGETNUNIFORMIVPROC                             __glGetnUniformiv;
-    PFNGLREADNPIXELSPROC                               __glReadnPixels;
-    PFNGLTEXSTORAGE2DPROC                              __glTexStorage2D;
-    PFNGLAPPLYFRAMEBUFFERATTACHMENTCMAAPROC            __glApplyFramebufferAttachmentCMAA;
-    PFNGLDEBUGMESSAGECALLBACKPROC                      __glDebugMessageCallback;
-    PFNGLDEBUGMESSAGECONTROLPROC                       __glDebugMessageControl;
-    PFNGLOBJECTLABELPROC                               __glObjectLabel;
-    PFNGLMAXSHADERCOMPILERTHREADSPROC                  __glMaxShaderCompilerThreads;
-    PFNGLCOPYBUFFERSUBDATAPROC                         __glCopyBufferSubData;
-    PFNGLBLITFRAMEBUFFERPROC                           __glBlitFramebuffer;
-    PFNGLRENDERBUFFERSTORAGEMULTISAMPLEPROC            __glRenderbufferStorageMultisample;
-    PFNGLCOPYIMAGESUBDATAPROC                          __glCopyImageSubData;
-    PFNGLGETPROGRAMBINARYPROC                          __glGetProgramBinary;
-    PFNGLPROGRAMBINARYPROC                             __glProgramBinary;
-    PFNGLMINSAMPLESHADINGPROC                          __glMinSampleShading;
-    PFNGLTEXIMAGE3DPROC                                __glTexImage3D;
-    PFNGLTEXSUBIMAGE3DPROC                             __glTexSubImage3D;
-    PFNGLBINDVERTEXARRAYPROC                           __glBindVertexArray;
-    PFNGLDELETEVERTEXARRAYSPROC                        __glDeleteVertexArrays;
-    PFNGLGENVERTEXARRAYSPROC                           __glGenVertexArrays;
-    PFNGLGETBUFFERSUBDATAPROC                          __glGetBufferSubData;
+    PFNGLRENDERBUFFERSTORAGEMULTISAMPLEADVANCEDPROC __glRenderbufferStorageMultisampleAdvanced;
+    PFNGLPOLYGONMODEPROC                            __glPolygonMode;
+    PFNGLBUFFERSTORAGEPROC                          __glBufferStorage;
+    PFNGLCLEARTEXIMAGEPROC                          __glClearTexImage;
+    PFNGLDISCARDFRAMEBUFFERPROC                     __glDiscardFramebuffer;
+    PFNGLDELETEQUERIESPROC                          __glDeleteQueries;
+    PFNGLGENQUERIESPROC                             __glGenQueries;
+    PFNGLGETQUERYOBJECTUI64VPROC                    __glGetQueryObjectui64v;
+    PFNGLQUERYCOUNTERPROC                           __glQueryCounter;
+    PFNGLDRAWBUFFERSPROC                            __glDrawBuffers;
+    PFNGLDRAWARRAYSINSTANCEDPROC                    __glDrawArraysInstanced;
+    PFNGLDRAWELEMENTSINSTANCEDPROC                  __glDrawElementsInstanced;
+    PFNGLVERTEXATTRIBDIVISORPROC                    __glVertexAttribDivisor;
+    PFNGLGETGRAPHICSRESETSTATUSPROC                 __glGetGraphicsResetStatus;
+    PFNGLGETNUNIFORMFVPROC                          __glGetnUniformfv;
+    PFNGLGETNUNIFORMIVPROC                          __glGetnUniformiv;
+    PFNGLREADNPIXELSPROC                            __glReadnPixels;
+    PFNGLTEXSTORAGE2DPROC                           __glTexStorage2D;
+    PFNGLAPPLYFRAMEBUFFERATTACHMENTCMAAPROC         __glApplyFramebufferAttachmentCMAA;
+    PFNGLDEBUGMESSAGECALLBACKPROC                   __glDebugMessageCallback;
+    PFNGLDEBUGMESSAGECONTROLPROC                    __glDebugMessageControl;
+    PFNGLOBJECTLABELPROC                            __glObjectLabel;
+    PFNGLMAXSHADERCOMPILERTHREADSPROC               __glMaxShaderCompilerThreads;
+    PFNGLCOPYBUFFERSUBDATAPROC                      __glCopyBufferSubData;
+    PFNGLBLITFRAMEBUFFERPROC                        __glBlitFramebuffer;
+    PFNGLRENDERBUFFERSTORAGEMULTISAMPLEPROC         __glRenderbufferStorageMultisample;
+    PFNGLCOPYIMAGESUBDATAPROC                       __glCopyImageSubData;
+    PFNGLGETPROGRAMBINARYPROC                       __glGetProgramBinary;
+    PFNGLPROGRAMBINARYPROC                          __glProgramBinary;
+    PFNGLMINSAMPLESHADINGPROC                       __glMinSampleShading;
+    PFNGLTEXIMAGE3DPROC                             __glTexImage3D;
+    PFNGLTEXSUBIMAGE3DPROC                          __glTexSubImage3D;
+    PFNGLBINDVERTEXARRAYPROC                        __glBindVertexArray;
+    PFNGLDELETEVERTEXARRAYSPROC                     __glDeleteVertexArrays;
+    PFNGLGENVERTEXARRAYSPROC                        __glGenVertexArrays;
+    PFNGLGETBUFFERSUBDATAPROC                       __glGetBufferSubData;
 };
 
 extern coreString  g_sExtensions;   // full extension string

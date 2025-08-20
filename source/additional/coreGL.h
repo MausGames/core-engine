@@ -22,6 +22,7 @@ extern coreBool GLEW_CORE_gl2_compatibility;   // handle deprecated OpenGL featu
 
 // ****************************************************************
 /* handle OpenGL ES extensions */
+#define GLEW_ANGLE_polygon_mode              true
 #define GLEW_ANGLE_texture_usage             false
 #define GLEW_EXT_draw_buffers                true
 #define GLEW_EXT_texture_norm16              true

@@ -80,6 +80,10 @@ private:
     coreMapStr<coreInspect*> m_apInspect;              // inspect objects to display current values during run-time
     coreMeasure* m_pOverall;                           // pointer to overall performance output object
 
+    coreObject3D m_DebugCube;                          // debug cube
+    coreObject3D m_DebugSphere;                        // debug sphere
+    coreObject3D m_DebugVolume;                        // debug collision volume
+
     coreObject2D m_Background;                         // background object to increase output readability
     coreLabel    m_Loading;                            // resource manager loading indicator
 
@@ -87,7 +91,8 @@ private:
     coreLabel m_aStatOutput[4];                        // labels for displaying statistic output
 
     coreBool m_bEnabled;                               // debug-monitor is enabled (debug-build or debug-context)
-    coreBool m_bVisible;                               // output is visible on screen
+    coreBool m_bOverlay;                               // debug overlay is visible
+    coreBool m_bRendering;                             // debug rendering is visible
     coreBool m_bHolding;                               // holding the current frame
 
 
@@ -123,6 +128,13 @@ public:
     inline void InspectValue(const coreHashString& sName, const coreVector4 vValue) {this->InspectValue(sName, "%.5f, %.5f, %.5f, %.5f", vValue.x, vValue.y, vValue.z, vValue.w);}
     inline void InspectValue(const coreHashString& sName, const void*       pValue) {this->InspectValue(sName, "0x%08X",                 P_TO_UI(pValue));}
 
+    /* render debug objects */
+    void RenderCube     (const coreVector3   vPosition, const coreVector3 vSize, const coreVector3 vDirection, const coreVector3 vOrientation);
+    void RenderCube     (const coreObject3D* pObject);
+    void RenderSphere   (const coreVector3   vPosition, const coreFloat fRadius);
+    void RenderSphere   (const coreObject3D* pObject);
+    void RenderCollision(const coreObject3D* pObject);
+
     /* check for debug status */
     static const coreBool& IsEnabled();
 
@@ -132,8 +144,11 @@ private:
     void __StatStart();
     void __StatEnd();
 
-    /* update and display debug output */
+    /* update and display debug overlay */
     void __UpdateOutput();
+
+    /* render as wireframe */
+    template <typename F> static void __RenderWireframe(F&& nRenderFunc);   // []() -> void
 };
 
 
@@ -159,6 +174,26 @@ template <typename... A> void CoreDebug::InspectValue(const coreHashString& sNam
 
     // write formatted values to output label
     m_apInspect.at(sName)->oOutput.SetText(PRINT("%s = %s", sName.GetString(), PRINT(pcFormat, std::forward<A>(vArgs)...)));
+}
+
+
+// ****************************************************************
+/* render as wireframe */
+template <typename F> void CoreDebug::__RenderWireframe(F&& nRenderFunc)
+{
+    // remember current depth-mask
+    GLboolean bState = false;
+    glGetBooleanv(GL_DEPTH_WRITEMASK, &bState);
+
+    // enable wireframe mode
+    if(CORE_GL_SUPPORT(ANGLE_polygon_mode)) glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+    if(bState) glDepthMask(false);
+    {
+        // call custom render function
+        nRenderFunc();
+    }
+    if(CORE_GL_SUPPORT(ANGLE_polygon_mode)) glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+    if(bState) glDepthMask(true);
 }
 
 
