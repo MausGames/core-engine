@@ -497,11 +497,8 @@ public:
 
 // ****************************************************************
 /* global scalar operations */
-constexpr coreVector2 operator + (const coreFloat f, const coreVector2 v) {return v + f;}
 constexpr coreVector2 operator * (const coreFloat f, const coreVector2 v) {return v * f;}
-constexpr coreVector3 operator + (const coreFloat f, const coreVector3 v) {return v + f;}
 constexpr coreVector3 operator * (const coreFloat f, const coreVector3 v) {return v * f;}
-constexpr coreVector4 operator + (const coreFloat f, const coreVector4 v) {return v + f;}
 constexpr coreVector4 operator * (const coreFloat f, const coreVector4 v) {return v * f;}
 
 

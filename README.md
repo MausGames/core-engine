@@ -45,7 +45,8 @@ It is **designed to be supportive, versatile and powerful**, and to dynamically 
   - **Pipeline Statistics:** vertex and fragment shader stats, culling stats, draw call and instance numbers
   - **Realtime Value and Texture Inspection**
   - **GPU Object Labels:** for driver logging and [RenderDoc](https://renderdoc.org/)
-  - **Debug Input:** show debug overlay, frame stepping, explicit hot reloading
+  - **Debug Drawing:** collision volumes, wireframe
+  - **Debug Input:** show debug overlay, show debug drawing, frame stepping, explicit hot reloading
   - **Debug Visualizers:** [Natvis](https://learn.microsoft.com/en-us/visualstudio/debugger/create-custom-views-of-native-objects), [LLDB](https://lldb.llvm.org/use/variable.html)
   - **Crash Dumps:** Windows (full), Linux (custom)
   - **Pedantic Checking:** assertions everywhere, code sanitizer support (undefined behaviour, address, leak), floating-point exceptions
