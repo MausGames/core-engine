@@ -52,6 +52,10 @@
 #include <imgui/imgui_impl_sdl3.cpp>
 #include <imgui/imgui_impl_opengl3.cpp>
 
+#if __has_include(<imgui/imgui_demo.cpp>)
+    #include <imgui/imgui_demo.cpp>
+#endif
+
 
 // ****************************************************************
 /* reset compiler warnings */

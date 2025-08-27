@@ -8,6 +8,12 @@
 ///////////////////////////////////////////////////////////
 #include "Core.h"
 
+#if defined(_CORE_DEBUG_)
+    #include <imgui/imgui.h>
+    #include <imgui/imgui_impl_sdl3.h>
+    #include <imgui/imgui_impl_opengl3.h>
+#endif
+
 
 // ****************************************************************
 /* constructor */
@@ -128,6 +134,31 @@ CoreDebug::CoreDebug()noexcept
         }
     }
 
+#if defined(IMGUI_API)
+
+    static const coreString s_sIniPath = coreData::UserFolderShared("imgui.ini");
+
+    // test for build issues
+    IMGUI_CHECKVERSION();
+
+    // create and enable ImGui context
+    ImGui::CreateContext();
+
+    // init ImGui backends
+    ImGui_ImplSDL3_InitForOpenGL(Core::System->GetWindow(), Core::Graphics->GetRenderContext());
+    ImGui_ImplOpenGL3_Init();
+
+    // configure ImGui behaviour and appearance
+    ImGui::StyleColorsDark();
+    ImGui::GetIO   ().ConfigFlags   |= ImGuiConfigFlags_NoMouseCursorChange;
+    ImGui::GetIO   ().IniFilename    = s_sIniPath.c_str();
+    ImGui::GetStyle().WindowRounding = 5.0f;
+    ImGui::GetStyle().FrameRounding  = 5.0f;
+
+    Core::Log->Info("Dear ImGui initialized (%s)", ImGui::GetVersion());
+
+#endif
+
     Core::Log->Info(CORE_LOG_BOLD("Debug Component enabled"));
 }
 
@@ -165,6 +196,17 @@ CoreDebug::~CoreDebug()
     m_apMeasure.clear();
     m_apInspect.clear();
 
+#if defined(IMGUI_API)
+
+    // shutdown ImGui backends
+    ImGui_ImplOpenGL3_Shutdown();
+    ImGui_ImplSDL3_Shutdown();
+
+    // destroy ImGui context
+    ImGui::DestroyContext();
+
+#endif
+
     Core::Log->Info(CORE_LOG_BOLD("Debug Component disabled"));
 }
 
@@ -173,6 +215,20 @@ CoreDebug::~CoreDebug()
 /* process debug events */
 coreBool CoreDebug::ProcessEvent(const SDL_Event& oEvent)
 {
+    if(!m_bEnabled) return true;
+
+#if defined(IMGUI_API)
+
+    // forward event to ImGui
+    if(ImGui_ImplSDL3_ProcessEvent(&oEvent))
+    {
+        // ignore captured input
+        if(ImGui::GetIO().WantCaptureMouse)    Core::Input->ClearMouseButtonAll();
+        if(ImGui::GetIO().WantCaptureKeyboard) Core::Input->ClearKeyboardButtonAll();
+    }
+
+#endif
+
     return true;
 }
 
@@ -292,7 +348,7 @@ void CoreDebug::MeasureEnd(const coreHashString& sName)
     pMeasure->dCurrentCPU = pMeasure->dCurrentCPU * CORE_DEBUG_SMOOTH_FACTOR + dDifferenceCPU * (1.0-CORE_DEBUG_SMOOTH_FACTOR);
 
     // write formatted values to output label
-    pMeasure->oOutput.SetText(PRINT("%s (CPU %.2fms / GPU %.2fms)", pcName, pMeasure->dCurrentCPU, pMeasure->dCurrentGPU));
+    pMeasure->oOutput.SetText(DEFINED(IMGUI_API) ? pcName : PRINT("%s (CPU %.2fms / GPU %.2fms)", pcName, pMeasure->dCurrentCPU, pMeasure->dCurrentGPU));
 }
 
 
@@ -590,30 +646,225 @@ void CoreDebug::__UpdateOutput()
     m_Background.Move();
 
     // hide output on screenshots
-    if(!Core::Input->GetKeyboardButton(CORE_INPUT_KEY(PRINTSCREEN), CORE_INPUT_PRESS))
+    if(Core::Input->GetKeyboardButton(CORE_INPUT_KEY(PRINTSCREEN), CORE_INPUT_PRESS)) return;
+
+#if defined(IMGUI_API)
+
+    // update ImGui backends
+    ImGui_ImplSDL3_NewFrame();
+    ImGui_ImplOpenGL3_NewFrame();
+
+    // create new ImGui frame
+    ImGui::NewFrame();
     {
-        glDisable(GL_DEPTH_TEST);
+        static coreBool s_bShowStats = true;
+        if(s_bShowStats)
         {
-            // render image output
-            FOR_EACH(it, m_apDisplay)
+            if(ImGui::Begin("Stats", &s_bShowStats, ImGuiWindowFlags_AlwaysAutoResize))
             {
-                (*m_apDisplay.get_key(it))->Enable(0u);
-                (*it)->oOutput.Render();
+                if(ImGui::BeginTable("Measurement", 3, ImGuiTableFlags_Resizable | ImGuiTableFlags_RowBg | ImGuiTableFlags_Borders | ImGuiTableFlags_SizingFixedFit))
+                {
+                    ImGui::TableSetupColumn("Name");
+                    ImGui::TableSetupColumn("CPU");
+                    ImGui::TableSetupColumn("GPU");
+                    ImGui::TableHeadersRow();
+
+                    FOR_EACH(it, m_apMeasure)
+                    {
+                        ImGui::TableNextColumn(); ImGui::TextUnformatted((*it)->oOutput.GetText());
+                        ImGui::TableNextColumn(); ImGui::TextColored(coreVector4(LERP(COLOR_WHITE, COLOR_RED, STEP(0.0, 0.5, (*it)->dCurrentCPU)), 1.0f), "%.2f", (*it)->dCurrentCPU);
+                        ImGui::TableNextColumn(); ImGui::TextColored(coreVector4(LERP(COLOR_WHITE, COLOR_RED, STEP(0.0, 0.5, (*it)->dCurrentGPU)), 1.0f), "%.2f", (*it)->dCurrentGPU);
+                    }
+
+                    ImGui::EndTable();
+                }
+
+                FOR_EACH(it, m_apInspect)
+                {
+                    ImGui::TextColoredUnf((*it)->oOutput.GetColor4(), (*it)->oOutput.GetText());
+                }
+
+                if(CORE_GL_SUPPORT(ARB_pipeline_statistics_query))
+                {
+                    for(coreUintW i = 0u; i < ARRAY_SIZE(m_aStatOutput); ++i)
+                    {
+                        ImGui::TextColoredUnf(m_aStatOutput[i].GetColor4(), m_aStatOutput[i].GetText());
+                    }
+                }
+
+                if(iResourceNum || iFunctionNum) ImGui::TextColoredUnf(m_Loading.GetColor4(), m_Loading.GetText());
             }
 
-            // render text output
-            m_Background.Render();
-            FOR_EACH(it, m_apMeasure) (*it)->oOutput.Render();
-            FOR_EACH(it, m_apInspect) (*it)->oOutput.Render();
-            if(iResourceNum || iFunctionNum) m_Loading.Render();
+            ImGui::End();
+        }
 
-            // render statistic text output
-            if(CORE_GL_SUPPORT(ARB_pipeline_statistics_query))
+        static coreBool s_bShowResources = false;
+        if(s_bShowResources)
+        {
+            if(ImGui::Begin("Resources", &s_bShowResources))
             {
-                for(coreUintW i = 0u; i < ARRAY_SIZE(m_aStatOutput); ++i)
-                    m_aStatOutput[i].Render();
+                if(ImGui::BeginTable("Handles", 2, ImGuiTableFlags_Resizable | ImGuiTableFlags_Sortable | ImGuiTableFlags_RowBg | ImGuiTableFlags_Borders | ImGuiTableFlags_SizingFixedFit))
+                {
+                    ImGui::TableSetupColumn("Name");
+                    ImGui::TableSetupColumn("Ref");
+                    ImGui::TableHeadersRow();
+
+                    coreList<coreResourceHandle*> apCopy = Core::Manager::Resource->m_apHandle.get_valuelist();
+
+                    const ImGuiTableColumnSortSpecs* pSpec = ImGui::TableGetSortSpecs()->Specs;
+
+                    switch(pSpec->ColumnIndex)
+                    {
+                    default: UNREACHABLE
+                    case 0u: std::sort(apCopy.begin(), apCopy.end(), [](const coreResourceHandle* A, const coreResourceHandle* B) {return (std::strcmp(A->GetName(), B->GetName()) < 0);}); break;
+                    case 1u: std::sort(apCopy.begin(), apCopy.end(), [](const coreResourceHandle* A, const coreResourceHandle* B) {return (A->GetRefCount() < B->GetRefCount());});         break;
+                    }
+
+                    if(pSpec->SortDirection == ImGuiSortDirection_Descending)
+                    {
+                        std::reverse(apCopy.begin(), apCopy.end());
+                    }
+
+                    FOR_EACH(it, apCopy)
+                    {
+                        if((*it)->GetRefCount())
+                        {
+                            ImGui::TableNextColumn(); ImGui::TextUnformatted((*it)->GetName());
+                            ImGui::TableNextColumn(); ImGui::Text("%u", (*it)->GetRefCount());
+                        }
+                    }
+
+                    ImGui::EndTable();
+                }
+            }
+
+            ImGui::End();
+        }
+
+        static coreBool s_bShowTime = false;
+        if(s_bShowTime)
+        {
+            if(ImGui::Begin("Time", &s_bShowTime))
+            {
+                ImGui::Text("%.2f", Core::System->GetTotalTime());
+                ImGui::Text("%u",   Core::System->GetCurFrame());
+            }
+
+            ImGui::End();
+        }
+
+        static coreBool s_bShowImages = true;
+        if(s_bShowImages)
+        {
+            if(ImGui::Begin("Images", &s_bShowImages))
+            {
+                FOR_EACH(it, m_apDisplay)
+                {
+                    ImGui::Image((*m_apDisplay.get_key(it))->GetIdentifier(), (*it)->oOutput.GetSize() * 1000.0f);
+                }
+            }
+
+            ImGui::End();
+        }
+
+        static coreBool s_bShowImGuiDemo      = false;
+        static coreBool s_bShowImGuiMetrics   = false;
+        static coreBool s_bShowImGuiDebugLog  = false;
+        static coreBool s_bShowImGuiStackTool = false;
+        static coreBool s_bShowImGuiAbout     = false;
+        #if __has_include(<imgui/imgui_demo.cpp>)
+            if(s_bShowImGuiDemo)      ImGui::ShowDemoWindow       (&s_bShowImGuiDemo);
+            if(s_bShowImGuiMetrics)   ImGui::ShowMetricsWindow    (&s_bShowImGuiMetrics);
+            if(s_bShowImGuiDebugLog)  ImGui::ShowDebugLogWindow   (&s_bShowImGuiDebugLog);
+            if(s_bShowImGuiStackTool) ImGui::ShowIDStackToolWindow(&s_bShowImGuiStackTool);
+            if(s_bShowImGuiAbout)     ImGui::ShowAboutWindow      (&s_bShowImGuiAbout);
+        #endif
+
+        if(ImGui::BeginMainMenuBar())
+        {
+            ImGui::MenuItem("Debug Menu", NULL, false, false);
+
+            if(ImGui::BeginMenu("Main"))
+            {
+                ImGui::MenuItem("Stats",     NULL, &s_bShowStats);
+                ImGui::MenuItem("Resources", NULL, &s_bShowResources);
+                ImGui::EndMenu();
+            }
+
+            if(ImGui::BeginMenu("System"))
+            {
+                ImGui::MenuItem("Time", NULL, &s_bShowTime);
+                ImGui::EndMenu();
+            }
+
+            if(ImGui::BeginMenu("Graphics"))
+            {
+                ImGui::MenuItem("Images", NULL, &s_bShowImages);
+                ImGui::EndMenu();
+            }
+
+            if(ImGui::BeginMenu("Audio"))
+            {
+                ImGui::EndMenu();
+            }
+
+            if(ImGui::BeginMenu("Input"))
+            {
+                ImGui::EndMenu();
+            }
+
+            if(ImGui::BeginMenu("Platform"))
+            {
+                ImGui::EndMenu();
+            }
+
+            if(ImGui::BeginMenu("ImGui"))
+            {
+                ImGui::MenuItem("Demo",       NULL, &s_bShowImGuiDemo);
+                ImGui::MenuItem("Metrics",    NULL, &s_bShowImGuiMetrics);
+                ImGui::MenuItem("Debug Log",  NULL, &s_bShowImGuiDebugLog);
+                ImGui::MenuItem("Stack Tool", NULL, &s_bShowImGuiStackTool);
+                ImGui::MenuItem("About",      NULL, &s_bShowImGuiAbout);
+                ImGui::EndMenu();
+            }
+
+            ImGui::EndMainMenuBar();
+        }
+    }
+    ImGui::Render();
+
+    // render ImGui frame
+    ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
+
+#else
+
+    glDisable(GL_DEPTH_TEST);
+    {
+        // render image output
+        FOR_EACH(it, m_apDisplay)
+        {
+            (*m_apDisplay.get_key(it))->Enable(0u);
+            (*it)->oOutput.Render();
+        }
+
+        // render background object
+        m_Background.Render();
+
+        // render general text output
+        FOR_EACH(it, m_apMeasure) (*it)->oOutput.Render();
+        FOR_EACH(it, m_apInspect) (*it)->oOutput.Render();
+        if(iResourceNum || iFunctionNum) m_Loading.Render();
+
+        // render statistic text output
+        if(CORE_GL_SUPPORT(ARB_pipeline_statistics_query))
+        {
+            for(coreUintW i = 0u; i < ARRAY_SIZE(m_aStatOutput); ++i)
+            {
+                m_aStatOutput[i].Render();
             }
         }
-        glEnable(GL_DEPTH_TEST);
     }
+    glEnable(GL_DEPTH_TEST);
+
+#endif
 }

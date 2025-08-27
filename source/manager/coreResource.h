@@ -195,6 +195,7 @@ private:
 
 public:
     FRIEND_CLASS(Core)
+    FRIEND_CLASS(CoreDebug)
     FRIEND_CLASS(coreResourceRelation)
     DISABLE_COPY(coreResourceManager)
 

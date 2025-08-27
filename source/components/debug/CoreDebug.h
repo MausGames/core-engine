@@ -13,6 +13,9 @@
 // TODO 3: ingame editor, with object selection, 3d and 2d, edit position, size and rotation (with axis-control like Blender), edit colors and time-speed
 // TODO 3: display direction, orientation and bounding box+radius on objects
 // TODO 5: check out AMD GPU PerfAPI
+// TODO 3: imgui should not modify debug stats
+// TODO 3: mouse-wheel and current focus is not ignored below imgui
+// TODO 4: either get rid of FRIEND_CLASS(CoreDebug) or accept it
 
 
 // ****************************************************************

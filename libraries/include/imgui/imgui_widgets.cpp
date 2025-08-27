@@ -268,6 +268,13 @@ void ImGui::TextUnformatted(const char* text, const char* text_end)
     TextEx(text, text_end, ImGuiTextFlags_NoWidthForLargeClippedText);
 }
 
+void ImGui::TextColoredUnf(const ImVec4& col, const char* text, const char* text_end)
+{
+    PushStyleColor(ImGuiCol_Text, col);
+    TextEx(text, text_end, ImGuiTextFlags_NoWidthForLargeClippedText);
+    PopStyleColor();
+}
+
 void ImGui::Text(const char* fmt, ...)
 {
     va_list args;
