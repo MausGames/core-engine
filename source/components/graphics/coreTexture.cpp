@@ -103,7 +103,9 @@ coreStatus coreTexture::Unload()
 
     // disable still active texture bindings
     for(coreUintW i = CORE_TEXTURE_UNITS; i--; )
+    {
         if(s_apBound[i] == this) coreTexture::Disable(i);
+    }
 
     // delete texture
     coreDelTextures2D(1u, &m_iIdentifier);
@@ -507,7 +509,9 @@ void coreTexture::EnableAll(const coreResourcePtr<coreTexture>* ppTextureArray)
     {
         // enable all separately
         for(coreUintW i = 0u; i < CORE_TEXTURE_UNITS; ++i)
+        {
             if(ppTextureArray[i].IsUsable()) ppTextureArray[i]->Enable(i);
+        }
     }
 }
 
@@ -526,7 +530,9 @@ void coreTexture::DisableAll()
     {
         // disable all separately (end with first texture unit)
         for(coreUintW i = CORE_TEXTURE_UNITS; i--; )
+        {
             coreTexture::Disable(i);
+        }
     }
 }
 
@@ -836,6 +842,7 @@ coreStatus coreTextureVolume::Create(const coreUint32 iWidth, const coreUint32 i
     glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_MIN_FILTER, iMinFilter);
     glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_WRAP_S,     iWrapMode);
     glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_WRAP_T,     iWrapMode);
+    glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_WRAP_R,     iWrapMode);
     glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_BASE_LEVEL, 0);
     glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_MAX_LEVEL,  0);
 
@@ -966,6 +973,7 @@ coreStatus coreTextureCube::Create(const coreUint32 iWidth, const coreUint32 iHe
     glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MIN_FILTER, iMinFilter);
     glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_S,     iWrapMode);
     glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_T,     iWrapMode);
+    glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_R,     iWrapMode);
     glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_BASE_LEVEL, 0);
     glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MAX_LEVEL,  0);
 

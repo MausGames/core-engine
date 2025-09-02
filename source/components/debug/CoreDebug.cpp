@@ -150,7 +150,7 @@ CoreDebug::CoreDebug()noexcept
 
     // configure ImGui behaviour and appearance
     ImGui::StyleColorsDark();
-    ImGui::GetIO   ().ConfigFlags   |= ImGuiConfigFlags_NoMouseCursorChange;
+    ImGui::GetIO   ().ConfigFlags    = ImGuiConfigFlags_NoMouseCursorChange;
     ImGui::GetIO   ().IniFilename    = s_sIniPath.c_str();
     ImGui::GetStyle().WindowRounding = 5.0f;
     ImGui::GetStyle().FrameRounding  = 5.0f;
@@ -679,20 +679,25 @@ void CoreDebug::__UpdateOutput()
                     ImGui::EndTable();
                 }
 
-                FOR_EACH(it, m_apInspect)
+                if(ImGui::BeginChild("Other", coreVector2(0.0f,0.0f), ImGuiChildFlags_Borders | ImGuiChildFlags_AutoResizeY))
                 {
-                    ImGui::TextColoredUnf((*it)->oOutput.GetColor4(), (*it)->oOutput.GetText());
-                }
-
-                if(CORE_GL_SUPPORT(ARB_pipeline_statistics_query))
-                {
-                    for(coreUintW i = 0u; i < ARRAY_SIZE(m_aStatOutput); ++i)
+                    FOR_EACH(it, m_apInspect)
                     {
-                        ImGui::TextColoredUnf(m_aStatOutput[i].GetColor4(), m_aStatOutput[i].GetText());
+                        ImGui::TextColoredUnf((*it)->oOutput.GetColor4(), (*it)->oOutput.GetText());
                     }
+
+                    if(CORE_GL_SUPPORT(ARB_pipeline_statistics_query))
+                    {
+                        for(coreUintW i = 0u; i < ARRAY_SIZE(m_aStatOutput); ++i)
+                        {
+                            ImGui::TextColoredUnf(m_aStatOutput[i].GetColor4(), m_aStatOutput[i].GetText());
+                        }
+                    }
+
+                    if(iResourceNum || iFunctionNum) ImGui::TextColoredUnf(m_Loading.GetColor4(), m_Loading.GetText());
                 }
 
-                if(iResourceNum || iFunctionNum) ImGui::TextColoredUnf(m_Loading.GetColor4(), m_Loading.GetText());
+                ImGui::EndChild();
             }
 
             ImGui::End();

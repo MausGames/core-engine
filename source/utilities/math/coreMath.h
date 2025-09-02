@@ -139,12 +139,12 @@ public:
     template <typename T, coreFloatingPoint S> static constexpr T LerpHermite5(const T& x, const T& y, const S& s)                                 {return LERP(x, y, (S(10) + (S(-15) + S(6) * s) * s) * s * s * s);}
     template <typename T, coreFloatingPoint S> static inline    T LerpExp     (const T& x, const T& y, const S& s)                                 {return POW(x, S(1) - s) * POW(y, s);}
     template <typename T, coreFloatingPoint S> static inline    T LerpPow     (const T& x, const T& y, const S& s, const S& k)                     {return LERP(x, y, POW(s, k));}                     // inverted curve with (k < 1)
-    template <coreFloatingPoint T>             static constexpr T Step        (const T& a, const T& b, const T& x)                                 {return CLAMP01((x - a) / (b - a));}                // linearstep
-    template <coreFloatingPoint T>             static inline    T StepSmooth  (const T& a, const T& b, const T& x)                                 {return LERPS (T(0), T(1), STEP(a, b, x));}
-    template <coreFloatingPoint T>             static inline    T StepBreak   (const T& a, const T& b, const T& x)                                 {return LERPB (T(0), T(1), STEP(a, b, x));}
-    template <coreFloatingPoint T>             static inline    T StepBreakRev(const T& a, const T& b, const T& x)                                 {return LERPBR(T(0), T(1), STEP(a, b, x));}
-    template <coreFloatingPoint T>             static constexpr T StepHermite3(const T& a, const T& b, const T& x)                                 {return LERPH3(T(0), T(1), STEP(a, b, x));}         // smoothstep
-    template <coreFloatingPoint T>             static constexpr T StepHermite5(const T& a, const T& b, const T& x)                                 {return LERPH5(T(0), T(1), STEP(a, b, x));}         // smootherstep
+    template <coreFloatingPoint T>             static constexpr T Step        (const T& a, const t_ident<T>& b, const t_ident<T>& x)               {return CLAMP01((x - a) / (b - a));}                // linearstep
+    template <coreFloatingPoint T>             static inline    T StepSmooth  (const T& a, const t_ident<T>& b, const t_ident<T>& x)               {return LERPS (T(0), T(1), STEP(a, b, x));}
+    template <coreFloatingPoint T>             static inline    T StepBreak   (const T& a, const t_ident<T>& b, const t_ident<T>& x)               {return LERPB (T(0), T(1), STEP(a, b, x));}
+    template <coreFloatingPoint T>             static inline    T StepBreakRev(const T& a, const t_ident<T>& b, const t_ident<T>& x)               {return LERPBR(T(0), T(1), STEP(a, b, x));}
+    template <coreFloatingPoint T>             static constexpr T StepHermite3(const T& a, const t_ident<T>& b, const t_ident<T>& x)               {return LERPH3(T(0), T(1), STEP(a, b, x));}         // smoothstep
+    template <coreFloatingPoint T>             static constexpr T StepHermite5(const T& a, const t_ident<T>& b, const t_ident<T>& x)               {return LERPH5(T(0), T(1), STEP(a, b, x));}         // smootherstep
 
     /* base operations */
     template <coreFloatingPoint T> static inline T FmodRange(const T& tNum, const t_ident<T>& tFrom, const t_ident<T>& tTo);
