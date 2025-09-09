@@ -422,6 +422,8 @@ using PFNGLGETBUFFERSUBDATAPROC = void (GL_APIENTRY *) (GLenum target, GLintptr 
 // ****************************************************************
 /* unused definitions and functions */
 #define GL_CLIPPING_OUTPUT_PRIMITIVES                   0x82F7
+#define GL_CONTEXT_COMPATIBILITY_PROFILE_BIT            0x0002
+#define GL_CONTEXT_CORE_PROFILE_BIT                     0x0001
 #define GL_CONTEXT_PROFILE_MASK                         0x9126
 #define GL_FRAGMENT_SHADER_INVOCATIONS                  0x82F4
 #define GL_GENERATE_MIPMAP                              0x8191

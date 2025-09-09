@@ -27,11 +27,11 @@
 
 // ****************************************************************
 /* use own OpenGL loader */
-#if defined(__ANGLE__)
+#if defined(__EMSCRIPTEN__) || defined(__ANGLE__)
 
     #define IMGUI_IMPL_OPENGL_ES3
 
-#elif !defined(__EMSCRIPTEN__)
+#else
 
     #define IMGUI_IMPL_OPENGL_LOADER_CUSTOM
 
@@ -45,6 +45,8 @@
 
 // ****************************************************************
 /* include library code */
+#define IMGUI_IGNORE_CLASS_EXTRA
+
 #include <imgui/imgui.cpp>
 #include <imgui/imgui_draw.cpp>
 #include <imgui/imgui_tables.cpp>

@@ -233,7 +233,11 @@ coreStatus coreFile::LoadData()
 #if defined(_CORE_DEBUG_)
 
     // for correct hot-reloading (not in release, not for archives)
-    if(!m_sPath.empty() && !m_pArchive) m_iSize = coreData::FileSize(m_sPath.c_str());
+    if(!m_sPath.empty() && !m_pArchive)
+    {
+        m_iSize = coreData::FileSize(m_sPath.c_str());
+        if(!m_iSize) return CORE_INVALID_CALL;
+    }
 
 #endif
 
