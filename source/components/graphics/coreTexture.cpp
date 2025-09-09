@@ -306,7 +306,7 @@ void coreTexture::Modify(const coreUint32 iOffsetX, const coreUint32 iOffsetY, c
     else
     {
         coreDataBuffer oBuffer;
-        if(bPixelBuffer)
+        if(bPixelBuffer && ((Core::Graphics->SystemGpuType() != CORE_GPU_TYPE_INTEL) || !DEFINED(_CORE_WINDOWS_)))   // # Intel hotfix: multiple uploads to the same texture may get mixed up by the driver
         {
             // create pixel buffer object for asynchronous texture loading
             oBuffer.Create(GL_PIXEL_UNPACK_BUFFER, iDataSize, pData, CORE_DATABUFFER_STORAGE_STREAM);
