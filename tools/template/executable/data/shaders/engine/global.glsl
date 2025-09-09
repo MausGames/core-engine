@@ -190,9 +190,7 @@
     #define discard demote
 #endif
 #if defined(_CORE_OPTION_NO_PERSPECTIVE_)
-    #define smoothEx noperspective
-#else
-    #define smoothEx smooth
+    #define smooth noperspective
 #endif
 
 // type definitions
