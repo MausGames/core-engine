@@ -184,19 +184,22 @@ template <typename... A> void CoreDebug::InspectValue(const coreHashString& sNam
 /* render as wireframe */
 template <typename F> void CoreDebug::__RenderWireframe(F&& nRenderFunc)
 {
-    // remember current depth-mask
-    GLboolean bState = false;
-    glGetBooleanv(GL_DEPTH_WRITEMASK, &bState);
+    // remember current render state
+    GLboolean abStatus[2] = {};
+    glGetBooleanv(GL_DEPTH_WRITEMASK, &abStatus[0]);
+    glGetBooleanv(GL_CULL_FACE,       &abStatus[1]);
 
     // enable wireframe mode
     if(CORE_GL_SUPPORT(ANGLE_polygon_mode)) glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
-    if(bState) glDepthMask(false);
+    if(abStatus[0]) glDepthMask(false);
+    if(abStatus[1]) glDisable(GL_CULL_FACE);
     {
         // call custom render function
         nRenderFunc();
     }
     if(CORE_GL_SUPPORT(ANGLE_polygon_mode)) glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
-    if(bState) glDepthMask(true);
+    if(abStatus[0]) glDepthMask(true);
+    if(abStatus[1]) glEnable(GL_CULL_FACE);
 }
 
 
