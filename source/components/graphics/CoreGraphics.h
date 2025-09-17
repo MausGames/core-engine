@@ -17,6 +17,7 @@
 // TODO 3: async glReadPixels, improve screenshot with pixel-pack-buffer (currently cannot move-only into lambda, and engine-reset can be problematic)
 // TODO 5: <old comment style>
 // TODO 3: check for max number of draw buffers and color attachments, max render buffer size and view-port dimension, max number of vertex attributes, max texture size
+// TODO 3: implement more granular default screenshot naming (currently you can basically create only one screenshot per second)
 
 
 // ****************************************************************
@@ -41,42 +42,54 @@ private:
         coreVector4 vValue;       // color and strength value
     };
 
+    /* screenshot structure */
+    struct coreScreenshot final
+    {
+        coreString              sPath;     // target file path
+        coreUint32              iToken;    // function token (for cancelling on shutdown)
+        coreDataBuffer          oBuffer;   // pixel buffer object for asynchronous download
+        coreDataScope<coreByte> pData;     // memory for direct download
+    };
+
 
 private:
-    SDL_GLContext m_pRenderContext;             // primary OpenGL context for render operations
-    SDL_GLContext m_pResourceContext;           // secondary OpenGL context for resource loading
+    SDL_GLContext m_pRenderContext;                 // primary OpenGL context for render operations
+    SDL_GLContext m_pResourceContext;               // secondary OpenGL context for resource loading
 
-    coreFloat m_fFOV;                           // field-of-view
-    coreFloat m_fNearClip;                      // near clipping plane
-    coreFloat m_fFarClip;                       // far clipping plane
-    coreFloat m_fAspectRatio;                   // aspect ratio
+    coreFloat m_fFOV;                               // field-of-view
+    coreFloat m_fNearClip;                          // near clipping plane
+    coreFloat m_fFarClip;                           // far clipping plane
+    coreFloat m_fAspectRatio;                       // aspect ratio
 
-    coreVector3 m_vCamPosition;                 // position of the camera
-    coreVector3 m_vCamDirection;                // direction of the camera
-    coreVector3 m_vCamOrientation;              // orientation of the camera
-    coreMatrix4 m_mCamera;                      // camera matrix
+    coreVector3 m_vCamPosition;                     // position of the camera
+    coreVector3 m_vCamDirection;                    // direction of the camera
+    coreVector3 m_vCamOrientation;                  // orientation of the camera
+    coreMatrix4 m_mCamera;                          // camera matrix
 
-    coreMatrix4 m_mPerspective;                 // perspective projection matrix
-    coreMatrix4 m_mOrtho;                       // orthographic projection matrix
-    coreVector4 m_vViewResolution;              // current viewport resolution (xy = normal, zw = reciprocal)
+    coreMatrix4 m_mPerspective;                     // perspective projection matrix
+    coreMatrix4 m_mOrtho;                           // orthographic projection matrix
+    coreVector4 m_vViewResolution;                  // current viewport resolution (xy = normal, zw = reciprocal)
 
-    coreLight m_aLight[CORE_GRAPHICS_LIGHTS];   // global ambient lights
+    coreLight m_aLight[CORE_GRAPHICS_LIGHTS];       // global ambient lights
 
-    coreUniformBuffer m_Transform3DBuffer;      // uniform buffer object for 3d-transformation data
-    coreUniformBuffer m_Transform2DBuffer;      // uniform buffer object for 2d-transformation data
-    coreUniformBuffer m_AmbientBuffer;          // uniform buffer object for ambient data
-    coreUint8         m_iUniformUpdate;         // update status for the UBOs (dirty flag)
+    coreUniformBuffer m_Transform3DBuffer;          // uniform buffer object for 3d-transformation data
+    coreUniformBuffer m_Transform2DBuffer;          // uniform buffer object for 2d-transformation data
+    coreUniformBuffer m_AmbientBuffer;              // uniform buffer object for ambient data
+    coreUint8         m_iUniformUpdate;             // update status for the UBOs (dirty flag)
 
-    coreUint32 m_aiScissorData[4];              // current scissor test properties
+    coreUint32 m_aiScissorData[4];                  // current scissor test properties
 
-    coreUint64   m_iMemoryStart;                // available graphics memory at the start of the application (in bytes)
-    coreUint8    m_iMaxSamples;                 // max multisample anti aliasing level
-    coreUint8    m_aiMaxSamplesEQAA[3];         // max enhanced quality anti aliasing levels (color, depth, storage)
-    coreUint8    m_aiMaxSamplesCSAA[2];         // max coverage sampling anti aliasing levels (coverage, color)
-    coreUint8    m_iMaxAnisotropy;              // max anisotropic texture filter level
-    coreUint8    m_iMaxTextures;                // max number of texture units (only for fragment shader)
-    corePoint2U8 m_VersionOpenGL;               // available OpenGL version
-    corePoint2U8 m_VersionGLSL;                 // available GLSL version
+    coreSet<coreScreenshot*> m_apScreenshotQueue;   // screenshot requests
+    coreSpinLock             m_ScreenshotLock;      // spinlock to prevent concurrent screenshot requests access
+
+    coreUint64   m_iMemoryStart;                    // available graphics memory at the start of the application (in bytes)
+    coreUint8    m_iMaxSamples;                     // max multisample anti aliasing level
+    coreUint8    m_aiMaxSamplesEQAA[3];             // max enhanced quality anti aliasing levels (color, depth, storage)
+    coreUint8    m_aiMaxSamplesCSAA[2];             // max coverage sampling anti aliasing levels (coverage, color)
+    coreUint8    m_iMaxAnisotropy;                  // max anisotropic texture filter level
+    coreUint8    m_iMaxTextures;                    // max number of texture units (only for fragment shader)
+    corePoint2U8 m_VersionOpenGL;                   // available OpenGL version
+    corePoint2U8 m_VersionGLSL;                     // available GLSL version
 
 
 private:
@@ -126,8 +139,8 @@ public:
     const coreGpuType& SystemGpuType   ()const;
 
     /* take screenshot */
-    void        TakeScreenshot(const coreChar* pcPath)const;
-    inline void TakeScreenshot()const {this->TakeScreenshot(coreData::UserFolderPrivate(coreData::DateTimePrint("screenshots/screenshot_%Y%m%d_%H%M%S")));}
+    void TakeScreenshot(const coreChar* pcPath);
+    void TakeScreenshot();
 
     /* get component properties */
     inline const SDL_GLContext& GetRenderContext  ()const                       {return m_pRenderContext;}
@@ -161,6 +174,9 @@ private:
 
     /* update the Emscripten canvas */
     void __UpdateEmscripten();
+
+    /* handle screenshot requests */
+    void __HandleScreenshot();
 };
 
 

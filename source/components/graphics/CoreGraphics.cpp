@@ -31,6 +31,8 @@ CoreGraphics::CoreGraphics()noexcept
 , m_AmbientBuffer     ()
 , m_iUniformUpdate    (0u)
 , m_aiScissorData     {}
+, m_apScreenshotQueue {}
+, m_ScreenshotLock    ()
 , m_iMemoryStart      (0u)
 , m_iMaxSamples       (0u)
 , m_aiMaxSamplesEQAA  {}
@@ -140,6 +142,8 @@ CoreGraphics::CoreGraphics()noexcept
     // setup texturing and packing
     if(CORE_GL_SUPPORT(CORE_gl2_compatibility) || DEFINED(_CORE_GLES_)) glHint(GL_GENERATE_MIPMAP_HINT, GL_NICEST);
     if(CORE_GL_SUPPORT(ARB_seamless_cube_map))                          glEnable(GL_TEXTURE_CUBE_MAP_SEAMLESS);
+    if(CORE_GL_SUPPORT(MESA_pack_invert))                               glPixelStorei(GL_PACK_INVERT_MESA,             1);
+    if(CORE_GL_SUPPORT(ANGLE_pack_reverse_row_order))                   glPixelStorei(GL_PACK_REVERSE_ROW_ORDER_ANGLE, 1);
     glHint(GL_TEXTURE_COMPRESSION_HINT, GL_NICEST);
     glPixelStorei(GL_PACK_ALIGNMENT,   4);
     glPixelStorei(GL_UNPACK_ALIGNMENT, 4);
@@ -239,6 +243,13 @@ CoreGraphics::~CoreGraphics()
     m_Transform3DBuffer.Delete();
     m_Transform2DBuffer.Delete();
     m_AmbientBuffer    .Delete();
+
+    // cancel all screenshot requests
+    FOR_EACH(it, m_apScreenshotQueue)
+    {
+        Core::Manager::Resource->DetachFunction((*it)->iToken);
+        SAFE_DELETE(*it)
+    }
 
     // exit OpenGL
     coreExitOpenGL();
@@ -705,55 +716,29 @@ const coreGpuType& CoreGraphics::SystemGpuType()const
 
 // ****************************************************************
 /* take screenshot */
-void CoreGraphics::TakeScreenshot(const coreChar* pcPath)const
+void CoreGraphics::TakeScreenshot(const coreChar* pcPath)
 {
-#if !defined(_CORE_EMSCRIPTEN_)
+#if !defined(_CORE_EMSCRIPTEN_) && !defined(_CORE_SWITCH_)
 
-    const coreUintW iWidthSrc = coreMath::CeilAlign(F_TO_UI(m_vViewResolution.x), 4u);
-    const coreUintW iWidthDst = F_TO_UI(m_vViewResolution.x);
-    const coreUintW iHeight   = F_TO_UI(m_vViewResolution.y);
-    const coreUintW iPitchSrc = iWidthSrc * 3u;
-    const coreUintW iPitchDst = iWidthDst * 3u;
-    const coreUintW iSize     = iHeight * iPitchSrc;
-    ASSERT(iPitchDst <= iPitchSrc)
+    // create new screenshot request
+    coreScreenshot* pScreenshot = new coreScreenshot();
+    pScreenshot->sPath  = pcPath;
+    pScreenshot->iToken = 0u;
 
-    // read pixel data from the frame buffer
-    coreByte* pData = new coreByte[iSize * 2u];
-    if(CORE_GL_SUPPORT(ARB_robustness)) glReadnPixels(0, 0, iWidthSrc, iHeight, GL_RGB, GL_UNSIGNED_BYTE, iSize, pData);
-                                   else glReadPixels (0, 0, iWidthSrc, iHeight, GL_RGB, GL_UNSIGNED_BYTE,        pData);
-
-    // copy path into lambda
-    coreString sPathCopy = pcPath;
-    ASSERT(!sPathCopy.empty())
-
-    Core::Manager::Resource->AttachFunction([=, sPathCopy = std::move(sPathCopy)]()
+    m_ScreenshotLock.Lock();
     {
-        // flip pixel data vertically
-        coreByte* pConvert = pData + iSize;
-        for(coreUintW i = 0u; i < iHeight; ++i)
-        {
-            std::memcpy(pConvert + (iHeight - i - 1u) * iPitchDst, pData + i * iPitchSrc, iPitchDst);
-        }
-
-        // create SDL surface
-        coreSurfaceScope pSurface = SDL_CreateSurfaceFrom(iWidthDst, iHeight, SDL_PIXELFORMAT_RGB24, pConvert, iPitchDst);
-        if(pSurface)
-        {
-            const coreChar* pcFullPath = std::strcmp(coreData::StrExtension(sPathCopy.c_str()), "png") ? PRINT("%s.png", sPathCopy.c_str()) : sPathCopy.c_str();
-
-            // create directory hierarchy
-            coreData::DirectoryCreate(coreData::StrDirectory(pcFullPath));
-
-            // save the surface as PNG image
-            IMG_SavePNG(pSurface, pcFullPath);
-        }
-
-        // delete pixel data
-        delete[] pData;
-        return CORE_OK;
-    });
+        // add screenshot object
+        m_apScreenshotQueue.insert(pScreenshot);
+    }
+    m_ScreenshotLock.Unlock();
 
 #endif
+}
+
+void CoreGraphics::TakeScreenshot()
+{
+    // take screenshot with default path
+    this->TakeScreenshot(coreData::UserFolderPrivate(coreData::DateTimePrint("screenshots/screenshot_%Y%m%d_%H%M%S")));
 }
 
 
@@ -763,7 +748,12 @@ void CoreGraphics::__UpdateScene()
 {
     // take screenshot
     if(Core::Input->GetKeyboardButton(CORE_INPUT_KEY(PRINTSCREEN), CORE_INPUT_PRESS))
+    {
         this->TakeScreenshot();
+    }
+
+    // handle screenshot requests
+    this->__HandleScreenshot();
 
     // check for OpenGL errors
     this->CheckOpenGL();
@@ -824,6 +814,126 @@ void CoreGraphics::__UpdateEmscripten()
 
     // clear color, depth and stencil buffer
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | (CoreApp::Settings::Graphics::StencilSize ? GL_STENCIL_BUFFER_BIT : 0u));
+
+#endif
+}
+
+
+// ****************************************************************
+/* handle screenshot requests */
+void CoreGraphics::__HandleScreenshot()
+{
+#if !defined(_CORE_EMSCRIPTEN_) && !defined(_CORE_SWITCH_)
+
+    if(m_apScreenshotQueue.empty()) return;   // # no lock
+
+    // check for OpenGL extensions
+    const coreBool bPixelBuffer = CORE_GL_SUPPORT(ARB_pixel_buffer_object);
+    const coreBool bRobustness  = CORE_GL_SUPPORT(ARB_robustness);
+    const coreBool bInverted    = CORE_GL_SUPPORT(MESA_pack_invert) || CORE_GL_SUPPORT(ANGLE_pack_reverse_row_order);
+
+    // set frame buffer properties
+    const coreUintW iWidthSrc = coreMath::CeilAlign(F_TO_UI(m_vViewResolution.x), 4u);
+    const coreUintW iWidthDst = F_TO_UI(m_vViewResolution.x);
+    const coreUintW iHeight   = F_TO_UI(m_vViewResolution.y);
+    const coreUintW iPitch    = iWidthSrc * 3u;
+    const coreUintW iSize     = iHeight * iPitch;
+
+    do
+    {
+        coreScreenshot* pScreenshot = NULL;
+
+        m_ScreenshotLock.Lock();
+        {
+            // get next open screenshot request
+            FOR_EACH(it, m_apScreenshotQueue)
+            {
+                if(!(*it)->iToken)
+                {
+                    pScreenshot = (*it);
+                    break;
+                }
+            }
+        }
+        m_ScreenshotLock.Unlock();
+
+        // no open screenshot request
+        if(!pScreenshot) break;
+
+        if(bPixelBuffer)
+        {
+            // create pixel buffer object for asynchronous download
+            pScreenshot->oBuffer.Create(GL_PIXEL_PACK_BUFFER, iSize, NULL, CORE_DATABUFFER_STORAGE_READ);
+
+            // read pixel data from the frame buffer
+            if(bRobustness) glReadnPixels(0, 0, iWidthSrc, iHeight, GL_RGB, GL_UNSIGNED_BYTE, iSize, NULL);
+                       else glReadPixels (0, 0, iWidthSrc, iHeight, GL_RGB, GL_UNSIGNED_BYTE,        NULL);
+
+            // wait until finished
+            pScreenshot->oBuffer.SyncRead();
+        }
+        else
+        {
+            // create memory for direct download
+            pScreenshot->pData = new coreByte[iSize];
+
+            // read pixel data from the frame buffer
+            if(bRobustness) glReadnPixels(0, 0, iWidthSrc, iHeight, GL_RGB, GL_UNSIGNED_BYTE, iSize, pScreenshot->pData);
+                       else glReadPixels (0, 0, iWidthSrc, iHeight, GL_RGB, GL_UNSIGNED_BYTE,        pScreenshot->pData);
+        }
+
+        // move to the resource thread
+        pScreenshot->iToken = Core::Manager::Resource->AttachFunction([=, this]()
+        {
+            // check for sync object status
+            const coreStatus eCheck = pScreenshot->oBuffer.SyncCheck(0u);
+            if(eCheck == CORE_BUSY) return CORE_BUSY;
+
+            // retrieve pixel data
+            coreByte* pSource = bPixelBuffer ? pScreenshot->oBuffer.MapRead(0u, iSize) : pScreenshot->pData.Get();
+
+            // flip pixel data vertically
+            coreDataScope<coreByte> pConvert = NULL;
+            if(!bInverted)
+            {
+                pConvert = new coreByte[iSize];
+                for(coreUintW i = 0u; i < LOOP_NONZERO(iHeight); ++i)
+                {
+                    std::memcpy(pConvert + (iHeight - i - 1u) * iPitch, pSource + i * iPitch, iPitch);
+                }
+            }
+
+            // create SDL surface
+            coreSurfaceScope pSurface = SDL_CreateSurfaceFrom(iWidthDst, iHeight, SDL_PIXELFORMAT_RGB24, bInverted ? pSource : pConvert.Get(), iPitch);
+            if(pSurface)
+            {
+                const coreChar* pcPath     = pScreenshot->sPath.c_str();
+                const coreChar* pcFullPath = std::strcmp(coreData::StrExtension(pcPath), "png") ? PRINT("%s.png", pcPath) : pcPath;
+
+                // create directory hierarchy
+                coreData::DirectoryCreate(coreData::StrDirectory(pcFullPath));
+
+                // save the surface as PNG image
+                IMG_SavePNG(pSurface, pcFullPath);
+            }
+
+            // unmap buffer
+            if(bPixelBuffer) pScreenshot->oBuffer.Unmap();
+
+            m_ScreenshotLock.Lock();
+            {
+                // remove screenshot object
+                m_apScreenshotQueue.erase(pScreenshot);
+            }
+            m_ScreenshotLock.Unlock();
+
+            // delete screenshot object
+            delete pScreenshot;
+
+            return CORE_OK;
+        });
+    }
+    while(true);
 
 #endif
 }
