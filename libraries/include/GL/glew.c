@@ -1342,6 +1342,7 @@ GLboolean __GLEW_KHR_debug = GL_FALSE;
 GLboolean __GLEW_KHR_no_error = GL_FALSE;
 GLboolean __GLEW_KHR_parallel_shader_compile = GL_FALSE;
 GLboolean __GLEW_KHR_robustness = GL_FALSE;
+GLboolean __GLEW_MESA_pack_invert = GL_FALSE;
 GLboolean __GLEW_NVX_gpu_memory_info = GL_FALSE;
 GLboolean __GLEW_NV_conservative_raster = GL_FALSE;
 GLboolean __GLEW_NV_copy_image = GL_FALSE;
@@ -1578,6 +1579,9 @@ static const char * _glewExtensionLookup[] = {
 #endif
 #ifdef GL_KHR_robustness
   "GL_KHR_robustness",
+#endif
+#ifdef GL_MESA_pack_invert
+  "GL_MESA_pack_invert",
 #endif
 #ifdef GL_NVX_gpu_memory_info
   "GL_NVX_gpu_memory_info",
@@ -1889,6 +1893,9 @@ static GLboolean* _glewExtensionEnabled[] = {
 #endif
 #ifdef GL_KHR_robustness
   &__GLEW_KHR_robustness,
+#endif
+#ifdef GL_MESA_pack_invert
+  &__GLEW_MESA_pack_invert,
 #endif
 #ifdef GL_NVX_gpu_memory_info
   &__GLEW_NVX_gpu_memory_info,
@@ -5048,6 +5055,16 @@ GLboolean GLEWAPIENTRY glewIsSupported (const char* name)
         if (_glewStrSame3(&pos, &len, (const GLubyte*)"robustness", 10))
         {
           ret = GLEW_KHR_robustness;
+          continue;
+        }
+#endif
+      }
+      if (_glewStrSame2(&pos, &len, (const GLubyte*)"MESA_", 5))
+      {
+#ifdef GL_MESA_pack_invert
+        if (_glewStrSame3(&pos, &len, (const GLubyte*)"pack_invert", 11))
+        {
+          ret = GLEW_MESA_pack_invert;
           continue;
         }
 #endif

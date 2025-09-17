@@ -50,6 +50,9 @@ void __coreInitOpenGLES()
     __CORE_GLES_CHECK(GL_ANDROID_extension_pack_es31a, false);
     const coreBool bAndroidPack = g_CoreContext.__GL_ANDROID_extension_pack_es31a;
 
+    // implement GL_ANGLE_pack_reverse_row_order
+    __CORE_GLES_CHECK(GL_ANGLE_pack_reverse_row_order, false);
+
     // implement GL_ANGLE_polygon_mode
     if(__CORE_GLES_CHECK(GL_ANGLE_polygon_mode, false))
     {

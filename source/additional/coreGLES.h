@@ -39,6 +39,7 @@
 #define CORE_GL_EXT_direct_state_access             (false)
 #define CORE_GL_EXT_framebuffer_object              (true)   // always available
 #define CORE_GL_EXT_gpu_shader4                     (__CORE_GLES_VAR(bES30))
+#define CORE_GL_MESA_pack_invert                    (false)
 #define CORE_GL_NVX_gpu_memory_info                 (false)
 #define CORE_GL_NV_framebuffer_multisample_coverage (false)
 #define CORE_GL_NV_multisample_filter_hint          (false)
@@ -54,6 +55,13 @@
 
 using PFNGLRENDERBUFFERSTORAGEMULTISAMPLEADVANCEDPROC = void (GL_APIENTRY *) (GLenum target, GLsizei samples, GLsizei storageSamples, GLenum internalformat, GLsizei width, GLsizei height);
 #define glRenderbufferStorageMultisampleAdvancedAMD __CORE_GLES_FUNC(glRenderbufferStorageMultisampleAdvanced)
+
+
+// ****************************************************************
+/* GL_ANGLE_pack_reverse_row_order */
+#define CORE_GL_ANGLE_pack_reverse_row_order (__CORE_GLES_VAR(GL_ANGLE_pack_reverse_row_order) && !DEFINED(_CORE_EMSCRIPTEN_))
+
+#define GL_PACK_REVERSE_ROW_ORDER_ANGLE 0x93A4
 
 
 // ****************************************************************
@@ -435,6 +443,7 @@ using PFNGLGETBUFFERSUBDATAPROC = void (GL_APIENTRY *) (GLenum target, GLintptr 
 #define GL_MULTISAMPLE                                  0x809D
 #define GL_MULTISAMPLE_COVERAGE_MODES_NV                0x8E12
 #define GL_MULTISAMPLE_FILTER_HINT_NV                   0x8534
+#define GL_PACK_INVERT_MESA                             0x8758
 #define GL_PERSPECTIVE_CORRECTION_HINT                  0x0C50
 #define GL_PRIMITIVES_SUBMITTED                         0x82EF
 #define GL_TEXTURE_COMPRESSION_HINT                     0x84EF
@@ -501,6 +510,7 @@ struct coreContext final
 
     coreBool __GL_AMD_framebuffer_multisample_advanced;
     coreBool __GL_ANDROID_extension_pack_es31a;
+    coreBool __GL_ANGLE_pack_reverse_row_order;
     coreBool __GL_ANGLE_polygon_mode;
     coreBool __GL_ANGLE_texture_usage;
     coreBool __GL_CORE_texture_float;

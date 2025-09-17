@@ -22,14 +22,16 @@ extern coreBool GLEW_CORE_gl2_compatibility;   // handle deprecated OpenGL featu
 
 // ****************************************************************
 /* handle OpenGL ES extensions */
+#define GLEW_ANGLE_pack_reverse_row_order    false
 #define GLEW_ANGLE_polygon_mode              true
 #define GLEW_ANGLE_texture_usage             false
 #define GLEW_EXT_draw_buffers                true
 #define GLEW_EXT_texture_norm16              true
 #define GLEW_EXT_texture_type_2_10_10_10_rev true
 
-#define GL_TEXTURE_USAGE_ANGLE          0x93A2
 #define GL_FRAMEBUFFER_ATTACHMENT_ANGLE 0x93A3
+#define GL_PACK_REVERSE_ROW_ORDER_ANGLE 0x93A4
+#define GL_TEXTURE_USAGE_ANGLE          0x93A2
 
 
 // ****************************************************************
