@@ -131,7 +131,7 @@ void coreRichText::Render()
                 {
                     // invalidate and synchronize previous buffer
                     oPass.aInstanceBuffer.current().Invalidate();
-                    oPass.aInstanceBuffer.current().Synchronize(CORE_DATABUFFER_MAP_INVALIDATE_ALL);
+                    oPass.aInstanceBuffer.current().SyncWrite(CORE_DATABUFFER_MAP_INVALIDATE_ALL);
 
                     // switch to next available array and buffer
                     oPass.aiVertexArray  .next();

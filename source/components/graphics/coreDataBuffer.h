@@ -14,6 +14,7 @@
 // TODO 5: <old comment style>
 // TODO 5: check for GL_ARB_map_buffer_alignment and ASSUME_ALIGNED
 // TODO 3: something like RGBA16F could handle all of {iComponents, iType, iSize, bInteger (UNORM, SNORM, not)}
+// TODO 3: flushing on SyncRead might only be necessary when switching threads (but do I even need sync on the same thread? MapRead will stall and I should use multi-buffering then)
 
 // NOTE: superior objects have to handle resource-resets, to refill the buffers
 
@@ -85,7 +86,9 @@ public:
     coreStatus Copy(const coreUint32 iReadOffset, const coreUint32 iWriteOffset, const coreUint32 iLength, coreDataBuffer* OUTPUT pDestination)const;
 
     /* protect buffer memory up to now */
-    inline void Synchronize(const coreDataBufferMap eMapType) {if(CORE_GL_SUPPORT(ARB_map_buffer_range) && ((eMapType == CORE_DATABUFFER_MAP_UNSYNCHRONIZED) || this->IsPersistent())) m_Sync.Create(CORE_SYNC_CREATE_NORMAL);}
+    inline void       SyncWrite(const coreDataBufferMap eMapType) {ASSERT(this->IsWritable()) if(CORE_GL_SUPPORT(ARB_map_buffer_range) && ((eMapType == CORE_DATABUFFER_MAP_UNSYNCHRONIZED) || this->IsPersistent())) m_Sync.Create(CORE_SYNC_CREATE_NORMAL);}
+    inline void       SyncRead ()                                 {ASSERT(this->IsReadable()) m_Sync.Create(CORE_SYNC_CREATE_FLUSHED);}
+    inline coreStatus SyncCheck(const coreUint64 iNanoWait)       {return m_Sync.Check(iNanoWait);}
 
     /* reset content of the data buffer object */
     coreStatus Clear(const coreTextureSpec& oTextureSpec, const void* pData);
