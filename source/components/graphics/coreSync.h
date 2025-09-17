@@ -23,8 +23,8 @@
 
 enum coreSyncCreate : coreBool
 {
-    CORE_SYNC_CREATE_NORMAL  = false,   // create only the sync object
-    CORE_SYNC_CREATE_FLUSHED = true     // create and flush the command buffer
+    CORE_SYNC_CREATE_NORMAL  = false,   // create only the sync object         (when staying on the same thread)
+    CORE_SYNC_CREATE_FLUSHED = true     // create and flush the command buffer (when switching threads)
 };
 
 

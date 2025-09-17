@@ -15,14 +15,14 @@
 
 // ****************************************************************
 /* scope definitions */
-#define CORE_SCOPE_CLASS(c,t,f,g)                          \
-    class c final : public coreScope<t>                    \
-    {                                                      \
-    public:                                                \
-        c(t* pObject)noexcept : coreScope<t> (pObject) {f} \
-        ~c()                                           {g} \
-                                                           \
-        ENABLE_COPY(c)                                     \
+#define CORE_SCOPE_CLASS(c,t,f,g)                                 \
+    class c final : public coreScope<t>                           \
+    {                                                             \
+    public:                                                       \
+        c(t* pObject = NULL)noexcept : coreScope<t> (pObject) {f} \
+        ~c()                                                  {g} \
+                                                                  \
+        ENABLE_COPY(c)                                            \
     };
 
 #define DEFER(x) const coreDefer CONCAT(__d, __LINE__)([&]() {x});

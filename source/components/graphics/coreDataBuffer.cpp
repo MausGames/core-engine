@@ -268,6 +268,8 @@ RETURN_RESTRICT coreByte* coreDataBuffer::MapRead(const coreUint32 iOffset, cons
 /* unmap buffer memory */
 void coreDataBuffer::Unmap()
 {
+    ASSERT(m_iIdentifier && this->IsMapped())
+
     if(CORE_GL_SUPPORT(ARB_map_buffer_range))
     {
         if(m_pPersistentBuffer)

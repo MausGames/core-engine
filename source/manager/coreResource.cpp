@@ -156,8 +156,6 @@ coreResourceManager::~coreResourceManager()
 /* update the resource manager */
 void coreResourceManager::UpdateResources(const coreFloat fBudgetSec)
 {
-    ASSERT(SDL_GL_GetCurrentContext())
-
     if(m_bActive)
     {
         const coreUint64 iStart = SDL_GetPerformanceCounter();
