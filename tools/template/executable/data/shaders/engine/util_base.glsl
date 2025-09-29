@@ -44,6 +44,18 @@
 
 
 // ****************************************************************
+// power of two and three
+float corePow2(const in float v) {return (v * v);}
+vec2  corePow2(const in vec2  v) {return (v * v);}
+vec3  corePow2(const in vec3  v) {return (v * v);}
+vec4  corePow2(const in vec4  v) {return (v * v);}
+float corePow3(const in float v) {return (v * v * v);}
+vec2  corePow3(const in vec2  v) {return (v * v * v);}
+vec3  corePow3(const in vec3  v) {return (v * v * v);}
+vec4  corePow3(const in vec4  v) {return (v * v * v);}
+
+
+// ****************************************************************
 // condition across group of shader invocations
 #if defined(GL_ARB_shader_group_vote)
     #define coreAnyInvocation(x)  (anyInvocationARB (x))
@@ -71,6 +83,30 @@ float coreLinearStep(const in float e0, const in float e1, const in float v) {re
 vec2  coreLinearStep(const in vec2  e0, const in vec2  e1, const in vec2  v) {return coreSaturate((v - e0) / (e1 - e0));}
 vec3  coreLinearStep(const in vec3  e0, const in vec3  e1, const in vec3  v) {return coreSaturate((v - e0) / (e1 - e0));}
 vec4  coreLinearStep(const in vec4  e0, const in vec4  e1, const in vec4  v) {return coreSaturate((v - e0) / (e1 - e0));}
+vec2  coreLinearStep(const in float e0, const in float e1, const in vec2  v) {return coreLinearStep(vec2(e0), vec2(e1), v);}
+vec3  coreLinearStep(const in float e0, const in float e1, const in vec3  v) {return coreLinearStep(vec3(e0), vec3(e1), v);}
+vec4  coreLinearStep(const in float e0, const in float e1, const in vec4  v) {return coreLinearStep(vec4(e0), vec4(e1), v);}
+
+
+// ****************************************************************
+// hermite interpolation between 0.0 and 1.0
+#if (CORE_GL_VERSION >= 130) || (CORE_GL_ES_VERSION >= 100)
+    #define coreSmoothStep(a,b,c) (smoothstep(a, b, c))
+#else
+    float coreSmoothStep(const in float e0, const in float e1, const in float v) {float t = coreLinearStep(e0, e1, v); return (    (3.0) -     (2.0) * t) * t * t;}
+    vec2  coreSmoothStep(const in vec2  e0, const in vec2  e1, const in vec2  v) {vec2  t = coreLinearStep(e0, e1, v); return (vec2(3.0) - vec2(2.0) * t) * t * t;}
+    vec3  coreSmoothStep(const in vec3  e0, const in vec3  e1, const in vec3  v) {vec3  t = coreLinearStep(e0, e1, v); return (vec3(3.0) - vec3(2.0) * t) * t * t;}
+    vec4  coreSmoothStep(const in vec4  e0, const in vec4  e1, const in vec4  v) {vec4  t = coreLinearStep(e0, e1, v); return (vec4(3.0) - vec4(2.0) * t) * t * t;}
+    vec2  coreSmoothStep(const in float e0, const in float e1, const in vec2  v) {return coreSmoothStep(vec2(e0), vec2(e1), v);}
+    vec3  coreSmoothStep(const in float e0, const in float e1, const in vec3  v) {return coreSmoothStep(vec3(e0), vec3(e1), v);}
+    vec4  coreSmoothStep(const in float e0, const in float e1, const in vec4  v) {return coreSmoothStep(vec4(e0), vec4(e1), v);}
+#endif
+
+
+// ****************************************************************
+// hermite blending and mixing
+#define coreSmoothBlend(s)   (coreSmoothStep(0.0, 1.0, s))
+#define coreSmoothMix(x,y,s) (mix(x, y, coreSmoothBlend(s)))
 
 
 // ****************************************************************

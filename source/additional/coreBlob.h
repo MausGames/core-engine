@@ -23,9 +23,9 @@
     #define CORE_BLOB_LIBRARY_NAME "libEGL.so"
 #endif
 
-#define CORE_BLOB_CACHE_NAME    (DEFINED(_CORE_DEBUG_) ? "blob_debug.cache" : "blob.cache")   // file name of the blob-cache
-#define CORE_BLOB_CACHE_MAGIC   (UINT_LITERAL("CBC0"))                                        // magic number of the blob-cache
-#define CORE_BLOB_CACHE_VERSION (0x00000001u)                                                 // current file version of the blob-cache
+#define CORE_BLOB_CACHE_NAME    (Core::Debug->IsEnabled() ? "blob_debug.cache" : "blob.cache")   // file name of the blob-cache
+#define CORE_BLOB_CACHE_MAGIC   (UINT_LITERAL("CBC0"))                                           // magic number of the blob-cache
+#define CORE_BLOB_CACHE_VERSION (0x00000001u)                                                    // current file version of the blob-cache
 
 struct coreCacheEntry final
 {

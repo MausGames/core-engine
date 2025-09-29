@@ -168,10 +168,15 @@ Functions
     T     coreMin3                (in T, in T, in T)                     // trinary minimum
     T     coreMax3                (in T, in T, in T)                     // trinary maximum
     T     coreMed3                (in T, in T, in T)                     // trinary median
+    T     corePow2                (in T)                                 // power of two
+    T     corePow3                (in T)                                 // power of three
     bool  coreAnyInvocation       (in bool)                              // condition across group of shader invocations
     bool  coreAllInvocations      (in bool)
     T     coreSaturate            (in T)                                 // clamp values between 0.0 and 1.0
     T     coreLinearStep          (in T, in T, in T)                     // linear interpolation between 0.0 and 1.0
+    T     coreSmoothStep          (in T, in T, in T)                     // hermite interpolation between 0.0 and 1.0
+    T     coreSmoothBlend         (in T)                                 // hermite blending
+    T     coreSmoothMix           (in T, in T, in T)                     // hermite mixing
     T     coreSign                (in T)                                 // extract the sign without returning 0.0
     S     coreIsNan               (in T)                                 // test if the parameter is not a number
     T     coreIntMod              (in T, in S)                           // integer modulo operation

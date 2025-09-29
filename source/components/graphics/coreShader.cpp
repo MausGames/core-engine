@@ -188,6 +188,12 @@ void coreShader::__LoadGlobalCode()
     s_asGlobalCode[1].append(PRINT("#define CORE_NUM_LIGHTS"          " (%u) \n", CORE_GRAPHICS_LIGHTS));
     s_asGlobalCode[1].append(PRINT("#define CORE_NUM_OUTPUTS"         " (%u) \n", CORE_SHADER_OUTPUT_COLORS));
 
+    // add debug environment flag
+    if(Core::Debug->IsEnabled())
+    {
+        s_asGlobalCode[1].append("#define _CORE_DEBUG_ (1) \n");
+    }
+
 #if defined(_CORE_EMSCRIPTEN_)
 
     // add WebGL environment flag (as certain features and extensions behave differently)
@@ -215,7 +221,9 @@ void coreShader::__LoadGlobalCode()
 
     // prevent instancing if not supported
     if(!CORE_GL_SUPPORT(ARB_instanced_arrays) || !CORE_GL_SUPPORT(ARB_vertex_array_object))
+    {
         s_asGlobalCode[1].append("#undef _CORE_OPTION_INSTANCING_ \n");
+    }
 
     const auto nRetrieveFunc = [](const coreChar* pcPath, coreString* OUTPUT psString)
     {

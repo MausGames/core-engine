@@ -12,6 +12,7 @@
 // #define _CORE_*_SHADER_          (1)   // shader type (VERTEX, FRAGMENT, ...)
 // #define _CORE_OPTION_*_          (1)   // multiple preprocessor options
 // #define _CORE_QUALITY_           (#)   // quality level
+// #define _CORE_DEBUG_             (1)   // debug environment
 // #define _CORE_WEBGL_             (1)   // WebGL environment
 // #define _CORE_ANGLE_             (1)   // ANGLE environment
 // #define _CORE_GPU_*_             (1)   // GPU vendor (AMD, NVIDIA, ...)
@@ -55,8 +56,12 @@
     #extension GL_EXT_shader_image_load_store           : enable
     #extension GL_NV_gpu_shader5                        : enable
 #endif
+#if defined(_CORE_DEBUG_)
+    #pragma debug(on)
+#else
+    #pragma debug(off)
+#endif
 #pragma optimize(on)
-#pragma debug(off)
 
 // feature helpers
 #if defined(GL_ES)
