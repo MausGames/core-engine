@@ -24,8 +24,8 @@ template <typename T> class coreList : public coreListBase<T>
 {
 private:
     /* internal types */
-    using coreIterator      = typename coreListBase<T>::iterator;
-    using coreConstIterator = typename coreListBase<T>::const_iterator;
+    using coreIterator      = coreListBase<T>::iterator;
+    using coreConstIterator = coreListBase<T>::const_iterator;
 
     /* hide undesired functions */
     using coreListBase<T>::at;
@@ -53,7 +53,7 @@ public:
 
 // ****************************************************************
 /* remove existing item without compaction */
-template <typename T> constexpr typename coreList<T>::coreIterator coreList<T>::erase_swap(const coreIterator& it)
+template <typename T> constexpr coreList<T>::coreIterator coreList<T>::erase_swap(const coreIterator& it)
 {
     ASSERT(!this->empty())
 

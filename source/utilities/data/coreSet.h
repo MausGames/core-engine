@@ -19,8 +19,8 @@ template <typename T> class coreSet final : public coreList<T>
 {
 private:
     /* internal types */
-    using coreIterator      = typename coreList<T>::iterator;
-    using coreConstIterator = typename coreList<T>::const_iterator;
+    using coreIterator      = coreList<T>::iterator;
+    using coreConstIterator = coreList<T>::const_iterator;
 
     /* hide undesired functions */
     using coreList<T>::push_back;

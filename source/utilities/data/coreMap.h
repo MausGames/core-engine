@@ -17,6 +17,7 @@
 // TODO 3: reserve and shrink_to_fit strings in coreMapStrFull ?
 // TODO 3: "deducing this" in C++23, to get rid of the const and non-const variants for at and at_bs (maybe somewhere else too)
 // TODO 3: change m_asStringList to regular list
+// TODO 3: turn into constexpr container
 
 
 // ****************************************************************
@@ -32,12 +33,12 @@ protected:
     /* internal types */
     using coreValueList             = coreList<T>;
     using coreKeyList               = coreList<K>;
-    using coreValueIterator         = typename coreValueList::iterator;
-    using coreValueConstIterator    = typename coreValueList::const_iterator;
-    using coreValueRevIterator      = typename coreValueList::reverse_iterator;
-    using coreValueConstRevIterator = typename coreValueList::const_reverse_iterator;
-    using coreKeyIterator           = typename coreKeyList  ::iterator;
-    using coreKeyConstIterator      = typename coreKeyList  ::const_iterator;
+    using coreValueIterator         = coreValueList::iterator;
+    using coreValueConstIterator    = coreValueList::const_iterator;
+    using coreValueRevIterator      = coreValueList::reverse_iterator;
+    using coreValueConstRevIterator = coreValueList::const_reverse_iterator;
+    using coreKeyIterator           = coreKeyList  ::iterator;
+    using coreKeyConstIterator      = coreKeyList  ::const_iterator;
 
 
 protected:
@@ -181,8 +182,8 @@ public:
     ENABLE_COPY(coreMapStrFull)
 
     /* access specific entry */
-    inline       T& operator [] (const coreUintW       iIndex)      {return this->m_atValueList[iIndex];}
-    inline const T& operator [] (const coreUintW       iIndex)const {return this->m_atValueList[iIndex];}
+    inline       T& operator [] (const coreUintW       iIndex)      {ASSERT(iIndex < this->size()) return this->m_atValueList[iIndex];}
+    inline const T& operator [] (const coreUintW       iIndex)const {ASSERT(iIndex < this->size()) return this->m_atValueList[iIndex];}
     inline       T& operator [] (const coreHashString& sKey)        {this->__save_string(sKey); return this->coreMapStrBase<T>::operator [] (sKey);}
     inline       T&          bs (const coreHashString& sKey)        {this->__save_string(sKey); return this->coreMapStrBase<T>::         bs (sKey);}
 
@@ -191,18 +192,18 @@ public:
     inline void shrink_to_fit()                          {m_asStringList.shrink_to_fit();    this->coreMapStrBase<T>::shrink_to_fit();}
 
     /* create new entry */
-    template <typename... A> inline void emplace   (const coreHashString& sKey,                                                          A&&... vArgs) {this->__save_string(sKey); this->coreMapStrBase<T>::emplace   (sKey,     std::forward<A>(vArgs)...);}
-    template <typename... A> inline void emplace_bs(const coreHashString& sKey,                                                          A&&... vArgs) {this->__save_string(sKey); this->coreMapStrBase<T>::emplace_bs(sKey,     std::forward<A>(vArgs)...);}
-    template <typename... A> inline void emplace   (const typename coreMapStrBase<T>::coreValueIterator& it, const coreHashString& sKey, A&&... vArgs) {this->__save_string(sKey); this->coreMapStrBase<T>::emplace   (it, sKey, std::forward<A>(vArgs)...);}
+    template <typename... A> inline void emplace   (const coreHashString& sKey,                                                 A&&... vArgs) {this->__save_string(sKey); this->coreMapStrBase<T>::emplace   (sKey,     std::forward<A>(vArgs)...);}
+    template <typename... A> inline void emplace_bs(const coreHashString& sKey,                                                 A&&... vArgs) {this->__save_string(sKey); this->coreMapStrBase<T>::emplace_bs(sKey,     std::forward<A>(vArgs)...);}
+    template <typename... A> inline void emplace   (const coreMapStrBase<T>::coreValueIterator& it, const coreHashString& sKey, A&&... vArgs) {this->__save_string(sKey); this->coreMapStrBase<T>::emplace   (it, sKey, std::forward<A>(vArgs)...);}
 
     /* remove existing entry */
     using coreMapStrBase<T>::erase;
-    inline typename coreMapStrBase<T>::coreValueIterator erase(const coreUintW iIndex) {this->_cache_clear(); this->m_atKeyList.erase(this->m_atKeyList.begin() + iIndex); return this->m_atValueList.erase(this->m_atValueList.begin() + iIndex);}
-    inline void                                          clear()                       {m_asStringList.clear(); this->coreMapStrBase<T>::clear();}
+    inline coreMapStrBase<T>::coreValueIterator erase(const coreUintW iIndex) {this->_cache_clear(); this->m_atKeyList.erase(this->m_atKeyList.begin() + iIndex); return this->m_atValueList.erase(this->m_atValueList.begin() + iIndex);}
+    inline void                                 clear()                       {m_asStringList.clear(); this->coreMapStrBase<T>::clear();}
 
     /* return original string */
-    inline const coreChar* get_string(const typename coreMapStrBase<T>::coreValueIterator&      it)      {return m_asStringList.at_bs(*this->get_key(it)).c_str();}
-    inline const coreChar* get_string(const typename coreMapStrBase<T>::coreValueConstIterator& it)const {return m_asStringList.at_bs(*this->get_key(it)).c_str();}
+    inline const coreChar* get_string(const coreMapStrBase<T>::coreValueIterator&      it)      {return m_asStringList.at_bs(*this->get_key(it)).c_str();}
+    inline const coreChar* get_string(const coreMapStrBase<T>::coreValueConstIterator& it)const {return m_asStringList.at_bs(*this->get_key(it)).c_str();}
 
 
 private:
@@ -222,12 +223,12 @@ public:
 
     /* access specific entry */
     using coreMapStrBase<T>::operator [];
-    inline       T& operator [] (const coreUintW iIndex)      {return this->m_atValueList[iIndex];}
-    inline const T& operator [] (const coreUintW iIndex)const {return this->m_atValueList[iIndex];}
+    inline       T& operator [] (const coreUintW iIndex)      {ASSERT(iIndex < this->size()) return this->m_atValueList[iIndex];}
+    inline const T& operator [] (const coreUintW iIndex)const {ASSERT(iIndex < this->size()) return this->m_atValueList[iIndex];}
 
     /* remove existing entry */
     using coreMapStrBase<T>::erase;
-    inline typename coreMapStrBase<T>::coreValueIterator erase(const coreUintW iIndex) {this->_cache_clear(); this->m_atKeyList.erase(this->m_atKeyList.begin() + iIndex); return this->m_atValueList.erase(this->m_atValueList.begin() + iIndex);}
+    inline coreMapStrBase<T>::coreValueIterator erase(const coreUintW iIndex) {this->_cache_clear(); this->m_atKeyList.erase(this->m_atKeyList.begin() + iIndex); return this->m_atValueList.erase(this->m_atValueList.begin() + iIndex);}
 };
 
 
@@ -466,7 +467,7 @@ template <typename K, typename I, typename T> coreBool coreMapGen<K, I, T>::eras
 
 // ****************************************************************
 /* lookup entry by key */
-template <typename K, typename I, typename T> typename coreMapGen<K, I, T>::coreKeyIterator coreMapGen<K, I, T>::_retrieve(const I& tKey)
+template <typename K, typename I, typename T> coreMapGen<K, I, T>::coreKeyIterator coreMapGen<K, I, T>::_retrieve(const I& tKey)
 {
     // loop through all entries
     FOR_EACH(it, m_atKeyList)
@@ -483,7 +484,7 @@ template <typename K, typename I, typename T> typename coreMapGen<K, I, T>::core
     return m_atKeyList.end();
 }
 
-template <typename K, typename I, typename T> typename coreMapGen<K, I, T>::coreKeyConstIterator coreMapGen<K, I, T>::_retrieve(const I& tKey)const
+template <typename K, typename I, typename T> coreMapGen<K, I, T>::coreKeyConstIterator coreMapGen<K, I, T>::_retrieve(const I& tKey)const
 {
     // loop through all entries
     FOR_EACH(it, m_atKeyList)
@@ -499,7 +500,7 @@ template <typename K, typename I, typename T> typename coreMapGen<K, I, T>::core
 
 // ****************************************************************
 /* binary lookup entry by key */
-template <typename K, typename I, typename T> typename coreMapGen<K, I, T>::coreKeyIterator coreMapGen<K, I, T>::_retrieve_bs(const I& tKey)
+template <typename K, typename I, typename T> coreMapGen<K, I, T>::coreKeyIterator coreMapGen<K, I, T>::_retrieve_bs(const I& tKey)
 {
     // find entry with binary search
     ASSERT(std::is_sorted(m_atKeyList.begin(), m_atKeyList.end()))
@@ -516,7 +517,7 @@ template <typename K, typename I, typename T> typename coreMapGen<K, I, T>::core
     return m_atKeyList.end();
 }
 
-template <typename K, typename I, typename T> typename coreMapGen<K, I, T>::coreKeyConstIterator coreMapGen<K, I, T>::_retrieve_bs(const I& tKey)const
+template <typename K, typename I, typename T> coreMapGen<K, I, T>::coreKeyConstIterator coreMapGen<K, I, T>::_retrieve_bs(const I& tKey)const
 {
     // find entry with binary search
     ASSERT(std::is_sorted(m_atKeyList.begin(), m_atKeyList.end()))

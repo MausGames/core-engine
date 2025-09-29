@@ -137,7 +137,7 @@ void coreViewBox::UnbindObject(coreObject2D* pObject)
     ASSERT(pObject)
 
     // remove view-object from list
-    m_apObject.index(m_apObject.erase(pObject));
+    m_apObject.erase(pObject);
 }
 
 

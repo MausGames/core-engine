@@ -81,13 +81,15 @@ CoreGraphics::CoreGraphics()noexcept
             iValue = 0; glGetIntegerv(GL_MAX_MULTISAMPLE_COVERAGE_MODES_NV, &iValue);
             if(iValue > 0)
             {
-                coreDataScope<corePoint2I32> pModeList = new corePoint2I32[iValue];
+                corePoint2I32* pModeList = TEMP_NEW(corePoint2I32, iValue);
 
-                glGetIntegerv(GL_MULTISAMPLE_COVERAGE_MODES_NV, r_cast<GLint*>(pModeList.Get()));
-                std::sort(pModeList.Get(), pModeList.Get() + iValue, std::greater());
+                glGetIntegerv(GL_MULTISAMPLE_COVERAGE_MODES_NV, r_cast<GLint*>(pModeList));
+                std::sort(pModeList, pModeList + iValue, std::greater());
 
                 m_aiMaxSamplesCSAA[0] = MAX(pModeList[0][0], 0);
                 m_aiMaxSamplesCSAA[1] = MAX(pModeList[0][1], 0);
+
+                TEMP_DELETE(pModeList)
             }
         }
     }
