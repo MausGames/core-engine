@@ -469,16 +469,15 @@ template <typename K, typename I, typename T> coreBool coreMapGen<K, I, T>::eras
 /* lookup entry by key */
 template <typename K, typename I, typename T> coreMapGen<K, I, T>::coreKeyIterator coreMapGen<K, I, T>::_retrieve(const I& tKey)
 {
-    // loop through all entries
-    FOR_EACH(it, m_atKeyList)
+    // find entry with linear search
+    const auto it = std::find(m_atKeyList.begin(), m_atKeyList.end(), tKey);
+
+    // check result
+    if(it != m_atKeyList.end())
     {
-        // compare key
-        if((*it) == tKey)
-        {
-            // cache current entry
-            this->_cache_set(m_atKeyList.index(it));
-            return it;
-        }
+        // cache current entry
+        this->_cache_set(m_atKeyList.index(it));
+        return it;
     }
 
     return m_atKeyList.end();
@@ -486,15 +485,8 @@ template <typename K, typename I, typename T> coreMapGen<K, I, T>::coreKeyIterat
 
 template <typename K, typename I, typename T> coreMapGen<K, I, T>::coreKeyConstIterator coreMapGen<K, I, T>::_retrieve(const I& tKey)const
 {
-    // loop through all entries
-    FOR_EACH(it, m_atKeyList)
-    {
-        // compare key
-        if((*it) == tKey)
-            return it;
-    }
-
-    return m_atKeyList.end();
+    // find entry with linear search
+    return std::find(m_atKeyList.begin(), m_atKeyList.end(), tKey);
 }
 
 
