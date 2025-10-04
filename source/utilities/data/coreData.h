@@ -249,9 +249,12 @@ public:
     static corePoint2U8           StrVersion  (const coreChar* pcInput);
     static coreUintW              StrCopy     (coreChar* OUTPUT pcOutput, const coreUintW iOutputSize, const coreChar* pcInput, const coreUintW iNum = 0u);
 
-    /* operate with containers */
-    template <typename T>             static inline void RangeShuffle(const T& tBegin, const T& tEnd, coreRand* OUTPUT pRand = Core::Rand) {for(coreUintW i = tEnd - tBegin; i-- > 1u; ) std::swap(tBegin[i], tBegin[pRand->Uint(i)]);}
-    template <typename T, typename S> static inline T    RangeClosest(const T& tBegin, const T& tEnd, const S& tValue)                     {return std::min_element(tBegin, tEnd, [&](const S& A, const S& B) {return (ABS(A - tValue) < ABS(B - tValue));});}
+    /* operate with containers and arrays */
+    template <typename T>             static inline    void      RangeShuffle (const T tBegin, const T tEnd, coreRand* OUTPUT pRand = Core::Rand) {for(coreUintW i = tEnd - tBegin; i-- > 1u; ) std::swap(tBegin[i], tBegin[pRand->Uint(i)]);}
+    template <typename T, typename S> static constexpr T         RangeClosest (const T tBegin, const T tEnd, const S& tValue)                     {return (std::min_element(tBegin, tEnd, [&](const S& A, const S& B) {return (ABS(A - tValue) < ABS(B - tValue));}));}
+    template <typename T, typename S> static constexpr coreBool  RangeContains(const T tBegin, const T tEnd, const S& tValue)                     {return (std::find   (tBegin, tEnd, tValue) != tEnd);}
+    template <typename T, typename S> static constexpr coreUintW RangeIndex   (const T tBegin, const T tEnd, const S& tValue)                     {return (std::find   (tBegin, tEnd, tValue)    - tBegin);}
+    template <typename T, typename F> static constexpr coreUintW RangeIndexIf (const T tBegin, const T tEnd, F&&      nFunction)                  {return (std::find_if(tBegin, tEnd, nFunction) - tBegin);}
 
 
 private:

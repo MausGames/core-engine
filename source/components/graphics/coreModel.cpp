@@ -221,7 +221,7 @@ coreStatus coreModel::Load(coreFile* pFile)
         });
 
         // save number of clusters
-        m_iNumClusters = std::find_if(aiTempIndex, aiTempIndex + CORE_MODEL_CLUSTERS_MAX, [](const coreList<coreUint16>& A) {return A.empty();}) - aiTempIndex;
+        m_iNumClusters = coreData::RangeIndexIf(aiTempIndex, aiTempIndex + CORE_MODEL_CLUSTERS_MAX, [](const coreList<coreUint16>& A) {return A.empty();});
         ASSERT(m_iNumClusters)
 
         // allocate cluster memory

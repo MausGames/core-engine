@@ -138,7 +138,7 @@ void coreRichText::Render()
                     oPass.aInstanceBuffer.next();
 
                     // determine render-count
-                    oPass.iNumEnabled = std::find_if(oPass.aCharacter.begin(), oPass.aCharacter.end(), [this](const coreCharacter& A) {return (A.iOrder >= m_iMaxOrder);}) - oPass.aCharacter.begin();
+                    oPass.iNumEnabled = coreData::RangeIndexIf(oPass.aCharacter.begin(), oPass.aCharacter.end(), [this](const coreCharacter& A) {return (A.iOrder >= m_iMaxOrder);});
 
                     if(CORE_GL_SUPPORT(ARB_half_float_vertex))
                     {
