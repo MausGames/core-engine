@@ -26,7 +26,7 @@ private:
 
 public:
     corePoint() = default;
-    template <typename... A> constexpr explicit corePoint(const T& tValue, A&&... vArgs)noexcept : m_atValue {tValue, T(std::forward<A>(vArgs))...} {STATIC_ASSERT(1u + sizeof...(A) == iSize)}
+    template <typename... A> constexpr explicit corePoint(const T tValue, A&&... vArgs)noexcept : m_atValue {tValue, T(std::forward<A>(vArgs))...} {STATIC_ASSERT(1u + sizeof...(A) == iSize)}
 
     ENABLE_COPY(corePoint)
     ENABLE_COMPARISON(corePoint)

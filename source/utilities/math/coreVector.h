@@ -127,10 +127,10 @@ public:
     constexpr coreVector2 NormalizedFast  ()const                                                     {ASSERT(!this->IsNull())          return coreVector2(x, y) * RSQRT(this->LengthSq());}
 
     /* process vector */
-    template <typename F, typename... A> inline coreVector2 Processed(F&& nFunction, A&&... vArgs)const                                                      {return coreVector2(nFunction(x, std::forward<A>(vArgs)...), nFunction(y, std::forward<A>(vArgs)...));}
-    inline coreVector2 Processed(coreFloat (*nFunction) (const coreFloat&))const                                                                             {return coreVector2(nFunction(x),                            nFunction(y));}
-    inline coreVector2 Processed(coreFloat (*nFunction) (const coreFloat&, const coreFloat&),                   const coreFloat f1)const                     {return coreVector2(nFunction(x, f1),                        nFunction(y, f1));}
-    inline coreVector2 Processed(coreFloat (*nFunction) (const coreFloat&, const coreFloat&, const coreFloat&), const coreFloat f1, const coreFloat f2)const {return coreVector2(nFunction(x, f1, f2),                    nFunction(y, f1, f2));}
+    template <typename F, typename... A> inline coreVector2 Processed(F&& nFunction, A&&... vArgs)const                                                   {return coreVector2(nFunction(x, std::forward<A>(vArgs)...), nFunction(y, std::forward<A>(vArgs)...));}
+    inline coreVector2 Processed(coreFloat (*nFunction) (const coreFloat))const                                                                           {return coreVector2(nFunction(x),                            nFunction(y));}
+    inline coreVector2 Processed(coreFloat (*nFunction) (const coreFloat, const coreFloat),                  const coreFloat f1)const                     {return coreVector2(nFunction(x, f1),                        nFunction(y, f1));}
+    inline coreVector2 Processed(coreFloat (*nFunction) (const coreFloat, const coreFloat, const coreFloat), const coreFloat f1, const coreFloat f2)const {return coreVector2(nFunction(x, f1, f2),                    nFunction(y, f1, f2));}
 
     /* direct functions */
     constexpr coreFloat   Length      ()const {return SQRT(this->LengthSq());}
@@ -284,10 +284,10 @@ public:
     constexpr coreVector3 NormalizedFast  ()const                                                          {ASSERT(!this->IsNull())          return coreVector3(x, y, z) * RSQRT(this->LengthSq());}
 
     /* process vector */
-    template <typename F, typename... A> inline coreVector3 Processed(F&& nFunction, A&&... vArgs)const                                                      {return coreVector3(nFunction(x, std::forward<A>(vArgs)...), nFunction(y, std::forward<A>(vArgs)...), nFunction(z, std::forward<A>(vArgs)...));}
-    inline coreVector3 Processed(coreFloat (*nFunction) (const coreFloat&))const                                                                             {return coreVector3(nFunction(x),                            nFunction(y),                            nFunction(z));}
-    inline coreVector3 Processed(coreFloat (*nFunction) (const coreFloat&, const coreFloat&),                   const coreFloat f1)const                     {return coreVector3(nFunction(x, f1),                        nFunction(y, f1),                        nFunction(z, f1));}
-    inline coreVector3 Processed(coreFloat (*nFunction) (const coreFloat&, const coreFloat&, const coreFloat&), const coreFloat f1, const coreFloat f2)const {return coreVector3(nFunction(x, f1, f2),                    nFunction(y, f1, f2),                    nFunction(z, f1, f2));}
+    template <typename F, typename... A> inline coreVector3 Processed(F&& nFunction, A&&... vArgs)const                                                   {return coreVector3(nFunction(x, std::forward<A>(vArgs)...), nFunction(y, std::forward<A>(vArgs)...), nFunction(z, std::forward<A>(vArgs)...));}
+    inline coreVector3 Processed(coreFloat (*nFunction) (const coreFloat))const                                                                           {return coreVector3(nFunction(x),                            nFunction(y),                            nFunction(z));}
+    inline coreVector3 Processed(coreFloat (*nFunction) (const coreFloat, const coreFloat),                  const coreFloat f1)const                     {return coreVector3(nFunction(x, f1),                        nFunction(y, f1),                        nFunction(z, f1));}
+    inline coreVector3 Processed(coreFloat (*nFunction) (const coreFloat, const coreFloat, const coreFloat), const coreFloat f1, const coreFloat f2)const {return coreVector3(nFunction(x, f1, f2),                    nFunction(y, f1, f2),                    nFunction(z, f1, f2));}
 
     /* direct functions */
     constexpr coreFloat   Length      ()const {return SQRT(this->LengthSq());}
@@ -442,10 +442,10 @@ public:
     constexpr coreVector4 NormalizedFast  ()const                                                               {ASSERT(!this->IsNull())          return coreVector4(x, y, z, w) * RSQRT(this->LengthSq());}
 
     /* process vector */
-    template <typename F, typename... A> inline coreVector4 Processed(F&& nFunction, A&&... vArgs)const                                                      {return coreVector4(nFunction(x, std::forward<A>(vArgs)...), nFunction(y, std::forward<A>(vArgs)...), nFunction(z, std::forward<A>(vArgs)...), nFunction(w, std::forward<A>(vArgs)...));}
-    inline coreVector4 Processed(coreFloat (*nFunction) (const coreFloat&))const                                                                             {return coreVector4(nFunction(x),                            nFunction(y),                            nFunction(z),                            nFunction(w));}
-    inline coreVector4 Processed(coreFloat (*nFunction) (const coreFloat&, const coreFloat&),                   const coreFloat f1)const                     {return coreVector4(nFunction(x, f1),                        nFunction(y, f1),                        nFunction(z, f1),                        nFunction(w, f1));}
-    inline coreVector4 Processed(coreFloat (*nFunction) (const coreFloat&, const coreFloat&, const coreFloat&), const coreFloat f1, const coreFloat f2)const {return coreVector4(nFunction(x, f1, f2),                    nFunction(y, f1, f2),                    nFunction(z, f1, f2),                    nFunction(w, f1, f2));}
+    template <typename F, typename... A> inline coreVector4 Processed(F&& nFunction, A&&... vArgs)const                                                   {return coreVector4(nFunction(x, std::forward<A>(vArgs)...), nFunction(y, std::forward<A>(vArgs)...), nFunction(z, std::forward<A>(vArgs)...), nFunction(w, std::forward<A>(vArgs)...));}
+    inline coreVector4 Processed(coreFloat (*nFunction) (const coreFloat))const                                                                           {return coreVector4(nFunction(x),                            nFunction(y),                            nFunction(z),                            nFunction(w));}
+    inline coreVector4 Processed(coreFloat (*nFunction) (const coreFloat, const coreFloat),                  const coreFloat f1)const                     {return coreVector4(nFunction(x, f1),                        nFunction(y, f1),                        nFunction(z, f1),                        nFunction(w, f1));}
+    inline coreVector4 Processed(coreFloat (*nFunction) (const coreFloat, const coreFloat, const coreFloat), const coreFloat f1, const coreFloat f2)const {return coreVector4(nFunction(x, f1, f2),                    nFunction(y, f1, f2),                    nFunction(z, f1, f2),                    nFunction(w, f1, f2));}
 
     /* direct functions */
     constexpr coreFloat   Length      ()const {return SQRT(this->LengthSq());}

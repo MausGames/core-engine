@@ -124,7 +124,7 @@ public:
     static constexpr                RETURN_RESTRICT const coreChar* Print(const coreChar* pcFormat) {return pcFormat;}
 
     /* convert between trivial value and string */
-    template <typename T, typename... A> static const coreChar* ToChars  (const T& tValue,                                A&&... vArgs);
+    template <typename T, typename... A> static const coreChar* ToChars  (const T tValue,                                 A&&... vArgs);
     template <typename T, typename... A> static T               FromChars(const coreChar* pcString, const coreUintW iLen, A&&... vArgs);
 
     /* get application properties */
@@ -286,7 +286,7 @@ template <typename... A> RETURN_RESTRICT const coreChar* coreData::Print(const c
 
 // ****************************************************************
 /* convert trivial value to string */
-template <typename T, typename... A> const coreChar* coreData::ToChars(const T& tValue, A&&... vArgs)
+template <typename T, typename... A> const coreChar* coreData::ToChars(const T tValue, A&&... vArgs)
 {
     coreChar* pcString = coreData::__NextTempString();
 

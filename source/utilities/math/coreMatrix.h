@@ -110,10 +110,10 @@ public:
     constexpr coreMatrix2 Inverted()const;
 
     /* process matrix */
-    template <typename F, typename... A> inline coreMatrix2 Processed(F&& nFunction, A&&... vArgs)const                                                      {coreMatrix2 M; for(coreUintW i = 0u; i < 4u; ++i) M.arr(i) = nFunction(this->arr(i), std::forward<A>(vArgs)...); return M;}
-    inline coreMatrix2 Processed(coreFloat (*nFunction) (const coreFloat&))const                                                                             {coreMatrix2 M; for(coreUintW i = 0u; i < 4u; ++i) M.arr(i) = nFunction(this->arr(i));                            return M;}
-    inline coreMatrix2 Processed(coreFloat (*nFunction) (const coreFloat&, const coreFloat&),                   const coreFloat f1)const                     {coreMatrix2 M; for(coreUintW i = 0u; i < 4u; ++i) M.arr(i) = nFunction(this->arr(i), f1);                        return M;}
-    inline coreMatrix2 Processed(coreFloat (*nFunction) (const coreFloat&, const coreFloat&, const coreFloat&), const coreFloat f1, const coreFloat f2)const {coreMatrix2 M; for(coreUintW i = 0u; i < 4u; ++i) M.arr(i) = nFunction(this->arr(i), f1, f2);                    return M;}
+    template <typename F, typename... A> inline coreMatrix2 Processed(F&& nFunction, A&&... vArgs)const                                                   {coreMatrix2 M; for(coreUintW i = 0u; i < 4u; ++i) M.arr(i) = nFunction(this->arr(i), std::forward<A>(vArgs)...); return M;}
+    inline coreMatrix2 Processed(coreFloat (*nFunction) (const coreFloat))const                                                                           {coreMatrix2 M; for(coreUintW i = 0u; i < 4u; ++i) M.arr(i) = nFunction(this->arr(i));                            return M;}
+    inline coreMatrix2 Processed(coreFloat (*nFunction) (const coreFloat, const coreFloat),                  const coreFloat f1)const                     {coreMatrix2 M; for(coreUintW i = 0u; i < 4u; ++i) M.arr(i) = nFunction(this->arr(i), f1);                        return M;}
+    inline coreMatrix2 Processed(coreFloat (*nFunction) (const coreFloat, const coreFloat, const coreFloat), const coreFloat f1, const coreFloat f2)const {coreMatrix2 M; for(coreUintW i = 0u; i < 4u; ++i) M.arr(i) = nFunction(this->arr(i), f1, f2);                    return M;}
 
     /* direct functions */
     constexpr coreFloat Determinant()const;
@@ -174,10 +174,10 @@ public:
     constexpr coreMatrix3 Inverted()const;
 
     /* process matrix */
-    template <typename F, typename... A> inline coreMatrix3 Processed(F&& nFunction, A&&... vArgs)const                                                      {coreMatrix3 M; for(coreUintW i = 0u; i < 9u; ++i) M.arr(i) = nFunction(this->arr(i), std::forward<A>(vArgs)...); return M;}
-    inline coreMatrix3 Processed(coreFloat (*nFunction) (const coreFloat&))const                                                                             {coreMatrix3 M; for(coreUintW i = 0u; i < 9u; ++i) M.arr(i) = nFunction(this->arr(i));                            return M;}
-    inline coreMatrix3 Processed(coreFloat (*nFunction) (const coreFloat&, const coreFloat&),                   const coreFloat f1)const                     {coreMatrix3 M; for(coreUintW i = 0u; i < 9u; ++i) M.arr(i) = nFunction(this->arr(i), f1);                        return M;}
-    inline coreMatrix3 Processed(coreFloat (*nFunction) (const coreFloat&, const coreFloat&, const coreFloat&), const coreFloat f1, const coreFloat f2)const {coreMatrix3 M; for(coreUintW i = 0u; i < 9u; ++i) M.arr(i) = nFunction(this->arr(i), f1, f2);                    return M;}
+    template <typename F, typename... A> inline coreMatrix3 Processed(F&& nFunction, A&&... vArgs)const                                                   {coreMatrix3 M; for(coreUintW i = 0u; i < 9u; ++i) M.arr(i) = nFunction(this->arr(i), std::forward<A>(vArgs)...); return M;}
+    inline coreMatrix3 Processed(coreFloat (*nFunction) (const coreFloat))const                                                                           {coreMatrix3 M; for(coreUintW i = 0u; i < 9u; ++i) M.arr(i) = nFunction(this->arr(i));                            return M;}
+    inline coreMatrix3 Processed(coreFloat (*nFunction) (const coreFloat, const coreFloat),                  const coreFloat f1)const                     {coreMatrix3 M; for(coreUintW i = 0u; i < 9u; ++i) M.arr(i) = nFunction(this->arr(i), f1);                        return M;}
+    inline coreMatrix3 Processed(coreFloat (*nFunction) (const coreFloat, const coreFloat, const coreFloat), const coreFloat f1, const coreFloat f2)const {coreMatrix3 M; for(coreUintW i = 0u; i < 9u; ++i) M.arr(i) = nFunction(this->arr(i), f1, f2);                    return M;}
 
     /* component functions */
     constexpr coreVector2 GetPosition ()const {return coreVector2(_31, _32);}
@@ -260,10 +260,10 @@ public:
     constexpr coreMatrix4 Inverted()const;
 
     /* process matrix */
-    template <typename F, typename... A> inline coreMatrix4 Processed(F&& nFunction, A&&... vArgs)const                                                      {coreMatrix4 M; for(coreUintW i = 0u; i < 16u; ++i) M.arr(i) = nFunction(this->arr(i), std::forward<A>(vArgs)...); return M;}
-    inline coreMatrix4 Processed(coreFloat (*nFunction) (const coreFloat&))const                                                                             {coreMatrix4 M; for(coreUintW i = 0u; i < 16u; ++i) M.arr(i) = nFunction(this->arr(i));                            return M;}
-    inline coreMatrix4 Processed(coreFloat (*nFunction) (const coreFloat&, const coreFloat&),                   const coreFloat f1)const                     {coreMatrix4 M; for(coreUintW i = 0u; i < 16u; ++i) M.arr(i) = nFunction(this->arr(i), f1);                        return M;}
-    inline coreMatrix4 Processed(coreFloat (*nFunction) (const coreFloat&, const coreFloat&, const coreFloat&), const coreFloat f1, const coreFloat f2)const {coreMatrix4 M; for(coreUintW i = 0u; i < 16u; ++i) M.arr(i) = nFunction(this->arr(i), f1, f2);                    return M;}
+    template <typename F, typename... A> inline coreMatrix4 Processed(F&& nFunction, A&&... vArgs)const                                                   {coreMatrix4 M; for(coreUintW i = 0u; i < 16u; ++i) M.arr(i) = nFunction(this->arr(i), std::forward<A>(vArgs)...); return M;}
+    inline coreMatrix4 Processed(coreFloat (*nFunction) (const coreFloat))const                                                                           {coreMatrix4 M; for(coreUintW i = 0u; i < 16u; ++i) M.arr(i) = nFunction(this->arr(i));                            return M;}
+    inline coreMatrix4 Processed(coreFloat (*nFunction) (const coreFloat, const coreFloat),                  const coreFloat f1)const                     {coreMatrix4 M; for(coreUintW i = 0u; i < 16u; ++i) M.arr(i) = nFunction(this->arr(i), f1);                        return M;}
+    inline coreMatrix4 Processed(coreFloat (*nFunction) (const coreFloat, const coreFloat, const coreFloat), const coreFloat f1, const coreFloat f2)const {coreMatrix4 M; for(coreUintW i = 0u; i < 16u; ++i) M.arr(i) = nFunction(this->arr(i), f1, f2);                    return M;}
 
     /* component functions */
     constexpr coreVector3 GetPosition()const {return coreVector3(_31, _32, _33);}
