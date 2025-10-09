@@ -12,7 +12,6 @@
 
 // TODO 3: call OnLoad directly after load instead with delayed function callback ?
 // TODO 4: resources exist only within handles, redefine all interfaces
-// TODO 5: investigate possible GPU memory fragmentation when streaming in and out lots of resources
 // TODO 3: set textures which are still loaded to default values (default_white.webp, default_normal.webp) "placeholder", as those do not prevent rendering (like models and shaders), and cause flickering (because textures of previous render-calls are used), but how to handle IsLoaded/IsUsable state for situations where components wait on textures, maybe set manually, or use LOAD option
 // TODO 3: set resources which could not be found (or loaded) to fallback values
 // TODO 3: CORE_OK for non-automatic resource-handle constructor and nullify might be wrong (as it gets marked as successful)

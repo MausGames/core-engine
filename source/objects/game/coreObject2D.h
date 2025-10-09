@@ -15,6 +15,7 @@
 // TODO 3: on IsClicked: consider finger number
 // TODO 5: <old comment style>
 // TODO 1: get rid of m_vDirection.InvertedX(), this is just wrong, it rotates into the wrong direction (same for view-dir, label/RT rectify) -> can be done now, but needs adjustment in all projects
+// TODO 5: new style and global config vor right-to-left arrangement
 
 
 // ****************************************************************

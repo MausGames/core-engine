@@ -327,7 +327,7 @@ FORCE_INLINE coreBool coreRecursiveLock::IsLocked()const
 
 
 // ****************************************************************
-/* acquire the shared spinlock */
+/* acquire the shared spinlock (exclusive) */
 FORCE_INLINE void coreSharedLock::LockWrite()
 {
 #if defined(CORE_SPINLOCK_DISABLED)
@@ -339,6 +339,9 @@ FORCE_INLINE void coreSharedLock::LockWrite()
 #endif
 }
 
+
+// ****************************************************************
+/* acquire the shared spinlock (shared) */
 FORCE_INLINE void coreSharedLock::LockRead()
 {
 #if defined(CORE_SPINLOCK_DISABLED)
@@ -352,7 +355,7 @@ FORCE_INLINE void coreSharedLock::LockRead()
 
 
 // ****************************************************************
-/* release the shared spinlock */
+/* release the shared spinlock (exclusive) */
 FORCE_INLINE void coreSharedLock::UnlockWrite()
 {
     ASSERT(this->IsLocked())
@@ -366,6 +369,9 @@ FORCE_INLINE void coreSharedLock::UnlockWrite()
 #endif
 }
 
+
+// ****************************************************************
+/* release the shared spinlock (shared) */
 FORCE_INLINE void coreSharedLock::UnlockRead()
 {
     ASSERT(this->IsLocked())
@@ -381,7 +387,7 @@ FORCE_INLINE void coreSharedLock::UnlockRead()
 
 
 // ****************************************************************
-/* try to acquire the shared spinlock */
+/* try to acquire the shared spinlock (exclusive) */
 FORCE_INLINE coreBool coreSharedLock::TryLockWrite()
 {
 #if defined(CORE_SPINLOCK_DISABLED)
@@ -402,6 +408,9 @@ FORCE_INLINE coreBool coreSharedLock::TryLockWrite()
 #endif
 }
 
+
+// ****************************************************************
+/* try to acquire the shared spinlock (shared) */
 FORCE_INLINE coreBool coreSharedLock::TryLockRead()
 {
 #if defined(CORE_SPINLOCK_DISABLED)

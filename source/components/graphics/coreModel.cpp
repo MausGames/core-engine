@@ -271,7 +271,7 @@ coreStatus coreModel::Load(coreFile* pFile)
         }
     }
 
-    if(!HAS_FLAG(m_eLoad, CORE_MODEL_LOAD_NO_BUFFERS))
+    if(!HAS_FLAG(m_eLoad, CORE_MODEL_LOAD_NO_BUFFERS) || Core::Debug->IsEnabled())   // # for debug drawing
     {
         if(CORE_GL_SUPPORT(ARB_vertex_type_2_10_10_10_rev) && CORE_GL_SUPPORT(ARB_half_float_vertex))
         {

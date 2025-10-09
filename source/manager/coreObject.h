@@ -16,6 +16,7 @@
 // TODO 2: add pre-registering interface to object manager ? accessing a non-existing list can cause issues
 // TODO 4: [const coreObject3D*] should be [const coreObject3D&], but pointers are swapped (for performance reasons)
 // TODO 2: collision between precise and simple volume should actually do a sphere<>triangle intersection test
+// TODO 4: [CORE2] change m_iStatus and m_iType to unsigned
 
 
 // ****************************************************************
