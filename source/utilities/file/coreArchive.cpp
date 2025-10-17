@@ -17,6 +17,7 @@ coreFile::coreFile(const coreChar* pcPath)noexcept
 , m_iSize       (0u)
 , m_iArchivePos (__CORE_FILE_TYPE_DIRECT)
 , m_pArchive    (NULL)
+, m_bExtern     (false)
 , m_iRefCount   (0u)
 , m_DataLock    ()
 {
@@ -31,12 +32,13 @@ coreFile::coreFile(const coreChar* pcPath)noexcept
             else Core::Log->Info   ("File (%s, %.1f KB) opened",     m_sPath.c_str(), I_TO_F(m_iSize) / 1024.0f);
 }
 
-coreFile::coreFile(const coreChar* pcPath, coreByte* pData, const coreUint32 iSize)noexcept
+coreFile::coreFile(const coreChar* pcPath, coreByte* pData, const coreUint32 iSize, const coreBool bExtern)noexcept
 : m_sPath       (pcPath)
 , m_pData       (pData)
 , m_iSize       (iSize)
 , m_iArchivePos (__CORE_FILE_TYPE_MEMORY)
 , m_pArchive    (NULL)
+, m_bExtern     (bExtern)
 , m_iRefCount   (0u)
 , m_DataLock    ()
 {
@@ -50,7 +52,7 @@ coreFile::~coreFile()
     ASSERT(!m_iRefCount)
 
     // delete file data
-    SAFE_DELETE_ARRAY(m_pData)
+    this->__DeleteData();
 }
 
 
@@ -86,14 +88,14 @@ coreStatus coreFile::Save(const coreChar* pcPath)
     coreFile::__Write(pFile, m_pData, m_iSize, &bSuccess);
 
     // close file
-    if(!SDL_CloseIO(pFile) || !bSuccess)
+    WARN_IF(!SDL_CloseIO(pFile) || !bSuccess)
     {
         Core::Log->Warning("File (%s) could not be saved properly (SDL: %s)", m_sPath.c_str(), SDL_GetError());
         return CORE_ERROR_FILE;
     }
 
     // move temporary file over real file
-    if(DEFINED(CORE_FILE_SAFEWRITE) && coreData::FileMove(pcTemp, m_sPath.c_str()))
+    WARN_IF(DEFINED(CORE_FILE_SAFEWRITE) && (coreData::FileMove(pcTemp, m_sPath.c_str()) != CORE_OK))
     {
         Core::Log->Warning("File (%s) could not be moved", m_sPath.c_str());
         return CORE_ERROR_FILE;
@@ -123,7 +125,7 @@ coreStatus coreFile::Compress(const coreInt32 iLevel)
     if(eError == CORE_OK)
     {
         // delete old data
-        SAFE_DELETE_ARRAY(m_pData)
+        this->__DeleteData();
 
         // save new data
         m_pData = pNewData;
@@ -150,7 +152,7 @@ coreStatus coreFile::Decompress(const coreUint32 iLimit)
     if(eError == CORE_OK)
     {
         // delete old data
-        SAFE_DELETE_ARRAY(m_pData)
+        this->__DeleteData();
 
         // save new data
         m_pData = pNewData;
@@ -269,9 +271,9 @@ coreStatus coreFile::LoadData()
     coreFile::__Read(pFile, m_pData, m_iSize, &bSuccess);
 
     // close file
-    if(!SDL_CloseIO(pFile) || !bSuccess)
+    WARN_IF(!SDL_CloseIO(pFile) || !bSuccess)
     {
-        SAFE_DELETE_ARRAY(m_pData)
+        this->__DeleteData();
         return CORE_ERROR_FILE;
     }
 
@@ -292,7 +294,7 @@ coreStatus coreFile::UnloadData()
     if(m_iRefCount) return CORE_BUSY;
 
     // delete file data
-    SAFE_DELETE_ARRAY(m_pData)
+    this->__DeleteData();
     return CORE_OK;
 }
 
@@ -356,13 +358,31 @@ void coreFile::FlushFilesystem()
 
 
 // ****************************************************************
+/* delete file data */
+void coreFile::__DeleteData()
+{
+    if(m_bExtern)
+    {
+        // just remove external data
+        m_pData   = NULL;
+        m_bExtern = false;
+    }
+    else
+    {
+        // actually delete data
+        SAFE_DELETE_ARRAY(m_pData)
+    }
+}
+
+
+// ****************************************************************
 /* safely read from stream */
 void coreFile::__Read(SDL_IOStream* pFile, void* pPointer, const coreUintW iSize, coreBool* OUTPUT pbSuccess)
 {
     ASSERT(pFile && pPointer && iSize && pbSuccess)
 
     // read and check for errors
-    if(!(*pbSuccess) || !((*pbSuccess) = (SDL_ReadIO(pFile, pPointer, iSize) == iSize)))
+    WARN_IF(!(*pbSuccess) || !((*pbSuccess) = (SDL_ReadIO(pFile, pPointer, iSize) == iSize)))
     {
         // reset output memory
         std::memset(pPointer, 0, iSize);
@@ -445,7 +465,7 @@ coreArchive::coreArchive(const coreChar* pcPath)noexcept
     }
 
     // close archive
-    if(!SDL_CloseIO(pArchive) || !bSuccess)
+    WARN_IF(!SDL_CloseIO(pArchive) || !bSuccess)
     {
         this->ClearFiles();
         Core::Log->Warning("Archive (%s) could not be opened properly (SDL: %s)", m_sPath.c_str(), SDL_GetError());
@@ -478,7 +498,9 @@ coreStatus coreArchive::Save(const coreChar* pcPath)
 
     // cache missing file data
     FOR_EACH(it, m_apFile)
+    {
         (*it)->LoadData();
+    }
 
     // write to temporary file first (to improve robustness)
     const coreChar* pcTemp = DEFINED(CORE_FILE_SAFEWRITE) ? PRINT("%s.temp_%u", m_sPath.c_str(), coreData::ProcessID()) : m_sPath.c_str();
@@ -522,14 +544,14 @@ coreStatus coreArchive::Save(const coreChar* pcPath)
     }
 
     // close archive
-    if(!SDL_CloseIO(pArchive) || !bSuccess)
+    WARN_IF(!SDL_CloseIO(pArchive) || !bSuccess)
     {
         Core::Log->Warning("Archive (%s) could not be saved properly (SDL: %s)", m_sPath.c_str(), SDL_GetError());
         return CORE_ERROR_FILE;
     }
 
     // move temporary file over real file
-    if(DEFINED(CORE_FILE_SAFEWRITE) && coreData::FileMove(pcTemp, m_sPath.c_str()))
+    WARN_IF(DEFINED(CORE_FILE_SAFEWRITE) && (coreData::FileMove(pcTemp, m_sPath.c_str()) != CORE_OK))
     {
         Core::Log->Warning("Archive (%s) could not be moved", m_sPath.c_str());
         return CORE_ERROR_FILE;
@@ -537,7 +559,9 @@ coreStatus coreArchive::Save(const coreChar* pcPath)
 
     // unload file data
     FOR_EACH(it, m_apFile)
+    {
         (*it)->UnloadData();
+    }
 
     Core::Log->Info("Archive (%s, %u) written", m_sPath.c_str(), iNumFiles);
     return CORE_OK;
@@ -546,7 +570,7 @@ coreStatus coreArchive::Save(const coreChar* pcPath)
 
 // ****************************************************************
 /* create file object */
-coreFile* coreArchive::CreateFile(const coreChar* pcPath, coreByte* pData, const coreUint32 iSize)
+coreFile* coreArchive::CreateFile(const coreChar* pcPath, coreByte* pData, const coreUint32 iSize, const coreBool bExtern)
 {
     // check already existing file
     WARN_IF(m_apFile.count_bs(pcPath))
@@ -556,7 +580,7 @@ coreFile* coreArchive::CreateFile(const coreChar* pcPath, coreByte* pData, const
     }
 
     // create and add new file object
-    coreFile* pFile = new coreFile(pcPath, pData, iSize);
+    coreFile* pFile = new coreFile(pcPath, pData, iSize, bExtern);
     this->AddFile(pFile);
 
     return pFile;
@@ -630,10 +654,9 @@ coreStatus coreArchive::DeleteFile(const coreChar* pcPath)
     return CORE_OK;
 }
 
-coreStatus coreArchive::DeleteFile(coreFile* pFile)
+coreStatus coreArchive::DeleteFile(const coreFile* pFile)
 {
-    if(pFile->m_pArchive != this) return CORE_INVALID_INPUT;
-    return this->DeleteFile(pFile->GetPath());
+    return (pFile->m_pArchive != this) ? CORE_INVALID_INPUT : this->DeleteFile(pFile->GetPath());
 }
 
 
@@ -643,7 +666,9 @@ void coreArchive::ClearFiles()
 {
     // delete file objects
     FOR_EACH(it, m_apFile)
+    {
         SAFE_DELETE(*it)
+    }
 
     // clear memory
     m_apFile.clear();

@@ -161,12 +161,8 @@ coreStatus coreConfig::Save()
         FOR_EACH(et, *it) sBuffer.append(PRINT("\n%s = %s", it->get_string(et), et->c_str()));
     }
 
-    // create file data
-    coreByte* pData = new coreByte[sBuffer.length()];
-    std::memcpy(pData, sBuffer.c_str(), sBuffer.length());
-
     // save configuration file
-    coreFile oFile(m_sPath.c_str(), pData, sBuffer.length());
+    coreFile oFile(m_sPath.c_str(), r_cast<coreByte*>(sBuffer.data()), sBuffer.length(), true);
     if(oFile.Save())
     {
         Core::Log->Warning("Configuration (%s) could not be saved", m_sPath.c_str());

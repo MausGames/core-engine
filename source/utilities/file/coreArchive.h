@@ -13,8 +13,6 @@
 // TODO 3: make archive a file
 // TODO 3: archive check sum (would need to read full file, maybe just for header, or check for correct size with offsets)
 // TODO 5: <old comment style>
-// TODO 4: "0 = does not exist physically" should be moved into own bool and -1 should become 0 ? (could simplify if-else, seeking)
-// TODO 3: allow referencing allocation instead of owning
 // TODO 4: get rid of Internal* functions ? but files should not be copied (normally)
 // TODO 3: add status-enum to file and store in archive: compressed, scrambled
 // TODO 3: mmap, CreateFileMapping+MapViewOfFile instead of reading into a buffer ? unbuffered reading ? batching (e.g. DirectStorage) ?
@@ -27,8 +25,8 @@
 #define CORE_FILE_MAGIC   (UINT_LITERAL("CFA0"))   // magic number of core-archives
 #define CORE_FILE_VERSION (0x00000001u)            // current file version of core-archives
 
-#define __CORE_FILE_TYPE_MEMORY (0u)
-#define __CORE_FILE_TYPE_DIRECT (UINT32_MAX)
+#define __CORE_FILE_TYPE_DIRECT (0u)
+#define __CORE_FILE_TYPE_MEMORY (1u)
 
 #if !defined(_CORE_EMSCRIPTEN_) && !defined(_CORE_SWITCH_)
     #define CORE_FILE_SAFEWRITE   // always write to temporary file first (to improve robustness)
@@ -45,8 +43,10 @@ private:
     coreByte*  m_pData;                  // file data
     coreUint32 m_iSize;                  // size of the file
 
-    coreUint32   m_iArchivePos;          // absolute data position in the associated archive (0 = does not exist physically | -1 = not associated with an archive)
+    coreUint32   m_iArchivePos;          // absolute data position in the associated archive
     coreArchive* m_pArchive;             // associated archive
+
+    coreBool m_bExtern;                  // current file data is not owned and should not be deleted
 
     coreAtomic<coreUint8> m_iRefCount;   // reference-counter to prevent early unloading
     coreSpinLock          m_DataLock;    // spinlock to prevent concurrent loading and unloading
@@ -54,7 +54,7 @@ private:
 
 public:
     explicit coreFile(const coreChar* pcPath)noexcept;
-    coreFile(const coreChar* pcPath, coreByte* pData, const coreUint32 iSize)noexcept;
+    coreFile(const coreChar* pcPath, coreByte* pData, const coreUint32 iSize, const coreBool bExtern = false)noexcept;
     ~coreFile();
 
     FRIEND_CLASS(coreArchive)
@@ -97,6 +97,9 @@ public:
 
 
 private:
+    /* delete file data */
+    void __DeleteData();
+
     /* safely read and write */
     static void __Read (SDL_IOStream* pFile, void*       pPointer, const coreUintW iSize, coreBool* OUTPUT pbSuccess);
     static void __Write(SDL_IOStream* pFile, const void* pPointer, const coreUintW iSize, coreBool* OUTPUT pbSuccess);
@@ -123,12 +126,12 @@ public:
     coreStatus Save(const coreChar* pcPath = NULL);
 
     /* manage file objects */
-    coreFile*  CreateFile(const coreChar* pcPath, coreByte* pData, const coreUint32 iSize);
+    coreFile*  CreateFile(const coreChar* pcPath, coreByte* pData, const coreUint32 iSize, const coreBool bExtern = false);
     coreStatus AddFile   (const coreChar* pcPath, const coreChar* pcNewPath = NULL);
     coreStatus AddFile   (coreFile*       pFile,  const coreChar* pcNewPath = NULL);
     coreStatus DeleteFile(const coreUintW iIndex);
     coreStatus DeleteFile(const coreChar* pcPath);
-    coreStatus DeleteFile(coreFile*       pFile);
+    coreStatus DeleteFile(const coreFile* pFile);
     void ClearFiles();
 
     /* access file objects */
