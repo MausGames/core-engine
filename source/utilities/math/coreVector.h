@@ -102,10 +102,12 @@ public:
     constexpr        coreVector2 MapStepRotatedInv45X(const coreUint8   iStep)const {return this->MapStepRotated45X((8u - iStep) % 8u);}
     constexpr        coreVector2 MapStepRotatedInv90 (const coreUint8   iStep)const {return this->MapStepRotated90 ((4u - iStep) % 4u);}
     constexpr        coreVector2 MapStepRotatedInv90X(const coreUint8   iStep)const {return this->MapStepRotated90X((4u - iStep) % 4u);}
-    static constexpr coreVector2 StepRotated45       (const coreUint8   iStep)      {ASSERT(iStep < 8u) return coreVector2::UnpackWay8(iStep);}
-    static constexpr coreVector2 StepRotated45X      (const coreUint8   iStep)      {ASSERT(iStep < 8u) return coreVector2::UnpackWay8(iStep).MapToAxis(coreVector2(0.382683456f, 0.923879504f));}
-    static constexpr coreVector2 StepRotated90       (const coreUint8   iStep)      {ASSERT(iStep < 4u) return coreVector2::UnpackWay8(iStep * 2u);}
-    static constexpr coreVector2 StepRotated90X      (const coreUint8   iStep)      {ASSERT(iStep < 4u) return coreVector2::UnpackWay8(iStep * 2u + 1u);}
+    static constexpr coreVector2 StepRotated45       (const coreUint8   iStep)      {ASSERT(iStep < 8u) return coreVector2::UnpackWay8    (iStep);}
+    static constexpr coreVector2 StepRotated45X      (const coreUint8   iStep)      {ASSERT(iStep < 8u) return coreVector2::UnpackWay8    (iStep).MapToAxis(coreVector2(0.382683456f, 0.923879504f));}
+    static constexpr coreVector2 StepRotated90       (const coreUint8   iStep)      {ASSERT(iStep < 4u) return coreVector2::UnpackWay8    (iStep * 2u);}
+    static constexpr coreVector2 StepRotated90X      (const coreUint8   iStep)      {ASSERT(iStep < 4u) return coreVector2::UnpackWay8    (iStep * 2u + 1u);}
+    static constexpr coreVector2 StepRotatedSign45   (const coreUint8   iStep)      {ASSERT(iStep < 8u) return coreVector2::UnpackWaySign8(iStep);}
+    static constexpr coreVector2 StepRotatedSign90X  (const coreUint8   iStep)      {ASSERT(iStep < 4u) return coreVector2::UnpackWaySign8(iStep * 2u + 1u);}
 
     /* constrain vector */
     constexpr coreVector2 AlongWay4        ()const                        {return (this->IsHorizontal() ? coreVector2(SIGN(x), 0.0f) : coreVector2(0.0f, SIGN(y))) * this->Length();}
@@ -176,6 +178,7 @@ public:
     constexpr        coreUint32  PackFloat2x16  ()const;
     constexpr        coreUint64  PackFloat2x32  ()const;
     static constexpr coreVector2 UnpackWay8     (const coreUint8  iNumber);
+    static constexpr coreVector2 UnpackWaySign8 (const coreUint8  iNumber);
     static constexpr coreVector2 UnpackUnorm2x8 (const coreUint16 iNumber);
     static constexpr coreVector2 UnpackSnorm2x8 (const coreUint16 iNumber);
     static constexpr coreVector2 UnpackUnorm2x16(const coreUint32 iNumber);
@@ -755,6 +758,23 @@ constexpr coreVector2 coreVector2::UnpackWay8(const coreUint8 iNumber)
     case 5u: return coreVector2( 1.0f,-1.0f) / SQRT2;
     case 6u: return coreVector2( 1.0f, 0.0f);
     case 7u: return coreVector2( 1.0f, 1.0f) / SQRT2;
+    case 8u: return coreVector2( 0.0f, 0.0f);
+    }
+}
+
+constexpr coreVector2 coreVector2::UnpackWaySign8(const coreUint8 iNumber)
+{
+    switch(iNumber)
+    {
+    default: UNREACHABLE
+    case 0u: return coreVector2( 0.0f, 1.0f);
+    case 1u: return coreVector2(-1.0f, 1.0f);
+    case 2u: return coreVector2(-1.0f, 0.0f);
+    case 3u: return coreVector2(-1.0f,-1.0f);
+    case 4u: return coreVector2( 0.0f,-1.0f);
+    case 5u: return coreVector2( 1.0f,-1.0f);
+    case 6u: return coreVector2( 1.0f, 0.0f);
+    case 7u: return coreVector2( 1.0f, 1.0f);
     case 8u: return coreVector2( 0.0f, 0.0f);
     }
 }
