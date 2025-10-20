@@ -14,9 +14,9 @@ set_target_properties(
 
 target_sources(
     CoreEngine PRIVATE
+    ${BASE_DIRECTORY}/source/additional/build/coreImGui.cpp
     ${BASE_DIRECTORY}/source/additional/coreAL.cpp
     ${BASE_DIRECTORY}/source/additional/coreCPUID.cpp
-    ${BASE_DIRECTORY}/source/additional/coreImGui.cpp
     ${BASE_DIRECTORY}/source/components/audio/CoreAudio.cpp
     ${BASE_DIRECTORY}/source/components/audio/coreMusic.cpp
     ${BASE_DIRECTORY}/source/components/audio/coreSound.cpp
@@ -116,9 +116,9 @@ else()
 
     target_sources(
         CoreEngine PRIVATE
+        ${BASE_DIRECTORY}/source/additional/build/coreGLEW.c
         ${BASE_DIRECTORY}/source/additional/linux/main.c
         ${BASE_DIRECTORY}/source/additional/coreGL.cpp
-        ${BASE_DIRECTORY}/source/additional/coreGLEW.c
     )
 
     target_compile_options(

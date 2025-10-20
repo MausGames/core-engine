@@ -412,12 +412,12 @@
       <ExcludedFromBuild Condition="'$(Configuration)'=='Debug_angle'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)'=='Release_angle'">true</ExcludedFromBuild>
     </ClCompile>
-    <ClCompile Include="..\..\..\source\additional\coreGLEW.c">
+    <ClCompile Include="..\..\..\source\additional\build\coreGLEW.c">
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <ExcludedFromBuild Condition="'$(Configuration)'=='Debug_angle'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)'=='Release_angle'">true</ExcludedFromBuild>
     </ClCompile>
-    <ClCompile Include="..\..\..\source\additional\coreImGui.cpp">
+    <ClCompile Include="..\..\..\source\additional\build\coreImGui.cpp">
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="..\..\..\source\additional\emscripten\main.c">

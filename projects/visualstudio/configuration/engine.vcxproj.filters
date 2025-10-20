@@ -205,7 +205,7 @@
     <ClCompile Include="..\..\..\source\objects\menu\coreViewBox.cpp">
       <Filter>objects\menu</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\source\additional\coreGLEW.c">
+    <ClCompile Include="..\..\..\source\additional\build\coreGLEW.c">
       <Filter>additional</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\source\additional\emscripten\main.c">
@@ -217,7 +217,7 @@
     <ClCompile Include="..\..\..\source\additional\macos\main.c">
       <Filter>additional\macos</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\source\additional\coreImGui.cpp">
+    <ClCompile Include="..\..\..\source\additional\build\coreImGui.cpp">
       <Filter>additional</Filter>
     </ClCompile>
   </ItemGroup>
