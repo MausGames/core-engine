@@ -12,31 +12,22 @@
 // ****************************************************************
 /* constructor */
 CoreAudio::CoreAudio()noexcept
-: m_pDevice               (NULL)
-, m_pContext              (NULL)
-, m_vPosition             (coreVector3(0.0f,0.0f,0.0f))
-, m_vVelocity             (coreVector3(0.0f,0.0f,0.0f))
-, m_avDirection           {coreVector3(0.0f,1.0f,0.0f), coreVector3(0.0f,0.0f,1.0f)}
-, m_afGlobalVolume        {-1.0f, -1.0f, -1.0f}
-, m_afMusicVolume         {-1.0f, -1.0f, -1.0f}
-, m_afSoundVolume         {-1.0f, -1.0f, -1.0f}
-, m_afTypeVolume          {}
-, m_aiSource              {}
-, m_aSourceData           {}
-, m_nDeferUpdates         (NULL)
-, m_nProcessUpdates       (NULL)
-, m_nResetDevice          (NULL)
-, m_nReopenDevice         (NULL)
-, m_nDebugMessageCallback (NULL)
-, m_nDebugMessageControl  (NULL)
-, m_nObjectLabel          (NULL)
-, m_bDeviceCheck          (false)
-, m_iDeviceFix            (0u)
-, m_bSupportALAW          (false)
-, m_bSupportMULAW         (false)
-, m_bSupportFloat         (false)
-, m_bSupportQuery         (false)
-, m_aiAttributes          {}
+: m_pDevice         (NULL)
+, m_pContext        (NULL)
+, m_vPosition       (coreVector3(0.0f,0.0f,0.0f))
+, m_vVelocity       (coreVector3(0.0f,0.0f,0.0f))
+, m_avDirection     {coreVector3(0.0f,1.0f,0.0f), coreVector3(0.0f,0.0f,1.0f)}
+, m_afGlobalVolume  {-1.0f, -1.0f, -1.0f}
+, m_afMusicVolume   {-1.0f, -1.0f, -1.0f}
+, m_afSoundVolume   {-1.0f, -1.0f, -1.0f}
+, m_afTypeVolume    {}
+, m_aiSource        {}
+, m_aSourceData     {}
+, m_nDeferUpdates   (NULL)
+, m_nProcessUpdates (NULL)
+, m_bDeviceCheck    (false)
+, m_iDeviceFix      (0u)
+, m_aiAttributes    {}
 {
     Core::Log->Header("Audio Interface");
 
@@ -66,6 +57,9 @@ CoreAudio::CoreAudio()noexcept
          Core::Log->Warning("OpenAL context could not be created (ALC Error Code: 0x%08X)", alcGetError(m_pDevice));
     else Core::Log->Info   ("OpenAL context created");
 
+    // init OpenAL
+    coreInitOpenAL();
+
     // enable OpenAL debug output
     this->DebugOpenAL();
 
@@ -73,12 +67,13 @@ CoreAudio::CoreAudio()noexcept
     alGenSources(CORE_AUDIO_SOURCES, m_aiSource);
 
     // init enumeration extension
-    if(alcIsExtensionPresent(m_pDevice, "ALC_ENUMERATE_ALL_EXT"))
+    if(CORE_ALC_SUPPORT(ENUMERATE_ALL_EXT))
     {
-        // log all available audio devices
+        // retrieve audio device list
         const coreChar* pcDeviceList = alcGetString(NULL, ALC_ALL_DEVICES_SPECIFIER);
         if(pcDeviceList)
         {
+            // log all available audio devices
             Core::Log->ListStartInfo("Available Devices");
             {
                 while(*pcDeviceList)
@@ -92,71 +87,55 @@ CoreAudio::CoreAudio()noexcept
     }
 
     // init HRTF extension
-    if(alcIsExtensionPresent(m_pDevice, "ALC_SOFT_HRTF"))
+    if(CORE_ALC_SUPPORT(SOFT_HRTF))
     {
-        // get function pointer to reset audio device
-        m_nResetDevice = r_cast<LPALCRESETDEVICESOFT>(alcGetProcAddress(m_pDevice, "alcResetDeviceSOFT"));
-
-        // log all available HRTFs
-        const LPALCGETSTRINGISOFT nGetStringi = r_cast<LPALCGETSTRINGISOFT>(alcGetProcAddress(m_pDevice, "alcGetStringiSOFT"));
-        if(nGetStringi)
+        // retrieve number of HRTFs
+        ALCint iNum = 0; alcGetIntegerv(m_pDevice, ALC_NUM_HRTF_SPECIFIERS_SOFT, 1, &iNum);
+        if(iNum > 0)
         {
-            // retrieve number of HRTFs
-            ALCint iNum = 0; alcGetIntegerv(m_pDevice, ALC_NUM_HRTF_SPECIFIERS_SOFT, 1, &iNum);
-            if(iNum > 0)
+            // log all available HRTFs
+            Core::Log->ListStartInfo("Available HRTFs");
             {
-                Core::Log->ListStartInfo("Available HRTFs");
+                for(coreUintW i = 0u, ie = iNum; i < ie; ++i)
                 {
-                    for(coreUintW i = 0u, ie = iNum; i < ie; ++i)
-                    {
-                        Core::Log->ListAdd("%zu: %s", i, nGetStringi(m_pDevice, ALC_HRTF_SPECIFIER_SOFT, i));
-                    }
+                    Core::Log->ListAdd("%zu: %s", i, alcGetStringiSOFT(m_pDevice, ALC_HRTF_SPECIFIER_SOFT, i));
                 }
-                Core::Log->ListEnd();
             }
+            Core::Log->ListEnd();
         }
-    }
-
-    // init reopen-device extension
-    if(alcIsExtensionPresent(m_pDevice, "ALC_SOFT_reopen_device"))
-    {
-        // get function pointer to reopen audio device
-        m_nReopenDevice = r_cast<LPALCREOPENDEVICESOFT>(alcGetProcAddress(m_pDevice, "alcReopenDeviceSOFT"));
     }
 
     // init system-events extension
-    if(alcIsExtensionPresent(m_pDevice, "ALC_SOFT_system_events"))
+    if(CORE_ALC_SUPPORT(SOFT_system_events))
     {
-        const auto nEventCallback = r_cast<LPALCEVENTCALLBACKSOFT>(alcGetProcAddress(m_pDevice, "alcEventCallbackSOFT"));
-        const auto nEventControl  = r_cast<LPALCEVENTCONTROLSOFT> (alcGetProcAddress(m_pDevice, "alcEventControlSOFT"));
-        if(nEventCallback && nEventControl)
+        // set callback function
+        alcEventCallbackSOFT([](const ALCenum iEventType, const ALCenum iDeviceType, ALCdevice* pDevice, const ALCsizei iLength, const ALCchar* pcMessage, void* pUserParam)
         {
-            // set callback function
-            nEventCallback([](const ALCenum iEventType, const ALCenum iDeviceType, ALCdevice* pDevice, const ALCsizei iLength, const ALCchar* pcMessage, void* pUserParam)
+            Core::Log->Warning(CORE_LOG_BOLD("OpenAL:") " %s", pcMessage);
+
+            if((iEventType == ALC_EVENT_TYPE_DEFAULT_DEVICE_CHANGED_SOFT) && (iDeviceType == ALC_PLAYBACK_DEVICE_SOFT))
             {
-                Core::Log->Warning(CORE_LOG_BOLD("OpenAL:") " %s", pcMessage);
+                s_cast<CoreAudio*>(pUserParam)->m_iDeviceFix.FetchMax(1u);
+            }
+        },
+        this);
 
-                if((iEventType == ALC_EVENT_TYPE_DEFAULT_DEVICE_CHANGED_SOFT) && (iDeviceType == ALC_PLAYBACK_DEVICE_SOFT))
-                {
-                    s_cast<CoreAudio*>(pUserParam)->m_iDeviceFix.FetchMax(1u);
-                }
-            },
-            this);
-
-            // enable all events
-            constexpr ALCenum aiEvent[] = {ALC_EVENT_TYPE_DEFAULT_DEVICE_CHANGED_SOFT, ALC_EVENT_TYPE_DEVICE_ADDED_SOFT, ALC_EVENT_TYPE_DEVICE_REMOVED_SOFT};
-            nEventControl(ARRAY_SIZE(aiEvent), aiEvent, true);
-        }
+        // enable all events
+        constexpr ALCenum aiEvent[] = {ALC_EVENT_TYPE_DEFAULT_DEVICE_CHANGED_SOFT, ALC_EVENT_TYPE_DEVICE_ADDED_SOFT, ALC_EVENT_TYPE_DEVICE_REMOVED_SOFT};
+        alcEventControlSOFT(ARRAY_SIZE(aiEvent), aiEvent, true);
     }
 
-    // init diconnect extension
-    if(alcIsExtensionPresent(m_pDevice, "ALC_EXT_disconnect")) m_bDeviceCheck = true;
+    // init disconnect extension
+    if(CORE_ALC_SUPPORT(EXT_disconnect))
+    {
+        m_bDeviceCheck = true;
+    }
 
     // init deferred-updates extension
-    if(alIsExtensionPresent("AL_SOFT_deferred_updates"))
+    if(CORE_AL_SUPPORT(SOFT_deferred_updates))
     {
-        m_nDeferUpdates   = r_cast<LPALDEFERUPDATESSOFT>  (alGetProcAddress("alDeferUpdatesSOFT"));
-        m_nProcessUpdates = r_cast<LPALPROCESSUPDATESSOFT>(alGetProcAddress("alProcessUpdatesSOFT"));
+        m_nDeferUpdates   = alDeferUpdatesSOFT;
+        m_nProcessUpdates = alProcessUpdatesSOFT;
     }
     if(!m_nDeferUpdates || !m_nProcessUpdates)
     {
@@ -166,39 +145,35 @@ CoreAudio::CoreAudio()noexcept
 
     // init source-resampler extension
     const coreChar* pcResamplerName = NULL;
-    if(alIsExtensionPresent("AL_SOFT_source_resampler"))
+    if(CORE_AL_SUPPORT(SOFT_source_resampler))
     {
         // change resampler of all audio sources
         this->__ChangeResampler(Core::Config->GetInt(CORE_CONFIG_AUDIO_RESAMPLERINDEX));
 
-        // log all available resamplers
-        const LPALGETSTRINGISOFT nGetStringi = r_cast<LPALGETSTRINGISOFT>(alGetProcAddress("alGetStringiSOFT"));
-        if(nGetStringi)
+        // retrieve number of resamplers
+        const ALint iNum = alGetInteger(AL_NUM_RESAMPLERS_SOFT);
+        if(iNum > 0)
         {
-            // retrieve number of resamplers
-            const ALint iNum = alGetInteger(AL_NUM_RESAMPLERS_SOFT);
-            if(iNum > 0)
+            const ALint iDefault = alGetInteger(AL_DEFAULT_RESAMPLER_SOFT);
+
+            // log all available resamplers
+            Core::Log->ListStartInfo("Available Resamplers");
             {
-                const ALint iDefault = alGetInteger(AL_DEFAULT_RESAMPLER_SOFT);
-
-                Core::Log->ListStartInfo("Available Resamplers");
+                for(coreUintW i = 0u, ie = iNum; i < ie; ++i)
                 {
-                    for(coreUintW i = 0u, ie = iNum; i < ie; ++i)
-                    {
-                        Core::Log->ListAdd("%zu: %s%s", i, nGetStringi(AL_RESAMPLER_NAME_SOFT, i), (ALint(i) == iDefault) ? "*" : "");
-                    }
+                    Core::Log->ListAdd("%zu: %s%s", i, alGetStringiSOFT(AL_RESAMPLER_NAME_SOFT, i), (ALint(i) == iDefault) ? "*" : "");
                 }
-                Core::Log->ListEnd();
             }
-
-            // retrieve selected resampler name
-            ALint iSelect = 0; alGetSourcei(m_aiSource[0], AL_SOURCE_RESAMPLER_SOFT, &iSelect);
-            pcResamplerName = nGetStringi(AL_RESAMPLER_NAME_SOFT, iSelect);
+            Core::Log->ListEnd();
         }
+
+        // retrieve selected resampler name
+        ALint iSelect = 0; alGetSourcei(m_aiSource[0], AL_SOURCE_RESAMPLER_SOFT, &iSelect);
+        pcResamplerName = alGetStringiSOFT(AL_RESAMPLER_NAME_SOFT, iSelect);
     }
 
     // init direct-channels extension
-    if(alIsExtensionPresent("AL_SOFT_direct_channels") && alIsExtensionPresent("AL_SOFT_direct_channels_remix"))
+    if(CORE_AL_SUPPORT(SOFT_direct_channels) && CORE_AL_SUPPORT(SOFT_direct_channels_remix))
     {
         this->DeferUpdates();
         {
@@ -209,14 +184,6 @@ CoreAudio::CoreAudio()noexcept
         }
         this->ProcessUpdates();
     }
-
-    // init format extensions
-    if(alIsExtensionPresent("AL_EXT_ALAW"))    m_bSupportALAW  = true;
-    if(alIsExtensionPresent("AL_EXT_MULAW"))   m_bSupportMULAW = true;
-    if(alIsExtensionPresent("AL_EXT_float32")) m_bSupportFloat = true;
-
-    // init length-query extension
-    if(alIsExtensionPresent("AL_SOFT_buffer_length_query")) m_bSupportQuery = true;
 
     // reset listener
     this->DeferUpdates();
@@ -273,6 +240,9 @@ CoreAudio::CoreAudio()noexcept
 /* destructor */
 CoreAudio::~CoreAudio()
 {
+    // exit OpenAL
+    coreExitOpenAL();
+
     // delete audio sources
     alDeleteSources(CORE_AUDIO_SOURCES, m_aiSource);
 
@@ -533,22 +503,14 @@ void CoreAudio::DebugOpenAL()
 {
     if(!Core::Debug->IsEnabled()) return;
 
-    if(alIsExtensionPresent("AL_EXT_debug"))
+    if(CORE_AL_SUPPORT(EXT_debug))
     {
-        // init debug extension
-        m_nDebugMessageCallback = r_cast<LPALDEBUGMESSAGECALLBACKEXT>(alGetProcAddress("alDebugMessageCallbackEXT"));
-        m_nDebugMessageControl  = r_cast<LPALDEBUGMESSAGECONTROLEXT> (alGetProcAddress("alDebugMessageControlEXT"));
-        m_nObjectLabel          = r_cast<LPALOBJECTLABELEXT>         (alGetProcAddress("alObjectLabelEXT"));
+        // enable debug output
+        alEnable(AL_DEBUG_OUTPUT_EXT);
 
-        if(m_nDebugMessageCallback && m_nDebugMessageControl)
-        {
-            // enable debug output
-            alEnable(AL_DEBUG_OUTPUT_EXT);
-
-            // set callback function and enable all messages
-            m_nDebugMessageCallback(&WriteOpenAL, NULL);
-            m_nDebugMessageControl(AL_DONT_CARE_EXT, AL_DONT_CARE_EXT, AL_DONT_CARE_EXT, 0, NULL, true);
-        }
+        // set callback function and enable all messages
+        alDebugMessageCallbackEXT(&WriteOpenAL, NULL);
+        alDebugMessageControlEXT(AL_DONT_CARE_EXT, AL_DONT_CARE_EXT, AL_DONT_CARE_EXT, 0, NULL, true);
     }
 }
 
@@ -581,8 +543,11 @@ void CoreAudio::LabelOpenAL(const ALenum iType, const ALuint iIdentifier, const 
 {
     if(!Core::Debug->IsEnabled()) return;
 
-    // assign string to identifier
-    if(m_nObjectLabel) m_nObjectLabel(iType, iIdentifier, -1, pcLabel);
+    if(CORE_AL_SUPPORT(EXT_debug))
+    {
+        // assign string to identifier
+        alObjectLabelEXT(iType, iIdentifier, -1, pcLabel);
+    }
 }
 
 
@@ -590,8 +555,11 @@ void CoreAudio::LabelOpenAL(const ALenum iType, const ALuint iIdentifier, const 
 /* reconfigure audio interface */
 void CoreAudio::Reconfigure()
 {
-    // reset audio device with different attributes
-    if(m_nResetDevice) m_nResetDevice(m_pDevice, this->__RetrieveAttributes());
+    if(CORE_ALC_SUPPORT(SOFT_HRTF))
+    {
+        // reset audio device with different attributes
+        alcResetDeviceSOFT(m_pDevice, this->__RetrieveAttributes());
+    }
 
     // change resampler of all audio sources
     this->__ChangeResampler(Core::Config->GetInt(CORE_CONFIG_AUDIO_RESAMPLERINDEX));
@@ -677,10 +645,10 @@ void CoreAudio::__UpdateDevice()
     {
         m_iDeviceFix = 0u;
 
-        if(m_nReopenDevice)
+        if(CORE_ALC_SUPPORT(SOFT_reopen_device))
         {
             // reopen audio device
-            if(m_nReopenDevice(m_pDevice, NULL, this->__RetrieveAttributes()))
+            if(alcReopenDeviceSOFT(m_pDevice, NULL, this->__RetrieveAttributes()))
             {
                 Core::Log->Warning("Audio device (%s) reopened", alcGetString(m_pDevice, ALC_ALL_DEVICES_SPECIFIER));
             }
@@ -697,7 +665,7 @@ void CoreAudio::__UpdateDevice()
 /* change resampler of all audio sources */
 void CoreAudio::__ChangeResampler(const ALint iResampler)
 {
-    if(alIsExtensionPresent("AL_SOFT_source_resampler"))
+    if(CORE_AL_SUPPORT(SOFT_source_resampler))
     {
         // retrieve number of resamplers
         const ALint iNum = alGetInteger(AL_NUM_RESAMPLERS_SOFT);
@@ -752,13 +720,13 @@ const ALint* CoreAudio::__RetrieveAttributes()
     nAttributeFunc(ALC_MONO_SOURCES,   CORE_AUDIO_SOURCES);
     nAttributeFunc(ALC_STEREO_SOURCES, CORE_AUDIO_SOURCES);
 
-    if(alcIsExtensionPresent(m_pDevice, "ALC_SOFT_output_mode"))
+    if(CORE_ALC_SUPPORT(SOFT_output_mode))
     {
         // set output mode
         nAttributeFunc(ALC_OUTPUT_MODE_SOFT, iOutputMode);
     }
 
-    if(alcIsExtensionPresent(m_pDevice, "ALC_SOFT_HRTF"))
+    if(CORE_ALC_SUPPORT(SOFT_HRTF))
     {
         // set HRTF state
         nAttributeFunc(ALC_HRTF_SOFT, iHRTF);
@@ -773,7 +741,7 @@ const ALint* CoreAudio::__RetrieveAttributes()
         }
     }
 
-    if(alcIsExtensionPresent(m_pDevice, "ALC_EXT_debug") && Core::Debug->IsEnabled())
+    if(CORE_ALC_SUPPORT(EXT_debug) && Core::Debug->IsEnabled())
     {
         // create debug context
         nAttributeFunc(ALC_CONTEXT_FLAGS_EXT, ALC_CONTEXT_DEBUG_BIT_EXT);

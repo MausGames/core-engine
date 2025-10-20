@@ -11,7 +11,6 @@
 #define _CORE_GUARD_AUDIO_H_
 
 // TODO 5: <old comment style>
-// TODO 4: move all OpenAL extension bools and functions into a separate system
 
 
 // ****************************************************************
@@ -54,40 +53,29 @@ private:
 
 
 private:
-    ALCdevice*  m_pDevice;                                 // audio device
-    ALCcontext* m_pContext;                                // primary OpenAL context (for all threads)
+    ALCdevice*  m_pDevice;                              // audio device
+    ALCcontext* m_pContext;                             // primary OpenAL context (for all threads)
 
-    coreVector3 m_vPosition;                               // position of the listener
-    coreVector3 m_vVelocity;                               // velocity of the listener
-    coreVector3 m_avDirection[2];                          // direction and orientation of the listener
+    coreVector3 m_vPosition;                            // position of the listener
+    coreVector3 m_vVelocity;                            // velocity of the listener
+    coreVector3 m_avDirection[2];                       // direction and orientation of the listener
 
-    coreFloat m_afGlobalVolume[3];                         // global volume (0 = current | 1 = target | 2 = config reference)
-    coreFloat m_afMusicVolume [3];                         // music volume
-    coreFloat m_afSoundVolume [3];                         // sound volume
+    coreFloat m_afGlobalVolume[3];                      // global volume (0 = current | 1 = target | 2 = config reference)
+    coreFloat m_afMusicVolume [3];                      // music volume
+    coreFloat m_afSoundVolume [3];                      // sound volume
 
-    coreFloat m_afTypeVolume[CORE_AUDIO_TYPES];            // volume for each sound type
+    coreFloat m_afTypeVolume[CORE_AUDIO_TYPES];         // volume for each sound type
 
-    ALuint         m_aiSource   [CORE_AUDIO_SOURCES];      // audio sources
-    coreSourceData m_aSourceData[CORE_AUDIO_SOURCES];      // data associated with audio sources
+    ALuint         m_aiSource   [CORE_AUDIO_SOURCES];   // audio sources
+    coreSourceData m_aSourceData[CORE_AUDIO_SOURCES];   // data associated with audio sources
 
-    LPALDEFERUPDATESSOFT   m_nDeferUpdates;                // suspend immediate playback state changes
-    LPALPROCESSUPDATESSOFT m_nProcessUpdates;              // catch-up and resume playback state changes
-    LPALCRESETDEVICESOFT   m_nResetDevice;                 // reset audio device with different attributes
-    LPALCREOPENDEVICESOFT  m_nReopenDevice;                // reopen audio device after change or disconnect
+    LPALDEFERUPDATESSOFT   m_nDeferUpdates;             // suspend immediate playback state changes
+    LPALPROCESSUPDATESSOFT m_nProcessUpdates;           // catch-up and resume playback state changes
 
-    LPALDEBUGMESSAGECALLBACKEXT m_nDebugMessageCallback;   // set callback to receive debug messages
-    LPALDEBUGMESSAGECONTROLEXT  m_nDebugMessageControl;    // filter debug messages
-    LPALOBJECTLABELEXT          m_nObjectLabel;            // add labels to OpenAL objects
+    coreBool              m_bDeviceCheck;               // periodically check for audio device disconnect
+    coreAtomic<coreUint8> m_iDeviceFix;                 // try to recover from audio device issues (1 = changed | 2 = disconnected)
 
-    coreBool              m_bDeviceCheck;                  // periodically check for audio device disconnect
-    coreAtomic<coreUint8> m_iDeviceFix;                    // try to recover from audio device issues (1 = changed | 2 = disconnected)
-
-    coreBool m_bSupportALAW;                               // support for A-law compression
-    coreBool m_bSupportMULAW;                              // support for MU-law compression
-    coreBool m_bSupportFloat;                              // support for raw float-data
-    coreBool m_bSupportQuery;                              // support for buffer queries
-
-    ALint m_aiAttributes[13];                              // OpenAL context attributes
+    ALint m_aiAttributes[13];                           // OpenAL context attributes
 
 
 private:
@@ -121,8 +109,8 @@ public:
     coreBool CheckSource (const void* pRef, const ALuint iBuffer, const ALuint iSource)const;
 
     /* combine playback state changes */
-    inline void DeferUpdates  ()const {m_nDeferUpdates  ();}
-    inline void ProcessUpdates()const {m_nProcessUpdates();}
+    inline void DeferUpdates  ()const {ASSERT(m_nDeferUpdates)   m_nDeferUpdates  ();}
+    inline void ProcessUpdates()const {ASSERT(m_nProcessUpdates) m_nProcessUpdates();}
 
     /* handle OpenAL debug output */
     friend void AL_APIENTRY WriteOpenAL(const ALenum iSource, const ALenum iType, const ALuint iID, const ALenum iSeverity, const ALsizei iLength, const ALchar* pcMessage, const void* pUserParam);
@@ -138,12 +126,6 @@ public:
     inline const coreVector3& GetListenerVelocity   ()const {return m_vVelocity;}
     inline const coreVector3& GetListenerDirection  ()const {return m_avDirection[0];}
     inline const coreVector3& GetListenerOrientation()const {return m_avDirection[1];}
-
-    /* check OpenAL properties */
-    inline const coreBool& GetSupportALAW ()const {return m_bSupportALAW;}
-    inline const coreBool& GetSupportMULAW()const {return m_bSupportMULAW;}
-    inline const coreBool& GetSupportFloat()const {return m_bSupportFloat;}
-    inline const coreBool& GetSupportQuery()const {return m_bSupportQuery;}
 
 
 private:

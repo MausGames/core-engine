@@ -177,6 +177,9 @@
     <ClCompile Include="..\..\..\source\objects\game\coreParticle.cpp">
       <Filter>objects\game</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\..\source\additional\coreAL.cpp">
+      <Filter>additional</Filter>
+    </ClCompile>
     <ClCompile Include="..\..\..\source\additional\coreGL.cpp">
       <Filter>additional</Filter>
     </ClCompile>
@@ -341,6 +344,9 @@
     </ClInclude>
     <ClInclude Include="..\..\..\source\objects\game\coreParticle.h">
       <Filter>objects\game</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\source\additional\coreAL.h">
+      <Filter>additional</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\source\additional\coreGL.h">
       <Filter>additional</Filter>

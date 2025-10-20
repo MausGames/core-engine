@@ -828,6 +828,7 @@ private:
 #else
     #include "additional/coreGL.h"
 #endif
+#include "additional/coreAL.h"
 #include "additional/coreCPUID.h"
 #include "utilities/math/coreMath.h"
 #include "utilities/data/hash/CRC32.h"

@@ -14,6 +14,7 @@ set_target_properties(
 
 target_sources(
     CoreEngine PRIVATE
+    ${BASE_DIRECTORY}/source/additional/coreAL.cpp
     ${BASE_DIRECTORY}/source/additional/coreCPUID.cpp
     ${BASE_DIRECTORY}/source/additional/coreImGui.cpp
     ${BASE_DIRECTORY}/source/components/audio/CoreAudio.cpp

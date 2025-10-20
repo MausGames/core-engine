@@ -501,7 +501,7 @@ using PFNGLGETBUFFERSUBDATAPROC = void (GL_APIENTRY *) (GLenum target, GLintptr 
 
 // ****************************************************************
 /* context structure */
-struct coreContext final
+struct coreContextGLES final
 {
     corePoint2U8 __Version;
     coreBool     __bES30;
@@ -599,14 +599,12 @@ struct coreContext final
     PFNGLGETBUFFERSUBDATAPROC                       __glGetBufferSubData;
 };
 
-extern coreString  g_sExtensions;   // full extension string
-extern coreContext g_CoreContext;   // context object
+extern coreString      g_sExtensions;   // full extension string
+extern coreContextGLES g_ContextGLES;   // context object
 
-#define __CORE_GLES_CHECK(x,b)           (g_CoreContext.__ ## x = ((b) || g_sExtensions.contains(#x " ")))
-#define __CORE_GLES_FUNC(f)              (g_CoreContext.__ ## f)
+#define __CORE_GLES_VAR(v)               (g_ContextGLES.__ ## v)
+#define __CORE_GLES_FUNC(f)              (g_ContextGLES.__ ## f)
 #define __CORE_GLES_FUNC_STATIC(v,f,...) (__CORE_GLES_VAR(v) ? f(__VA_ARGS__) : __CORE_GLES_FUNC(f)(__VA_ARGS__))
-#define __CORE_GLES_FUNC_FETCH(f,a,b)    {g_CoreContext.__ ## f = r_cast<decltype(g_CoreContext.__ ## f)>(eglGetProcAddress((b) ? #f : #f #a));}
-#define __CORE_GLES_VAR(v)               (g_CoreContext.__ ## v)
 
 template <typename... A> void __UNUSED_ARGS(A...) {}
 #define __CORE_GLES_UNUSED_ARGS(...) {if(false) __UNUSED_ARGS(__VA_ARGS__);}

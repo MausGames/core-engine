@@ -100,8 +100,8 @@ coreStatus coreSound::Load(coreFile* pFile)
         iSoundSize = m_iDeferTotal * sizeof(coreInt16);
 
         // handle compression
-             if(HAS_FLAG(m_eLoad, CORE_SOUND_LOAD_ALAW))  {if(Core::Audio->GetSupportALAW ()) {coreEncodeALAW (pSoundData, iSoundSize, &pTempData, &iSoundSize); pSoundData = pTempData; m_Format = coreSound::__CreateWaveFormat(CORE_SOUND_FORMAT_ALAW,  m_Format.iNumChannels, m_Format.iSampleRate, 8u);}}
-        else if(HAS_FLAG(m_eLoad, CORE_SOUND_LOAD_MULAW)) {if(Core::Audio->GetSupportMULAW()) {coreEncodeMULAW(pSoundData, iSoundSize, &pTempData, &iSoundSize); pSoundData = pTempData; m_Format = coreSound::__CreateWaveFormat(CORE_SOUND_FORMAT_MULAW, m_Format.iNumChannels, m_Format.iSampleRate, 8u);}}
+             if(HAS_FLAG(m_eLoad, CORE_SOUND_LOAD_ALAW))  {if(CORE_AL_SUPPORT(EXT_ALAW))  {coreEncodeALAW (pSoundData, iSoundSize, &pTempData, &iSoundSize); pSoundData = pTempData; m_Format = coreSound::__CreateWaveFormat(CORE_SOUND_FORMAT_ALAW,  m_Format.iNumChannels, m_Format.iSampleRate, 8u);}}
+        else if(HAS_FLAG(m_eLoad, CORE_SOUND_LOAD_MULAW)) {if(CORE_AL_SUPPORT(EXT_MULAW)) {coreEncodeMULAW(pSoundData, iSoundSize, &pTempData, &iSoundSize); pSoundData = pTempData; m_Format = coreSound::__CreateWaveFormat(CORE_SOUND_FORMAT_MULAW, m_Format.iNumChannels, m_Format.iSampleRate, 8u);}}
     }
     else if(!std::memcmp(pcExtension, "wav", 3u))
     {
@@ -130,8 +130,8 @@ coreStatus coreSound::Load(coreFile* pFile)
         }
 
         // handle compression
-             if(m_Format.iAudioFormat == CORE_SOUND_FORMAT_ALAW)  {if(!Core::Audio->GetSupportALAW ()) {coreDecodeALAW (pSoundData, iSoundSize, &pTempData, &iSoundSize); pSoundData = pTempData; m_Format = coreSound::__CreateWaveFormat(CORE_SOUND_FORMAT_PCM, m_Format.iNumChannels, m_Format.iSampleRate, 16u);}}
-        else if(m_Format.iAudioFormat == CORE_SOUND_FORMAT_MULAW) {if(!Core::Audio->GetSupportMULAW()) {coreDecodeMULAW(pSoundData, iSoundSize, &pTempData, &iSoundSize); pSoundData = pTempData; m_Format = coreSound::__CreateWaveFormat(CORE_SOUND_FORMAT_PCM, m_Format.iNumChannels, m_Format.iSampleRate, 16u);}}
+             if(m_Format.iAudioFormat == CORE_SOUND_FORMAT_ALAW)  {if(!CORE_AL_SUPPORT(EXT_ALAW))  {coreDecodeALAW (pSoundData, iSoundSize, &pTempData, &iSoundSize); pSoundData = pTempData; m_Format = coreSound::__CreateWaveFormat(CORE_SOUND_FORMAT_PCM, m_Format.iNumChannels, m_Format.iSampleRate, 16u);}}
+        else if(m_Format.iAudioFormat == CORE_SOUND_FORMAT_MULAW) {if(!CORE_AL_SUPPORT(EXT_MULAW)) {coreDecodeMULAW(pSoundData, iSoundSize, &pTempData, &iSoundSize); pSoundData = pTempData; m_Format = coreSound::__CreateWaveFormat(CORE_SOUND_FORMAT_PCM, m_Format.iNumChannels, m_Format.iSampleRate, 16u);}}
         else if(m_Format.iAudioFormat == CORE_SOUND_FORMAT_PCM)   {ASSERT(!HAS_FLAG(m_eLoad, CORE_SOUND_LOAD_ALAW) && !HAS_FLAG(m_eLoad, CORE_SOUND_LOAD_MULAW))}
         else
         {
@@ -181,7 +181,7 @@ coreStatus coreSound::Load(coreFile* pFile)
 
     // get sound length
     coreFloat fLength = 0.0f;
-    if(Core::Audio->GetSupportQuery()) alGetBufferf(m_iBuffer, AL_SEC_LENGTH_SOFT, &fLength);
+    if(CORE_AL_SUPPORT(SOFT_buffer_length_query)) alGetBufferf(m_iBuffer, AL_SEC_LENGTH_SOFT, &fLength);
 
     // add debug label
     Core::Audio->LabelOpenAL(AL_BUFFER_EXT, m_iBuffer, m_sName.c_str());
