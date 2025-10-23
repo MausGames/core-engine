@@ -1518,7 +1518,7 @@ coreStatus coreData::FileCopy(const coreChar* pcFrom, const coreChar* pcTo)
             if(iFileTo != -1)
             {
                 coreIntW iRet;
-                coreIntW iLen = oBuffer.st_size ? oBuffer.st_size : UINT32_MAX;
+                coreIntW iLen = oBuffer.st_size ? oBuffer.st_size : SSIZE_MAX;
 
                 // copy directly in kernel space
                 if((iRet = copy_file_range(iFileFrom, NULL, iFileTo, NULL, iLen, 0u)) > 0)
@@ -2367,7 +2367,7 @@ corePoint2U8 coreData::StrVersion(const coreChar* pcInput)
     WARN_IF(!pcInput) return corePoint2U8(0u, 0u);
 
     const coreChar* pcDot = std::strchr(pcInput, '.');
-    return (P_TO_UI(pcDot) > P_TO_UI(pcInput)) ? corePoint2U8((pcDot - 1u)[0] - '0', (pcDot + 1u)[0] - '0') : corePoint2U8(0u, 0u);
+    return (P_TO_UI(pcDot) > P_TO_UI(pcInput)) ? corePoint2U8((pcDot - 1u)[0] - '0', (pcDot + 1u)[0] - '0') : corePoint2U8(0u, 0u);   // # handle first character
 }
 
 

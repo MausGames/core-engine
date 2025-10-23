@@ -91,7 +91,7 @@ public:
     inline coreStatus SyncCheck(const coreUint64 iNanoWait)       {return m_Sync.Check(iNanoWait);}
 
     /* reset content of the data buffer object */
-    coreStatus Clear(const coreTextureSpec& oTextureSpec, const void* pData);
+    coreStatus Clear(const coreTextureSpec& oTextureSpec, const void* pData = NULL);
     coreStatus Invalidate();
 
     /* check for current buffer status */

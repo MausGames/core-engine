@@ -177,6 +177,7 @@ public:
     template <coreFloatingPoint T> static inline T Cot (const T tInput) {return TAN(T(PI_D) / T(2) - tInput);}
 
     /* rounding operations */
+    template <std::integral     T> static constexpr T  DivUp        (const T  tNum, const t_ident<T> tDenom)   {ASSERT((tNum >= T(0)) && (tDenom > T(0))) return (tNum + tDenom - T(1)) / tDenom;}
     template <coreFloatingPoint T> static inline    T  Ceil         (const T  tInput)                          {return std::ceil (tInput);}
     template <coreFloatingPoint T> static inline    T  Floor        (const T  tInput)                          {return std::floor(tInput);}
     template <coreFloatingPoint T> static inline    T  Round        (const T  tInput)                          {return std::round(tInput);}

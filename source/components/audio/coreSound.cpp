@@ -414,7 +414,7 @@ void coreSound::__ClearDefer()
 coreSound::coreWaveFormat coreSound::__CreateWaveFormat(const coreUint16 iAudioFormat, const coreUint16 iNumChannels, const coreUint32 iSampleRate, const coreUint16 iBitsPerSample)
 {
     // calculate missing parameters
-    const coreUint16 iBlockAlign = iNumChannels * ((iBitsPerSample + 7u) / 8u);
+    const coreUint16 iBlockAlign = iNumChannels * coreMath::DivUp(iBitsPerSample, 8u);
     const coreUint32 iByteRate   = iSampleRate  * iBlockAlign;
 
     // create structure

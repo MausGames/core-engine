@@ -429,7 +429,7 @@ inline coreBool coreBackendSteam::UploadLeaderboard(const corePlatformLeaderboar
         if(iLeaderboard)
         {
             // convert context data size
-            const coreInt32 iSize = coreMath::CeilAlign(iDataSize, sizeof(coreInt32)) / sizeof(coreInt32);
+            const coreInt32 iSize = coreMath::DivUp(iDataSize, sizeof(coreInt32));
             ASSERT(iSize <= k_cLeaderboardDetailsMax)
 
             // start score upload

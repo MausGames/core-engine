@@ -33,12 +33,12 @@ void __coreInitOpenGLES()
     coreData::StrForEachToken(Core::Config->GetString(CORE_CONFIG_GRAPHICS_DISABLEEXTENSIONS), " ,;", [](const coreChar* pcToken) {g_sExtensions.replace(PRINT("%s ", pcToken), "");});
 
     // get OpenGL ES version
-    g_ContextGLES.__Version = coreData::StrVersion(r_cast<const coreChar*>(glGetString(GL_VERSION)));
-    g_ContextGLES.__bES30   = (g_ContextGLES.__Version >= corePoint2U8(3u, 0u));
-    g_ContextGLES.__bES31   = (g_ContextGLES.__Version >= corePoint2U8(3u, 1u));
-    g_ContextGLES.__bES32   = (g_ContextGLES.__Version >= corePoint2U8(3u, 2u));
-    const coreBool  bES30   = (g_ContextGLES.__bES30);
-    const coreBool  bES32   = (g_ContextGLES.__bES32);
+    g_ContextGLES.__oVersion = coreData::StrVersion(r_cast<const coreChar*>(glGetString(GL_VERSION)));
+    g_ContextGLES.__bES30    = (g_ContextGLES.__oVersion >= corePoint2U8(3u, 0u));
+    g_ContextGLES.__bES31    = (g_ContextGLES.__oVersion >= corePoint2U8(3u, 1u));
+    g_ContextGLES.__bES32    = (g_ContextGLES.__oVersion >= corePoint2U8(3u, 2u));
+    const coreBool  bES30    = (g_ContextGLES.__bES30);
+    const coreBool  bES32    = (g_ContextGLES.__bES32);
 
     // handle support for certain limitations
     CORE_GL_CORE_es2_restriction = !bES30;

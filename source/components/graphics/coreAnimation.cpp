@@ -91,7 +91,7 @@ coreStatus coreAnimation::Load(coreFile* pFile)
 
         // set grid division to minimize unused space (but do not stretch too much)
         m_Division[0] = (coreUint16(pAnim->count) < ARRAY_SIZE(aiPreset)) ? aiPreset[pAnim->count] : F_TO_UI(SQRT(I_TO_F(pAnim->count)));
-        m_Division[1] = coreMath::CeilAlign(pAnim->count, m_Division[0]) / m_Division[0];
+        m_Division[1] = coreMath::DivUp(pAnim->count, m_Division[0]);
     }
 
     ASSERT((m_Division[0] <= m_Division[1]) && (m_Division[0] * m_Division[1] <= pAnim->count))

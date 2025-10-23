@@ -83,8 +83,8 @@ int main(int argc, char** argv)
 #else
 
     // improve memory debugging with glibc
-    mallopt(M_CHECK_ACTION, 3);
-    mallopt(M_PERTURB,      1);
+    mallopt(M_CHECK_ACTION, 0x03);
+    mallopt(M_PERTURB,      0x01);
 
 #endif
 
