@@ -198,7 +198,7 @@ public:
 
     /* remove existing entry */
     using coreMapStrBase<T>::erase;
-    inline coreMapStrBase<T>::coreValueIterator erase(const coreUintW iIndex) {this->_cache_clear(); this->m_atKeyList.erase(this->m_atKeyList.begin() + iIndex); return this->m_atValueList.erase(this->m_atValueList.begin() + iIndex);}
+    inline coreMapStrBase<T>::coreValueIterator erase(const coreUintW iIndex) {this->_cache_clear(); this->m_atKeyList.erase_index(iIndex); return this->m_atValueList.erase_index(iIndex);}
     inline void                                 clear()                       {m_asStringList.clear(); this->coreMapStrBase<T>::clear();}
 
     /* return original string */
@@ -228,7 +228,7 @@ public:
 
     /* remove existing entry */
     using coreMapStrBase<T>::erase;
-    inline coreMapStrBase<T>::coreValueIterator erase(const coreUintW iIndex) {this->_cache_clear(); this->m_atKeyList.erase(this->m_atKeyList.begin() + iIndex); return this->m_atValueList.erase(this->m_atValueList.begin() + iIndex);}
+    inline coreMapStrBase<T>::coreValueIterator erase(const coreUintW iIndex) {this->_cache_clear(); this->m_atKeyList.erase_index(iIndex); return this->m_atValueList.erase_index(iIndex);}
 };
 
 

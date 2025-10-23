@@ -187,7 +187,7 @@ template <typename T> void coreSpline<T>::DeleteNode(const coreUintW iIndex)
     else m_fTotalDistance -= m_apNode[iIndex].fDistance;
 
     // remove old node
-    m_apNode.erase(m_apNode.begin() + iIndex);
+    m_apNode.erase_index(iIndex);
 }
 
 

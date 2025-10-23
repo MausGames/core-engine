@@ -11,6 +11,7 @@
 #define _CORE_GUARD_LIST_H_
 
 // TODO 3: for list, set, map, string (though is used in copyable_function), remove implicit copy operator and create explicit copy function, std::copy(this->begin(), this->end(), A.begin());
+// TODO 4: rename count to contains/exists/other, for list, set and map
 // TODO 3: check on T& and co. parameters for list, set, map, switch-box
 
 
@@ -37,18 +38,32 @@ public:
 
     ENABLE_COPY(coreList)
 
+    /* remove existing item */
+    constexpr coreIterator erase_first(const T& tItem)         {return this->erase(this->__retrieve_first(tItem));}
+    constexpr coreIterator erase_last (const T& tItem)         {return this->erase(this->__retrieve_last (tItem));}
+    constexpr coreIterator erase_index(const coreUintW iIndex) {ASSERT(iIndex < this->size()) return this->erase(this->begin() + iIndex);}
+    constexpr coreIterator erase_swap (const coreIterator& it);
+
+    /* check for existing item */
+    constexpr coreBool  count_first(const T& tItem)const {return (this->__retrieve_first(tItem) != this->end());}
+    constexpr coreBool  count_last (const T& tItem)const {return (this->__retrieve_last (tItem) != this->end());}
+    constexpr coreUintW count_num  (const T& tItem)const {return std::count(this->begin(), this->end(), tItem);}
+
     /* get internal index */
-    constexpr coreUintW index      (const coreIterator&      it)const {return it - this->begin();}
-    constexpr coreUintW index      (const coreConstIterator& it)const {return it - this->begin();}
-    constexpr coreUintW first_index(const T& tItem)const              {return this->index(std::find(this->begin(),  this->end(),  tItem));}
-    constexpr coreUintW last_index (const T& tItem)const              {return this->index(std::find(this->rbegin(), this->rend(), tItem));}
+    constexpr coreUintW index      (const coreIterator&      it)const {return (it - this->begin());}
+    constexpr coreUintW index      (const coreConstIterator& it)const {return (it - this->begin());}
+    constexpr coreUintW index_first(const T& tItem)const              {return this->index(this->__retrieve_first(tItem));}
+    constexpr coreUintW index_last (const T& tItem)const              {return this->index(this->__retrieve_last (tItem));}
 
     /* change front item */
     constexpr void push_front(const T& tItem) {this->insert(this->begin(), tItem);}
     constexpr void pop_front ()               {ASSERT(!this->empty()) this->erase(this->begin());}
 
-    /* remove existing item */
-    constexpr coreIterator erase_swap(const coreIterator& it);
+
+private:
+    /* lookup item */
+    constexpr coreConstIterator __retrieve_first(const T& tItem)const {return std::find(this->begin(),  this->end(),  tItem);}
+    constexpr coreConstIterator __retrieve_last (const T& tItem)const {return std::find(this->rbegin(), this->rend(), tItem).base();}
 };
 
 
@@ -66,7 +81,7 @@ template <typename T> constexpr coreList<T>::coreIterator coreList<T>::erase_swa
     if(iIndex < this->size() - 1u) (*it) = std::move(this->back());
     this->pop_back();
 
-    return this->begin() + iIndex;
+    return (this->begin() + iIndex);
 }
 
 

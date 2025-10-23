@@ -23,6 +23,13 @@ private:
     using coreConstIterator = coreList<T>::const_iterator;
 
     /* hide undesired functions */
+    using coreList<T>::erase_first;
+    using coreList<T>::erase_last;
+    using coreList<T>::count_first;
+    using coreList<T>::count_last;
+    using coreList<T>::count_num;
+    using coreList<T>::index_first;
+    using coreList<T>::index_last;
     using coreList<T>::push_back;
     using coreList<T>::push_front;
 

@@ -187,8 +187,8 @@ coreBool coreMenu::ChangeSurface(const coreUint8 iNewSurface, const coreFloat fS
                 {
                     // move object to own render-list
                     m_aapRender[0].push_back(m_aapRender[1][i]);
-                    m_aapRender[1].erase(m_aapRender[1].begin() + i);
-                    m_aapRender[2].erase(m_aapRender[2].begin() + j);
+                    m_aapRender[1].erase_index(i);
+                    m_aapRender[2].erase_index(j);
 
                     --i;
                     break;
