@@ -1,9 +1,9 @@
 {
-    "version": 6,
+    "version": 10,
     "cmakeMinimumRequired":
     {
         "major": 3,
-        "minor": 25,
+        "minor": 31,
         "patch": 0
     },
     "configurePresets":
@@ -42,6 +42,20 @@
             }
         },
         {
+            "name": "x86-64",
+            "cacheVariables":
+            {
+                "CORE_X86": "1"
+            }
+        },
+        {
+            "name": "arm-64",
+            "cacheVariables":
+            {
+                "CORE_ARM": "1"
+            }
+        },
+        {
             "name": "linux",
             "cacheVariables":
             {
@@ -71,15 +85,23 @@
         },
         {
             "name": "linux-x86-64-debug",
-            "inherits": ["linux", "debug", "base"]
+            "inherits": ["linux", "x86-64", "debug", "base"]
         },
         {
             "name": "linux-x86-64-release",
-            "inherits": ["linux", "release", "base"]
+            "inherits": ["linux", "x86-64", "release", "base"]
         },
         {
             "name": "linux-x86-64-test",
-            "inherits": ["linux", "test", "base"]
+            "inherits": ["linux", "x86-64", "test", "base"]
+        },
+        {
+            "name": "linux-arm-64-debug",
+            "inherits": ["linux", "arm-64", "debug", "base"]
+        },
+        {
+            "name": "linux-arm-64-release",
+            "inherits": ["linux", "arm-64", "release", "base"]
         },
         {
             "name": "emscripten-debug",
@@ -111,6 +133,16 @@
         {
             "name": "linux_x86_64 (test)",
             "configurePreset": "linux-x86-64-test",
+            "inherits": "base"
+        },
+        {
+            "name": "linux_arm_64 (debug)",
+            "configurePreset": "linux-arm-64-debug",
+            "inherits": "base"
+        },
+        {
+            "name": "linux_arm_64 (release)",
+            "configurePreset": "linux-arm-64-release",
             "inherits": "base"
         },
         {

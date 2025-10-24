@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.25)
+cmake_minimum_required(VERSION 3.31)
 
 set(BASE_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/../..)
 
@@ -9,6 +9,7 @@ set_target_properties(
     CoreEngine PROPERTIES
     C_STANDARD 17
     CXX_STANDARD 23
+    CXX_SCAN_FOR_MODULES OFF
     DEBUG_POSTFIX _debug
 )
 
