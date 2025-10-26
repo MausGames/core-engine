@@ -10,7 +10,6 @@
 #ifndef _CORE_GUARD_RAND_H_
 #define _CORE_GUARD_RAND_H_
 
-// TODO 3: replace std::ldexp if possible
 // TODO 4: add assertions ?, (min <= max) (though Int violates this when forwarding to Uint) (Float is bi-directional) (actually wrap-around is intended), (0.0f <= chance <= 1.0f)
 
 // NOTE: LCG 32/15 {m_iSeed = 214013u * m_iSeed + 2531011u; return (m_iSeed >> 16u) & 0x7FFFu;}
@@ -43,12 +42,12 @@ public:
     coreUint32 Raw();
 
     /* generate bounded random number */
-    inline coreInt32  Int  (const coreInt32  iMax)                        {return coreInt32(this->Uint(iMax));}                        // min = 0, wrap-around on negative input
+    inline coreInt32  Int  (const coreInt32  iMax)                        {return coreInt32(this->Uint(iMax));}                                    // min = 0, wrap-around on negative input
     inline coreInt32  Int  (const coreInt32  iMin, const coreInt32  iMax) {return coreInt32(this->Uint(iMin, iMax));}
-    inline coreUint32 Uint (const coreUint32 iMax)                        {return this->Raw() % (iMax        + 1u);}                   // min = 0u
+    inline coreUint32 Uint (const coreUint32 iMax)                        {return this->Raw() % (iMax        + 1u);}                               // min = 0u
     inline coreUint32 Uint (const coreUint32 iMin, const coreUint32 iMax) {return this->Raw() % (iMax - iMin + 1u) + iMin;}
-    inline coreFloat  Float(const coreFloat  fMax)                        {return coreFloat(std::ldexp(this->Raw(), -32)) * (fMax);}   // min = 0.0f
-    inline coreFloat  Float(const coreFloat  fMin, const coreFloat  fMax) {return coreFloat(std::ldexp(this->Raw(), -32)) * (fMax - fMin) + fMin;}
+    inline coreFloat  Float(const coreFloat  fMax)                        {return (coreFloat(this->Raw()) / coreFloat(CORE_RAND_MAX)) * (fMax);}   // min = 0.0f
+    inline coreFloat  Float(const coreFloat  fMin, const coreFloat  fMax) {return (coreFloat(this->Raw()) / coreFloat(CORE_RAND_MAX)) * (fMax - fMin) + fMin;}
     inline coreBool   Bool ()                                             {return (this->Raw() & 0x01u);}
     inline coreBool   Bool (const coreFloat fChance)                      {return (this->Float(1.0f - CORE_MATH_PRECISION) < fChance);}
 
