@@ -37,6 +37,7 @@
     #include <sys/utsname.h>
     #include <sys/statvfs.h>
     #include <sys/stat.h>
+    #include <sys/mman.h>
 #endif
 
 THREAD_LOCAL coreData::coreTempString coreData::s_TempString         = {};
@@ -1644,6 +1645,116 @@ coreStatus coreData::FileDelete(const coreChar* pcPath)
 
 
 // ****************************************************************
+/* map file into memory (for reading) */
+coreStatus coreData::FileMap(const coreChar* pcPath, const coreInt64 iOffset, const coreInt64 iLength, coreFileMap* OUTPUT pMap)
+{
+    ASSERT(pcPath && (iOffset >= 0) && (iLength >= 0) && pMap)
+
+    // reset mapping object
+    std::memset(pMap, 0, sizeof(coreFileMap));
+
+    // set mapping base
+    const coreInt64 iBase  = coreMath::FloorAlign(iOffset, coreData::__GetMapAlign());
+    const coreInt64 iShift = iOffset - iBase;
+
+#if defined(_CORE_WINDOWS_)
+
+    // open file
+    const HANDLE pFile = CreateFileW(coreData::__ToWideChar(pcPath), GENERIC_READ, FILE_SHARE_READ, NULL, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, NULL);
+    if(pFile != INVALID_HANDLE_VALUE)
+    {
+        // retrieve file size
+        LARGE_INTEGER iSize;
+        if(GetFileSizeEx(pFile, &iSize) && (iOffset + MAX(iLength, 1) <= iSize.QuadPart))
+        {
+            // open file mapping
+            const HANDLE pMapping = CreateFileMappingW(pFile, NULL, PAGE_READONLY, 0u, 0u, NULL);
+            if(pMapping)   // not INVALID_HANDLE_VALUE
+            {
+                // set mapping range
+                const coreUintW iRange = iLength ? (iLength + iShift) : 0u;
+
+                // map file into memory
+                void* pPointer = MapViewOfFile(pMapping, FILE_MAP_READ, iBase >> 32u, iBase & 0xFFFFFFFFu, iRange);
+                if(pPointer)
+                {
+                    // prepare mapping object
+                    pMap->pData = I_TO_P(P_TO_SI(pPointer) + iShift);
+                    pMap->iSize = iRange;
+                }
+            }
+
+            // close file mapping
+            CloseHandle(pMapping);
+        }
+
+        // close file
+        CloseHandle(pFile);
+    }
+
+#elif defined(_CORE_LINUX_) || defined(_CORE_MACOS_) || defined(_CORE_EMSCRIPTEN_) || defined(_CORE_SWITCH_)
+
+    // open file
+    const coreInt32 iFile = open(pcPath, O_RDONLY);
+    if(iFile != -1)
+    {
+        struct stat oBuffer;
+
+        // get POSIX file info
+        if(!fstat(iFile, &oBuffer) && (iOffset + MAX(iLength, 1) <= oBuffer.st_size))
+        {
+            // set mapping range
+            const coreUintW iRange = iLength ? (iLength + iShift) : (oBuffer.st_size - iBase);
+
+            // map file into memory
+            void* pPointer = mmap(NULL, iRange, PROT_READ, MAP_SHARED, iFile, iBase);
+            if(pPointer != MAP_FAILED)
+            {
+                // prepare mapping object
+                pMap->pData = I_TO_P(P_TO_SI(pPointer) + iShift);
+                pMap->iSize = iRange;
+            }
+        }
+
+        // close file
+        close(iFile);
+    }
+
+#endif
+
+    return pMap->pData ? CORE_OK : CORE_ERROR_FILE;
+}
+
+
+// ****************************************************************
+/* unmap file from memory */
+coreStatus coreData::FileUnmap(const coreFileMap* pMap)
+{
+    ASSERT(pMap)
+
+    // check for valid mapping object
+    if(!pMap->pData || !pMap->iSize) return CORE_INVALID_INPUT;
+
+    // get original pointer
+    void* pPointer = coreMath::FloorAlignPtr(pMap->pData, coreData::__GetMapAlign());
+
+#if defined(_CORE_WINDOWS_)
+
+    // unmap file from memory
+    if(UnmapViewOfFile(pPointer)) return CORE_OK;
+
+#elif defined(_CORE_LINUX_) || defined(_CORE_MACOS_) || defined(_CORE_EMSCRIPTEN_) || defined(_CORE_SWITCH_)
+
+    // unmap file from memory (with original size)
+    if(!munmap(pPointer, pMap->iSize + P_TO_UI(pMap->pData) - P_TO_UI(pPointer))) return CORE_OK;
+
+#endif
+
+    return CORE_ERROR_FILE;
+}
+
+
+// ****************************************************************
 /* check if directory exists */
 coreBool coreData::DirectoryExists(const coreChar* pcPath)
 {
@@ -2466,4 +2577,42 @@ const coreChar* coreData::__ToAnsiChar(const coreWchar* pcText)
 #endif
 
     return NULL;
+}
+
+
+// ****************************************************************
+/* get memory mapping alignment */
+coreUintW coreData::__GetMapAlign()
+{
+#if defined(_CORE_WINDOWS_)
+
+    static const coreUintW s_iAlign = []()
+    {
+        // retrieve system information
+        SYSTEM_INFO oInfo = {};
+        GetSystemInfo(&oInfo);
+
+        // use allocation granularity
+        return oInfo.dwAllocationGranularity ? oInfo.dwAllocationGranularity : ALIGNMENT_ALLOC;
+    }();
+
+#elif defined(_CORE_LINUX_) || defined(_CORE_MACOS_) || defined(_CORE_EMSCRIPTEN_) || defined(_CORE_SWITCH_)
+
+    static const coreUintW s_iAlign = []()
+    {
+        // retrieve runtime system parameter
+        const coreInt64 iPageSize = sysconf(_SC_PAGESIZE);
+
+        // use page size
+        return iPageSize ? iPageSize : ALIGNMENT_PAGE;
+    }();
+
+#else
+
+    // ignore alignment
+    static const coreUintW s_iAlign = 1u;
+
+#endif
+
+    return s_iAlign;
 }

@@ -15,7 +15,6 @@
 // TODO 5: <old comment style>
 // TODO 4: get rid of Internal* functions ? but files should not be copied (normally)
 // TODO 3: add status-enum to file and store in archive: compressed, scrambled
-// TODO 3: mmap, CreateFileMapping+MapViewOfFile instead of reading into a buffer ? unbuffered reading ? batching (e.g. DirectStorage) ?
 // TODO 2: when saving an archive fails late, file-state was already adjusted and cannot be recovered (archive-pos)
 // TODO 3: get size from archive (sum up all files and headers, but paths have variable sizes)
 
@@ -46,6 +45,7 @@ private:
     coreUint32   m_iArchivePos;          // absolute data position in the associated archive
     coreArchive* m_pArchive;             // associated archive
 
+    coreBool m_bMapped;                  // current file data comes from memory mapping
     coreBool m_bExtern;                  // current file data is not owned and should not be deleted
 
     coreAtomic<coreUint8> m_iRefCount;   // reference-counter to prevent early unloading
@@ -73,7 +73,7 @@ public:
     SDL_IOStream* CreateReadStream()const;
 
     /* load and unload file data */
-    coreStatus LoadData();
+    coreStatus LoadData(const coreBool bMapped = false);
     coreStatus UnloadData();
 
     /* edit file data directly */

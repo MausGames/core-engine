@@ -138,7 +138,7 @@ It is **designed to be supportive, versatile and powerful**, and to dynamically 
 - **String Functions:** transformations, tokenization, safe string copy, string building, fast value/string conversions, path extractions, and a lot more
 - **Time Functions:** local and UTC, formatting
 - **Scopes and Smart Pointers**
-- **File Handling:** chunk-based archive container class, safe file writing (temp + move), various file and directory operations, recursive directory creation and enumeration, long path awareness (Windows)
+- **File Handling:** chunk-based archive container class, safe file writing (temp + move), file memory mapping, various file and directory operations, recursive directory creation and enumeration, long path awareness (Windows)
 - **Process Handling:** application paths, application stats (CPU and GPU memory), dynamic library loading
 - **Operating System:** system paths, system stats (CPU and GPU memory, disk space), environment and hardware detections
 - **Synchronization**: recursive and non-recursive locks (spin-locks, mutexes), atomics

@@ -15,7 +15,6 @@
 // TODO 3: reduce memory consumption with all the redundant keys in containers
 // TODO 3: determine number of entries and call reserve(x), or use property (e.g. RESERVE)
 // TODO 5: try to use strtok_s/_r()
-// TODO 3: use stream/mmap for FindString if possible
 
 
 // ****************************************************************

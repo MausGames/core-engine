@@ -66,6 +66,12 @@ struct coreFileStats final
     std::time_t iWriteTime;   // file write time (additional)
 };
 
+struct coreFileMap final
+{
+    void*     pData;   // mapped file data
+    coreUintW iSize;   // mapped file size
+};
+
 enum coreCpuType : coreUint8
 {
     CORE_CPU_TYPE_AMD     = 1u,
@@ -201,6 +207,8 @@ public:
     static coreStatus  FileCopy         (const coreChar* pcFrom, const coreChar* pcTo);
     static coreStatus  FileMove         (const coreChar* pcFrom, const coreChar* pcTo);
     static coreStatus  FileDelete       (const coreChar* pcPath);
+    static coreStatus  FileMap          (const coreChar* pcPath, const coreInt64 iOffset, const coreInt64 iLength, coreFileMap* OUTPUT pMap);
+    static coreStatus  FileUnmap        (const coreFileMap* pMap);
     static coreBool    DirectoryExists  (const coreChar* pcPath);
     static coreBool    DirectoryWritable(const coreChar* pcPath);
     static coreStatus  DirectoryCopy    (const coreChar* pcFrom, const coreChar* pcTo);
@@ -267,6 +275,9 @@ private:
     /* transform between 8-bit ANSI and 16-bit Unicode (for Windows API) */
     static const coreWchar* __ToWideChar(const coreChar*  pcText);
     static const coreChar*  __ToAnsiChar(const coreWchar* pcText);
+
+    /* get memory mapping alignment */
+    static coreUintW __GetMapAlign();
 };
 
 

@@ -281,6 +281,7 @@ coreBool coreLanguage::FindString(const coreChar* pcPath, const coreChar* pcKey,
     ASSERT(psOutput)
 
     coreFileScope pFile = Core::Manager::Resource->RetrieveFile(pcPath);
+    pFile->LoadData(true);
 
     // get file data
     const coreChar* pcData = r_cast<const coreChar*>(pFile->GetData());

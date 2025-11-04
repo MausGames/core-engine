@@ -17,6 +17,7 @@ coreFile::coreFile(const coreChar* pcPath)noexcept
 , m_iSize       (0u)
 , m_iArchivePos (__CORE_FILE_TYPE_DIRECT)
 , m_pArchive    (NULL)
+, m_bMapped     (false)
 , m_bExtern     (false)
 , m_iRefCount   (0u)
 , m_DataLock    ()
@@ -38,6 +39,7 @@ coreFile::coreFile(const coreChar* pcPath, coreByte* pData, const coreUint32 iSi
 , m_iSize       (iSize)
 , m_iArchivePos (__CORE_FILE_TYPE_MEMORY)
 , m_pArchive    (NULL)
+, m_bMapped     (false)
 , m_bExtern     (bExtern)
 , m_iRefCount   (0u)
 , m_DataLock    ()
@@ -62,7 +64,7 @@ coreStatus coreFile::Save(const coreChar* pcPath)
 {
     // check file data
     this->LoadData();
-    if(!m_pData || !m_iSize) return CORE_INVALID_CALL;
+    if(!m_pData || !m_iSize || m_bMapped) return CORE_INVALID_CALL;
 
     // save path
     if(pcPath) m_sPath = pcPath;
@@ -206,7 +208,7 @@ SDL_IOStream* coreFile::CreateReadStream()const
         if(!pFile) return NULL;
 
         // seek file data position
-        if(SDL_SeekIO(pFile, m_iArchivePos, SDL_IO_SEEK_SET) != m_iArchivePos)
+        WARN_IF(SDL_SeekIO(pFile, m_iArchivePos, SDL_IO_SEEK_SET) != m_iArchivePos)
         {
             SDL_CloseIO(pFile);
             return NULL;
@@ -225,7 +227,7 @@ SDL_IOStream* coreFile::CreateReadStream()const
 
 // ****************************************************************
 /* load file data */
-coreStatus coreFile::LoadData()
+coreStatus coreFile::LoadData(const coreBool bMapped)
 {
     const coreSpinLocker oLocker(&m_DataLock);
 
@@ -243,6 +245,30 @@ coreStatus coreFile::LoadData()
 
 #endif
 
+    if(bMapped)
+    {
+        coreFileMap oMap;
+        if(m_pArchive)
+        {
+            // map archive into memory
+            WARN_IF(coreData::FileMap(m_pArchive->GetPath(), m_iArchivePos, m_iSize, &oMap) != CORE_OK) {}
+        }
+        else
+        {
+            // map direct file into memory
+            WARN_IF(coreData::FileMap(m_sPath.c_str(), 0, 0, &oMap) != CORE_OK) {}
+        }
+
+        if(oMap.pData)
+        {
+            // cache memory mapping
+            m_pData   = s_cast<coreByte*>(oMap.pData);
+            m_bMapped = true;
+
+            return CORE_OK;
+        }
+    }
+
     SDL_IOStream* pFile;
     if(m_pArchive)
     {
@@ -251,7 +277,7 @@ coreStatus coreFile::LoadData()
         if(!pFile) return CORE_ERROR_FILE;
 
         // seek file data position
-        if(SDL_SeekIO(pFile, m_iArchivePos, SDL_IO_SEEK_SET) != m_iArchivePos)
+        WARN_IF(SDL_SeekIO(pFile, m_iArchivePos, SDL_IO_SEEK_SET) != m_iArchivePos)
         {
             SDL_CloseIO(pFile);
             return CORE_ERROR_FILE;
@@ -361,15 +387,29 @@ void coreFile::FlushFilesystem()
 /* delete file data */
 void coreFile::__DeleteData()
 {
-    if(m_bExtern)
+    if(m_bMapped)
     {
-        // just remove external data
+        // reconstruct mapping object
+        coreFileMap oMap;
+        oMap.pData = m_pData;
+        oMap.iSize = m_iSize;
+
+        // unmap file from memory
+        WARN_IF(coreData::FileUnmap(&oMap) != CORE_OK) {}
+
+        // remove memory mapping
+        m_pData   = NULL;
+        m_bMapped = false;
+    }
+    else if(m_bExtern)
+    {
+        // remove external data
         m_pData   = NULL;
         m_bExtern = false;
     }
     else
     {
-        // actually delete data
+        // delete file data
         SAFE_DELETE_ARRAY(m_pData)
     }
 }
