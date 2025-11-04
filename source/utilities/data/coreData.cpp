@@ -120,7 +120,7 @@ coreUint64 coreData::ProcessMemory()
         std::fscanf(pFile, "%*s %llu", &iPages);
         std::fclose(pFile);
 
-        // multiply with page-size and return
+        // multiply with page size and return
         return iPages * sysconf(_SC_PAGESIZE);
     }
 

@@ -22,6 +22,7 @@
 // TODO 3: manually merge various locations with multiple separate allocations (e.g. texture, MD3)
 // TODO 3: use (smaller) indices instead of pointers for the pool allocator (but different pages have non-consecutive base addresses, without big address-space pre-reservation)
 // TODO 3: improve temp-storage: detect duplicate index assignments, detect wrong interleaved alloc-frees (because pointer is just decreased to the minimum), RETURN_RESTRICT (but requires non-null)
+// TODO 3: std::start_lifetime_as with C++23 (and when libraries support it)
 
 
 // ****************************************************************

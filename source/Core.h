@@ -37,7 +37,7 @@
 // TODO 3: improve MSVC debug allocator usage, #define new new(_NORMAL_BLOCK, __FILE__, __LINE__)
 // TODO 5: check out NVAPI and ADLX/AGS
 // TODO 4: handle implicit conversions, (enable MSVC warnings 4242, 4244, 4267 4365 again)
-// TODO 4: unify/clarify const void* and const coreByte*
+// TODO 4: unify/clarify const void* and const coreByte* (maybe void* for APIs and coreByte* for internal use only) (adjust all call-sites)
 // TODO 4: "WARN_IF" where applicable, "if" where not (check between user-caused errors, system-caused errors, developer errors)
 // TODO 3: automatic Core::Reshape() if not handled, currently it's explicit in every application, CoreApp callback ?
 // TODO 4: noexcept = default, ~T()noexcept

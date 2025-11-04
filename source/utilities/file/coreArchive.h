@@ -17,6 +17,7 @@
 // TODO 3: add status-enum to file and store in archive: compressed, scrambled
 // TODO 2: when saving an archive fails late, file-state was already adjusted and cannot be recovered (archive-pos)
 // TODO 3: get size from archive (sum up all files and headers, but paths have variable sizes)
+// TODO 3: allow caching a file-stream in an archive to make reading multiple files faster (thread-safety?) (stored in a manager?) (though many systems take a separate stream)
 
 
 // ****************************************************************

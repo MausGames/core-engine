@@ -85,15 +85,15 @@ CoreDebug::CoreDebug()noexcept
     m_pOverall->oOutput.SetColor3(COLOR_WHITE);
 
     // create debug cube
+    m_DebugCube.DefineModel  ("default_cube.md3z");
     m_DebugCube.DefineTexture(0u, "default_white.webp");
     m_DebugCube.DefineProgram("default_3d_raw_program");
-    m_DebugCube.DefineModel  ("default_cube.md3z");
     m_DebugCube.SetAlpha     (0.5f);
 
     // create debug sphere
+    m_DebugSphere.DefineModel  ("default_sphere.md3z");
     m_DebugSphere.DefineTexture(0u, "default_white.webp");
     m_DebugSphere.DefineProgram("default_3d_raw_program");
-    m_DebugSphere.DefineModel  ("default_sphere.md3z");
     m_DebugSphere.SetAlpha     (0.5f);
 
     // create debug collision volume

@@ -13,7 +13,7 @@
 // TODO 3: implement sound pause
 // TODO 3: cache and check audio source properties (reduce OpenAL function calls) (required per source) (pitch and loop at least)
 // TODO 5: <old comment style>
-// TODO 3: AL_EXT_STATIC_BUFFER and alBufferDataStatic
+// TODO 3: AL_EXT_STATIC_BUFFER and alBufferDataStatic (or for music streaming, to remove the copy operation)
 // TODO 3: use temp-allocation for ALAW+MULAW encoding (currently function OUTPUT)
 
 
