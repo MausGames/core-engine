@@ -47,32 +47,32 @@ public:
     constexpr coreVector2  operator -  (const coreVector2 v)const {return coreVector2(x - v.x, y - v.y);}
     constexpr coreVector2  operator *  (const coreVector2 v)const {return coreVector2(x * v.x, y * v.y);}
     constexpr coreVector2  operator /  (const coreVector2 v)const {return coreVector2(x / v.x, y / v.y);}
-    inline    coreVector2& operator += (const coreVector2 v)      {return (*this = *this + v);}
-    inline    coreVector2& operator -= (const coreVector2 v)      {return (*this = *this - v);}
-    inline    coreVector2& operator *= (const coreVector2 v)      {return (*this = *this * v);}
-    inline    coreVector2& operator /= (const coreVector2 v)      {return (*this = *this / v);}
+    constexpr coreVector2& operator += (const coreVector2 v)      {return (*this = *this + v);}
+    constexpr coreVector2& operator -= (const coreVector2 v)      {return (*this = *this - v);}
+    constexpr coreVector2& operator *= (const coreVector2 v)      {return (*this = *this * v);}
+    constexpr coreVector2& operator /= (const coreVector2 v)      {return (*this = *this / v);}
 
     /* scalar operations */
     constexpr coreVector2  operator +  (const coreFloat f)const {return coreVector2(x + f, y + f);}
     constexpr coreVector2  operator -  (const coreFloat f)const {return coreVector2(x - f, y - f);}
     constexpr coreVector2  operator *  (const coreFloat f)const {return coreVector2(x * f, y * f);}
     constexpr coreVector2  operator /  (const coreFloat f)const {return coreVector2(x / f, y / f);}
-    inline    coreVector2& operator += (const coreFloat f)      {return (*this = *this + f);}
-    inline    coreVector2& operator -= (const coreFloat f)      {return (*this = *this - f);}
-    inline    coreVector2& operator *= (const coreFloat f)      {return (*this = *this * f);}
-    inline    coreVector2& operator /= (const coreFloat f)      {return (*this = *this / f);}
+    constexpr coreVector2& operator += (const coreFloat f)      {return (*this = *this + f);}
+    constexpr coreVector2& operator -= (const coreFloat f)      {return (*this = *this - f);}
+    constexpr coreVector2& operator *= (const coreFloat f)      {return (*this = *this * f);}
+    constexpr coreVector2& operator /= (const coreFloat f)      {return (*this = *this / f);}
 
     /* matrix operations */
     constexpr coreVector2  operator *  (const coreMatrix2& m)const;
     constexpr coreVector2  operator *  (const coreMatrix3& m)const;
     constexpr coreVector2  operator *  (const coreMatrix4& m)const;
-    inline    coreVector2& operator *= (const coreMatrix2& m) {return (*this = *this * m);}
-    inline    coreVector2& operator *= (const coreMatrix3& m) {return (*this = *this * m);}
-    inline    coreVector2& operator *= (const coreMatrix4& m) {return (*this = *this * m);}
+    constexpr coreVector2& operator *= (const coreMatrix2& m) {return (*this = *this * m);}
+    constexpr coreVector2& operator *= (const coreMatrix3& m) {return (*this = *this * m);}
+    constexpr coreVector2& operator *= (const coreMatrix4& m) {return (*this = *this * m);}
 
     /* convert vector */
     constexpr explicit operator coreBool ()const           {return (x != 0.0f) || (y != 0.0f);}
-    inline          coreFloat& arr(const coreUintW i)      {ASSERT(i < 2u) return (&x)[i];}
+    constexpr       coreFloat& arr(const coreUintW i)      {ASSERT(i < 2u) return (&x)[i];}
     constexpr const coreFloat& arr(const coreUintW i)const {ASSERT(i < 2u) return (&x)[i];}
     constexpr const coreFloat* ptr()const                  {return (&x);}
     constexpr coreVector2      yx ()const                  {return coreVector2(y, x);}
@@ -216,30 +216,30 @@ public:
     constexpr coreVector3  operator -  (const coreVector3 v)const {return coreVector3(x - v.x, y - v.y, z - v.z);}
     constexpr coreVector3  operator *  (const coreVector3 v)const {return coreVector3(x * v.x, y * v.y, z * v.z);}
     constexpr coreVector3  operator /  (const coreVector3 v)const {return coreVector3(x / v.x, y / v.y, z / v.z);}
-    inline    coreVector3& operator += (const coreVector3 v)      {return (*this = *this + v);}
-    inline    coreVector3& operator -= (const coreVector3 v)      {return (*this = *this - v);}
-    inline    coreVector3& operator *= (const coreVector3 v)      {return (*this = *this * v);}
-    inline    coreVector3& operator /= (const coreVector3 v)      {return (*this = *this / v);}
+    constexpr coreVector3& operator += (const coreVector3 v)      {return (*this = *this + v);}
+    constexpr coreVector3& operator -= (const coreVector3 v)      {return (*this = *this - v);}
+    constexpr coreVector3& operator *= (const coreVector3 v)      {return (*this = *this * v);}
+    constexpr coreVector3& operator /= (const coreVector3 v)      {return (*this = *this / v);}
 
     /* scalar operations */
     constexpr coreVector3  operator +  (const coreFloat f)const {return coreVector3(x + f, y + f, z + f);}
     constexpr coreVector3  operator -  (const coreFloat f)const {return coreVector3(x - f, y - f, z - f);}
     constexpr coreVector3  operator *  (const coreFloat f)const {return coreVector3(x * f, y * f, z * f);}
     constexpr coreVector3  operator /  (const coreFloat f)const {return coreVector3(x / f, y / f, z / f);}
-    inline    coreVector3& operator += (const coreFloat f)      {return (*this = *this + f);}
-    inline    coreVector3& operator -= (const coreFloat f)      {return (*this = *this - f);}
-    inline    coreVector3& operator *= (const coreFloat f)      {return (*this = *this * f);}
-    inline    coreVector3& operator /= (const coreFloat f)      {return (*this = *this / f);}
+    constexpr coreVector3& operator += (const coreFloat f)      {return (*this = *this + f);}
+    constexpr coreVector3& operator -= (const coreFloat f)      {return (*this = *this - f);}
+    constexpr coreVector3& operator *= (const coreFloat f)      {return (*this = *this * f);}
+    constexpr coreVector3& operator /= (const coreFloat f)      {return (*this = *this / f);}
 
     /* matrix operations */
     constexpr coreVector3  operator *  (const coreMatrix3& m)const;
     constexpr coreVector3  operator *  (const coreMatrix4& m)const;
-    inline    coreVector3& operator *= (const coreMatrix3& m) {return (*this = *this * m);}
-    inline    coreVector3& operator *= (const coreMatrix4& m) {return (*this = *this * m);}
+    constexpr coreVector3& operator *= (const coreMatrix3& m) {return (*this = *this * m);}
+    constexpr coreVector3& operator *= (const coreMatrix4& m) {return (*this = *this * m);}
 
     /* convert vector */
     constexpr explicit operator coreBool ()const           {return (x != 0.0f) || (y != 0.0f) || (z != 0.0f);}
-    inline          coreFloat& arr(const coreUintW i)      {ASSERT(i < 3u) return (&x)[i];}
+    constexpr       coreFloat& arr(const coreUintW i)      {ASSERT(i < 3u) return (&x)[i];}
     constexpr const coreFloat& arr(const coreUintW i)const {ASSERT(i < 3u) return (&x)[i];}
     constexpr const coreFloat* ptr()const                  {return (&x);}
     constexpr coreVector3      xzy()const                  {return coreVector3(x, z, y);}
@@ -253,12 +253,12 @@ public:
     constexpr coreVector2      yz ()const                  {return coreVector2(y, z);}
     constexpr coreVector2      zx ()const                  {return coreVector2(z, x);}
     constexpr coreVector2      zy ()const                  {return coreVector2(z, y);}
-    inline    void             xy (const coreVector2 v)    {x = v.x; y = v.y;}
-    inline    void             xz (const coreVector2 v)    {x = v.x; z = v.y;}
-    inline    void             yx (const coreVector2 v)    {y = v.x; x = v.y;}
-    inline    void             yz (const coreVector2 v)    {y = v.x; z = v.y;}
-    inline    void             zx (const coreVector2 v)    {z = v.x; x = v.y;}
-    inline    void             zy (const coreVector2 v)    {z = v.x; y = v.y;}
+    constexpr void             xy (const coreVector2 v)    {x = v.x; y = v.y;}
+    constexpr void             xz (const coreVector2 v)    {x = v.x; z = v.y;}
+    constexpr void             yx (const coreVector2 v)    {y = v.x; x = v.y;}
+    constexpr void             yz (const coreVector2 v)    {y = v.x; z = v.y;}
+    constexpr void             zx (const coreVector2 v)    {z = v.x; x = v.y;}
+    constexpr void             zy (const coreVector2 v)    {z = v.x; y = v.y;}
 
     /* invert vector */
     constexpr coreVector3 operator - ()const {return coreVector3(-x, -y, -z);}
@@ -378,28 +378,28 @@ public:
     constexpr coreVector4  operator -  (const coreVector4 v)const {return coreVector4(x - v.x, y - v.y, z - v.z, w - v.w);}
     constexpr coreVector4  operator *  (const coreVector4 v)const {return coreVector4(x * v.x, y * v.y, z * v.z, w * v.w);}
     constexpr coreVector4  operator /  (const coreVector4 v)const {return coreVector4(x / v.x, y / v.y, z / v.z, w / v.w);}
-    inline    coreVector4& operator += (const coreVector4 v)      {return (*this = *this + v);}
-    inline    coreVector4& operator -= (const coreVector4 v)      {return (*this = *this - v);}
-    inline    coreVector4& operator *= (const coreVector4 v)      {return (*this = *this * v);}
-    inline    coreVector4& operator /= (const coreVector4 v)      {return (*this = *this / v);}
+    constexpr coreVector4& operator += (const coreVector4 v)      {return (*this = *this + v);}
+    constexpr coreVector4& operator -= (const coreVector4 v)      {return (*this = *this - v);}
+    constexpr coreVector4& operator *= (const coreVector4 v)      {return (*this = *this * v);}
+    constexpr coreVector4& operator /= (const coreVector4 v)      {return (*this = *this / v);}
 
     /* scalar operations */
     constexpr coreVector4  operator +  (const coreFloat f)const {return coreVector4(x + f, y + f, z + f, w + f);}
     constexpr coreVector4  operator -  (const coreFloat f)const {return coreVector4(x - f, y - f, z - f, w - f);}
     constexpr coreVector4  operator *  (const coreFloat f)const {return coreVector4(x * f, y * f, z * f, w * f);}
     constexpr coreVector4  operator /  (const coreFloat f)const {return coreVector4(x / f, y / f, z / f, w / f);}
-    inline    coreVector4& operator += (const coreFloat f)      {return (*this = *this + f);}
-    inline    coreVector4& operator -= (const coreFloat f)      {return (*this = *this - f);}
-    inline    coreVector4& operator *= (const coreFloat f)      {return (*this = *this * f);}
-    inline    coreVector4& operator /= (const coreFloat f)      {return (*this = *this / f);}
+    constexpr coreVector4& operator += (const coreFloat f)      {return (*this = *this + f);}
+    constexpr coreVector4& operator -= (const coreFloat f)      {return (*this = *this - f);}
+    constexpr coreVector4& operator *= (const coreFloat f)      {return (*this = *this * f);}
+    constexpr coreVector4& operator /= (const coreFloat f)      {return (*this = *this / f);}
 
     /* matrix operations */
     constexpr coreVector4  operator *  (const coreMatrix4& m)const;
-    inline    coreVector4& operator *= (const coreMatrix4& m) {return (*this = *this * m);}
+    constexpr coreVector4& operator *= (const coreMatrix4& m) {return (*this = *this * m);}
 
     /* convert vector */
     constexpr explicit operator coreBool ()const            {return (x != 0.0f) || (y != 0.0f) || (z != 0.0f) || (w != 0.0f);}
-    inline          coreFloat& arr (const coreUintW i)      {ASSERT(i < 4u) return (&x)[i];}
+    constexpr       coreFloat& arr (const coreUintW i)      {ASSERT(i < 4u) return (&x)[i];}
     constexpr const coreFloat& arr (const coreUintW i)const {ASSERT(i < 4u) return (&x)[i];}
     constexpr const coreFloat* ptr ()const                  {return (&x);}
     constexpr coreVector3      xyzw()const                  {return coreVector3(x, y, z) * w;}
@@ -417,20 +417,20 @@ public:
     constexpr coreVector2      wx  ()const                  {return coreVector2(w, x);}
     constexpr coreVector2      wy  ()const                  {return coreVector2(w, y);}
     constexpr coreVector2      wz  ()const                  {return coreVector2(w, z);}
-    inline    void             xyz (const coreVector3 v)    {x = v.x; y = v.y; z = v.z;}
-    inline    void             yzw (const coreVector3 v)    {y = v.x; z = v.y; w = v.z;}
-    inline    void             xy  (const coreVector2 v)    {x = v.x; y = v.y;}
-    inline    void             xz  (const coreVector2 v)    {x = v.x; z = v.y;}
-    inline    void             xw  (const coreVector2 v)    {x = v.x; w = v.y;}
-    inline    void             yx  (const coreVector2 v)    {y = v.x; x = v.y;}
-    inline    void             yz  (const coreVector2 v)    {y = v.x; z = v.y;}
-    inline    void             yw  (const coreVector2 v)    {y = v.x; w = v.y;}
-    inline    void             zx  (const coreVector2 v)    {z = v.x; x = v.y;}
-    inline    void             zy  (const coreVector2 v)    {z = v.x; y = v.y;}
-    inline    void             zw  (const coreVector2 v)    {z = v.x; w = v.y;}
-    inline    void             wx  (const coreVector2 v)    {w = v.x; x = v.y;}
-    inline    void             wy  (const coreVector2 v)    {w = v.x; y = v.y;}
-    inline    void             wz  (const coreVector2 v)    {w = v.x; z = v.y;}
+    constexpr void             xyz (const coreVector3 v)    {x = v.x; y = v.y; z = v.z;}
+    constexpr void             yzw (const coreVector3 v)    {y = v.x; z = v.y; w = v.z;}
+    constexpr void             xy  (const coreVector2 v)    {x = v.x; y = v.y;}
+    constexpr void             xz  (const coreVector2 v)    {x = v.x; z = v.y;}
+    constexpr void             xw  (const coreVector2 v)    {x = v.x; w = v.y;}
+    constexpr void             yx  (const coreVector2 v)    {y = v.x; x = v.y;}
+    constexpr void             yz  (const coreVector2 v)    {y = v.x; z = v.y;}
+    constexpr void             yw  (const coreVector2 v)    {y = v.x; w = v.y;}
+    constexpr void             zx  (const coreVector2 v)    {z = v.x; x = v.y;}
+    constexpr void             zy  (const coreVector2 v)    {z = v.x; y = v.y;}
+    constexpr void             zw  (const coreVector2 v)    {z = v.x; w = v.y;}
+    constexpr void             wx  (const coreVector2 v)    {w = v.x; x = v.y;}
+    constexpr void             wy  (const coreVector2 v)    {w = v.x; y = v.y;}
+    constexpr void             wz  (const coreVector2 v)    {w = v.x; z = v.y;}
 
     /* invert vector */
     constexpr coreVector4 operator - ()const {return coreVector4(-x, -y, -z, -w);}

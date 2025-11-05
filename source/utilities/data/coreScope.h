@@ -50,7 +50,7 @@ public:
 
     /* access associated object */
     constexpr T*                      Get()const {ASSERT(m_ptObject) return m_ptObject;}
-    inline             operator       T* ()      {return m_ptObject;}
+    constexpr          operator       T* ()      {return m_ptObject;}
     constexpr          operator const T* ()const {return m_ptObject;}
     constexpr explicit operator coreBool ()const {return m_ptObject != NULL;}
     constexpr T*       operator ->       ()const {return  this->Get();}

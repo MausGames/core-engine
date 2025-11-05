@@ -515,9 +515,9 @@
     RETURN_NODISCARD constexpr e  operator &  (const e   a, const e b) {return s_cast<e>( s_cast<std::underlying_type_t<e>>(a) & s_cast<std::underlying_type_t<e>>(b));} \
     RETURN_NODISCARD constexpr e  operator |  (const e   a, const e b) {return s_cast<e>( s_cast<std::underlying_type_t<e>>(a) | s_cast<std::underlying_type_t<e>>(b));} \
     RETURN_NODISCARD constexpr e  operator ^  (const e   a, const e b) {return s_cast<e>( s_cast<std::underlying_type_t<e>>(a) ^ s_cast<std::underlying_type_t<e>>(b));} \
-    inline                     e& operator &= (e& OUTPUT a, const e b) {return (a = a & b);}                                                                             \
-    inline                     e& operator |= (e& OUTPUT a, const e b) {return (a = a | b);}                                                                             \
-    inline                     e& operator ^= (e& OUTPUT a, const e b) {return (a = a ^ b);}
+    constexpr                  e& operator &= (e& OUTPUT a, const e b) {return (a = a & b);}                                                                             \
+    constexpr                  e& operator |= (e& OUTPUT a, const e b) {return (a = a | b);}                                                                             \
+    constexpr                  e& operator ^= (e& OUTPUT a, const e b) {return (a = a ^ b);}
 
 // safely convert pointers and references along the inheritance hierarchy
 #if defined(_CORE_RTTI_)

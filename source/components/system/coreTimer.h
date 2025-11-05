@@ -52,31 +52,31 @@ public:
     coreBool Update(const coreFloat fSpeedModifier);
 
     /* control the timer */
-    inline void Play (const coreTimerPlay eReset) {m_bStatus = true; if(eReset) this->Reset();}
-    inline void Pause()                           {m_bStatus = false;}
-    inline void Reset()                           {m_fValue  = 0.0f; m_iCurLoops = 0u;}
-    inline void Stop ()                           {this->Pause(); this->Reset();}
+    constexpr void Play (const coreTimerPlay eReset) {m_bStatus = true; if(eReset) this->Reset();}
+    constexpr void Pause()                           {m_bStatus = false;}
+    constexpr void Reset()                           {m_fValue  = 0.0f; m_iCurLoops = 0u;}
+    constexpr void Stop ()                           {this->Pause(); this->Reset();}
 
     /* set all basic object properties */
-    inline void Set(const coreFloat fEnd, const coreFloat fSpeed, const coreUint16 iLoops) {m_fEnd = fEnd; m_fSpeed = fSpeed; m_iMaxLoops = iLoops;}
+    constexpr void Set(const coreFloat fEnd, const coreFloat fSpeed, const coreUint16 iLoops) {m_fEnd = fEnd; m_fSpeed = fSpeed; m_iMaxLoops = iLoops;}
 
     /* set object properties */
-    inline void SetValue   (const coreFloat  fValue)    {m_fValue    = fValue;}
-    inline void SetEnd     (const coreFloat  fEnd)      {m_fEnd      = fEnd;}
-    inline void SetSpeed   (const coreFloat  fSpeed)    {m_fSpeed    = fSpeed;}
-    inline void SetMaxLoops(const coreUint16 iMaxLoops) {m_iMaxLoops = iMaxLoops;}
-    inline void SetCurLoops(const coreUint16 iCurLoops) {m_iCurLoops = iCurLoops;}
-    inline void SetTimeID  (const coreInt8   iTimeID)   {m_iTimeID   = iTimeID;}
+    constexpr void SetValue   (const coreFloat  fValue)    {m_fValue    = fValue;}
+    constexpr void SetEnd     (const coreFloat  fEnd)      {m_fEnd      = fEnd;}
+    constexpr void SetSpeed   (const coreFloat  fSpeed)    {m_fSpeed    = fSpeed;}
+    constexpr void SetMaxLoops(const coreUint16 iMaxLoops) {m_iMaxLoops = iMaxLoops;}
+    constexpr void SetCurLoops(const coreUint16 iCurLoops) {m_iCurLoops = iCurLoops;}
+    constexpr void SetTimeID  (const coreInt8   iTimeID)   {m_iTimeID   = iTimeID;}
 
     /* get object properties */
-    inline       coreFloat   GetValue   (const coreTimerGet eReversed)const {return eReversed ? (m_fEnd - m_fValue) : m_fValue;}
-    inline       coreFloat   GetValuePct(const coreTimerGet eReversed)const {return this->GetValue(eReversed) / m_fEnd;}
-    inline const coreFloat&  GetEnd     ()const                             {return m_fEnd;}
-    inline const coreFloat&  GetSpeed   ()const                             {return m_fSpeed;}
-    inline const coreUint16& GetMaxLoops()const                             {return m_iMaxLoops;}
-    inline const coreUint16& GetCurLoops()const                             {return m_iCurLoops;}
-    inline const coreInt8&   GetTimeID  ()const                             {return m_iTimeID;}
-    inline const coreBool&   GetStatus  ()const                             {return m_bStatus;}
+    constexpr       coreFloat   GetValue   (const coreTimerGet eReversed)const {return eReversed ? (m_fEnd - m_fValue) : m_fValue;}
+    constexpr       coreFloat   GetValuePct(const coreTimerGet eReversed)const {return this->GetValue(eReversed) / m_fEnd;}
+    constexpr const coreFloat&  GetEnd     ()const                             {return m_fEnd;}
+    constexpr const coreFloat&  GetSpeed   ()const                             {return m_fSpeed;}
+    constexpr const coreUint16& GetMaxLoops()const                             {return m_iMaxLoops;}
+    constexpr const coreUint16& GetCurLoops()const                             {return m_iCurLoops;}
+    constexpr const coreInt8&   GetTimeID  ()const                             {return m_iTimeID;}
+    constexpr const coreBool&   GetStatus  ()const                             {return m_bStatus;}
 };
 
 
@@ -95,7 +95,7 @@ public:
     ENABLE_COPY(coreFlow)
 
     /* access the flowing value */
-    inline    operator       coreFloat& ()      {return m_fValue;}
+    constexpr operator       coreFloat& ()      {return m_fValue;}
     constexpr operator const coreFloat& ()const {return m_fValue;}
     constexpr const coreFloat& ToFloat  ()const {return m_fValue;}
 

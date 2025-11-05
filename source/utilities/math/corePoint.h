@@ -33,7 +33,7 @@ public:
 
     /* access specific element */
     constexpr explicit operator coreBool ()const            {for(coreUintW i = 0u; i < iSize; ++i) if(m_atValue[i]) return true; return false;}
-    inline          T& operator [] (const coreUintW i)      {ASSERT(i < iSize) return m_atValue[i];}
+    constexpr       T& operator [] (const coreUintW i)      {ASSERT(i < iSize) return m_atValue[i];}
     constexpr const T& operator [] (const coreUintW i)const {ASSERT(i < iSize) return m_atValue[i];}
     constexpr const T* ptr()const                           {return m_atValue;}
 
@@ -42,10 +42,10 @@ public:
     constexpr corePoint  operator -  (const corePoint p)const {corePoint P; for(coreUintW i = 0u; i < iSize; ++i) P.m_atValue[i] = m_atValue[i] - p.m_atValue[i]; return P;}
     constexpr corePoint  operator *  (const corePoint p)const {corePoint P; for(coreUintW i = 0u; i < iSize; ++i) P.m_atValue[i] = m_atValue[i] * p.m_atValue[i]; return P;}
     constexpr corePoint  operator /  (const corePoint p)const {corePoint P; for(coreUintW i = 0u; i < iSize; ++i) P.m_atValue[i] = m_atValue[i] / p.m_atValue[i]; return P;}
-    inline    corePoint& operator += (const corePoint p)      {return (*this = *this + p);}
-    inline    corePoint& operator -= (const corePoint p)      {return (*this = *this - p);}
-    inline    corePoint& operator *= (const corePoint p)      {return (*this = *this * p);}
-    inline    corePoint& operator /= (const corePoint p)      {return (*this = *this / p);}
+    constexpr corePoint& operator += (const corePoint p)      {return (*this = *this + p);}
+    constexpr corePoint& operator -= (const corePoint p)      {return (*this = *this - p);}
+    constexpr corePoint& operator *= (const corePoint p)      {return (*this = *this * p);}
+    constexpr corePoint& operator /= (const corePoint p)      {return (*this = *this / p);}
 };
 
 

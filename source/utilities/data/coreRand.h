@@ -39,29 +39,30 @@ public:
     ENABLE_COPY(coreRand)
 
     /* generate raw random number */
-    coreUint32 Raw();
+    constexpr coreUint32 Raw();
 
     /* generate bounded random number */
-    inline coreInt32  Int  (const coreInt32  iMax)                        {return coreInt32(this->Uint(iMax));}                                    // min = 0, wrap-around on negative input
-    inline coreInt32  Int  (const coreInt32  iMin, const coreInt32  iMax) {return coreInt32(this->Uint(iMin, iMax));}
-    inline coreUint32 Uint (const coreUint32 iMax)                        {return this->Raw() % (iMax        + 1u);}                               // min = 0u
-    inline coreUint32 Uint (const coreUint32 iMin, const coreUint32 iMax) {return this->Raw() % (iMax - iMin + 1u) + iMin;}
-    inline coreFloat  Float(const coreFloat  fMax)                        {return (coreFloat(this->Raw()) / coreFloat(CORE_RAND_MAX)) * (fMax);}   // min = 0.0f
-    inline coreFloat  Float(const coreFloat  fMin, const coreFloat  fMax) {return (coreFloat(this->Raw()) / coreFloat(CORE_RAND_MAX)) * (fMax - fMin) + fMin;}
-    inline coreBool   Bool ()                                             {return (this->Raw() & 0x01u);}
-    inline coreBool   Bool (const coreFloat fChance)                      {return (this->Float(1.0f - CORE_MATH_PRECISION) < fChance);}
+    constexpr coreInt32  Int  (const coreInt32  iMax)                        {return coreInt32(this->Uint(iMax));}                                    // min = 0, wrap-around on negative input
+    constexpr coreInt32  Int  (const coreInt32  iMin, const coreInt32  iMax) {return coreInt32(this->Uint(iMin, iMax));}
+    constexpr coreUint32 Uint (const coreUint32 iMax)                        {return this->Raw() % (iMax        + 1u);}                               // min = 0u
+    constexpr coreUint32 Uint (const coreUint32 iMin, const coreUint32 iMax) {return this->Raw() % (iMax - iMin + 1u) + iMin;}
+    constexpr coreFloat  Float(const coreFloat  fMax)                        {return (coreFloat(this->Raw()) / coreFloat(CORE_RAND_MAX)) * (fMax);}   // min = 0.0f
+    constexpr coreFloat  Float(const coreFloat  fMin, const coreFloat  fMax) {return (coreFloat(this->Raw()) / coreFloat(CORE_RAND_MAX)) * (fMax - fMin) + fMin;}
+    constexpr coreBool   Bool ()                                             {return (this->Raw() & 0x01u);}
+    constexpr coreBool   Bool (const coreFloat fChance)                      {return (this->Float(1.0f - CORE_MATH_PRECISION) < fChance);}
 
     /* set object properties */
-    inline void SetSeed(const coreUint64 iSeed) {m_iSeed = iSeed;}
+    constexpr void SetSeed     (const coreUint64 iSeed) {m_iSeed = iSeed;}
+    constexpr void SetSeedMixed(const coreUint64 iSeed) {m_iSeed = iSeed; this->Raw();}
 
     /* get object properties */
-    inline const coreUint64& GetSeed()const {return m_iSeed;}
+    constexpr const coreUint64& GetSeed()const {return m_iSeed;}
 };
 
 
 // ****************************************************************
 /* generate raw random number (PCG-XSH-RR 64/32) */
-inline coreUint32 coreRand::Raw()
+constexpr coreUint32 coreRand::Raw()
 {
     const coreUint64 iCurrent = m_iSeed;
     m_iSeed = m_iSeed * 6364136223846793005u + 1442695040888963407u;
