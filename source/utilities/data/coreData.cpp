@@ -14,7 +14,6 @@
     #include <Shlobj.h>
     #include <Lmcons.h>
 #elif defined(_CORE_LINUX_)
-    #include <fcntl.h>
     #include <sys/sendfile.h>
     #include <gnu/libc-version.h>
 #elif defined(_CORE_MACOS_)
@@ -33,6 +32,7 @@
     #include <dirent.h>
     #include <pwd.h>
     #include <ftw.h>
+    #include <fcntl.h>
     #include <dlfcn.h>
     #include <sys/utsname.h>
     #include <sys/statvfs.h>

@@ -23,9 +23,9 @@
 
 // ****************************************************************
 /* music definitions */
-#define CORE_MUSIC_CHUNK     (DEFINED(_CORE_EMSCRIPTEN_) ? 0x2000u : 0x1000u)   // size of a music stream chunk in floats/shorts (on speed 1.0x)
-#define CORE_MUSIC_BUFFERS   (DEFINED(_CORE_EMSCRIPTEN_) ? 4u      : 3u)        // number of sound buffers (with chunks)
-#define CORE_MUSIC_OPUS_RATE (48000u)                                           // Opus is always coded at 48 kHz sample rate
+#define CORE_MUSIC_CHUNK     (0x2000u)                                // size of a music stream chunk in floats/shorts (on speed 1.0x)
+#define CORE_MUSIC_BUFFERS   (DEFINED(_CORE_EMSCRIPTEN_) ? 4u : 3u)   // number of sound buffers (with chunks)
+#define CORE_MUSIC_OPUS_RATE (48000u)                                 // Opus is always coded at 48 kHz sample rate
 
 #define __CORE_MUSIC_LOCKER const coreSpinLocker oLocker(&m_Lock);
 

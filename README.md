@@ -57,7 +57,7 @@ It is **designed to be supportive, versatile and powerful**, and to dynamically 
 - **Realtime Value and Texture Inspection**
 - **GPU Object Labels:** for driver logging and [RenderDoc](https://renderdoc.org/)
 - **Debug Drawing:** collision volumes, wireframe
-- **Debug Input:** show debug overlay, show debug drawing, frame stepping, explicit hot reloading
+- **Debug Input:** show debug overlay (ImGui, native), show debug drawing, frame stepping, explicit hot reloading
 - **Debug Visualizers:** [Natvis](https://learn.microsoft.com/en-us/visualstudio/debugger/create-custom-views-of-native-objects), [LLDB](https://lldb.llvm.org/use/variable.html)
 - **Crash Dumps:** Windows (full), Linux (custom)
 - **Pedantic Checking:** assertions everywhere, code sanitizer support (undefined behaviour, address, leak), floating-point exceptions
@@ -141,7 +141,7 @@ It is **designed to be supportive, versatile and powerful**, and to dynamically 
 - **File Handling:** chunk-based archive container class, safe file writing (temp + move), file memory mapping, various file and directory operations, recursive directory creation and enumeration, long path awareness (Windows)
 - **Process Handling:** application paths, application stats (CPU and GPU memory), dynamic library loading
 - **Operating System:** system paths, system stats (CPU and GPU memory, disk space), environment and hardware detections
-- **Synchronization**: recursive and non-recursive locks (spin-locks, mutexes), atomics
+- **Synchronization**: recursive, non-recursive and read-write locks (spin-locks, mutexes), atomics
 - **Inline Text Formatting**: create formatted text without buffers or allocations
 - **Inline Preprocessor Testing**: check for any preprocessor symbol like a regular boolean
 - **... and everything from SDL**

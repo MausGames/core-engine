@@ -470,7 +470,7 @@ coreStatus coreProgram::Load(coreFile* pFile)
 
         // set current shader-program
         glUseProgram(m_iIdentifier);
-        if(!DEFINED(_CORE_DEBUG_)) s_pCurrent = NULL;
+        s_pCurrent = NULL;
 
         // bind texture units
         for(coreUintW i = 0u; i < CORE_TEXTURE_UNITS_2D;     ++i) glUniform1i(glGetUniformLocation(m_iIdentifier, s_asTexture2D    [i].GetString()), i);
