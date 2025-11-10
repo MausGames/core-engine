@@ -109,7 +109,8 @@ public:
     void SetLight(const coreUintW iIndex, const coreVector4 vPosition, const coreVector4 vDirection, const coreVector4 vValue);
 
     /* update data for the uniform buffer objects */
-    void UpdateTransformation();
+    void UpdateTransformation3D();
+    void UpdateTransformation2D();
     void UpdateAmbient();
 
     /* handle stencil testing */

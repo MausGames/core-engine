@@ -330,6 +330,7 @@ void CoreGraphics::SetView(coreVector2 vResolution, const coreFloat fFOV, const 
 
         // invoke transformation data update
         ADD_BIT(m_iUniformUpdate, 0u)
+        ADD_BIT(m_iUniformUpdate, 1u)
     }
 }
 
@@ -353,14 +354,14 @@ void CoreGraphics::SetLight(const coreUintW iIndex, const coreVector4 vPosition,
     if(bNewLight)
     {
         // invoke ambient data update
-        ADD_BIT(m_iUniformUpdate, 1u)
+        ADD_BIT(m_iUniformUpdate, 2u)
     }
 }
 
 
 // ****************************************************************
 /* update transformation data for the uniform buffer objects */
-void CoreGraphics::UpdateTransformation()
+void CoreGraphics::UpdateTransformation3D()
 {
     // check update status
     if(!HAS_BIT(m_iUniformUpdate, 0u)) return;
@@ -379,7 +380,22 @@ void CoreGraphics::UpdateTransformation()
         std::memcpy(pRange3D + 128u, &m_mPerspective, sizeof(coreMatrix4));
         std::memcpy(pRange3D + 192u, &m_vCamPosition, sizeof(coreVector3));
         m_Transform3DBuffer.Unmap();
+    }
+    else
+    {
+        // invoke manual data forwarding
+        coreProgram::Disable(false);
+    }
+}
 
+void CoreGraphics::UpdateTransformation2D()
+{
+    // check update status
+    if(!HAS_BIT(m_iUniformUpdate, 1u)) return;
+    REMOVE_BIT(m_iUniformUpdate, 1u)
+
+    if(CORE_GL_SUPPORT(ARB_uniform_buffer_object))
+    {
         // map buffer range
         coreByte* pRange2D = m_Transform2DBuffer.MapWriteNext();
 
@@ -401,8 +417,8 @@ void CoreGraphics::UpdateTransformation()
 void CoreGraphics::UpdateAmbient()
 {
     // check update status
-    if(!HAS_BIT(m_iUniformUpdate, 1u)) return;
-    REMOVE_BIT(m_iUniformUpdate, 1u)
+    if(!HAS_BIT(m_iUniformUpdate, 2u)) return;
+    REMOVE_BIT(m_iUniformUpdate, 2u)
 
     if(CORE_GL_SUPPORT(ARB_uniform_buffer_object))
     {
@@ -770,6 +786,7 @@ void CoreGraphics::__UpdateScene()
     // # Steam hotfix: overlay injection invalidates UBO content
     ADD_BIT(m_iUniformUpdate, 0u)
     ADD_BIT(m_iUniformUpdate, 1u)
+    ADD_BIT(m_iUniformUpdate, 2u)
 
 #endif
 

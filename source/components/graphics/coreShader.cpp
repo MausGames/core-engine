@@ -551,7 +551,8 @@ coreBool coreProgram::Enable()
     ASSERT(m_eStatus)
 
     // try to update global uniform data
-    Core::Graphics->UpdateTransformation();
+    Core::Graphics->UpdateTransformation3D();
+    Core::Graphics->UpdateTransformation2D();
     Core::Graphics->UpdateAmbient();
 
     // check current shader-program
