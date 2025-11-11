@@ -162,7 +162,7 @@ coreVector2 coreFont::RetrieveTextDimensions(const coreChar* pcText, const coreU
 
 // ****************************************************************
 /* retrieve the vertical shift of a rendered string of text */
-coreInt8 coreFont::RetrieveTextShift(const coreChar* pcText, const coreUint16 iHeight, const coreUint8 iOutline)
+coreInt8 coreFont::RetrieveTextShift(const coreChar* pcText, const coreUint16 iHeight, const coreUint8 iOutline, coreInt8* OUTPUT piTop, coreInt8* OUTPUT piBottom)
 {
     coreInt32 iTotalMinY = INT32_MAX, iTotalMaxY = INT32_MIN;
 
@@ -185,12 +185,12 @@ coreInt8 coreFont::RetrieveTextShift(const coreChar* pcText, const coreUint16 iH
         iTotalMaxY = MAX(iTotalMaxY, iMaxY);
     }
 
-    // retrieve baseline offsets
-    const coreInt32 iAscent  = TTF_GetFontAscent (pFont);
-    const coreInt32 iDescent = TTF_GetFontDescent(pFont);
+    // calculate vertical overhang
+    if(piTop)    (*piTop)    = MAX(TTF_GetFontAscent (pFont) - iTotalMaxY, 0);
+    if(piBottom) (*piBottom) = MIN(TTF_GetFontDescent(pFont) - iTotalMinY, 0);
 
     // calculate final shift
-    return coreInt8(MIN(iAscent - iTotalMaxY, 0) + MAX(iDescent - iTotalMinY, 0));
+    return coreInt8(iTotalMinY + iTotalMaxY);
 }
 
 
@@ -217,39 +217,24 @@ coreBool coreFont::IsGlyphProvided(const coreChar* pcMultiByte)
 
 // ****************************************************************
 /* retrieve dimensions of a glyph */
-void coreFont::RetrieveGlyphMetrics(const coreChar32 cGlyph, const coreUint16 iHeight, const coreUint8 iOutline, coreInt32* OUTPUT piMinX, coreInt32* OUTPUT piMaxX, coreInt32* OUTPUT piMinY, coreInt32* OUTPUT piMaxY, coreInt32* OUTPUT piAdvance, coreInt32* OUTPUT piShift)
+void coreFont::RetrieveGlyphMetrics(const coreChar32 cGlyph, const coreUint16 iHeight, const coreUint8 iOutline, coreInt32* OUTPUT piMinX, coreInt32* OUTPUT piMaxX, coreInt32* OUTPUT piMinY, coreInt32* OUTPUT piMaxY, coreInt32* OUTPUT piAdvance)
 {
     // check for requested height and outline
     this->__EnsureHeight(iHeight, iOutline);
     TTF_Font* pFont = m_aapFont.at(iHeight).at(iOutline);
 
     // retrieve dimensions
-    coreInt32 iMinY, iMaxY;
-    TTF_GetGlyphMetrics(pFont, cGlyph, piMinX, piMaxX, &iMinY, &iMaxY, piAdvance);
-
-    // return vertical bounds
-    if(piMinY) (*piMinY) = iMinY;
-    if(piMaxY) (*piMaxY) = iMaxY;
-
-    if(piShift)
-    {
-        // retrieve baseline offsets
-        const coreInt32 iAscent  = TTF_GetFontAscent (pFont);
-        const coreInt32 iDescent = TTF_GetFontDescent(pFont);
-
-        // calculate final shift
-        (*piShift) = MIN(iAscent - iMaxY, 0) + MAX(iDescent - iMinY, 0);
-    }
+    TTF_GetGlyphMetrics(pFont, cGlyph, piMinX, piMaxX, piMinY, piMaxY, piAdvance);
 }
 
-coreUint8 coreFont::RetrieveGlyphMetrics(const coreChar* pcMultiByte, const coreUint16 iHeight, const coreUint8 iOutline, coreInt32* OUTPUT piMinX, coreInt32* OUTPUT piMaxX, coreInt32* OUTPUT piMinY, coreInt32* OUTPUT piMaxY, coreInt32* OUTPUT piAdvance, coreInt32* OUTPUT piShift)
+coreUint8 coreFont::RetrieveGlyphMetrics(const coreChar* pcMultiByte, const coreUint16 iHeight, const coreUint8 iOutline, coreInt32* OUTPUT piMinX, coreInt32* OUTPUT piMaxX, coreInt32* OUTPUT piMinY, coreInt32* OUTPUT piMaxY, coreInt32* OUTPUT piAdvance)
 {
     // convert multibyte UTF-8 character to UTF-32 glyph
     coreChar32 cGlyph;
     const coreUint8 iBytes = coreFont::ConvertToGlyph(pcMultiByte, &cGlyph);
 
     // retrieve dimensions and return number of bytes
-    this->RetrieveGlyphMetrics(cGlyph, iHeight, iOutline, piMinX, piMaxX, piMinY, piMaxY, piAdvance, piShift);
+    this->RetrieveGlyphMetrics(cGlyph, iHeight, iOutline, piMinX, piMaxX, piMinY, piMaxY, piAdvance);
     return iBytes;
 }
 

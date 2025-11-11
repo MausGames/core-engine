@@ -573,7 +573,7 @@ void coreRichText::__ParseText()
 
                 // retrieve dimensions
                 coreInt32 iAdvance;
-                pFont->RetrieveGlyphMetrics(cGlyph, iRelHeight, iRelOutline, NULL, NULL, NULL, NULL, &iAdvance, NULL);
+                pFont->RetrieveGlyphMetrics(cGlyph, iRelHeight, iRelOutline, NULL, NULL, NULL, NULL, &iAdvance);
 
                 // retrieve kerning
                 const coreInt32 iKerning = pFont->RetrieveGlyphKerning(cTestPrevGlyph, cGlyph, iRelHeight, iRelOutline);
@@ -617,7 +617,7 @@ void coreRichText::__ParseText()
 
         // retrieve dimensions
         coreInt32 iMinX, iMaxX, iMinY, iMaxY, iAdvance;
-        pFont->RetrieveGlyphMetrics(cGlyph, iRelHeight, iRelOutline, &iMinX, &iMaxX, &iMinY, &iMaxY, &iAdvance, NULL);
+        pFont->RetrieveGlyphMetrics(cGlyph, iRelHeight, iRelOutline, &iMinX, &iMaxX, &iMinY, &iMaxY, &iAdvance);
 
         // fix negative coordinates
         coreInt32 iCorrection = 0;

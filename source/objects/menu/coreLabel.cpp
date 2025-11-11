@@ -23,6 +23,7 @@ coreLabel::coreLabel()noexcept
 , m_vScale             (coreVector2(1.0f,1.0f))
 , m_iRectify           (0x03u)
 , m_iShift             (0)
+, m_iExtent            (0u)
 , m_eRefresh           (CORE_LABEL_REFRESH_NOTHING)
 {
 }
@@ -309,9 +310,14 @@ void coreLabel::__GenerateTexture(const coreChar* pcText)
                                else m_apTexture[CORE_LABEL_TEXTURE]->Clear     (0u);
     m_apTexture[CORE_LABEL_TEXTURE]->Modify(0u, 0u, iPitch, iHeight, iSize, pData);
 
+    // retrieve vertical overhang
+    coreInt8 iTop, iBottom;
+    m_pFont->RetrieveTextShift(pcText, iRelHeight, iRelOutline, &iTop, &iBottom);
+
     // display only visible texture area
-    this->SetTexSize(coreVector2(I_TO_F(iWidth), I_TO_F(iHeight)) / m_vResolution);
-    ASSERT((this->GetTexSize().x <= 1.0f) && (this->GetTexSize().y <= 1.0f))
+    this->SetTexSize  (coreVector2(I_TO_F(iWidth), I_TO_F(iHeight - iTop + iBottom)) / m_vResolution);
+    this->SetTexOffset(coreVector2(0.0f,           I_TO_F(iTop))                     / m_vResolution);
+    ASSERT((this->GetTexSize().x + this->GetTexOffset().x <= 1.0f) && (this->GetTexSize().y + this->GetTexOffset().y <= 1.0f))
 
     // delete merge buffer
     TEMP_ZERO_DELETE(pData)
@@ -328,20 +334,22 @@ void coreLabel::__RefreshSize()
     const coreUint16 iRelHeight  = CORE_LABEL_HEIGHT_RELATIVE (m_iHeight);
     const coreUint8  iRelOutline = CORE_LABEL_OUTLINE_RELATIVE(m_iOutline);
 
+    // retrieve vertical shift
+    coreInt8 iTop, iBottom;
+    m_iShift  = m_pFont->RetrieveTextShift(m_sText.c_str(), iRelHeight, iRelOutline, &iTop, &iBottom) - (iRelHeight * 10u / 13u + iRelOutline * 2u);   // # heuristic
+    m_iExtent = iRelHeight + iRelOutline * 2u;
+
     if(HAS_FLAG(m_eRefresh, CORE_LABEL_REFRESH_TEXTURE))
     {
         // set size by text dimensions
         const coreVector2 vDimensions = m_pFont->RetrieveTextDimensions(m_sText.c_str(), iRelHeight, iRelOutline);
-        this->SetSize(vDimensions * m_vScale * CORE_LABEL_SIZE_FACTOR);
+        this->SetSize((vDimensions - coreVector2(0.0f, I_TO_F(iTop - iBottom))) * m_vScale * CORE_LABEL_SIZE_FACTOR);
     }
     else
     {
         // set size by texture coordinates
         this->SetSize(this->GetTexSize() * m_vResolution * m_vScale * CORE_LABEL_SIZE_FACTOR);
     }
-
-    // retrieve vertical shift
-    m_iShift = m_pFont->RetrieveTextShift(m_sText.c_str(), iRelHeight, iRelOutline);
 }
 
 
@@ -360,7 +368,8 @@ void coreLabel::__MoveRectified()
         const coreVector2 vViewAlign  = this->GetAlignment().MapToAxisInv(vViewDir);
 
         // apply vertical shift
-        m_vScreenPosition -= m_vScreenDirection * (I_TO_F(m_iShift) * 0.5f);
+        m_vScreenPosition += m_vScreenDirection * (I_TO_F(m_iShift) * 0.5f);
+        m_vScreenPosition += m_vScreenDirection.Processed(ABS) * vViewAlign * ((I_TO_F(m_iExtent) - m_vScreenSize.y) * 0.5f);
 
         // align texture with screen pixels
         if(HAS_FLAG(m_iRectify, vViewDir.y ? 0x01u : 0x02u))

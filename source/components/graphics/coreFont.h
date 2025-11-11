@@ -64,13 +64,13 @@ public:
     /* retrieve text-related attributes */
     coreBool    AreGlyphsProvided     (const coreChar* pcText);
     coreVector2 RetrieveTextDimensions(const coreChar* pcText, const coreUint16 iHeight, const coreUint8 iOutline);
-    coreInt8    RetrieveTextShift     (const coreChar* pcText, const coreUint16 iHeight, const coreUint8 iOutline);
+    coreInt8    RetrieveTextShift     (const coreChar* pcText, const coreUint16 iHeight, const coreUint8 iOutline, coreInt8* OUTPUT piTop, coreInt8* OUTPUT piBottom);
 
     /* retrieve glyph-related attributes */
     coreBool  IsGlyphProvided     (const coreChar32 cGlyph);
     coreBool  IsGlyphProvided     (const coreChar*  pcMultiByte);
-    void      RetrieveGlyphMetrics(const coreChar32 cGlyph,                                      const coreUint16 iHeight, const coreUint8 iOutline, coreInt32* OUTPUT piMinX, coreInt32* OUTPUT piMaxX, coreInt32* OUTPUT piMinY, coreInt32* OUTPUT piMaxY, coreInt32* OUTPUT piAdvance, coreInt32* OUTPUT piShift);
-    coreUint8 RetrieveGlyphMetrics(const coreChar*  pcMultiByte,                                 const coreUint16 iHeight, const coreUint8 iOutline, coreInt32* OUTPUT piMinX, coreInt32* OUTPUT piMaxX, coreInt32* OUTPUT piMinY, coreInt32* OUTPUT piMaxY, coreInt32* OUTPUT piAdvance, coreInt32* OUTPUT piShift);
+    void      RetrieveGlyphMetrics(const coreChar32 cGlyph,                                      const coreUint16 iHeight, const coreUint8 iOutline, coreInt32* OUTPUT piMinX, coreInt32* OUTPUT piMaxX, coreInt32* OUTPUT piMinY, coreInt32* OUTPUT piMaxY, coreInt32* OUTPUT piAdvance);
+    coreUint8 RetrieveGlyphMetrics(const coreChar*  pcMultiByte,                                 const coreUint16 iHeight, const coreUint8 iOutline, coreInt32* OUTPUT piMinX, coreInt32* OUTPUT piMaxX, coreInt32* OUTPUT piMinY, coreInt32* OUTPUT piMaxY, coreInt32* OUTPUT piAdvance);
     coreInt32 RetrieveGlyphKerning(const coreChar32 cGlyph1,      const coreChar32 cGlyph2,      const coreUint16 iHeight, const coreUint8 iOutline);
     coreInt32 RetrieveGlyphKerning(const coreChar*  pcMultiByte1, const coreChar*  pcMultiByte2, const coreUint16 iHeight, const coreUint8 iOutline);
 

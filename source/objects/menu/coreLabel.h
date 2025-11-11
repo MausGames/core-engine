@@ -12,7 +12,7 @@
 
 // TODO 5: <old comment style>
 // TODO 3: coreResourceRelation in coreLabel is spamming the resource-manager
-// TODO 3: there is empty space over and under text in the texture and render-output (not on every font! default.ttf has it), adjust to reduce overhead (only render or also texture?)
+// TODO 3: there is empty space over and under text in the texture (not on every font, default.ttf has it)
 // TODO 3: optional mipmapping to allow proper rendering in 3d space
 // TODO 3: support text shadow (fully configurable), also for coreRichText
 
@@ -52,7 +52,8 @@ private:
     coreVector2 m_vScale;          // scale factor
     coreUint8   m_iRectify;        // align texture with screen pixels (X, Y)
 
-    coreInt8 m_iShift;             // vertical shift for handling ascenders and descenders
+    coreInt8   m_iShift;           // vertical shift for handling ascenders and descenders
+    coreUint16 m_iExtent;          // full relative height including outline
 
     coreLabelRefresh m_eRefresh;   // refresh status (dirty flag)
 
@@ -129,9 +130,13 @@ template <typename F> void coreLabel::RetrieveDesiredSize(F&& nRetrieveFunc)cons
             const coreUint16 iRelHeight  = CORE_LABEL_HEIGHT_RELATIVE (m_iHeight);
             const coreUint8  iRelOutline = CORE_LABEL_OUTLINE_RELATIVE(m_iOutline);
 
+            // retrieve vertical overhang
+            coreInt8 iTop, iBottom;
+            m_pFont->RetrieveTextShift(m_sText.c_str(), iRelHeight, iRelOutline, &iTop, &iBottom);
+
             // return the dimensions of the current text
             const coreVector2 vDimensions = m_pFont->RetrieveTextDimensions(m_sText.c_str(), iRelHeight, iRelOutline);
-            nRetrieveFunc(vDimensions * m_vScale * CORE_LABEL_SIZE_FACTOR);
+            nRetrieveFunc((vDimensions - coreVector2(0.0f, I_TO_F(iTop - iBottom))) * m_vScale * CORE_LABEL_SIZE_FACTOR);
         });
     }
     else
