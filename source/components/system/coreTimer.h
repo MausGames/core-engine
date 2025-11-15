@@ -90,7 +90,7 @@ private:
 
 public:
     coreFlow() = default;
-    constexpr FORCE_INLINE coreFlow(const coreFloat fValue)noexcept : m_fValue (fValue) {}
+    template <typename T> constexpr FORCE_INLINE coreFlow(const T tValue)noexcept : m_fValue (coreFloat(tValue)) {}
 
     ENABLE_COPY(coreFlow)
 

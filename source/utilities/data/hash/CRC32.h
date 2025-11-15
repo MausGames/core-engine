@@ -133,7 +133,12 @@ constexpr coreUint32 coreHashCRC32C(const coreByte* pData, coreUintW iLength)
     {
         coreUint32 iHash = 0xFFFFFFFFu;
 
-        while(iLength >= 8u)     {iHash = _mm_crc32_u64(iHash, (*r_cast<const coreUint64*>(pData))); pData += 8u; iLength -= 8u;}
+    #if defined(_CORE_64BIT_)
+        while(iLength >= 8u) {iHash = _mm_crc32_u64(iHash, (*r_cast<const coreUint64*>(pData))); pData += 8u; iLength -= 8u;}
+    #else
+        while(iLength >= 4u) {iHash = _mm_crc32_u32(iHash, (*r_cast<const coreUint32*>(pData))); pData += 4u; iLength -= 4u;}
+    #endif
+
         if(HAS_BIT(iLength, 2u)) {iHash = _mm_crc32_u32(iHash, (*r_cast<const coreUint32*>(pData))); pData += 4u;}
         if(HAS_BIT(iLength, 1u)) {iHash = _mm_crc32_u16(iHash, (*r_cast<const coreUint16*>(pData))); pData += 2u;}
         if(HAS_BIT(iLength, 0u)) {iHash = _mm_crc32_u8 (iHash, (*r_cast<const coreUint8 *>(pData))); pData += 1u;}

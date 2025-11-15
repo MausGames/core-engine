@@ -40,7 +40,7 @@ coreBool coreSync::Create(const coreSyncCreate eCreate)
 
         // generate new sync object
         m_pSync = glFenceSync(GL_SYNC_GPU_COMMANDS_COMPLETE, 0u);
-        if(eCreate) coreSync::Flush();   // # flush needs to happen on the same thread/context
+        if(eCreate == CORE_SYNC_CREATE_FLUSHED) coreSync::Flush();   // # flush needs to happen on the same thread/context
 
         return true;
     }
