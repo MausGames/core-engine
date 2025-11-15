@@ -251,6 +251,7 @@
     #pragma warning(disable : 4774)   // format string not a string literal
     #pragma warning(disable : 4800)   // implicit conversion to bool
     #pragma warning(disable : 4820)   // padding after data member
+    #pragma warning(disable : 4865)   // underlying type will change from int to unsigned int
     #pragma warning(disable : 5026)   // move constructor implicitly deleted
     #pragma warning(disable : 5027)   // move assignment operator implicitly deleted
     #pragma warning(disable : 5039)   // potentially throwing function passed to extern C function
