@@ -192,9 +192,22 @@ RETURN_RESTRICT coreByte* coreDataBuffer::MapWrite(const coreUint32 iOffset, con
     {
         if(eMapType == CORE_DATABUFFER_MAP_INVALIDATE_ALL)
         {
-            // manually orphan buffer memory (to reduce synchronization)
-            this->Bind();
-            glBufferData(m_iTarget, m_iSize, NULL, GL_DYNAMIC_DRAW);
+            if(CORE_GL_SUPPORT(ARB_direct_state_access))
+            {
+                // manually orphan buffer memory directly (new)
+                glNamedBufferData(m_iIdentifier, m_iSize, NULL, GL_DYNAMIC_DRAW);
+            }
+            else if(CORE_GL_SUPPORT(EXT_direct_state_access))
+            {
+                // manually orphan buffer memory directly (old)
+                glNamedBufferDataEXT(m_iIdentifier, m_iSize, NULL, GL_DYNAMIC_DRAW);
+            }
+            else
+            {
+                // bind and manually orphan buffer memory
+                this->Bind();
+                glBufferData(m_iTarget, m_iSize, NULL, GL_DYNAMIC_DRAW);
+            }
         }
 
         if(m_iFallbackSize < iLength)
@@ -247,9 +260,22 @@ RETURN_RESTRICT coreByte* coreDataBuffer::MapRead(const coreUint32 iOffset, cons
             m_iFallbackSize = iLength;
         }
 
-        // retrieve data from the data buffer
-        this->Bind();
-        glGetBufferSubData(m_iTarget, iOffset, iLength, m_pPersistentBuffer);
+        if(CORE_GL_SUPPORT(ARB_direct_state_access))
+        {
+            // retrieve data from the data buffer directly (new)
+            glGetNamedBufferSubData(m_iIdentifier, iOffset, iLength, m_pPersistentBuffer);
+        }
+        else if(CORE_GL_SUPPORT(EXT_direct_state_access))
+        {
+            // retrieve data from the data buffer directly (old)
+            glGetNamedBufferSubDataEXT(m_iIdentifier, iOffset, iLength, m_pPersistentBuffer);
+        }
+        else
+        {
+            // bind and retrieve data from the data buffer
+            this->Bind();
+            glGetBufferSubData(m_iTarget, iOffset, iLength, m_pPersistentBuffer);
+        }
 
         return m_pPersistentBuffer;
     }
@@ -309,9 +335,22 @@ void coreDataBuffer::Unmap()
 
         if(this->IsWritable())
         {
-            // send new data to the data buffer
-            this->Bind();
-            glBufferSubData(m_iTarget, m_iMapOffset, m_iMapLength, m_pPersistentBuffer);
+            if(CORE_GL_SUPPORT(ARB_direct_state_access))
+            {
+                // send new data to the data buffer directly (new)
+                glNamedBufferSubData(m_iIdentifier, m_iMapOffset, m_iMapLength, m_pPersistentBuffer);
+            }
+            else if(CORE_GL_SUPPORT(EXT_direct_state_access))
+            {
+                // send new data to the data buffer directly (old)
+                glNamedBufferSubDataEXT(m_iIdentifier, m_iMapOffset, m_iMapLength, m_pPersistentBuffer);
+            }
+            else
+            {
+                // bind and send new data to the data buffer
+                this->Bind();
+                glBufferSubData(m_iTarget, m_iMapOffset, m_iMapLength, m_pPersistentBuffer);
+            }
         }
     }
 
