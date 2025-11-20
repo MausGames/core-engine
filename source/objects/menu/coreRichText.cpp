@@ -96,7 +96,7 @@ void coreRichText::Render()
         // calculate resolution-modified transformation parameters
         coreVector2 vCharPosition  = vPosition * fCanonBase;
         coreVector2 vCharSize      = vSize     * fCanonBase;
-        coreVector2 vCharDirection = vDirection.InvertedX();
+        coreVector2 vCharDirection = vDirection;
 
         // add offset to position
         vCharPosition += vRelOffset + (vCharDirection.x ? coreVector2::Bound(vCharSize, vCharDirection) : vCharSize) * 0.5f;
@@ -898,7 +898,7 @@ void coreRichText::__MoveRectified()
         // handle global 2d-object rotation
         const coreVector2 vResolution = Core::System->GetResolution();
         const coreVector2 vViewDir    = HAS_FLAG(m_eStyle, CORE_OBJECT2D_STYLE_VIEWDIR) ? Core::Manager::Object->GetSpriteViewDir() : coreVector2(0.0f,1.0f);
-        const coreVector2 vViewAlign  = this->GetAlignment().MapToAxisInv(vViewDir);
+        const coreVector2 vViewAlign  = this->GetAlignment().MapToAxis(vViewDir);
 
         // align texture with screen pixels
         if(HAS_FLAG(m_iRectify, vViewDir.y ? 0x01u : 0x02u))

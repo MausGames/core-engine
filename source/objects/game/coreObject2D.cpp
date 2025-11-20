@@ -219,7 +219,7 @@ void coreObject2D::Move()
         // calculate resolution-modified transformation parameters
         m_vScreenPosition  = m_vPosition * fCanonBase;
         m_vScreenSize      = m_vSize     * fCanonBase;
-        m_vScreenDirection = m_vDirection.InvertedX();
+        m_vScreenDirection = m_vDirection;
 
         // add origin and offset to position
         m_vScreenPosition += m_vCenter    * ((vViewDir.x != 0.0f) ? vAltCenter.yx() : vAltCenter);
@@ -228,8 +228,8 @@ void coreObject2D::Move()
         // apply global rotation
         if(vViewDir.y != 1.0f)
         {
-            m_vScreenPosition  = m_vScreenPosition .MapToAxisInv(vViewDir);
-            m_vScreenDirection = m_vScreenDirection.MapToAxisInv(vViewDir);
+            m_vScreenPosition  = m_vScreenPosition .MapToAxis(vViewDir);
+            m_vScreenDirection = m_vScreenDirection.MapToAxis(vViewDir);
         }
 
         // reset the update status

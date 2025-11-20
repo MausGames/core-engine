@@ -365,7 +365,7 @@ void coreLabel::__MoveRectified()
         // handle global 2d-object rotation
         const coreVector2 vResolution = Core::System->GetResolution();
         const coreVector2 vViewDir    = HAS_FLAG(m_eStyle, CORE_OBJECT2D_STYLE_VIEWDIR) ? Core::Manager::Object->GetSpriteViewDir() : coreVector2(0.0f,1.0f);
-        const coreVector2 vViewAlign  = this->GetAlignment().MapToAxisInv(vViewDir);
+        const coreVector2 vViewAlign  = this->GetAlignment().MapToAxis(vViewDir);
 
         // apply vertical shift
         m_vScreenPosition += m_vScreenDirection * (I_TO_F(m_iShift) * 0.5f);
