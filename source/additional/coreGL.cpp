@@ -301,6 +301,12 @@ void __coreInitOpenGL()
     }
     #undef __REMAP
 
+    // # AMD hotfix: prevent elusive driver crash (especially with shared context, but also with RenderDoc)
+    if((Core::Graphics->SystemGpuType() == CORE_GPU_TYPE_AMD) && (DEFINED(_CORE_LINUX_) || coreData::DetectWine()))
+    {
+        __GLEW_ARB_map_buffer_range = false;
+    }
+
     // # Intel hotfix: prevent hang on old drivers
     GLEW_CORE_shared_context = (Core::Graphics->SystemGpuType() != CORE_GPU_TYPE_INTEL) || GLEW_VERSION_4_1;
 
