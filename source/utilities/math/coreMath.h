@@ -145,6 +145,8 @@ public:
     template <coreFloatingPoint T>             static inline    T StepBreakRev(const T a, const t_ident<T> b, const t_ident<T> x)               {return LERPBR(T(0), T(1), STEP(a, b, x));}
     template <coreFloatingPoint T>             static constexpr T StepHermite3(const T a, const t_ident<T> b, const t_ident<T> x)               {return LERPH3(T(0), T(1), STEP(a, b, x));}         // smoothstep
     template <coreFloatingPoint T>             static constexpr T StepHermite5(const T a, const t_ident<T> b, const t_ident<T> x)               {return LERPH5(T(0), T(1), STEP(a, b, x));}         // smootherstep
+    template <coreFloatingPoint T>             static inline    T Friction    (const T tRate, const T tTime)                                    {return EXP(-tRate * tTime);}
+    template <coreFloatingPoint T, typename S> static inline    S FrictionTo  (const T tRate, const T tTime, const S tFrom, const S tTo)        {return LERP(tTo, tFrom, coreMath::Friction(tRate, tTime));}
 
     /* base operations */
     template <coreFloatingPoint T> static inline T FmodRange(const T tNum, const t_ident<T> tFrom, const t_ident<T> tTo);
