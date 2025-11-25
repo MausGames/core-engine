@@ -219,6 +219,7 @@ Functions
     vec4  coreTextureBaseProj     (in int v1Unit, in vec4 v4ProjCoord)
     float coreTextureBaseShadow   (in int v1Unit, in vec4 v4ProjCoord)
     vec4  coreTextureSharp2D      (in int v1Unit, in vec2 v2TexCoord, in float v1LodBias)
+    vec4  coreTextureGrad2D       (in int v1Unit, in vec2 v2TexCoord, in vec2 v2Dx, in vec2 v2Dy)
 
 Input
 

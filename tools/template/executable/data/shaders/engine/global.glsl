@@ -151,13 +151,15 @@
     #endif
 #endif
 #if defined(GL_EXT_shader_texture_lod)
-    #define texture2DLod(t,v,l)     (texture2DLodEXT    (t, v, l))
-    #define texture2DProjLod(t,v,l) (texture2DProjLodEXT(t, v, l))
-    #define shadow2DProjLod(t,v,l)  (shadow2DProj       (t, v))
+    #define texture2DLod(t,v,l)       (texture2DLodEXT    (t, v, l))
+    #define texture2DProjLod(t,v,l)   (texture2DProjLodEXT(t, v, l))
+    #define shadow2DProjLod(t,v,l)    (shadow2DProj       (t, v))
+    #define texture2DGradARB(t,v,x,y) (texture2DGradEXT   (t, v, x, y))
 #elif !defined(GL_ARB_shader_texture_lod)
-    #define texture2DLod(t,v,l)     (texture2D          (t, v))
-    #define texture2DProjLod(t,v,l) (texture2DProj      (t, v))
-    #define shadow2DProjLod(t,v,l)  (shadow2DProj       (t, v))
+    #define texture2DLod(t,v,l)       (texture2D          (t, v))
+    #define texture2DProjLod(t,v,l)   (texture2DProj      (t, v))
+    #define shadow2DProjLod(t,v,l)    (shadow2DProj       (t, v))
+    #define texture2DGradARB(t,v,x,y) (texture2D          (t, v))
 #endif
 #if defined(CORE_GL_MODERN_API)
     #if defined(_CORE_VERTEX_SHADER_)
@@ -248,6 +250,7 @@ uniform mediump sampler2DShadow u_as2TextureShadow[CORE_NUM_TEXTURES_SHADOW];
     #define coreTextureBaseProj(u,c)   (textureProjLod  (u_as2Texture2D    [u], c, 0.0))
     #define coreTextureBaseShadow(u,c) (textureProjLod  (u_as2TextureShadow[u], c, 0.0))
     #define coreTextureSharp2D(u,c,s)  (texture         (u_as2Texture2D    [u], c, s))
+    #define coreTextureGrad2D(u,c,x,y) (textureGrad     (u_as2Texture2D    [u], c, x, y))
 #else
     #define coreTexture2D(u,c)         (texture2D       (u_as2Texture2D    [u], c))
     #define coreTextureProj(u,c)       (texture2DProj   (u_as2Texture2D    [u], c))
@@ -256,4 +259,5 @@ uniform mediump sampler2DShadow u_as2TextureShadow[CORE_NUM_TEXTURES_SHADOW];
     #define coreTextureBaseProj(u,c)   (texture2DProjLod(u_as2Texture2D    [u], c, 0.0))
     #define coreTextureBaseShadow(u,c) (shadow2DProjLod (u_as2TextureShadow[u], c, 0.0).r)
     #define coreTextureSharp2D(u,c,s)  (texture2D       (u_as2Texture2D    [u], c, s))
+    #define coreTextureGrad2D(u,c,x,y) (texture2DGradARB(u_as2Texture2D    [u], c, x, y))
 #endif
