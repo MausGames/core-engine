@@ -84,18 +84,6 @@ static bool IsWow64()
 
 
 // ****************************************************************
-static bool IsWindows10OrGreater()
-{
-    // use only major version
-    OSVERSIONINFOEXW oVersionInfo = {sizeof(oVersionInfo)};
-    oVersionInfo.dwMajorVersion   = 10u;
-
-    // check for Windows 10 or greater
-    return VerifyVersionInfoW(&oVersionInfo, VER_MAJORVERSION, VerSetConditionMask(0u, VER_MAJORVERSION, VER_GREATER_EQUAL));
-}
-
-
-// ****************************************************************
 static int RunCommand(const wchar_t* pcPath, wchar_t* pcCmdLine)
 {
     STARTUPINFOW        oStartupInfo = {};
@@ -136,7 +124,7 @@ extern int WINAPI wWinMain(_In_ HINSTANCE pInstance, _In_opt_ HINSTANCE pPrevIns
     const bool bAngle   = std::wcsstr(pcCmdLine, L"--angle");
 
     // set working directory
-    const wchar_t* pcDirectory = ((IsWow64() && IsWindows10OrGreater() && !bForce32) || bForce64) ? L"bin\\windows_x86_64\\" : L"bin\\windows_x86_32\\";
+    const wchar_t* pcDirectory = ((IsWow64() && !bForce32) || bForce64) ? L"bin\\windows_x86_64\\" : L"bin\\windows_x86_32\\";
     if(!DirectoryExists(pcDirectory))
     {
         MessageBoxW(NULL, L"Could not find binary directory!", L"Launcher", MB_OK | MB_ICONERROR);
