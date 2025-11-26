@@ -163,7 +163,7 @@ coreBool coreTextBox::__Write()
     const coreInputChar iChar = Core::Input->GetKeyboardChar();
     if(iChar)
     {
-        if(iChar == CORE_INPUT_CHAR(RETURN))
+        if((iChar == CORE_INPUT_CHAR(RETURN)) || (iChar == CORE_INPUT_CHAR(KP_ENTER)))
         {
             // finish text-input
             return true;

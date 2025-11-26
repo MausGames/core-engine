@@ -144,15 +144,12 @@ coreBool CoreInput::ProcessEvent(const SDL_Event& oEvent)
         if(!oEvent.key.repeat)
         {
             this->SetKeyboardButton(oEvent.key.scancode, true);
-                 if(oEvent.key.scancode == CORE_INPUT_KEY(BACKSPACE)) this->SetKeyboardChar(CORE_INPUT_CHAR(BACKSPACE));
-            else if(oEvent.key.scancode == CORE_INPUT_KEY(RETURN))    this->SetKeyboardChar(CORE_INPUT_CHAR(RETURN));
-            else if(oEvent.key.scancode == CORE_INPUT_KEY(KP_ENTER))  this->SetKeyboardChar(CORE_INPUT_CHAR(RETURN));
-            else if(oEvent.key.mod & SDL_KMOD_CTRL)
-            {
-                     if(oEvent.key.scancode == CORE_INPUT_KEY(X)) this->SetKeyboardChar(CORE_INPUT_CHAR(CUT));
-                else if(oEvent.key.scancode == CORE_INPUT_KEY(C)) this->SetKeyboardChar(CORE_INPUT_CHAR(COPY));
-                else if(oEvent.key.scancode == CORE_INPUT_KEY(V)) this->SetKeyboardChar(CORE_INPUT_CHAR(PASTE));
-            }
+        }
+        if(oEvent.key.mod & SDL_KMOD_CTRL)
+        {
+                 if(oEvent.key.scancode == CORE_INPUT_KEY(X)) this->SetKeyboardChar(CORE_INPUT_CHAR(CUT));
+            else if(oEvent.key.scancode == CORE_INPUT_KEY(C)) this->SetKeyboardChar(CORE_INPUT_CHAR(COPY));
+            else if(oEvent.key.scancode == CORE_INPUT_KEY(V)) this->SetKeyboardChar(CORE_INPUT_CHAR(PASTE));
         }
         break;
 
