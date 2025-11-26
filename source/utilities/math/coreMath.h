@@ -104,10 +104,6 @@
 #define BLENDH3(x) (LERPH3(0.0f, 1.0f, x))
 #define BLENDH5(x) (LERPH5(0.0f, 1.0f, x))
 
-#if defined(_CORE_MACOS_)
-    namespace std {template <typename T, typename S> FORCE_INLINE constexpr T bit_cast(const S tValue) {return __builtin_bit_cast(T, tValue);}}
-#endif
-
 template <typename T> concept coreFloatingPoint = std::floating_point<T> || (std::is_class_v<T> && std::is_convertible_v<T, coreFloat>);
 
 

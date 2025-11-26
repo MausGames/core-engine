@@ -154,7 +154,7 @@
 			isa = PBXProject;
 			attributes = {
 				BuildIndependentTargetsInParallel = 1;
-				LastUpgradeCheck = 1620;
+				LastUpgradeCheck = 2610;
 				TargetAttributes = {
 					5B06DE7527CAA48E0036BB19 = {
 						CreatedOnToolsVersion = 13.2.1;
@@ -232,7 +232,6 @@
 				ENABLE_HARDENED_RUNTIME = YES;
 				FRAMEWORK_SEARCH_PATHS = ../../../core-engine/libraries/bin/macos;
 				GCC_C_LANGUAGE_STANDARD = c17;
-				GCC_ENABLE_OBJC_EXCEPTIONS = NO;
 				GCC_NO_COMMON_BLOCKS = YES;
 				GCC_OPTIMIZATION_LEVEL = 0;
 				GCC_PREPROCESSOR_DEFINITIONS = (
@@ -257,7 +256,10 @@
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.games";
 				INFOPLIST_KEY_NSHumanReadableCopyright = "Copyright (c) XXXX Martin Mauersics";
 				LD_RUNPATH_SEARCH_PATHS = "@executable_path/../Frameworks";
-				LIBRARY_SEARCH_PATHS = ../../../core-engine/libraries/bin/macos;
+				LIBRARY_SEARCH_PATHS = (
+					../../../core-engine/libraries/bin/macos,
+					../../../core-engine/libraries/bin/macos/optional,
+				);
 				MACOSX_DEPLOYMENT_TARGET = 10.13;
 				MARKETING_VERSION = 0.0.1;
 				ONLY_ACTIVE_ARCH = YES;
@@ -329,7 +331,10 @@
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.games";
 				INFOPLIST_KEY_NSHumanReadableCopyright = "Copyright (c) XXXX Martin Mauersics";
 				LD_RUNPATH_SEARCH_PATHS = "@executable_path/../Frameworks";
-				LIBRARY_SEARCH_PATHS = ../../../core-engine/libraries/bin/macos;
+				LIBRARY_SEARCH_PATHS = (
+					../../../core-engine/libraries/bin/macos,
+					../../../core-engine/libraries/bin/macos/optional,
+				);
 				LLVM_LTO = YES;
 				MACOSX_DEPLOYMENT_TARGET = 10.13;
 				MARKETING_VERSION = 0.0.1;

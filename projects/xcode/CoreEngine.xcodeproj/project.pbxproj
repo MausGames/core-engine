@@ -7,7 +7,10 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		5B5594D12867136000509370 /* coreImGui.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5B5594D02867136000509370 /* coreImGui.cpp */; };
+		5B0916E72ED3BA83002FC68A /* coreGLEW.c in Sources */ = {isa = PBXBuildFile; fileRef = 5B0916E42ED3BA83002FC68A /* coreGLEW.c */; };
+		5B0916E82ED3BA83002FC68A /* coreImGui.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5B0916E52ED3BA83002FC68A /* coreImGui.cpp */; };
+		5B0916EB2ED3BA92002FC68A /* coreAL.h in Headers */ = {isa = PBXBuildFile; fileRef = 5B0916E92ED3BA92002FC68A /* coreAL.h */; };
+		5B0916EC2ED3BA92002FC68A /* coreAL.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5B0916EA2ED3BA92002FC68A /* coreAL.cpp */; };
 		5B660CE727E0B7AB009BB1CB /* XXH.h in Headers */ = {isa = PBXBuildFile; fileRef = 5B660CE527E0B7AB009BB1CB /* XXH.h */; };
 		5B660CE827E0B7AB009BB1CB /* XXH.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5B660CE627E0B7AB009BB1CB /* XXH.cpp */; };
 		5B77109B27CD488B00EB424C /* cocoa.h in Headers */ = {isa = PBXBuildFile; fileRef = 5B77109927CD488B00EB424C /* cocoa.h */; };
@@ -25,7 +28,6 @@
 		5BB8C34327C94E4200BBB338 /* main.c in Sources */ = {isa = PBXBuildFile; fileRef = 5BB8C2BC27C94E4100BBB338 /* main.c */; };
 		5BB8C34527C94E4200BBB338 /* coreCPUID.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5BB8C2BE27C94E4100BBB338 /* coreCPUID.cpp */; };
 		5BB8C34627C94E4200BBB338 /* coreGL.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5BB8C2BF27C94E4100BBB338 /* coreGL.cpp */; };
-		5BB8C34827C94E4200BBB338 /* coreGLEW.c in Sources */ = {isa = PBXBuildFile; fileRef = 5BB8C2C527C94E4100BBB338 /* coreGLEW.c */; };
 		5BB8C34B27C94E4200BBB338 /* header.h in Headers */ = {isa = PBXBuildFile; fileRef = 5BB8C2CB27C94E4100BBB338 /* header.h */; };
 		5BB8C34D27C94E4200BBB338 /* coreCPUID.h in Headers */ = {isa = PBXBuildFile; fileRef = 5BB8C2CD27C94E4100BBB338 /* coreCPUID.h */; };
 		5BB8C34E27C94E4200BBB338 /* CoreInput.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5BB8C2D027C94E4100BBB338 /* CoreInput.cpp */; };
@@ -127,7 +129,10 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
-		5B5594D02867136000509370 /* coreImGui.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = coreImGui.cpp; sourceTree = "<group>"; };
+		5B0916E42ED3BA83002FC68A /* coreGLEW.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = coreGLEW.c; sourceTree = "<group>"; };
+		5B0916E52ED3BA83002FC68A /* coreImGui.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = coreImGui.cpp; sourceTree = "<group>"; };
+		5B0916E92ED3BA92002FC68A /* coreAL.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = coreAL.h; sourceTree = "<group>"; };
+		5B0916EA2ED3BA92002FC68A /* coreAL.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = coreAL.cpp; sourceTree = "<group>"; };
 		5B660CE527E0B7AB009BB1CB /* XXH.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = XXH.h; sourceTree = "<group>"; };
 		5B660CE627E0B7AB009BB1CB /* XXH.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = XXH.cpp; sourceTree = "<group>"; };
 		5B77109927CD488B00EB424C /* cocoa.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = cocoa.h; sourceTree = "<group>"; };
@@ -151,7 +156,6 @@
 		5BB8C2C227C94E4100BBB338 /* main.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = main.c; sourceTree = "<group>"; };
 		5BB8C2C327C94E4100BBB338 /* manifest.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = manifest.json; sourceTree = "<group>"; };
 		5BB8C2C427C94E4100BBB338 /* pre.js */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.javascript; path = pre.js; sourceTree = "<group>"; };
-		5BB8C2C527C94E4100BBB338 /* coreGLEW.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = coreGLEW.c; sourceTree = "<group>"; };
 		5BB8C2C727C94E4100BBB338 /* main.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = main.c; sourceTree = "<group>"; };
 		5BB8C2CB27C94E4100BBB338 /* header.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = header.h; sourceTree = "<group>"; };
 		5BB8C2CC27C94E4100BBB338 /* main.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = main.c; sourceTree = "<group>"; };
@@ -265,6 +269,15 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		5B0916E62ED3BA83002FC68A /* build */ = {
+			isa = PBXGroup;
+			children = (
+				5B0916E42ED3BA83002FC68A /* coreGLEW.c */,
+				5B0916E52ED3BA83002FC68A /* coreImGui.cpp */,
+			);
+			path = build;
+			sourceTree = "<group>";
+		};
 		5BB8C28F27C9489900BBB338 = {
 			isa = PBXGroup;
 			children = (
@@ -290,10 +303,13 @@
 		5BB8C2B827C94E4100BBB338 /* additional */ = {
 			isa = PBXGroup;
 			children = (
+				5B0916E62ED3BA83002FC68A /* build */,
 				5BB8C2C027C94E4100BBB338 /* emscripten */,
 				5BB8C2C627C94E4100BBB338 /* linux */,
 				5BB8C2BB27C94E4100BBB338 /* macos */,
 				5BB8C2CA27C94E4100BBB338 /* windows */,
+				5B0916E92ED3BA92002FC68A /* coreAL.h */,
+				5B0916EA2ED3BA92002FC68A /* coreAL.cpp */,
 				5BA975542D8DF01C00D916E6 /* coreBlob.h */,
 				5BB8C2BE27C94E4100BBB338 /* coreCPUID.cpp */,
 				5BB8C2CD27C94E4100BBB338 /* coreCPUID.h */,
@@ -301,8 +317,6 @@
 				5BB8C2B927C94E4100BBB338 /* coreGL.h */,
 				5BB8C2BD27C94E4100BBB338 /* coreGLES.cpp */,
 				5BB8C2BA27C94E4100BBB338 /* coreGLES.h */,
-				5BB8C2C527C94E4100BBB338 /* coreGLEW.c */,
-				5B5594D02867136000509370 /* coreImGui.cpp */,
 			);
 			name = additional;
 			path = ../../source/additional;
@@ -664,6 +678,7 @@
 				5BB8C3A327C94E4200BBB338 /* coreLabel.h in Headers */,
 				5BB8C39727C94E4200BBB338 /* coreObject2D.h in Headers */,
 				5BB8C38927C94E4200BBB338 /* coreList.h in Headers */,
+				5B0916EB2ED3BA92002FC68A /* coreAL.h in Headers */,
 				5BB8C38F27C94E4200BBB338 /* coreSet.h in Headers */,
 				5BB8C35027C94E4200BBB338 /* windows.h in Headers */,
 				5BB8C34D27C94E4200BBB338 /* coreCPUID.h in Headers */,
@@ -710,7 +725,7 @@
 			isa = PBXProject;
 			attributes = {
 				BuildIndependentTargetsInParallel = 1;
-				LastUpgradeCheck = 1620;
+				LastUpgradeCheck = 2610;
 				TargetAttributes = {
 					5BB8C29727C9489900BBB338 = {
 						CreatedOnToolsVersion = 13.2.1;
@@ -745,9 +760,11 @@
 				5BB8C37627C94E4200BBB338 /* coreLanguage.cpp in Sources */,
 				5BB8C37927C94E4200BBB338 /* coreArchive.cpp in Sources */,
 				5BB8C3A027C94E4200BBB338 /* coreMenu.cpp in Sources */,
+				5B0916E72ED3BA83002FC68A /* coreGLEW.c in Sources */,
+				5B0916E82ED3BA83002FC68A /* coreImGui.cpp in Sources */,
 				5BB8C37027C94E4200BBB338 /* coreDataBuffer.cpp in Sources */,
+				5B0916EC2ED3BA92002FC68A /* coreAL.cpp in Sources */,
 				5B77109C27CD488B00EB424C /* cocoa.mm in Sources */,
-				5BB8C34827C94E4200BBB338 /* coreGLEW.c in Sources */,
 				5BB8C35927C94E4200BBB338 /* coreTimer.cpp in Sources */,
 				5BB8C3AD27C94E4200BBB338 /* Core.cpp in Sources */,
 				5BB8C34327C94E4200BBB338 /* main.c in Sources */,
@@ -768,7 +785,6 @@
 				5BB8C35527C94E4200BBB338 /* CoreSystem.cpp in Sources */,
 				5BB8C3A827C94E4200BBB338 /* coreResource.cpp in Sources */,
 				5BA9755A2D8DF08A00D916E6 /* coreRichText.cpp in Sources */,
-				5B5594D12867136000509370 /* coreImGui.cpp in Sources */,
 				5BB8C39C27C94E4200BBB338 /* coreCheckBox.cpp in Sources */,
 				5BB8C37327C94E4200BBB338 /* CoreGraphics.cpp in Sources */,
 				5BB8C37427C94E4200BBB338 /* CoreDebug.cpp in Sources */,
