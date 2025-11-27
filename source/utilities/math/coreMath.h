@@ -68,7 +68,8 @@
 #define STEPBR coreMath::StepBreakRev
 #define STEPH3 coreMath::StepHermite3
 #define STEPH5 coreMath::StepHermite5
-#define FMODR  coreMath::FmodRange
+#define FMODR  coreMath::FmodRepeat
+#define FMODM  coreMath::FmodMirror
 #define FMOD   coreMath::Fmod
 #define TRUNC  coreMath::Trunc
 #define FRACT  coreMath::Fract
@@ -145,15 +146,16 @@ public:
     template <coreFloatingPoint T, typename S> static inline    S FrictionTo  (const T tRate, const T tTime, const S tFrom, const S tTo)        {return LERP(tTo, tFrom, coreMath::Friction(tRate, tTime));}
 
     /* base operations */
-    template <coreFloatingPoint T> static inline T FmodRange(const T tNum, const t_ident<T> tFrom, const t_ident<T> tTo);
-    template <coreFloatingPoint T> static inline T Fmod     (const T tNum, const t_ident<T> tDenom) {return std::fmod (tNum, tDenom);}
-    template <coreFloatingPoint T> static inline T Trunc    (const T tInput)                        {return std::trunc(tInput);}
-    template <coreFloatingPoint T> static inline T Fract    (const T tInput)                        {return tInput - TRUNC(tInput);}   // FMOD(x, 1)
-    template <coreFloatingPoint T> static inline T Cbrt     (const T tInput)                        {return std::cbrt (tInput);}
-    template <coreFloatingPoint T> static inline T Sqrt     (const T tInput)                        {return std::sqrt (tInput);}
-    static constexpr coreFloat                     Sqrt     (const coreFloat fInput);
-    static constexpr coreFloat                     Rsqrt    (const coreFloat fInput);
-    static constexpr coreFloat                     Rcp      (const coreFloat fInput);
+    template <coreFloatingPoint T> static inline T FmodRepeat(const T tNum, const t_ident<T> tFrom, const t_ident<T> tTo);
+    template <coreFloatingPoint T> static inline T FmodMirror(const T tNum, const t_ident<T> tFrom, const t_ident<T> tTo);
+    template <coreFloatingPoint T> static inline T Fmod      (const T tNum, const t_ident<T> tDenom) {return std::fmod (tNum, tDenom);}
+    template <coreFloatingPoint T> static inline T Trunc     (const T tInput)                        {return std::trunc(tInput);}
+    template <coreFloatingPoint T> static inline T Fract     (const T tInput)                        {return tInput - TRUNC(tInput);}   // FMOD(x, 1)
+    template <coreFloatingPoint T> static inline T Cbrt      (const T tInput)                        {return std::cbrt (tInput);}
+    template <coreFloatingPoint T> static inline T Sqrt      (const T tInput)                        {return std::sqrt (tInput);}
+    static constexpr coreFloat                     Sqrt      (const coreFloat fInput);
+    static constexpr coreFloat                     Rsqrt     (const coreFloat fInput);
+    static constexpr coreFloat                     Rcp       (const coreFloat fInput);
 
     /* exponential operations */
     template <coreFloatingPoint T> static inline T Pow  (const T tBase,  const t_ident<T> tExp)  {return std::pow  (tBase, tExp);}
@@ -228,8 +230,8 @@ public:
 
 
 // ****************************************************************
-/* loop value within specific range */
-template <coreFloatingPoint T> inline T coreMath::FmodRange(const T tNum, const t_ident<T> tFrom, const t_ident<T> tTo)
+/* loop value within specific range (repeated) */
+template <coreFloatingPoint T> inline T coreMath::FmodRepeat(const T tNum, const t_ident<T> tFrom, const t_ident<T> tTo)
 {
     ASSERT(tFrom < tTo)
 
@@ -237,6 +239,17 @@ template <coreFloatingPoint T> inline T coreMath::FmodRange(const T tNum, const 
     if(tNum <  tFrom) return FMOD(tNum - tTo,   tFrom - tTo)   + tTo;
 
     return tNum;
+}
+
+
+// ****************************************************************
+/* loop value within specific range (mirrored) */
+template <coreFloatingPoint T> inline T coreMath::FmodMirror(const T tNum, const t_ident<T> tFrom, const t_ident<T> tTo)
+{
+    ASSERT(tFrom < tTo)
+
+    const T tOutput = FMODR(tNum, tFrom, tTo * T(2) - tFrom);
+    return (tOutput > tTo) ? (tTo * T(2) - tOutput) : tOutput;
 }
 
 
