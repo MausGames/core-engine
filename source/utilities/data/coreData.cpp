@@ -1654,8 +1654,8 @@ coreStatus coreData::FileMap(const coreChar* pcPath, const coreInt64 iOffset, co
     std::memset(pMap, 0, sizeof(coreFileMap));
 
     // set mapping base
-    const coreInt64 iBase  = coreMath::FloorAlign(iOffset, coreData::__GetMapAlign());
-    const coreInt64 iShift = iOffset - iBase;
+    UNUSED const coreInt64 iBase  = coreMath::FloorAlign(iOffset, coreData::__GetMapAlign());
+    UNUSED const coreInt64 iShift = iOffset - iBase;
 
 #if defined(_CORE_WINDOWS_)
 
@@ -1692,7 +1692,7 @@ coreStatus coreData::FileMap(const coreChar* pcPath, const coreInt64 iOffset, co
         CloseHandle(pFile);
     }
 
-#elif defined(_CORE_LINUX_) || defined(_CORE_MACOS_) || defined(_CORE_EMSCRIPTEN_) || defined(_CORE_SWITCH_)
+#elif defined(_CORE_LINUX_) || defined(_CORE_MACOS_) || defined(_CORE_EMSCRIPTEN_)
 
     // open file
     const coreInt32 iFile = open(pcPath, O_RDONLY);
@@ -1736,14 +1736,14 @@ coreStatus coreData::FileUnmap(const coreFileMap* pMap)
     if(!pMap->pData || !pMap->iSize) return CORE_INVALID_INPUT;
 
     // get original pointer
-    void* pPointer = coreMath::FloorAlignPtr(pMap->pData, coreData::__GetMapAlign());
+    UNUSED void* pPointer = coreMath::FloorAlignPtr(pMap->pData, coreData::__GetMapAlign());
 
 #if defined(_CORE_WINDOWS_)
 
     // unmap file from memory
     if(UnmapViewOfFile(pPointer)) return CORE_OK;
 
-#elif defined(_CORE_LINUX_) || defined(_CORE_MACOS_) || defined(_CORE_EMSCRIPTEN_) || defined(_CORE_SWITCH_)
+#elif defined(_CORE_LINUX_) || defined(_CORE_MACOS_) || defined(_CORE_EMSCRIPTEN_)
 
     // unmap file from memory (with original size)
     if(!munmap(pPointer, pMap->iSize + P_TO_UI(pMap->pData) - P_TO_UI(pPointer))) return CORE_OK;

@@ -11,6 +11,7 @@
 #define _CORE_GUARD_SET_H_
 
 // TODO 3: prevent accidental duplicates (operator[], insert(it), emplace(it), etc.)
+// TODO 3: insert_once_bs makes two lookups
 
 
 // ****************************************************************

@@ -135,12 +135,6 @@ CoreGraphics::CoreGraphics()noexcept
     }
     Core::Log->ListEnd();
 
-    // enable vertical synchronization
-    const coreInt32 iVsync = Core::Config->GetInt(CORE_CONFIG_SYSTEM_VSYNC);
-         if(SDL_GL_SetSwapInterval(iVsync)) Core::Log->Info("Vertical synchronization configured (interval %d)", iVsync);
-    else if(SDL_GL_SetSwapInterval(1))      Core::Log->Info("Vertical synchronization configured (default)");
-    else Core::Log->Warning("Vertical synchronization not directly supported (SDL: %s)", SDL_GetError());
-
     // setup texturing and packing
     if(CORE_GL_SUPPORT(CORE_gl2_compatibility) || DEFINED(_CORE_GLES_)) glHint(GL_GENERATE_MIPMAP_HINT, GL_NICEST);
     if(CORE_GL_SUPPORT(ARB_seamless_cube_map))                          glEnable(GL_TEXTURE_CUBE_MAP_SEAMLESS);
@@ -227,6 +221,12 @@ CoreGraphics::CoreGraphics()noexcept
         // re-assign render context to main window
         SDL_GL_MakeCurrent(Core::System->GetWindow(), m_pRenderContext);
     }
+
+    // enable vertical synchronization (after resource context, because SDL on EGL resets the interval to 1)
+    const coreInt32 iVsync = Core::Config->GetInt(CORE_CONFIG_SYSTEM_VSYNC);
+         if(SDL_GL_SetSwapInterval(iVsync)) Core::Log->Info("Vertical synchronization configured (interval %d)", iVsync);
+    else if(SDL_GL_SetSwapInterval(1))      Core::Log->Info("Vertical synchronization configured (default)");
+    else Core::Log->Warning("Vertical synchronization not directly supported (SDL: %s)", SDL_GetError());
 
     // load shader-cache
     coreProgram::LoadShaderCache();

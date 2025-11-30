@@ -73,6 +73,9 @@
     <Filter Include="additional\macos">
       <UniqueIdentifier>{0eac98f1-d6b9-4ba9-b6fe-d5db834d737f}</UniqueIdentifier>
     </Filter>
+    <Filter Include="additional\build">
+      <UniqueIdentifier>{ae75434c-7031-456f-9d25-8dda4a34432d}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\source\components\audio\coreSound.cpp">
@@ -206,7 +209,7 @@
       <Filter>objects\menu</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\source\additional\build\coreGLEW.c">
-      <Filter>additional</Filter>
+      <Filter>additional\build</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\source\additional\emscripten\main.c">
       <Filter>additional\emscripten</Filter>
@@ -218,7 +221,7 @@
       <Filter>additional\macos</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\source\additional\build\coreImGui.cpp">
-      <Filter>additional</Filter>
+      <Filter>additional\build</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

@@ -196,7 +196,7 @@ coreStatus coreThread::__Main()
         else
         {
             // always yield
-            SDL_Delay(0u);
+            CORE_SPINLOCK_YIELD
         }
 
         // check for shut down

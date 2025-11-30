@@ -174,6 +174,10 @@
     #define flat
     #define smooth
     #define centroid
+#else
+    #if defined(_CORE_OPTION_NO_PERSPECTIVE_)
+        #define smooth noperspective
+    #endif
 #endif
 #if !defined(CORE_GL_noperspective_interpolation)
     #define noperspective
@@ -195,9 +199,6 @@
 #endif
 #if defined(GL_EXT_demote_to_helper_invocation)
     #define discard demote
-#endif
-#if defined(_CORE_OPTION_NO_PERSPECTIVE_)
-    #define smooth noperspective
 #endif
 
 // type definitions

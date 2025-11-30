@@ -45,6 +45,7 @@
 
 #if defined(CORE_SPINLOCK_MUTEX)
     #include <mutex>
+    #include <shared_mutex>
 #endif
 
 
