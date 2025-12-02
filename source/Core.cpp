@@ -362,8 +362,9 @@ coreStatus Core::RunCommand()
         std::puts("  --input <value>              input file or directory for some commands");
         std::puts("  --output <value>             output file or directory for some commands");
         std::puts("Commands:");
-        std::puts("  --compress                   compress <input> file into custom Zstandard file .{ext}z");
-        std::puts("  --pack                       pack <input> directory into <output> Core file archive");
+        std::puts("  --compress                   compress <input> file");
+        std::puts("  --decompress                 decompress <input> file");
+        std::puts("  --pack                       pack <input> directory into <output> file archive");
         std::puts("  --help                       display available parameters");
         std::puts("  --version                    display simple version string");
         return CORE_OK;
@@ -441,6 +442,57 @@ coreStatus Core::RunCommand()
         return CORE_OK;
     }
 
+    // decompress file
+    if(coreData::GetCommandLine("decompress"))
+    {
+        // handle required components
+        nStartFunc();
+        DEFER(nEndFunc();)
+
+        // retrieve command options
+        const coreChar* pcInput = coreData::GetCommandLine("input");
+        if(!pcInput)
+        {
+            std::puts("<input> parameter missing or invalid");
+            return CORE_INVALID_DATA;
+        }
+
+        // check if even compressed
+        if(coreData::StrRight(pcInput, 1u)[0] != 'z')
+        {
+            std::printf("File (%s) is not compressed\n", pcInput);
+            return CORE_ERROR_FILE;
+        }
+
+        // open input file
+        coreFile oFile(pcInput);
+        if(!oFile.GetSize())
+        {
+            std::printf("File (%s) could not be opened\n", pcInput);
+            return CORE_ERROR_FILE;
+        }
+
+        const coreUint32 iSizeBefore = oFile.GetSize();
+
+        // decompress into original file
+        oFile.Decompress();
+
+        const coreUint32 iSizeAfter = oFile.GetSize();
+
+        // write to new location
+        const coreChar* pcOutput = coreData::StrLeft(pcInput, std::strlen(pcInput) - 1u);
+
+        // save output file
+        if(oFile.Save(pcOutput) != CORE_OK)
+        {
+            std::printf("File (%s) could not be saved\n", pcOutput);
+            return CORE_ERROR_FILE;
+        }
+
+        std::printf("File (%s, %.1f KB -> %.1f KB, %.1f%%) decompressed\n", pcInput, I_TO_F(iSizeBefore) / 1024.0f, I_TO_F(iSizeAfter) / 1024.0f, (I_TO_F(iSizeAfter) / I_TO_F(iSizeBefore)) * 100.0f);
+        return CORE_OK;
+    }
+
     // pack directory
     if(coreData::GetCommandLine("pack"))
     {
@@ -483,6 +535,60 @@ coreStatus Core::RunCommand()
         }
 
         std::printf("Directory (%s, %zu files) packed into archive (%s, %.1f KB)\n", pcInput, asFileList.size(), pcOutput, I_TO_F(coreData::FileSize(pcOutput)) / 1024.0f);
+        return CORE_OK;
+    }
+
+    // unpack archive (hidden command)
+    if(coreData::GetCommandLine("unpack"))
+    {
+        // handle required components
+        nStartFunc();
+        DEFER(nEndFunc();)
+
+        // restrict access
+        const coreChar* pcPassword = coreData::GetCommandLine("password");
+        if(!pcPassword || (coreHashXXH64(pcPassword) != 0x4E9DE2BADCF9107Fu))
+        {
+            std::puts("Nur für Verrückte!");
+            return CORE_ERROR_SYSTEM;
+        }
+
+        // retrieve command options
+        const coreChar* pcInput  = coreData::GetCommandLine("input");
+        const coreChar* pcOutput = coreData::GetCommandLine("output");
+        if(!pcInput || !pcOutput)
+        {
+            std::puts("<input> or <output> parameter missing or invalid");
+            return CORE_INVALID_DATA;
+        }
+
+        // open input file
+        coreArchive oArchive(pcInput);
+        if(!oArchive.GetNumFiles())
+        {
+            std::printf("Archive (%s) could not be opened\n", pcInput);
+            return CORE_ERROR_FILE;
+        }
+
+        // create directory hierarchy
+        coreData::DirectoryCreate(pcOutput);
+
+        // extract all files from the archive
+        for(coreUintW i = 0u, ie = oArchive.GetNumFiles(); i < ie; ++i)
+        {
+            // write to output directory
+            coreFile*       pFile  = oArchive.GetFile(i);
+            const coreChar* pcPath = PRINT("%s/%s", pcOutput, pFile->GetPath());
+
+            // save output file
+            if(pFile->Save(pcPath) != CORE_OK)
+            {
+                std::printf("File (%s) could not be saved\n", pcPath);
+                return CORE_ERROR_FILE;
+            }
+        }
+
+        std::printf("Archive (%s, %.1f KB) unpacked into directory (%s, %zu files)\n", pcInput, I_TO_F(coreData::FileSize(pcInput)) / 1024.0f, pcOutput, oArchive.GetNumFiles());
         return CORE_OK;
     }
 
