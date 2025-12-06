@@ -810,13 +810,13 @@ void CoreGraphics::__UpdateScene()
     Core::Debug->MeasureEnd  (CORE_DEBUG_OVERALL_NAME);
     Core::Debug->MeasureStart(CORE_DEBUG_OVERALL_NAME);
 
+#if !defined(_CORE_EMSCRIPTEN_)
+
     // reset engine on OpenGL context loss
     if(CORE_GL_SUPPORT(ARB_robustness))
     {
         if(glGetGraphicsResetStatus() != GL_NO_ERROR) Core::Reset();
     }
-
-#if !defined(_CORE_EMSCRIPTEN_)
 
     // clear color, depth and stencil buffer
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | (CoreApp::Settings::Graphics::StencilSize ? GL_STENCIL_BUFFER_BIT : 0u));
@@ -830,6 +830,21 @@ void CoreGraphics::__UpdateScene()
 void CoreGraphics::__UpdateEmscripten()
 {
 #if defined(_CORE_EMSCRIPTEN_)
+
+    static coreAtomic<coreBool> s_bLost = false;
+
+    // register canvas event callback
+    UNUSED static const EMSCRIPTEN_RESULT s_iResult = emscripten_set_webglcontextrestored_callback("canvas", NULL, false, [](const coreInt32 iEventType, const void* pReserved, void* pUserData)
+    {
+        s_bLost = true;
+        return true;
+    });
+
+    // reset engine on WebGL context loss
+    if(s_bLost.Exchange(false))
+    {
+        Core::Reset();
+    }
 
     // clear color, depth and stencil buffer
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | (CoreApp::Settings::Graphics::StencilSize ? GL_STENCIL_BUFFER_BIT : 0u));

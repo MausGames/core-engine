@@ -13,6 +13,7 @@ const g_pCanvas   = document.getElementById("canvas");
 const g_pLoader   = document.getElementById("loader");
 const g_pStatus   = document.getElementById("status");
 const g_pProgress = document.getElementById("progress");
+const g_pMessage  = document.getElementById("message");
 
 
 // ****************************************************************
@@ -20,6 +21,23 @@ g_pCanvas.addEventListener("click", function()
 {
     window   .focus();
     g_pCanvas.focus();
+});
+
+g_pCanvas.addEventListener("webglcontextcreationerror", function(oEvent)
+{
+    g_pMessage.innerHTML = "WebGL context creation error: " + oEvent.statusMessage;
+});
+
+g_pCanvas.addEventListener("webglcontextlost", function(oEvent)
+{
+    console.error("WebGL context lost: " + oEvent.statusMessage);
+    oEvent.preventDefault();
+});
+
+g_pCanvas.addEventListener("webglcontextrestored", function(oEvent)
+{
+    console.error("WebGL context restored: " + oEvent.statusMessage);
+    oEvent.preventDefault();
 });
 
 Module["canvas"] = g_pCanvas;

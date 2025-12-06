@@ -309,6 +309,7 @@
     #include "additional/windows/header.h"
 #elif defined(_CORE_EMSCRIPTEN_)
     #include <emscripten.h>
+    #include <emscripten/html5.h>
 #endif
 #if defined(_CORE_SSE_)
     #include <immintrin.h>
