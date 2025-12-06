@@ -74,7 +74,7 @@ if(CORE_EMSCRIPTEN)
 
     set_target_properties(
         CoreEngine PROPERTIES
-        ARCHIVE_OUTPUT_DIRECTORY ${BASE_DIRECTORY}/output/emscripten/
+        ARCHIVE_OUTPUT_DIRECTORY ${BASE_DIRECTORY}/output/emscripten
     )
 
     target_sources(
@@ -87,7 +87,7 @@ if(CORE_EMSCRIPTEN)
         CoreEngine PUBLIC
         -msse3 -pipe -Wall -Wextra -Wpedantic
         -matomics -mbulk-memory -mextended-const -mmultivalue -mmutable-globals -mnontrapping-fptoint -mreference-types -msign-ext -msimd128 -mtail-call
-        $<IF:$<CONFIG:DEBUG>, -O0 -g3 -gsplit-dwarf -gz=zlib -ftrivial-auto-var-init=pattern, -Os -flto -fwhole-program-vtables -fvirtual-function-elimination -fforce-emit-vtables -fstrict-vtable-pointers -fno-strict-overflow -ffinite-math-only -fno-signed-zeros -fno-trapping-math -fno-math-errno -ffp-contract=off -fno-rtti -fno-exceptions -Werror>
+        $<IF:$<CONFIG:DEBUG>, -O0 -g3 -gsource-map -gsplit-dwarf -gz=zlib -ftrivial-auto-var-init=pattern, -Os -flto -fwhole-program-vtables -fvirtual-function-elimination -fforce-emit-vtables -fstrict-vtable-pointers -fno-strict-overflow -ffinite-math-only -fno-signed-zeros -fno-trapping-math -fno-math-errno -ffp-contract=off -fno-rtti -fno-exceptions -Werror>
     )
 
     target_link_directories(
@@ -105,14 +105,14 @@ if(CORE_EMSCRIPTEN)
         CoreEngine INTERFACE
         -sENVIRONMENT=web -sMAX_WEBGL_VERSION=2 -sGL_ENABLE_GET_PROC_ADDRESS=1 -sWASM_BIGINT=1 -sMALLOC=mimalloc -sALLOW_MEMORY_GROWTH=1 -sSTACK_SIZE=1MB
         --preload-file ../../../executable/data_web@/data --shell-file ${BASE_DIRECTORY}/source/additional/emscripten/shell.html --pre-js ${BASE_DIRECTORY}/source/additional/emscripten/pre.js
-        $<IF:$<CONFIG:DEBUG>, -O0 -g3 -sGL_ASSERTIONS=1, -Os -flto -sGL_TRACK_ERRORS=0 -sEVAL_CTORS=1 --closure 1>
+        $<IF:$<CONFIG:DEBUG>, -O0 -g3 -gsource-map -sASSERTIONS=2 -sGL_ASSERTIONS=1, -Os -flto -sEVAL_CTORS=1 -sGL_TRACK_ERRORS=0 --closure 1>
     )
 
 else()
 
     set_target_properties(
         CoreEngine PROPERTIES
-        ARCHIVE_OUTPUT_DIRECTORY ${BASE_DIRECTORY}/output/linux_x86_64/
+        ARCHIVE_OUTPUT_DIRECTORY ${BASE_DIRECTORY}/output/linux_x86_64
     )
 
     target_sources(

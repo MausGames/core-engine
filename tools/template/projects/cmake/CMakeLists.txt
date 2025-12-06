@@ -43,7 +43,7 @@ if(CORE_EMSCRIPTEN)
     set_target_properties(
         CoreApp PROPERTIES
         SUFFIX .html
-        RUNTIME_OUTPUT_DIRECTORY ${BASE_DIRECTORY}/executable/bin/emscripten/
+        RUNTIME_OUTPUT_DIRECTORY ${BASE_DIRECTORY}/executable/bin/emscripten
     )
 
 else()
@@ -51,7 +51,7 @@ else()
     set_target_properties(
         CoreApp PROPERTIES
         SUFFIX .elf
-        RUNTIME_OUTPUT_DIRECTORY ${BASE_DIRECTORY}/executable/bin/linux_x86_64/
+        RUNTIME_OUTPUT_DIRECTORY ${BASE_DIRECTORY}/executable/bin/linux_x86_64
     )
 
     if(NOT CORE_DEBUG)

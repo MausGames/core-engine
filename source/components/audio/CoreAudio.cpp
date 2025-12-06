@@ -641,10 +641,8 @@ void CoreAudio::__UpdateDevice()
     }
 
     // try to recover from audio device issues
-    if(m_iDeviceFix)
+    if(m_iDeviceFix.Exchange(0u))
     {
-        m_iDeviceFix = 0u;
-
         if(CORE_ALC_SUPPORT(SOFT_reopen_device))
         {
             // reopen audio device
