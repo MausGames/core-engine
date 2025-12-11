@@ -138,9 +138,8 @@ coreMemoryPool::coreMemoryPool(coreMemoryPool&& m)noexcept
 , m_iBlockSize  (m.m_iBlockSize)
 , m_iPageSize   (m.m_iPageSize)
 , m_bValid      (m.m_bValid)
-, m_pHeap       (m.m_pHeap)
+, m_pHeap       (std::exchange(m.m_pHeap, NULL))
 {
-    m.m_pHeap = NULL;
 }
 
 

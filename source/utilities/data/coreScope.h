@@ -103,9 +103,8 @@ template <typename T> constexpr coreScope<T>::coreScope(T* ptObject)noexcept
 }
 
 template <typename T> coreScope<T>::coreScope(coreScope&& m)noexcept
-: m_ptObject (m.m_ptObject)
+: m_ptObject (std::exchange(m.m_ptObject, NULL))
 {
-    m.m_ptObject = NULL;
 }
 
 

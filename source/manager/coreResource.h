@@ -451,9 +451,8 @@ template <typename T> coreResourcePtr<T>::coreResourcePtr(const coreResourcePtr&
 }
 
 template <typename T> coreResourcePtr<T>::coreResourcePtr(coreResourcePtr&& m)noexcept
-: m_iIndex (m.m_iIndex)
+: m_iIndex (std::exchange(m.m_iIndex, 0u))
 {
-    m.m_iIndex = 0u;
 }
 
 

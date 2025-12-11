@@ -213,7 +213,7 @@ constexpr coreDataBuffer::coreDataBuffer()noexcept
 }
 
 inline coreDataBuffer::coreDataBuffer(coreDataBuffer&& m)noexcept
-: m_iIdentifier       (m.m_iIdentifier)
+: m_iIdentifier       (std::exchange(m.m_iIdentifier, 0u))
 , m_eStorageType      (m.m_eStorageType)
 , m_iTarget           (m.m_iTarget)
 , m_iSize             (m.m_iSize)
@@ -223,7 +223,6 @@ inline coreDataBuffer::coreDataBuffer(coreDataBuffer&& m)noexcept
 , m_iMapLength        (m.m_iMapLength)
 , m_Sync              (std::move(m.m_Sync))
 {
-    m.m_iIdentifier = 0u;
 }
 
 

@@ -152,11 +152,10 @@ inline coreWorkString::coreWorkString(const coreChar* pcText)noexcept
 }
 
 inline coreWorkString::coreWorkString(coreWorkString&& m)noexcept
-: m_pcBuffer  (m.m_pcBuffer)
+: m_pcBuffer  (std::exchange(m.m_pcBuffer, NULL))
 , m_iSize     (m.m_iSize)
 , m_iCapacity (m.m_iCapacity)
 {
-    m.m_pcBuffer = NULL;
 }
 
 

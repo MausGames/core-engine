@@ -65,9 +65,8 @@ constexpr coreSync::coreSync()noexcept
 }
 
 inline coreSync::coreSync(coreSync&& m)noexcept
-: m_pSync (m.m_pSync)
+: m_pSync (std::exchange(m.m_pSync, NULL))
 {
-    m.m_pSync = NULL;
 }
 
 
