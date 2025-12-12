@@ -710,7 +710,7 @@ void coreTexture::CreateCompressedBC7(const coreUintW iInWidth, const coreUintW 
             for(coreUintW i = 0u; i < 4u; ++i) std::memcpy(aBlock + (i + 12u) * 4u, pInput + (i + 3u*iInWidth) * iComponents, iComponents);
 
             // compress block (RGB -> BPTC/BC7, RGBA -> BPTC/BC7)
-            bc7enc_compress_block(pOutput, aBlock, iComponents);
+            bc7enc_compress_block(pOutput, aBlock, iComponents, 0);
 
             // increment pointers
             pInput  += iInOffsetX;

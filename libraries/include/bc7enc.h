@@ -19,8 +19,8 @@
 #include <climits>
 #include <algorithm>
 
-#define BC7ENC_BLOCK_SIZE (16)
-#define BC7ENC_MAX_PARTITIONS (64)
+#define BC7ENC_BLOCK_SIZE     (16)
+#define BC7ENC_MAX_PARTITIONS (DEFINED(_CORE_DEBUG_) ? 0 : DEFINED(_CORE_EMSCRIPTEN_) ? 4 : 8)
 #define BC7ENC_MAX_UBER_LEVEL (4)
 
 struct color_rgba { uint8_t m_c[4]; };
@@ -30,16 +30,16 @@ struct bc7enc_compress_block_params
     static constexpr uint32_t m_mode_mask = UINT32_MAX;
 
     // m_max_partitions may range from 0 (disables mode 1) to BC7ENC_MAX_PARTITIONS. The higher this value, the slower the compressor, but the higher the quality.
-    static constexpr uint32_t m_max_partitions = DEFINED(_CORE_DEBUG_) ? 0 : DEFINED(_CORE_EMSCRIPTEN_) ? 4 : 8;
+    uint32_t m_max_partitions;
 
     // Relative RGBA or YCbCrA weights.
-    static constexpr uint32_t m_weights[4] = {128, 64, 16, 32};
+    //uint32_t m_weights[4];
 
     // m_uber_level may range from 0 to BC7ENC_MAX_UBER_LEVEL. The higher this value, the slower the compressor, but the higher the quality.
     static constexpr uint32_t m_uber_level = 0;
 
     // If m_perceptual is true, colorspace error is computed in YCbCr space, otherwise RGB.
-    static constexpr bool m_perceptual = true;
+    //bool m_perceptual;
 
     // Set m_try_least_squares to false for slightly faster/lower quality compression.
     static constexpr bool m_try_least_squares = DEFINED(_CORE_DEBUG_) ? false : true;
@@ -397,7 +397,7 @@ static void compute_least_squares_endpoints_rgba(uint32_t N, const uint8_t* __re
         if ((pXl->m_c[c] < 0.0f) || (pXh->m_c[c] > 255.0f))
         {
             uint32_t lo_v = UINT32_MAX, hi_v = 0;
-            for (uint32_t i = 0; i < N; i++)
+            for (uint32_t i = 0; i < LOOP_NONZERO(N); i++)
             {
                 lo_v = minimumu(lo_v, pColors[i].m_c[c]);
                 hi_v = maximumu(hi_v, pColors[i].m_c[c]);
@@ -459,7 +459,7 @@ static void compute_least_squares_endpoints_rgb(uint32_t N, const uint8_t* __res
         if ((pXl->m_c[c] < 0.0f) || (pXh->m_c[c] > 255.0f))
         {
             uint32_t lo_v = UINT32_MAX, hi_v = 0;
-            for (uint32_t i = 0; i < N; i++)
+            for (uint32_t i = 0; i < LOOP_NONZERO(N); i++)
             {
                 lo_v = minimumu(lo_v, pColors[i].m_c[c]);
                 hi_v = maximumu(hi_v, pColors[i].m_c[c]);
@@ -512,7 +512,7 @@ static void compute_least_squares_endpoints_a(uint32_t N, const uint8_t* __restr
     if ((*pXl < 0.0f) || (*pXh > 255.0f))
     {
         uint32_t lo_v = UINT32_MAX, hi_v = 0;
-        for (uint32_t i = 0; i < N; i++)
+        for (uint32_t i = 0; i < LOOP_NONZERO(N); i++)
         {
             lo_v = minimumu(lo_v, pColors[i].m_c[3]);
             hi_v = maximumu(hi_v, pColors[i].m_c[3]);
@@ -538,16 +538,8 @@ struct color_cell_compressor_params
     bool m_has_pbits;
     bool m_endpoints_share_pbit;
 
-    static constexpr uint32_t m_weights[4] =
-    {
-        // https://en.wikipedia.org/wiki/YCbCr#ITU-R_BT.709_conversion
-        (int)(bc7enc_compress_block_params::m_weights[0] * 4.0f),
-        (int)(bc7enc_compress_block_params::m_weights[1] * 4.0f * (.5f / (1.0f - .2126f)) * (.5f / (1.0f - .2126f))),
-        (int)(bc7enc_compress_block_params::m_weights[2] * 4.0f * (.5f / (1.0f - .0722f)) * (.5f / (1.0f - .0722f))),
-        bc7enc_compress_block_params::m_weights[3] * 4
-    };
-
-    static constexpr bool m_perceptual = true;
+    bool m_perceptual;
+    uint32_t m_weights[4];
 };
 
 struct color_cell_compressor_results
@@ -760,13 +752,6 @@ static uint64_t evaluate_solution(const color_rgba* __restrict pLow, const color
         for (uint32_t j = 0; j < nc; j++)
             weightedColors[i].m_c[j] = (uint8_t)((actualMinColor.m_c[j] * (64 - pParams->m_pSelector_weights[i]) + actualMaxColor.m_c[j] * pParams->m_pSelector_weights[i] + 32) >> 6);
 
-    const int lr = actualMinColor.m_c[0];
-    const int lg = actualMinColor.m_c[1];
-    const int lb = actualMinColor.m_c[2];
-    const int dr = actualMaxColor.m_c[0] - lr;
-    const int dg = actualMaxColor.m_c[1] - lg;
-    const int db = actualMaxColor.m_c[2] - lb;
-
     uint64_t total_err = 0;
 
     if (pComp_params->m_force_selectors)
@@ -788,6 +773,13 @@ static uint64_t evaluate_solution(const color_rgba* __restrict pLow, const color
     }
     else if (!pParams->m_perceptual)
     {
+        const int lr = actualMinColor.m_c[0];
+        const int lg = actualMinColor.m_c[1];
+        const int lb = actualMinColor.m_c[2];
+        const int dr = actualMaxColor.m_c[0] - lr;
+        const int dg = actualMaxColor.m_c[1] - lg;
+        const int db = actualMaxColor.m_c[2] - lb;
+
         if (pParams->m_has_alpha)
         {
             const int la = actualMinColor.m_c[3];
@@ -1539,7 +1531,7 @@ static uint64_t color_cell_compression(uint32_t mode, const color_cell_compresso
     return pResults->m_best_overall_err;
 }
 
-static uint64_t color_cell_compression_est_mode1(uint32_t num_pixels, const color_rgba* __restrict pPixels, bool perceptual, uint64_t best_err_so_far)
+static uint64_t color_cell_compression_est_mode1(uint32_t num_pixels, const color_rgba* __restrict pPixels, bool perceptual, const uint32_t* __restrict pweights, uint64_t best_err_so_far)
 {
     // Find RGB bounds as an approximation of the block's principle axis
     uint32_t lr = 255, lg = 255, lb = 255;
@@ -1629,7 +1621,7 @@ static uint64_t color_cell_compression_est_mode1(uint32_t num_pixels, const colo
             const int dcr = (cr1[s] - cr2) >> 8;
             const int dcb = (cb1[s] - cb2) >> 8;
 
-            total_err += color_cell_compressor_params::m_weights[0] * (dl * dl) + color_cell_compressor_params::m_weights[1] * (dcr * dcr) + color_cell_compressor_params::m_weights[2] * (dcb * dcb);
+            total_err += pweights[0] * (dl * dl) + pweights[1] * (dcr * dcr) + pweights[2] * (dcb * dcb);
             if (total_err > best_err_so_far)
                 break;
         }
@@ -1666,7 +1658,7 @@ static uint64_t color_cell_compression_est_mode1(uint32_t num_pixels, const colo
             int dg = (int)pE1->m_c[1] - (int)pC->m_c[1];
             int db = (int)pE1->m_c[2] - (int)pC->m_c[2];
 
-            total_err += color_cell_compressor_params::m_weights[0] * (dr * dr) + color_cell_compressor_params::m_weights[1] * (dg * dg) + color_cell_compressor_params::m_weights[2] * (db * db);
+            total_err += pweights[0] * (dr * dr) + pweights[1] * (dg * dg) + pweights[2] * (db * db);
             if (total_err > best_err_so_far)
                 break;
         }
@@ -1675,7 +1667,7 @@ static uint64_t color_cell_compression_est_mode1(uint32_t num_pixels, const colo
     return total_err;
 }
 
-static uint64_t color_cell_compression_est_mode7(uint32_t num_pixels, const color_rgba* __restrict pPixels, bool perceptual, uint64_t best_err_so_far)
+static uint64_t color_cell_compression_est_mode7(uint32_t num_pixels, const color_rgba* __restrict pPixels, bool perceptual, const uint32_t* __restrict pweights, uint64_t best_err_so_far)
 {
     // Find RGB bounds as an approximation of the block's principle axis
     uint32_t lr = 255, lg = 255, lb = 255, la = 255;
@@ -1763,7 +1755,7 @@ static uint64_t color_cell_compression_est_mode7(uint32_t num_pixels, const colo
 
             const int dca = (int)pC->m_c[3] - (int)weightedColors[s].m_c[3];
 
-            total_err += color_cell_compressor_params::m_weights[0] * (dl * dl) + color_cell_compressor_params::m_weights[1] * (dcr * dcr) + color_cell_compressor_params::m_weights[2] * (dcb * dcb) + color_cell_compressor_params::m_weights[3] * (dca * dca);
+            total_err += pweights[0] * (dl * dl) + pweights[1] * (dcr * dcr) + pweights[2] * (dcb * dcb) + pweights[3] * (dca * dca);
             if (total_err > best_err_so_far)
                 break;
         }
@@ -1793,7 +1785,7 @@ static uint64_t color_cell_compression_est_mode7(uint32_t num_pixels, const colo
             int db = (int)pE1->m_c[2] - (int)pC->m_c[2];
             int da = (int)pE1->m_c[3] - (int)pC->m_c[3];
 
-            total_err += color_cell_compressor_params::m_weights[0] * (dr * dr) + color_cell_compressor_params::m_weights[1] * (dg * dg) + color_cell_compressor_params::m_weights[2] * (db * db) + color_cell_compressor_params::m_weights[3] * (da * da);
+            total_err += pweights[0] * (dr * dr) + pweights[1] * (dg * dg) + pweights[2] * (db * db) + pweights[3] * (da * da);
             if (total_err > best_err_so_far)
                 break;
         }
@@ -1845,9 +1837,11 @@ static const uint32_t g_partition_predictors[35] =
 };
 
 // Estimate the partition used by modes 1/7. This scans through each partition and computes an approximate error for each.
-static uint32_t estimate_partition(const color_rgba* __restrict pPixels, const bc7enc_compress_block_params* __restrict pComp_params, uint32_t mode)
+static uint32_t estimate_partition(const color_rgba* __restrict pPixels, const bc7enc_compress_block_params* __restrict pComp_params, const color_cell_compressor_params* __restrict pParams, uint32_t mode)
 {
-    const uint32_t total_partitions = minimumu(pComp_params->m_max_partitions, BC7ENC_MAX_PARTITIONS);
+    ASSERT(pComp_params->m_max_partitions <= BC7ENC_MAX_PARTITIONS)
+    const uint32_t total_partitions = pComp_params->m_max_partitions;
+
     if (total_partitions <= 1)
         return 0;
 
@@ -1858,9 +1852,9 @@ static uint32_t estimate_partition(const color_rgba* __restrict pPixels, const b
     // Using a sorted order allows the user to decrease the # of partitions to scan with minimal loss in quality.
     static const uint8_t s_sorted_partition_order[64] =
     {
-        1 - 1, 14 - 1, 2 - 1, 3 - 1, 16 - 1, 15 - 1, 11 - 1, 17 - 1,
-        4 - 1, 24 - 1, 27 - 1, 7 - 1, 8 - 1, 22 - 1, 20 - 1, 30 - 1,
-        9 - 1, 5 - 1, 10 - 1, 21 - 1, 6 - 1, 32 - 1, 23 - 1, 18 - 1,
+         1 - 1, 14 - 1,  2 - 1,  3 - 1, 16 - 1, 15 - 1, 11 - 1, 17 - 1,
+         4 - 1, 24 - 1, 27 - 1,  7 - 1,  8 - 1, 22 - 1, 20 - 1, 30 - 1,
+         9 - 1,  5 - 1, 10 - 1, 21 - 1,  6 - 1, 32 - 1, 23 - 1, 18 - 1,
         19 - 1, 12 - 1, 13 - 1, 31 - 1, 25 - 1, 26 - 1, 29 - 1, 28 - 1,
         33 - 1, 34 - 1, 35 - 1, 46 - 1, 47 - 1, 52 - 1, 50 - 1, 51 - 1,
         49 - 1, 39 - 1, 40 - 1, 38 - 1, 54 - 1, 53 - 1, 55 - 1, 37 - 1,
@@ -1902,9 +1896,9 @@ static uint32_t estimate_partition(const color_rgba* __restrict pPixels, const b
         for (uint32_t subset = 0; (subset < 2) && (total_subset_err < best_err); subset++)
         {
             if (mode == 7)
-                total_subset_err += color_cell_compression_est_mode7(subset_total_colors[subset], &subset_colors[subset][0], pComp_params->m_perceptual, best_err);
+                total_subset_err += color_cell_compression_est_mode7(subset_total_colors[subset], &subset_colors[subset][0], pParams->m_perceptual, pParams->m_weights, best_err);
             else
-                total_subset_err += color_cell_compression_est_mode1(subset_total_colors[subset], &subset_colors[subset][0], pComp_params->m_perceptual, best_err);
+                total_subset_err += color_cell_compression_est_mode1(subset_total_colors[subset], &subset_colors[subset][0], pParams->m_perceptual, pParams->m_weights, best_err);
         }
 
         if (partition < 16)
@@ -2231,7 +2225,7 @@ static void handle_alpha_block(void* __restrict pBlock, const color_rgba* __rest
     ASSERT((pComp_params->m_mode_mask & (1 << 6)) || (pComp_params->m_mode_mask & (1 << 5)) || (pComp_params->m_mode_mask & (1 << 7)));
 
     pParams->m_pSelector_weights = g_bc7_weights4;
-    pParams->m_pSelector_weightsx = (const vec4F *)g_bc7_weights4x;
+    pParams->m_pSelector_weightsx = (const vec4F*)g_bc7_weights4x;
     pParams->m_num_selector_weights = 16;
     pParams->m_comp_bits = 7;
     pParams->m_has_pbits = true;
@@ -2282,7 +2276,7 @@ static void handle_alpha_block(void* __restrict pBlock, const color_rgba* __rest
 
     if ((best_err > 0) && (pComp_params->m_mode_mask & (1 << 7)))
     {
-        const uint32_t trial_partition = estimate_partition(pPixels, pComp_params, 7);
+        const uint32_t trial_partition = estimate_partition(pPixels, pComp_params, pParams, 7);
 
         pParams->m_pSelector_weights = g_bc7_weights2;
         pParams->m_pSelector_weightsx = (const vec4F*)g_bc7_weights2x;
@@ -2425,10 +2419,10 @@ static void handle_opaque_block(void* __restrict pBlock, const color_rgba* __res
     // Mode 1
     if ((best_err > 0) && (pComp_params->m_max_partitions > 0) && (pComp_params->m_mode_mask & (1 << 1)))
     {
-        const uint32_t trial_partition = estimate_partition(pPixels, pComp_params, 1);
+        const uint32_t trial_partition = estimate_partition(pPixels, pComp_params, pParams, 1);
 
         pParams->m_pSelector_weights = g_bc7_weights3;
-        pParams->m_pSelector_weightsx = (const vec4F *)g_bc7_weights3x;
+        pParams->m_pSelector_weightsx = (const vec4F*)g_bc7_weights3x;
         pParams->m_num_selector_weights = 8;
         pParams->m_comp_bits = 6;
         pParams->m_has_pbits = true;
@@ -2492,16 +2486,38 @@ static void handle_opaque_block(void* __restrict pBlock, const color_rgba* __res
 // Packs a single block of 4x4 RGBA pixels (R first in memory) to 128-bit BC7 block pBlock, using either mode 1 and/or 6.
 // Alpha blocks will always use mode 6, and by default opaque blocks will use either modes 1 or 6.
 // Returns true if the block had any pixels with alpha < 255, otherwise it returns false. (This is not an error code - a block is always encoded.)
-inline bool bc7enc_compress_block(void* __restrict pBlock, const void* __restrict pPixelsRGBA, const int components)
+inline bool bc7enc_compress_block(void* __restrict pBlock, const void* __restrict pPixelsRGBA, const int components, const int type)
 {
     ASSERT(g_bc7_mode_1_optimal_endpoints[255][0].m_hi != 0);
-
-    const color_rgba* pPixels = (const color_rgba *)(pPixelsRGBA);
 
     bc7enc_compress_block_params comp_params;
     color_cell_compressor_params params;
 
-    if(components == 4)
+    if (type == 0)
+    {
+        comp_params.m_max_partitions = 0;
+
+        params.m_perceptual = false;
+        params.m_weights[0] = 1;
+        params.m_weights[1] = 1;
+        params.m_weights[2] = 1;
+        params.m_weights[3] = 1;
+    }
+    else
+    {
+        comp_params.m_max_partitions = BC7ENC_MAX_PARTITIONS;
+
+        // https://en.wikipedia.org/wiki/YCbCr#ITU-R_BT.709_conversion
+        params.m_perceptual = true;
+        params.m_weights[0] = uint32_t(128.0f * 4.0f);
+        params.m_weights[1] = uint32_t( 64.0f * 4.0f * (0.5f / (1.0f - 0.2126f)) * (0.5f / (1.0f - 0.2126f)));
+        params.m_weights[2] = uint32_t( 16.0f * 4.0f * (0.5f / (1.0f - 0.0722f)) * (0.5f / (1.0f - 0.0722f)));
+        params.m_weights[3] = uint32_t( 32.0f * 4.0f);
+    }
+
+    const color_rgba* pPixels = (const color_rgba *)(pPixelsRGBA);
+
+    if (components == 4)
     {
         if (comp_params.m_force_alpha)
         {
@@ -2525,7 +2541,7 @@ inline bool bc7enc_compress_block(void* __restrict pBlock, const void* __restric
 
 inline int bc7enc_ratio(int components)
 {
-    switch(components)
+    switch (components)
     {
     case 4: return 4;
     case 3: return 3;
@@ -2536,7 +2552,7 @@ inline int bc7enc_ratio(int components)
 
 inline int bc7enc_blocksize(int components)
 {
-    switch(components)
+    switch (components)
     {
     case 4: return 16;
     case 3: return 16;
