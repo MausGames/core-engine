@@ -135,7 +135,7 @@ using PFNGLDISCARDFRAMEBUFFERPROC = void (GL_APIENTRY *) (GLenum target, GLsizei
 
 // ****************************************************************
 /* GL_EXT_disjoint_timer_query (mapped on GL_ARB_timer_query) */
-#define CORE_GL_ARB_timer_query (__CORE_GLES_VAR(GL_EXT_disjoint_timer_query))
+#define CORE_GL_ARB_timer_query (__CORE_GLES_VAR(GL_EXT_disjoint_timer_query) && !DEFINED(_CORE_EMSCRIPTEN_))
 
 #define GL_TIMESTAMP 0x8E28
 

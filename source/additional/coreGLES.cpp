@@ -118,14 +118,6 @@ void __coreInitOpenGLES()
         __CORE_GLES_FETCH(glGetQueryObjectui64v, EXT, false)
         __CORE_GLES_FETCH(glQueryCounter,        EXT, false)
     }
-    else if(g_sExtensions.contains("GL_EXT_disjoint_timer_query_webgl2 "))
-    {
-        g_ContextGLES.__GL_EXT_disjoint_timer_query = true;
-        __CORE_GLES_FETCH(glDeleteQueries,       EXT, false)
-        __CORE_GLES_FETCH(glGenQueries,          EXT, false)
-        __CORE_GLES_FETCH(glGetQueryObjectui64v, EXT, false)
-        __CORE_GLES_FETCH(glQueryCounter,        EXT, false)
-    }
 
     // implement GL_EXT_draw_buffers
     if(__CORE_GLES_CHECK(GL_EXT_draw_buffers, bES30))
