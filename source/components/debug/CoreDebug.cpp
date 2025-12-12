@@ -329,7 +329,7 @@ void CoreDebug::MeasureEnd(const coreHashString& sName)
 
         // update GPU performance value
         const coreDouble dDifferenceGPU = coreDouble(aiResult[1] - aiResult[0]) / 1.0e06;
-        pMeasure->dCurrentGPU = pMeasure->dCurrentGPU * CORE_DEBUG_SMOOTH_FACTOR + dDifferenceGPU * (1.0-CORE_DEBUG_SMOOTH_FACTOR);
+        pMeasure->dCurrentGPU = LERP(pMeasure->dCurrentGPU, dDifferenceGPU, CORE_DEBUG_SMOOTH_FACTOR);
     }
 
     const coreChar* pcName = sName.GetString();
@@ -340,12 +340,12 @@ void CoreDebug::MeasureEnd(const coreHashString& sName)
 
         // add additional performance information (frame rate and process memory)
         const coreFloat fTime = Core::System->GetTime();
-        if(fTime) pcName = PRINT("%s %.1f FPS%s %.2f MB / %.2f MB", pcName, 1.0f / fTime, SDL_GL_GetSwapIntervalInline() ? "*" : "", coreDouble(coreData::ProcessMemory()) / (1024.0*1024.0), coreDouble(Core::Graphics->ProcessGpuMemory()) / (1024.0*1024.0));
+        if(fTime) pcName = PRINT("%s %.2f FPS%s %.2f MB / %.2f MB", pcName, 1.0f / fTime, SDL_GL_GetSwapIntervalInline() ? "*" : "", coreDouble(coreData::ProcessMemory()) / (1024.0 * 1024.0), coreDouble(Core::Graphics->ProcessGpuMemory()) / (1024.0 * 1024.0));
     }
 
     // fetch second CPU time value and update CPU performance value
-    const coreDouble dDifferenceCPU = coreDouble(SDL_GetPerformanceCounter() - pMeasure->iPerfTime) * Core::System->GetPerfFrequency() * 1.0e03;
-    pMeasure->dCurrentCPU = pMeasure->dCurrentCPU * CORE_DEBUG_SMOOTH_FACTOR + dDifferenceCPU * (1.0-CORE_DEBUG_SMOOTH_FACTOR);
+    const coreDouble dDifferenceCPU = coreDouble(SDL_GetPerformanceCounter() - pMeasure->iPerfTime) / Core::System->GetPerfFrequency() * 1.0e03;
+    pMeasure->dCurrentCPU = LERP(pMeasure->dCurrentCPU, dDifferenceCPU, CORE_DEBUG_SMOOTH_FACTOR);
 
     // write formatted values to output label
     pMeasure->oOutput.SetText(DEFINED(IMGUI_API) ? pcName : PRINT("%s (CPU %.2fms / GPU %.2fms)", pcName, pMeasure->dCurrentCPU, pMeasure->dCurrentGPU));

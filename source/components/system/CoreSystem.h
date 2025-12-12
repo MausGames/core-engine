@@ -22,6 +22,7 @@
 // ****************************************************************
 /* system definitions */
 #define CORE_SYSTEM_TIMES          (4u)     // number of dynamic frame times
+#define CORE_SYSTEM_SMOOTHS        (4u)     // number of frame time smoothing intermediate values (including the base value)
 #define CORE_SYSTEM_WINDOW_BORDER  (36u)    // border width used for restricting window size
 #define CORE_SYSTEM_WINDOW_MINIMUM (128u)   // minimum size of the main window
 
@@ -54,37 +55,37 @@ private:
 
 
 private:
-    SDL_Window* m_pWindow;                         // SDL main window object
+    SDL_Window* m_pWindow;                            // SDL main window object
 
-    coreList<coreDisplay> m_aDisplayData;          // all available displays
-    coreUint8             m_iDisplayIndex;         // current display index
+    coreList<coreDisplay> m_aDisplayData;             // all available displays
+    coreUint8             m_iDisplayIndex;            // current display index
 
-    coreVector2    m_vResolution;                  // width and height of the window
-    coreFloat      m_fRefreshRate;                 // refresh rate (in Hz)
-    coreSystemMode m_eMode;                        // fullscreen mode
+    coreVector2    m_vResolution;                     // width and height of the window
+    coreFloat      m_fRefreshRate;                    // refresh rate (in Hz)
+    coreSystemMode m_eMode;                           // fullscreen mode
 
-    coreDouble m_dTotalTime;                       // total time since start of the application
-    coreDouble m_dTotalTimeBefore;                 // total time of the previous frame
-    coreDouble m_dLastTimeFull;                    // high-precision last frame time
-    coreFloat  m_fLastTime;                        // smoothed and rounded last frame time
-    coreFloat  m_afTime     [CORE_SYSTEM_TIMES];   // dynamic frame times
-    coreFloat  m_afTimeSpeed[CORE_SYSTEM_TIMES];   // speed factor for the dynamic frame times
+    coreDouble m_dTotalTime;                          // total time since start of the application
+    coreDouble m_dTotalTimeBefore;                    // total time of the previous frame
+    coreDouble m_adSmoothTime[CORE_SYSTEM_SMOOTHS];   // frame time smoothing intermediate values
+    coreFloat  m_fLastTime;                           // smoothed and rounded last frame time
+    coreFloat  m_afTime     [CORE_SYSTEM_TIMES];      // dynamic frame times
+    coreFloat  m_afTimeSpeed[CORE_SYSTEM_TIMES];      // speed factor for the dynamic frame times
 
-    coreUint32 m_iCurFrame;                        // current frame number since start of the application
-    coreUint8  m_iSkipFrame;                       // skip frame status
+    coreUint32 m_iCurFrame;                           // current frame number since start of the application
+    coreUint8  m_iSkipFrame;                          // skip frame status
 
-    coreDouble m_dPerfFrequency;                   // high-precision time coefficient
-    coreUint64 m_iPerfTime;                        // high-precision time value
+    coreDouble m_dPerfFrequency;                      // high-precision time coefficient
+    coreUint64 m_iPerfTime;                           // high-precision time value
 
-    coreFloat   m_fCanonBase;                      // canonical base resolution (major axis)
-    coreVector2 m_vCanonSize;                      // canonical transform size
+    coreFloat   m_fCanonBase;                         // canonical base resolution (major axis)
+    coreVector2 m_vCanonSize;                         // canonical transform size
 
-    SDL_ThreadID m_iMainThread;                    // thread-ID from the main-thread
+    SDL_ThreadID m_iMainThread;                       // thread-ID from the main-thread
 
-    coreBool m_bWinFocusLost;                      // window/application lost focus (through event)
-    coreBool m_bWinPosChanged;                     // window position changed (through event)
-    coreBool m_bWinSizeChanged;                    // window size changed (through event)
-    coreBool m_bTerminated;                        // application will be terminated
+    coreBool m_bWinFocusLost;                         // window/application lost focus (through event)
+    coreBool m_bWinPosChanged;                        // window position changed (through event)
+    coreBool m_bWinSizeChanged;                       // window size changed (through event)
+    coreBool m_bTerminated;                           // application will be terminated
 
 
 private:

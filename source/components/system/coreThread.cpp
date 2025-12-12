@@ -183,7 +183,7 @@ coreStatus coreThread::__Main()
         {
             // handle thread-overhead
             iBeforeTime = SDL_GetPerformanceCounter();
-            dWait      -= coreDouble(iBeforeTime - iAfterTime) * Core::System->GetPerfFrequency();
+            dWait      -= coreDouble(iBeforeTime - iAfterTime) / Core::System->GetPerfFrequency();
 
             // wait for next iteration
             dWait = MAX(dWait + (1.0 / coreDouble(m_fFrequency)), 0.0);
@@ -191,7 +191,7 @@ coreStatus coreThread::__Main()
 
             // handle waiting-overhead
             iAfterTime = SDL_GetPerformanceCounter();
-            dWait     -= coreDouble(iAfterTime - iBeforeTime) * Core::System->GetPerfFrequency();
+            dWait     -= coreDouble(iAfterTime - iBeforeTime) / Core::System->GetPerfFrequency();
         }
         else
         {

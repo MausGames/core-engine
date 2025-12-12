@@ -21,7 +21,7 @@
 // ****************************************************************
 /* debug definitions */
 #define CORE_DEBUG_QUERIES         (4u)        // number of GPU timer-query pairs used for each measure object
-#define CORE_DEBUG_SMOOTH_FACTOR   (0.98)      // factor used to smooth-out time values and reduce flickering (higher = smoother, but slower)
+#define CORE_DEBUG_SMOOTH_FACTOR   (0.02)      // factor used to smooth-out time values and reduce flickering (lower = smoother, but slower)
 #define CORE_DEBUG_OVERALL_NAME    "Overall"   // name for the overall performance output object
 
 #define CORE_DEBUG_STAT_PRIMITIVES (0u)        // submitted primitives
