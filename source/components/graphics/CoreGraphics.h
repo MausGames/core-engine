@@ -15,7 +15,7 @@
 // TODO 3: wrap glDisable, glDepthMask, glCullFace, glClearColor, etc. within the class (reference-counter for nested calls ?)
 // TODO 3: if(CORE_GL_SUPPORT(ARB_clip_control)) glClipControl(GL_LOWER_LEFT, GL_ZERO_TO_ONE); -> improves depth-precision (with F32, glDepthRange(1.0, 0.0);), breaks depth-dependent rendering (water, shadow) in Project One
 // TODO 5: <old comment style>
-// TODO 3: check for max number of draw buffers and color attachments, max render buffer size and view-port dimension, max number of vertex attributes, max texture size
+// TODO 3: check for max number of draw buffers (GL_MAX_DRAW_BUFFERS) and color attachments (GL_MAX_COLOR_ATTACHMENTS), max render buffer size (GL_MAX_RENDERBUFFER_SIZE) and view-port dimension (GL_MAX_VIEWPORT_DIMS[0]&[1]), max number of vertex attributes (GL_MAX_VERTEX_ATTRIBS), max texture size (GL_MAX_TEXTURE_SIZE)
 // TODO 2: offset-binding is expensive on ANGLE (according to docs)
 // TODO 3: implement more granular default screenshot naming (currently you can basically create only one screenshot per second)
 

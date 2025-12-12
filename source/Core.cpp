@@ -316,8 +316,8 @@ coreStatus Core::RunEngine()
 
 #if defined(_CORE_EMSCRIPTEN_)
 
-        }, 0, 1);
-    }, 0, 1);
+        }, 0, true);
+    }, 0, true);
 
 #endif
 
@@ -411,7 +411,7 @@ coreStatus Core::RunCommand()
             oFile.Compress(ZSTD_maxCLevel());
 
             // write to same location
-            pcOutput = NULL;
+            pcOutput = pcInput;
 
             // check for efficacy
             if(oFile.GetSize() >= iSizeBefore)

@@ -266,10 +266,10 @@ coreBatchList::coreBatchList(const coreUint32 iStartCapacity)noexcept
 , m_iNumInstances      (0u)
 , m_iNumEnabled        (0u)
 , m_pProgram           (NULL)
+, m_iLastModel         (UINT32_MAX)
 , m_aiVertexArray      {}
 , m_aInstanceBuffer    {}
 , m_paCustomBuffer     (NULL)
-, m_iLastModel         (UINT32_MAX)
 , m_nDefineBufferFunc  (NULL)
 , m_nUpdateDataFunc    (NULL)
 , m_nUpdateShaderFunc  (NULL)

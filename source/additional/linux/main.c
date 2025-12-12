@@ -24,7 +24,7 @@ extern const char* g_pcUserFolder;
 
 // ****************************************************************
 /* execute custom signal handler */
-static void SignalHandler(int iSignal, siginfo_t* pInfo, void* pContext)
+static void SignalHandler(const int iSignal, siginfo_t* pInfo, void* pContext)
 {
     // switch to user folder
     chdir(g_pcUserFolder);

@@ -355,7 +355,7 @@ CoreSystem::CoreSystem()noexcept
         m_pWindow = SDL_CreateWindowWithProperties(oProps);
         if(!m_pWindow) Core::Log->Error("Main window could not be created (SDL: %s)", SDL_GetError());
     }
-    Core::Log->Info("Main window created (%s, %s, %.0f x %.0f, display %u, mode %u)", SDL_GetCurrentVideoDriver(), SDL_GetPixelFormatName(SDL_GetWindowPixelFormat(m_pWindow)), m_vResolution.x, m_vResolution.y, m_iDisplayIndex, m_eMode);
+    Core::Log->Info("Main window created (%s, %s, %.0f x %.0f, display %u, mode %u, theme %d)", SDL_GetCurrentVideoDriver(), SDL_GetPixelFormatName(SDL_GetWindowPixelFormat(m_pWindow)), m_vResolution.x, m_vResolution.y, m_iDisplayIndex, m_eMode, SDL_GetSystemTheme());
 
     // set fullscreen mode
     if(m_eMode == CORE_SYSTEM_MODE_FULLSCREEN)

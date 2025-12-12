@@ -524,7 +524,7 @@
 
 // safely convert pointers and references along the inheritance hierarchy
 #if defined(_CORE_RTTI_)
-    template <typename T, typename S> RETURN_NODISCARD inline T coreDynamicCast(S a) {T b = dynamic_cast<T>(a); ASSERT(!a || b) return b;}
+    template <typename T, typename S> RETURN_NODISCARD inline T coreDynamicCast(S a) {const T b = dynamic_cast<T>(a); ASSERT(!a || b) return b;}
 #else
     #define coreDynamicCast static_cast
 #endif

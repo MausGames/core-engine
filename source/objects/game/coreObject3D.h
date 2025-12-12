@@ -133,11 +133,11 @@ private:
 
     coreProgramPtr m_pProgram;                                                        // shader-program object
 
+    GLuint m_iLastModel;                                                              // vertex buffer identifier of the last used model (to detect changes and update the vertex array)
+
     coreRing<GLuint,           CORE_BATCHLIST_INSTANCE_BUFFERS>  m_aiVertexArray;     // vertex array objects
     coreRing<coreVertexBuffer, CORE_BATCHLIST_INSTANCE_BUFFERS>  m_aInstanceBuffer;   // instance data buffers
     coreRing<coreVertexBuffer, CORE_BATCHLIST_INSTANCE_BUFFERS>* m_paCustomBuffer;    // optional custom attribute buffers
-
-    GLuint m_iLastModel;                                                              // vertex buffer identifier of the last used model (to detect changes and update the vertex array)
 
     coreDefineBuffer m_nDefineBufferFunc;                                             // function for defining the vertex structure of the custom attribute buffers
     coreUpdateData   m_nUpdateDataFunc;                                               // function for updating custom attributes with instancing

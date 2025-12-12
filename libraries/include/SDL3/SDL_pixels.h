@@ -361,12 +361,15 @@ typedef enum SDL_PackedLayout
  *
  * \sa SDL_BITSPERPIXEL
  */
+//#define SDL_BYTESPERPIXEL(format) \
+//    (SDL_ISPIXELFORMAT_FOURCC(format) ? \
+//        ((((format) == SDL_PIXELFORMAT_YUY2) || \
+//          ((format) == SDL_PIXELFORMAT_UYVY) || \
+//          ((format) == SDL_PIXELFORMAT_YVYU) || \
+//          ((format) == SDL_PIXELFORMAT_P010)) ? 2 : 1) : (((format) >> 0) & 0xFFu))
+
 #define SDL_BYTESPERPIXEL(format) \
-    (SDL_ISPIXELFORMAT_FOURCC(format) ? \
-        ((((format) == SDL_PIXELFORMAT_YUY2) || \
-          ((format) == SDL_PIXELFORMAT_UYVY) || \
-          ((format) == SDL_PIXELFORMAT_YVYU) || \
-          ((format) == SDL_PIXELFORMAT_P010)) ? 2 : 1) : (((format) >> 0) & 0xFFu))
+    (((format) >> 0) & 0xFFu)
 
 
 /**

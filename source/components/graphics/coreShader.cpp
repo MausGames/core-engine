@@ -426,7 +426,7 @@ coreStatus coreProgram::Load(coreFile* pFile)
                 if((*it) >= 0) glBindAttribLocation(m_iIdentifier, (*it), m_aiAttribute.get_string(it));
             }
 
-            // bind output locations
+            // bind output locations (# automatic on GLES)
             if(CORE_GL_SUPPORT(EXT_gpu_shader4))
             {
                 for(coreUintW i = 0u; i < CORE_SHADER_OUTPUT_COLORS; ++i)
