@@ -26,6 +26,8 @@
 #define CORE_SYSTEM_WINDOW_BORDER  (36u)    // border width used for restricting window size
 #define CORE_SYSTEM_WINDOW_MINIMUM (128u)   // minimum size of the main window
 
+#define CORE_SYSTEM_TIME_DEFAULT (CORE_SYSTEM_TIMES)
+
 #define TIME (Core::System->GetTime())
 
 enum coreSystemMode : coreUint8
@@ -55,37 +57,37 @@ private:
 
 
 private:
-    SDL_Window* m_pWindow;                            // SDL main window object
+    SDL_Window* m_pWindow;                              // SDL main window object
 
-    coreList<coreDisplay> m_aDisplayData;             // all available displays
-    coreUint8             m_iDisplayIndex;            // current display index
+    coreList<coreDisplay> m_aDisplayData;               // all available displays
+    coreUint8             m_iDisplayIndex;              // current display index
 
-    coreVector2    m_vResolution;                     // width and height of the window
-    coreFloat      m_fRefreshRate;                    // refresh rate (in Hz)
-    coreSystemMode m_eMode;                           // fullscreen mode
+    coreVector2    m_vResolution;                       // width and height of the window
+    coreFloat      m_fRefreshRate;                      // refresh rate (in Hz)
+    coreSystemMode m_eMode;                             // fullscreen mode
 
-    coreDouble m_dTotalTime;                          // total time since start of the application
-    coreDouble m_dTotalTimeBefore;                    // total time of the previous frame
-    coreDouble m_adSmoothTime[CORE_SYSTEM_SMOOTHS];   // frame time smoothing intermediate values
-    coreFloat  m_fLastTime;                           // smoothed and rounded last frame time
-    coreFloat  m_afTime     [CORE_SYSTEM_TIMES];      // dynamic frame times
-    coreFloat  m_afTimeSpeed[CORE_SYSTEM_TIMES];      // speed factor for the dynamic frame times
+    coreDouble m_dTotalTime;                            // total time since start of the application
+    coreDouble m_dTotalTimeBefore;                      // total time of the previous frame
+    coreDouble m_adSmoothTime[CORE_SYSTEM_SMOOTHS];     // frame time smoothing intermediate values
+    coreFloat  m_fLastTime;                             // smoothed and rounded last frame time
+    coreFloat  m_afTime     [CORE_SYSTEM_TIMES + 1u];   // dynamic frame times (and additional unmodified default time)
+    coreFloat  m_afTimeSpeed[CORE_SYSTEM_TIMES];        // speed factor for the dynamic frame times
 
-    coreUint32 m_iCurFrame;                           // current frame number since start of the application
-    coreUint8  m_iSkipFrame;                          // skip frame status
+    coreUint32 m_iCurFrame;                             // current frame number since start of the application
+    coreUint8  m_iSkipFrame;                            // skip frame status
 
-    coreDouble m_dPerfFrequency;                      // high-precision time coefficient
-    coreUint64 m_iPerfTime;                           // high-precision time value
+    coreDouble m_dPerfFrequency;                        // high-precision time coefficient
+    coreUint64 m_iPerfTime;                             // high-precision time value
 
-    coreFloat   m_fCanonBase;                         // canonical base resolution (major axis)
-    coreVector2 m_vCanonSize;                         // canonical transform size
+    coreFloat   m_fCanonBase;                           // canonical base resolution (major axis)
+    coreVector2 m_vCanonSize;                           // canonical transform size
 
-    SDL_ThreadID m_iMainThread;                       // thread-ID from the main-thread
+    SDL_ThreadID m_iMainThread;                         // thread-ID from the main-thread
 
-    coreBool m_bWinFocusLost;                         // window/application lost focus (through event)
-    coreBool m_bWinPosChanged;                        // window position changed (through event)
-    coreBool m_bWinSizeChanged;                       // window size changed (through event)
-    coreBool m_bTerminated;                           // application will be terminated
+    coreBool m_bWinFocusLost;                           // window/application lost focus (through event)
+    coreBool m_bWinPosChanged;                          // window position changed (through event)
+    coreBool m_bWinSizeChanged;                         // window size changed (through event)
+    coreBool m_bTerminated;                             // application will be terminated
 
 
 private:
@@ -123,8 +125,8 @@ public:
     inline const coreDouble&     GetTotalTimeBefore()const                       {return m_dTotalTimeBefore;}
     inline       coreFloat       GetTotalTimeFloat (const coreDouble dLoop)const {return coreFloat(FMOD(m_dTotalTime, dLoop));}
     inline const coreFloat&      GetTime           ()const                       {return m_fLastTime;}
-    inline const coreFloat&      GetTime           (const coreInt8  iID)const    {ASSERT(iID < coreInt8(CORE_SYSTEM_TIMES)) return (iID >= 0) ? m_afTime[iID] : m_fLastTime;}
-    inline const coreFloat&      GetTimeSpeed      (const coreUintW iID)const    {ASSERT(iID <          CORE_SYSTEM_TIMES)  return m_afTimeSpeed[iID];}
+    inline const coreFloat&      GetTime           (const coreUintW iID)const    {ASSERT(iID < CORE_SYSTEM_TIMES + 1u) return m_afTime     [iID];}
+    inline const coreFloat&      GetTimeSpeed      (const coreUintW iID)const    {ASSERT(iID < CORE_SYSTEM_TIMES)      return m_afTimeSpeed[iID];}
     inline const coreUint32&     GetCurFrame       ()const                       {return m_iCurFrame;}
     inline const coreDouble&     GetPerfFrequency  ()const                       {return m_dPerfFrequency;}
     inline const coreUint64&     GetPerfTime       ()const                       {return m_iPerfTime;}

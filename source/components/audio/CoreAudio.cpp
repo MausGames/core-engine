@@ -284,7 +284,7 @@ void CoreAudio::SetListener(const coreVector3 vPosition, const coreVector3 vVelo
     }
 }
 
-void CoreAudio::SetListener(const coreFloat fSpeed, const coreInt8 iTimeID)
+void CoreAudio::SetListener(const coreFloat fSpeed, const coreUint8 iTimeID)
 {
     // calculate velocity as relative camera movement
     const coreFloat   fTime     =  Core::System->GetTime(iTimeID);

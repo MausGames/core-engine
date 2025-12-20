@@ -481,7 +481,7 @@ void coreParticleSystem::__Reset(const coreResourceReset eInit)
 /* constructor */
 coreParticleEffect::coreParticleEffect(coreParticleSystem* pSystem)noexcept
 : m_fCreation (0.0f)
-, m_iTimeID   (-1)
+, m_iTimeID   (CORE_SYSTEM_TIME_DEFAULT)
 , m_pOrigin   (NULL)
 , m_pSystem   (pSystem)
 {

@@ -209,7 +209,7 @@ class coreParticleEffect final
 private:
     coreFlow m_fCreation;            // status value for particle creation
 
-    coreInt8      m_iTimeID;         // ID of the used frame time
+    coreUint8     m_iTimeID;         // ID of the used frame time
     coreObject3D* m_pOrigin;         // origin object for relative movement
 
     coreParticleSystem* m_pSystem;   // associated particle system object
@@ -238,12 +238,12 @@ public:
     template <typename F> inline void ForEachParticle(F&& nUpdateFunc) {ASSERT(m_pSystem) m_pSystem->ForEachParticle(this, std::forward<F>(nUpdateFunc));}   // [](coreParticle* OUTPUT pParticle, const coreUintW i) -> void
 
     /* set object properties */
-    inline void SetTimeID(const coreInt8      iTimeID) {m_iTimeID = iTimeID;}
+    inline void SetTimeID(const coreUint8     iTimeID) {m_iTimeID = iTimeID;}
     inline void SetOrigin(coreObject3D*       pOrigin) {m_pOrigin = pOrigin;}
     inline void SetSystem(coreParticleSystem* pSystem) {this->Unbind(); m_pSystem = pSystem;}
 
     /* get object properties */
-    inline const coreInt8&     GetTimeID()const {return m_iTimeID;}
+    inline const coreUint8&    GetTimeID()const {return m_iTimeID;}
     inline coreObject3D*       GetOrigin()const {return m_pOrigin;}
     inline coreParticleSystem* GetSystem()const {return m_pSystem;}
 };

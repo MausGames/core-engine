@@ -385,7 +385,6 @@ CoreSystem::CoreSystem()noexcept
     // reset dynamic frame times
     for(coreUintW i = 0u; i < CORE_SYSTEM_TIMES; ++i)
     {
-        m_afTime     [i] = 0.0f;
         m_afTimeSpeed[i] = 1.0f;
     }
 
@@ -741,6 +740,10 @@ void CoreSystem::__UpdateTime()
     {
         m_afTime[i] = m_fLastTime * m_afTimeSpeed[i];
     }
+
+    // copy unmodified default time (for performance)
+    m_afTime[CORE_SYSTEM_TIME_DEFAULT] = m_fLastTime;
+    STATIC_ASSERT(CORE_SYSTEM_TIME_DEFAULT < ARRAY_SIZE(m_afTime))
 
     // increase current frame number
     ++m_iCurFrame;

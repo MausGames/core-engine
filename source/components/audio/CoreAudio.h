@@ -89,7 +89,7 @@ public:
 
     /* control the listener */
     void SetListener(const coreVector3 vPosition, const coreVector3 vVelocity, const coreVector3 vDirection, const coreVector3 vOrientation);
-    void SetListener(const coreFloat fSpeed, const coreInt8 iTimeID = -1);
+    void SetListener(const coreFloat fSpeed, const coreUint8 iTimeID = CORE_SYSTEM_TIME_DEFAULT);
 
     /* override current volume */
     inline void SetGlobalVolume(const coreFloat fVolume)                        {ASSERT(fVolume >= 0.0f) m_afGlobalVolume[1] = fVolume;}
