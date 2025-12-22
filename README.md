@@ -187,11 +187,18 @@ It is **designed to be supportive, versatile and powerful**, and to dynamically 
 | [Last Fall](https://mausgames.itch.io/last-fall) | Tricky arcade puzzler made for [Ludum Dare 49](https://ldjam.com/events/ludum-dare/49/last-fall) | [GitHub](https://github.com/MausGames/last-fall), [GitLab](https://gitlab.com/MausGames/last-fall) |
 | [Ink Jump](https://mausgames.itch.io/ink-jump) | Reflective precision platformer made on [Mi'pu'mi][1] day  | [GitHub](https://github.com/MausGames/ink-jump), [GitLab](https://gitlab.com/MausGames/ink-jump) |
 
+<br>
+
 <table>
     <tr>
         <td><a href="material/screenshots/p1_screen_021.jpg?raw=true"><img src="material/screenshots/p1_screen_021t.jpg"></a></td>
         <td><a href="material/screenshots/laf_screen_006.jpg?raw=true"><img src="material/screenshots/laf_screen_006t.jpg"></a></td>
         <td><a href="material/screenshots/inj_screen_001.jpg?raw=true"><img src="material/screenshots/inj_screen_001t.jpg"></a></td>
+    </tr>
+    <tr>
+        <td><a href="material/screenshots/enj_screen_006.jpg?raw=true"><img src="material/screenshots/enj_screen_006t.jpg"></a></td>
+        <td><a href="material/screenshots/dr_screen_new_006.jpg?raw=true"><img src="material/screenshots/dr_screen_new_006t.jpg"></a></td>
+        <td><a href="material/screenshots/fli_screen_003.jpg?raw=true"><img src="material/screenshots/fli_screen_003t.jpg"></a></td>
     </tr>
 </table>
 
