@@ -57,6 +57,7 @@ public:
 
     /* change front item */
     constexpr void push_front(const T& tItem) {this->insert(this->begin(), tItem);}
+    constexpr void push_front(T&&      tItem) {this->insert(this->begin(), std::move(tItem));}
     constexpr void pop_front ()               {ASSERT(!this->empty()) this->erase(this->begin());}
 
 

@@ -43,9 +43,13 @@ public:
     /* insert new unique item */
     using coreList<T>::insert;
     constexpr void     insert        (const T& tItem) {ASSERT(!this->count   (tItem)) {this->push_back(tItem);}}
-    constexpr void     insert_bs     (const T& tItem) {ASSERT(!this->count_bs(tItem)) {this->insert(this->__retrieve_bs(tItem), tItem);}}
-    constexpr coreBool insert_once   (const T& tItem) {    if(!this->count   (tItem)) {this->push_back(tItem);                          return true;} return false;}
-    constexpr coreBool insert_once_bs(const T& tItem) {    if(!this->count_bs(tItem)) {this->insert(this->__retrieve_bs(tItem), tItem); return true;} return false;}
+    constexpr void     insert        (T&&      tItem) {ASSERT(!this->count   (tItem)) {this->push_back(std::move(tItem));}}
+    constexpr void     insert_bs     (const T& tItem) {ASSERT(!this->count_bs(tItem)) {const auto it = this->__retrieve_bs(tItem); this->insert(it, tItem);}}
+    constexpr void     insert_bs     (T&&      tItem) {ASSERT(!this->count_bs(tItem)) {const auto it = this->__retrieve_bs(tItem); this->insert(it, std::move(tItem));}}
+    constexpr coreBool insert_once   (const T& tItem) {    if(!this->count   (tItem)) {this->push_back(tItem);                                                         return true;} return false;}
+    constexpr coreBool insert_once   (T&&      tItem) {    if(!this->count   (tItem)) {this->push_back(std::move(tItem));                                              return true;} return false;}
+    constexpr coreBool insert_once_bs(const T& tItem) {    if(!this->count_bs(tItem)) {const auto it = this->__retrieve_bs(tItem); this->insert(it, tItem);            return true;} return false;}
+    constexpr coreBool insert_once_bs(T&&      tItem) {    if(!this->count_bs(tItem)) {const auto it = this->__retrieve_bs(tItem); this->insert(it, std::move(tItem)); return true;} return false;}
 
     /* remove existing item */
     using coreList<T>::erase;
