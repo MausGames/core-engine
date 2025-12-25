@@ -3,7 +3,7 @@
 
 /*
  * The OpenGL Extension Wrangler Library
- * Copyright (C) 2008-2019, Nigel Stewart <nigels[]users sourceforge net>
+ * Copyright (C) 2008-2025, Nigel Stewart <nigels[]nigels com>
  * Copyright (C) 2002-2008, Milan Ikits <milan ikits[]ieee org>
  * Copyright (C) 2002-2008, Marcelo E. Magallon <mmagallo[]debian org>
  * Copyright (C) 2002, Lev Povalahev
@@ -1091,6 +1091,7 @@ PFNGLTEXTUREBUFFEREXTPROC __glewTextureBufferEXT = NULL;
 PFNGLTEXTUREIMAGE1DEXTPROC __glewTextureImage1DEXT = NULL;
 PFNGLTEXTUREIMAGE2DEXTPROC __glewTextureImage2DEXT = NULL;
 PFNGLTEXTUREIMAGE3DEXTPROC __glewTextureImage3DEXT = NULL;
+PFNGLTEXTUREPAGECOMMITMENTEXTPROC __glewTexturePageCommitmentEXT = NULL;
 PFNGLTEXTUREPARAMETERIIVEXTPROC __glewTextureParameterIivEXT = NULL;
 PFNGLTEXTUREPARAMETERIUIVEXTPROC __glewTextureParameterIuivEXT = NULL;
 PFNGLTEXTUREPARAMETERFEXTPROC __glewTextureParameterfEXT = NULL;
@@ -3496,6 +3497,7 @@ static GLboolean _glewInit_GL_EXT_direct_state_access (void)
   r = ((glTextureImage1DEXT = (PFNGLTEXTUREIMAGE1DEXTPROC)glewGetProcAddress((const GLubyte*)"glTextureImage1DEXT")) == NULL) || r;
   r = ((glTextureImage2DEXT = (PFNGLTEXTUREIMAGE2DEXTPROC)glewGetProcAddress((const GLubyte*)"glTextureImage2DEXT")) == NULL) || r;
   r = ((glTextureImage3DEXT = (PFNGLTEXTUREIMAGE3DEXTPROC)glewGetProcAddress((const GLubyte*)"glTextureImage3DEXT")) == NULL) || r;
+  r = ((glTexturePageCommitmentEXT = (PFNGLTEXTUREPAGECOMMITMENTEXTPROC)glewGetProcAddress((const GLubyte*)"glTexturePageCommitmentEXT")) == NULL) || r;
   r = ((glTextureParameterIivEXT = (PFNGLTEXTUREPARAMETERIIVEXTPROC)glewGetProcAddress((const GLubyte*)"glTextureParameterIivEXT")) == NULL) || r;
   r = ((glTextureParameterIuivEXT = (PFNGLTEXTUREPARAMETERIUIVEXTPROC)glewGetProcAddress((const GLubyte*)"glTextureParameterIuivEXT")) == NULL) || r;
   r = ((glTextureParameterfEXT = (PFNGLTEXTUREPARAMETERFEXTPROC)glewGetProcAddress((const GLubyte*)"glTextureParameterfEXT")) == NULL) || r;
@@ -4350,9 +4352,9 @@ const GLubyte * GLEWAPIENTRY glewGetString (GLenum name)
   static const GLubyte* _glewString[] =
   {
     (const GLubyte*)NULL,
-    (const GLubyte*)"2.2.0 custom",
+    (const GLubyte*)"2.3.0 custom",
     (const GLubyte*)"2",
-    (const GLubyte*)"2",
+    (const GLubyte*)"3",
     (const GLubyte*)"0"
   };
   const size_t max_string = sizeof(_glewString)/sizeof(*_glewString) - 1;
