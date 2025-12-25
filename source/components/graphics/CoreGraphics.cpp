@@ -247,6 +247,7 @@ CoreGraphics::~CoreGraphics()
     m_AmbientBuffer    .Delete();
 
     // cancel all screenshot requests
+    ASSERT(!Core::Manager::Resource->GetActive())
     FOR_EACH(it, m_apScreenshotQueue)
     {
         Core::Manager::Resource->DetachFunction((*it)->iToken);

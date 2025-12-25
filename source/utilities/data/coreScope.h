@@ -144,6 +144,7 @@ inline coreProperties::coreProperties()noexcept
 : m_iPropertiesID (0u)
 {
     m_iPropertiesID = SDL_CreateProperties();
+    ASSERT(m_iPropertiesID)
 }
 
 

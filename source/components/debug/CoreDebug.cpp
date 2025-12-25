@@ -657,7 +657,72 @@ void CoreDebug::__UpdateOutput()
     // create new ImGui frame
     ImGui::NewFrame();
     {
-        static coreBool s_bShowStats = true;
+        static coreBool s_bShowStats          = true;
+        static coreBool s_bShowResources      = false;
+        static coreBool s_bShowTime           = false;
+        static coreBool s_bShowImages         = true;
+        static coreBool s_bShowImGuiDemo      = false;
+        static coreBool s_bShowImGuiMetrics   = false;
+        static coreBool s_bShowImGuiDebugLog  = false;
+        static coreBool s_bShowImGuiStackTool = false;
+        static coreBool s_bShowImGuiAbout     = false;
+
+        if(ImGui::BeginMainMenuBar())
+        {
+            ImGui::MenuItem("Debug Menu", NULL, false, false);
+
+            if(ImGui::BeginMenu("Main"))
+            {
+                ImGui::MenuItem("Stats",     NULL, &s_bShowStats);
+                ImGui::MenuItem("Resources", NULL, &s_bShowResources);
+                ImGui::EndMenu();
+            }
+
+            if(ImGui::BeginMenu("System"))
+            {
+                ImGui::MenuItem("Time", NULL, &s_bShowTime);
+                ImGui::EndMenu();
+            }
+
+            if(ImGui::BeginMenu("Graphics"))
+            {
+                ImGui::MenuItem("Images", NULL, &s_bShowImages);
+                ImGui::EndMenu();
+            }
+
+            if(ImGui::BeginMenu("Audio"))
+            {
+                ImGui::EndMenu();
+            }
+
+            if(ImGui::BeginMenu("Input"))
+            {
+                ImGui::EndMenu();
+            }
+
+            if(ImGui::BeginMenu("Platform"))
+            {
+                ImGui::EndMenu();
+            }
+
+            if(ImGui::BeginMenu("Application"))
+            {
+                ImGui::EndMenu();
+            }
+
+            if(ImGui::BeginMenu("ImGui"))
+            {
+                ImGui::MenuItem("Demo",       NULL, &s_bShowImGuiDemo);
+                ImGui::MenuItem("Metrics",    NULL, &s_bShowImGuiMetrics);
+                ImGui::MenuItem("Debug Log",  NULL, &s_bShowImGuiDebugLog);
+                ImGui::MenuItem("Stack Tool", NULL, &s_bShowImGuiStackTool);
+                ImGui::MenuItem("About",      NULL, &s_bShowImGuiAbout);
+                ImGui::EndMenu();
+            }
+
+            ImGui::EndMainMenuBar();
+        }
+
         if(s_bShowStats)
         {
             if(ImGui::Begin("Stats", &s_bShowStats, ImGuiWindowFlags_AlwaysAutoResize))
@@ -703,7 +768,6 @@ void CoreDebug::__UpdateOutput()
             ImGui::End();
         }
 
-        static coreBool s_bShowResources = false;
         if(s_bShowResources)
         {
             if(ImGui::Begin("Resources", &s_bShowResources))
@@ -746,7 +810,6 @@ void CoreDebug::__UpdateOutput()
             ImGui::End();
         }
 
-        static coreBool s_bShowTime = false;
         if(s_bShowTime)
         {
             if(ImGui::Begin("Time", &s_bShowTime))
@@ -758,7 +821,6 @@ void CoreDebug::__UpdateOutput()
             ImGui::End();
         }
 
-        static coreBool s_bShowImages = true;
         if(s_bShowImages)
         {
             if(ImGui::Begin("Images", &s_bShowImages))
@@ -772,11 +834,6 @@ void CoreDebug::__UpdateOutput()
             ImGui::End();
         }
 
-        static coreBool s_bShowImGuiDemo      = false;
-        static coreBool s_bShowImGuiMetrics   = false;
-        static coreBool s_bShowImGuiDebugLog  = false;
-        static coreBool s_bShowImGuiStackTool = false;
-        static coreBool s_bShowImGuiAbout     = false;
         #if __has_include(<imgui/imgui_demo.cpp>)
             if(s_bShowImGuiDemo)      ImGui::ShowDemoWindow       (&s_bShowImGuiDemo);
             if(s_bShowImGuiMetrics)   ImGui::ShowMetricsWindow    (&s_bShowImGuiMetrics);
@@ -784,57 +841,6 @@ void CoreDebug::__UpdateOutput()
             if(s_bShowImGuiStackTool) ImGui::ShowIDStackToolWindow(&s_bShowImGuiStackTool);
             if(s_bShowImGuiAbout)     ImGui::ShowAboutWindow      (&s_bShowImGuiAbout);
         #endif
-
-        if(ImGui::BeginMainMenuBar())
-        {
-            ImGui::MenuItem("Debug Menu", NULL, false, false);
-
-            if(ImGui::BeginMenu("Main"))
-            {
-                ImGui::MenuItem("Stats",     NULL, &s_bShowStats);
-                ImGui::MenuItem("Resources", NULL, &s_bShowResources);
-                ImGui::EndMenu();
-            }
-
-            if(ImGui::BeginMenu("System"))
-            {
-                ImGui::MenuItem("Time", NULL, &s_bShowTime);
-                ImGui::EndMenu();
-            }
-
-            if(ImGui::BeginMenu("Graphics"))
-            {
-                ImGui::MenuItem("Images", NULL, &s_bShowImages);
-                ImGui::EndMenu();
-            }
-
-            if(ImGui::BeginMenu("Audio"))
-            {
-                ImGui::EndMenu();
-            }
-
-            if(ImGui::BeginMenu("Input"))
-            {
-                ImGui::EndMenu();
-            }
-
-            if(ImGui::BeginMenu("Platform"))
-            {
-                ImGui::EndMenu();
-            }
-
-            if(ImGui::BeginMenu("ImGui"))
-            {
-                ImGui::MenuItem("Demo",       NULL, &s_bShowImGuiDemo);
-                ImGui::MenuItem("Metrics",    NULL, &s_bShowImGuiMetrics);
-                ImGui::MenuItem("Debug Log",  NULL, &s_bShowImGuiDebugLog);
-                ImGui::MenuItem("Stack Tool", NULL, &s_bShowImGuiStackTool);
-                ImGui::MenuItem("About",      NULL, &s_bShowImGuiAbout);
-                ImGui::EndMenu();
-            }
-
-            ImGui::EndMainMenuBar();
-        }
     }
     ImGui::Render();
 

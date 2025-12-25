@@ -127,7 +127,7 @@ void coreTranslate::__ChangeLanguage(coreLanguage* pLanguage, const coreBool bUp
         FOR_EACH(it, m_apsPointer) m_pLanguage->BindForeign(*m_apsPointer.get_key(it), it->c_str());
 
         // invoke object update
-        if(bUpdate) this->__UpdateTranslate();
+        if(bUpdate) this->__UpdateTranslate();   // # virtual function
     }
 }
 
