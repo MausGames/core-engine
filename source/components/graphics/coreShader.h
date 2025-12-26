@@ -137,6 +137,9 @@ public:
     coreStatus Load(coreFile* pFile)final;
     coreStatus Unload()final;
 
+    /* get resource type */
+    inline coreResourceType GetResourceType()const final {return CORE_RESOURCE_TYPE_GRAPHICS;}
+
     /* set object properties */
     inline void SetCustomCode(const coreChar* pcCustomCode) {m_sCustomCode = pcCustomCode;}
 
@@ -215,6 +218,9 @@ public:
     /* load and unload shader-program */
     coreStatus Load(coreFile* pFile)final;
     coreStatus Unload()final;
+
+    /* get resource type */
+    inline coreResourceType GetResourceType()const final {return CORE_RESOURCE_TYPE_GRAPHICS;}
 
     /* enable and disable the shader-program */
     coreBool Enable();

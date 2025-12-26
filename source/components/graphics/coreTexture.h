@@ -140,6 +140,9 @@ public:
     coreStatus Load(coreFile* pFile)final;
     coreStatus Unload()final;
 
+    /* get resource type */
+    inline coreResourceType GetResourceType()const final {return CORE_RESOURCE_TYPE_GRAPHICS;}
+
     /* handle texture memory */
     void Create(const coreUint32 iWidth, const coreUint32 iHeight, const coreTextureSpec& oSpec, const coreTextureMode eMode);
     void Modify(const coreUint32 iOffsetX, const coreUint32 iOffsetY, const coreUint32 iWidth, const coreUint32 iHeight, const coreUint32 iDataSize, const coreByte* pData);

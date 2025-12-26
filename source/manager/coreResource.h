@@ -38,6 +38,13 @@ enum coreResourceReset : coreBool
     CORE_RESOURCE_RESET_INIT = true     // invoke start up routine
 };
 
+enum coreResourceType : coreUint8
+{
+    CORE_RESOURCE_TYPE_DEFAULT  = 0u,   // any other resource
+    CORE_RESOURCE_TYPE_GRAPHICS = 1u,   // graphics resource (requires OpenGL context)
+    CORE_RESOURCE_TYPE_AUDIO    = 2u    // audio resource    (requires OpenAL context)
+};
+
 
 // ****************************************************************
 /* resource interface */
@@ -57,6 +64,9 @@ public:
     virtual coreStatus Load(coreFile* pFile) = 0;
     virtual coreStatus Unload()              = 0;
 
+    /* get resource type */
+    virtual coreResourceType GetResourceType()const = 0;
+
     /* assign resource name */
     inline void AssignName(const coreChar* pcName) {m_sName = pcName;}
 
@@ -73,6 +83,9 @@ public:
     /* load and unload resource data (without any effect) */
     coreStatus Load(coreFile* pFile)final {return CORE_OK;}
     coreStatus Unload()final              {return CORE_OK;}
+
+    /* get resource type */
+    inline coreResourceType GetResourceType()const final {return CORE_RESOURCE_TYPE_DEFAULT;}
 };
 
 

@@ -43,6 +43,9 @@ public:
     coreStatus Load(coreFile* pFile)final;
     coreStatus Unload()final;
 
+    /* get resource type */
+    inline coreResourceType GetResourceType()const final {return CORE_RESOURCE_TYPE_GRAPHICS;}
+
     /* change current animation state */
     void     ChangeTimeLoop(const coreFloat  fTime);
     coreBool ChangeTimeOnce(const coreFloat  fTime);

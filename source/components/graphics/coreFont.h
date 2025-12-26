@@ -53,6 +53,9 @@ public:
     coreStatus Load(coreFile* pFile)final;
     coreStatus Unload()final;
 
+    /* get resource type */
+    inline coreResourceType GetResourceType()const final {return CORE_RESOURCE_TYPE_DEFAULT;}
+
     /* create solid text with the font */
     SDL_Surface* CreateText (const coreChar*  pcText, const coreUint16 iHeight);
     SDL_Surface* CreateGlyph(const coreChar32 cGlyph, const coreUint16 iHeight);

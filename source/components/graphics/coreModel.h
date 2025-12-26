@@ -100,6 +100,9 @@ public:
     coreStatus Load(coreFile* pFile)final;
     coreStatus Unload()final;
 
+    /* get resource type */
+    inline coreResourceType GetResourceType()const final {return CORE_RESOURCE_TYPE_GRAPHICS;}
+
     /* draw the model */
     inline void Draw        ()const {if(m_IndexBuffer.IsValid()) this->DrawElements(); else this->DrawArrays();}
     void        DrawArrays  ()const;
