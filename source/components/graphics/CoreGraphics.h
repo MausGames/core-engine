@@ -82,6 +82,8 @@ private:
     coreSet<coreScreenshot*> m_apScreenshotQueue;   // screenshot requests
     coreSpinLock             m_ScreenshotLock;      // spinlock to prevent concurrent screenshot requests access
 
+    coreUint8 m_iOverrideState;                     // track recently overridden properties
+
     coreUint64   m_iMemoryStart;                    // available graphics memory at the start of the application (in bytes)
     coreUint8    m_iMaxSamples;                     // max multisample anti aliasing level
     coreUint8    m_aiMaxSamplesEQAA[3];             // max enhanced quality anti aliasing levels (color, depth, storage)
@@ -102,8 +104,11 @@ public:
     DISABLE_COPY(CoreGraphics)
 
     /* control camera and view frustum */
-    void SetCamera(const coreVector3 vPosition, const coreVector3 vDirection, const coreVector3 vOrientation);
-    void SetView  (coreVector2 vResolution, const coreFloat fFOV, const coreFloat fNearClip, const coreFloat fFarClip, coreFloat fAspectRatio);
+    void        SetCamera          (const coreVector3 vPosition, const coreVector3 vDirection, const coreVector3 vOrientation);
+    void        SetView            (coreVector2 vResolution, const coreFloat fFOV, const coreFloat fNearClip, const coreFloat fFarClip, coreFloat fAspectRatio);
+    inline void OverrideCamera     (const coreMatrix4& mCamera)      {m_mCamera      = mCamera;      ADD_BIT(m_iUniformUpdate, 0u) ADD_BIT(m_iOverrideState, 0u)}
+    inline void OverridePerspective(const coreMatrix4& mPerspective) {m_mPerspective = mPerspective; ADD_BIT(m_iUniformUpdate, 0u) ADD_BIT(m_iOverrideState, 1u)}
+    inline void OverrideOrtho      (const coreMatrix4& mOrtho)       {m_mOrtho       = mOrtho;       ADD_BIT(m_iUniformUpdate, 1u) ADD_BIT(m_iOverrideState, 1u)}
 
     /* control ambient */
     void SetLight(const coreUintW iIndex, const coreVector4 vPosition, const coreVector4 vDirection, const coreVector4 vValue);

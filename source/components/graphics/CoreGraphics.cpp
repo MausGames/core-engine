@@ -33,6 +33,7 @@ CoreGraphics::CoreGraphics()noexcept
 , m_aiScissorData     {}
 , m_apScreenshotQueue {}
 , m_ScreenshotLock    ()
+, m_iOverrideState    (0u)
 , m_iMemoryStart      (0u)
 , m_iMaxSamples       (0u)
 , m_aiMaxSamplesEQAA  {}
@@ -283,13 +284,16 @@ void CoreGraphics::SetCamera(const coreVector3 vPosition, const coreVector3 vDir
     if(m_vCamDirection   != vDirection)   {m_vCamDirection   = vDirection;   bNewCamera = true;}
     if(m_vCamOrientation != vOrientation) {m_vCamOrientation = vOrientation; bNewCamera = true;}
 
-    if(bNewCamera)
+    if(bNewCamera || HAS_BIT(m_iOverrideState, 0u))
     {
         // create camera matrix
         m_mCamera = coreMatrix4::Camera(m_vCamPosition, m_vCamDirection, m_vCamOrientation);
 
         // invoke transformation data update
         ADD_BIT(m_iUniformUpdate, 0u)
+
+        // clear override state
+        REMOVE_BIT(m_iOverrideState, 0u)
     }
 }
 
@@ -323,7 +327,7 @@ void CoreGraphics::SetView(coreVector2 vResolution, const coreFloat fFOV, const 
     if(m_fFarClip     != fFarClip)     {m_fFarClip     = fFarClip;     bNewView = true;}
     if(m_fAspectRatio != fAspectRatio) {m_fAspectRatio = fAspectRatio; bNewView = true;}
 
-    if(bNewView)
+    if(bNewView || HAS_BIT(m_iOverrideState, 1u))
     {
         // create projection matrices
         m_mPerspective = coreMatrix4::Perspective(vResolution, m_fFOV, m_fNearClip, m_fFarClip, m_fAspectRatio);
@@ -332,6 +336,9 @@ void CoreGraphics::SetView(coreVector2 vResolution, const coreFloat fFOV, const 
         // invoke transformation data update
         ADD_BIT(m_iUniformUpdate, 0u)
         ADD_BIT(m_iUniformUpdate, 1u)
+
+        // clear override state
+        REMOVE_BIT(m_iOverrideState, 1u)
     }
 }
 

@@ -107,7 +107,9 @@ public:
 
     /* control time */
     inline void SetTimeSpeed(const coreUintW iID, const coreFloat fTimeSpeed) {ASSERT(iID < CORE_SYSTEM_TIMES) m_afTimeSpeed[iID] = fTimeSpeed;}
-    inline void SkipFrame()                                                   {m_iSkipFrame = 1u;}
+    inline void OverrideTime(const coreFloat fTime)                           {m_fLastTime = fTime; m_afTime[CORE_SYSTEM_TIME_DEFAULT] = fTime;}
+    inline void OverrideTime(const coreUintW iID, const coreFloat fTime)      {ASSERT(iID < CORE_SYSTEM_TIMES) m_afTime[iID] = fTime;}
+    inline void SkipFrame   ()                                                {m_iSkipFrame = 1u;}
 
     /* terminate the application */
     inline void Quit() {m_bTerminated = true;}
