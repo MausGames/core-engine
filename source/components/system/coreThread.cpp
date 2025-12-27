@@ -176,6 +176,10 @@ coreStatus coreThread::__Main()
     Core::Log->Info("Thread (%s, %04lX) started", m_sName.c_str(), SDL_GetCurrentThreadID());
     coreStatus eReturn = this->__InitThread();
 
+    // cache time coefficient (# also to handle engine reset)
+    const coreDouble dFrequency = Core::System->GetPerfFrequency();
+    ASSERT(dFrequency)
+
     // begin main-loop
     while(eReturn == CORE_OK)
     {
@@ -183,7 +187,7 @@ coreStatus coreThread::__Main()
         {
             // handle thread-overhead
             iBeforeTime = SDL_GetPerformanceCounter();
-            dWait      -= coreDouble(iBeforeTime - iAfterTime) / Core::System->GetPerfFrequency();
+            dWait      -= coreDouble(iBeforeTime - iAfterTime) / dFrequency;
 
             // wait for next iteration
             dWait = MAX(dWait + (1.0 / coreDouble(m_fFrequency)), 0.0);
@@ -191,7 +195,7 @@ coreStatus coreThread::__Main()
 
             // handle waiting-overhead
             iAfterTime = SDL_GetPerformanceCounter();
-            dWait     -= coreDouble(iAfterTime - iBeforeTime) / Core::System->GetPerfFrequency();
+            dWait     -= coreDouble(iAfterTime - iBeforeTime) / dFrequency;
         }
         else
         {

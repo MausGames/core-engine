@@ -637,7 +637,7 @@ void coreVertexBuffer::Activate(const coreUint8 iDivisor)
             }
             else
             {
-                const coreBool bNormalized = ((it->iType >= GL_BYTE) && (it->iType <= GL_UNSIGNED_INT)) || (it->iType == GL_INT_2_10_10_10_REV) || (it->iType == GL_UNSIGNED_INT_2_10_10_10_REV);
+                const coreBool bNormalized = (!it->bInteger) && (((it->iType >= GL_BYTE) && (it->iType <= GL_UNSIGNED_INT)) || (it->iType == GL_INT_2_10_10_10_REV) || (it->iType == GL_UNSIGNED_INT_2_10_10_10_REV));
                 glVertexAttribPointer(it->iLocation, it->iComponents, it->iType, bNormalized, m_aStream.at(it->iBufferOffset).iStride, I_TO_P(it->iBufferOffset * m_iNumVertices + it->iVertexOffset));
             }
         }

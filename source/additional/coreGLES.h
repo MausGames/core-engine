@@ -99,6 +99,7 @@ using PFNGLPOLYGONMODEPROC = void (GL_APIENTRY *) (GLenum face, GLenum mode);
 
 #define GL_CLIENT_STORAGE_BIT  0x0200
 #define GL_DYNAMIC_STORAGE_BIT 0x0100
+#define GL_MAP_COHERENT_BIT    0x0080
 #define GL_MAP_PERSISTENT_BIT  0x0040
 
 using PFNGLBUFFERSTORAGEPROC = void (GL_APIENTRY *) (GLenum target, GLsizeiptr size, const void* data, GLbitfield flags);
