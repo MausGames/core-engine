@@ -60,10 +60,11 @@ vec3 coreUnpackNormalOcta(const in vec2 v)
     #if defined(GL_ARB_shading_language_packing)
         return packUnorm4x8(x);
     #else
-        return (uint(x.a * 255.0) << 24) +
-               (uint(x.b * 255.0) << 16) +
-               (uint(x.g * 255.0) <<  8) +
-               (uint(x.r * 255.0));
+        uvec4 A = uvec4(x * 255.0 + 0.5);
+        return (A.a << 24) +
+               (A.b << 16) +
+               (A.g <<  8) +
+               (A.r);
     #endif
     }
 
@@ -75,7 +76,7 @@ vec3 coreUnpackNormalOcta(const in vec2 v)
         return vec4(float( x        & 0xFFu),
                     float((x >>  8) & 0xFFu),
                     float((x >> 16) & 0xFFu),
-                    float((x >> 24) & 0xFFu)) * 0.003921569;
+                    float((x >> 24) & 0xFFu)) / 255.0;
     #endif
     }
 
