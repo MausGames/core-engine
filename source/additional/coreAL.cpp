@@ -18,19 +18,15 @@ coreContextAL g_ContextAL = {};
 
 // ****************************************************************
 /* init OpenAL */
-void coreInitOpenAL()
+void coreInitOpenALDevice(ALCdevice* pDevice)
 {
     coreBool* A = NULL;
 
     // reset context structure
     std::memset(&g_ContextAL, 0, sizeof(g_ContextAL));
 
-    // retrieve current OpenAL context
-    ALCcontext* pContex = alcGetCurrentContext();
-    WARN_IF(!pContex) return;
-
-    // retrieve current audio device
-    ALCdevice* pDevice = alcGetContextsDevice(pContex);
+    // check OpenAL state
+    ASSERT(!alcGetCurrentContext())
     WARN_IF(!pDevice) return;
 
     // implement ALC_SOFT_HRTF
@@ -53,6 +49,20 @@ void coreInitOpenAL()
         __CORE_ALC_FETCH(alcEventControlSOFT)
     }
 
+    // check remaining ALC extensions
+    __CORE_ALC_CHECK(ENUMERATE_ALL_EXT)
+    __CORE_ALC_CHECK(EXT_debug)
+    __CORE_ALC_CHECK(EXT_disconnect)
+    __CORE_ALC_CHECK(SOFT_output_mode)
+}
+
+void coreInitOpenALContext()
+{
+    coreBool* A = NULL;
+
+    // check OpenAL state
+    ASSERT(alcGetCurrentContext())
+
     // implement AL_EXT_debug
     __CORE_AL_CHECK(EXT_debug)
     {
@@ -73,12 +83,6 @@ void coreInitOpenAL()
     {
         __CORE_AL_FETCH(alGetStringiSOFT)
     }
-
-    // check remaining ALC extensions
-    __CORE_ALC_CHECK(ENUMERATE_ALL_EXT)
-    __CORE_ALC_CHECK(EXT_debug)
-    __CORE_ALC_CHECK(EXT_disconnect)
-    __CORE_ALC_CHECK(SOFT_output_mode)
 
     // check remaining AL extensions
     __CORE_AL_CHECK(EXT_ALAW)

@@ -48,8 +48,13 @@ CoreAudio::CoreAudio()noexcept
 
 #endif
 
-    // open audio device and create OpenAL context
-    m_pDevice  = alcOpenDevice(NULL);
+    // open audio device
+    m_pDevice = alcOpenDevice(NULL);
+
+    // init OpenAL (device)
+    coreInitOpenALDevice(m_pDevice);
+
+    // create OpenAL context
     m_pContext = alcCreateContext(m_pDevice, this->__RetrieveAttributes());
 
     // activate OpenAL context
@@ -57,8 +62,8 @@ CoreAudio::CoreAudio()noexcept
          Core::Log->Warning("OpenAL context could not be created (ALC Error Code: 0x%08X)", alcGetError(m_pDevice));
     else Core::Log->Info   ("OpenAL context created");
 
-    // init OpenAL
-    coreInitOpenAL();
+    // init OpenAL (context)
+    coreInitOpenALContext();
 
     // enable OpenAL debug output
     this->DebugOpenAL();

@@ -111,7 +111,8 @@ extern coreContextAL g_ContextAL;   // context object
 
 // ****************************************************************
 /* init and exit OpenAL */
-extern void coreInitOpenAL();
+extern void coreInitOpenALDevice(ALCdevice* pDevice);
+extern void coreInitOpenALContext();
 extern void coreExitOpenAL();
 
 
