@@ -16,6 +16,7 @@
 #define CORE_ALC_ENUMERATE_ALL_EXT         (__CORE_AL_VAR(ALC_ENUMERATE_ALL_EXT))
 #define CORE_ALC_EXT_debug                 (__CORE_AL_VAR(ALC_EXT_debug))
 #define CORE_ALC_EXT_disconnect            (__CORE_AL_VAR(ALC_EXT_disconnect))
+#define CORE_ALC_EXT_EFX                   (__CORE_AL_VAR(ALC_EXT_EFX))
 #define CORE_ALC_SOFT_HRTF                 (__CORE_AL_VAR(ALC_SOFT_HRTF))
 #define CORE_ALC_SOFT_output_mode          (__CORE_AL_VAR(ALC_SOFT_output_mode))
 #define CORE_ALC_SOFT_reopen_device        (__CORE_AL_VAR(ALC_SOFT_reopen_device))
@@ -30,6 +31,18 @@
 #define CORE_AL_SOFT_direct_channels       (__CORE_AL_VAR(AL_SOFT_direct_channels))
 #define CORE_AL_SOFT_direct_channels_remix (__CORE_AL_VAR(AL_SOFT_direct_channels_remix))
 #define CORE_AL_SOFT_source_resampler      (__CORE_AL_VAR(AL_SOFT_source_resampler))
+
+
+// ****************************************************************
+/* ALC_EXT_EFX */
+#define alAuxiliaryEffectSlotf       __CORE_AL_FUNC(alAuxiliaryEffectSlotf)
+#define alAuxiliaryEffectSloti       __CORE_AL_FUNC(alAuxiliaryEffectSloti)
+#define alDeleteAuxiliaryEffectSlots __CORE_AL_FUNC(alDeleteAuxiliaryEffectSlots)
+#define alDeleteEffects              __CORE_AL_FUNC(alDeleteEffects)
+#define alEffectf                    __CORE_AL_FUNC(alEffectf)
+#define alEffecti                    __CORE_AL_FUNC(alEffecti)
+#define alGenAuxiliaryEffectSlots    __CORE_AL_FUNC(alGenAuxiliaryEffectSlots)
+#define alGenEffects                 __CORE_AL_FUNC(alGenEffects)
 
 
 // ****************************************************************
@@ -74,6 +87,7 @@ struct coreContextAL final
     coreBool __ALC_ENUMERATE_ALL_EXT;
     coreBool __ALC_EXT_debug;
     coreBool __ALC_EXT_disconnect;
+    coreBool __ALC_EXT_EFX;
     coreBool __ALC_SOFT_HRTF;
     coreBool __ALC_SOFT_reopen_device;
     coreBool __ALC_SOFT_output_mode;
@@ -89,18 +103,26 @@ struct coreContextAL final
     coreBool __AL_SOFT_direct_channels_remix;
     coreBool __AL_SOFT_source_resampler;
 
-    LPALCGETSTRINGISOFT         __alcGetStringiSOFT;
-    LPALCRESETDEVICESOFT        __alcResetDeviceSOFT;
-    LPALCREOPENDEVICESOFT       __alcReopenDeviceSOFT;
-    LPALCEVENTCALLBACKSOFT      __alcEventCallbackSOFT;
-    LPALCEVENTCONTROLSOFT       __alcEventControlSOFT;
+    LPALAUXILIARYEFFECTSLOTF       __alAuxiliaryEffectSlotf;   // al not alc
+    LPALAUXILIARYEFFECTSLOTI       __alAuxiliaryEffectSloti;
+    LPALDELETEAUXILIARYEFFECTSLOTS __alDeleteAuxiliaryEffectSlots;
+    LPALDELETEEFFECTS              __alDeleteEffects;
+    LPALEFFECTF                    __alEffectf;
+    LPALEFFECTI                    __alEffecti;
+    LPALGENAUXILIARYEFFECTSLOTS    __alGenAuxiliaryEffectSlots;
+    LPALGENEFFECTS                 __alGenEffects;
+    LPALCGETSTRINGISOFT            __alcGetStringiSOFT;
+    LPALCRESETDEVICESOFT           __alcResetDeviceSOFT;
+    LPALCREOPENDEVICESOFT          __alcReopenDeviceSOFT;
+    LPALCEVENTCALLBACKSOFT         __alcEventCallbackSOFT;
+    LPALCEVENTCONTROLSOFT          __alcEventControlSOFT;
 
-    LPALDEBUGMESSAGECALLBACKEXT __alDebugMessageCallbackEXT;
-    LPALDEBUGMESSAGECONTROLEXT  __alDebugMessageControlEXT;
-    LPALOBJECTLABELEXT          __alObjectLabelEXT;
-    LPALDEFERUPDATESSOFT        __alDeferUpdatesSOFT;
-    LPALPROCESSUPDATESSOFT      __alProcessUpdatesSOFT;
-    LPALGETSTRINGISOFT          __alGetStringiSOFT;
+    LPALDEBUGMESSAGECALLBACKEXT    __alDebugMessageCallbackEXT;
+    LPALDEBUGMESSAGECONTROLEXT     __alDebugMessageControlEXT;
+    LPALOBJECTLABELEXT             __alObjectLabelEXT;
+    LPALDEFERUPDATESSOFT           __alDeferUpdatesSOFT;
+    LPALPROCESSUPDATESSOFT         __alProcessUpdatesSOFT;
+    LPALGETSTRINGISOFT             __alGetStringiSOFT;
 };
 
 extern coreContextAL g_ContextAL;   // context object

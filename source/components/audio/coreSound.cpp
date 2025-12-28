@@ -220,7 +220,7 @@ coreStatus coreSound::Unload()
 
 // ****************************************************************
 /* play the sound with positional behavior */
-void coreSound::PlayPosition(const void* pRef, const coreFloat fVolume, const coreFloat fPitch, const coreBool bLoop, const coreUint8 iType, const coreVector3 vPosition, const coreFloat fRefDistance, const coreFloat fMaxDistance, const coreFloat fRolloff)
+void coreSound::PlayPosition(const void* pRef, const coreFloat fVolume, const coreFloat fPitch, const coreBool bLoop, const coreUint8 iType, const coreUint8 iEffect, const coreVector3 vPosition, const coreFloat fRefDistance, const coreFloat fMaxDistance, const coreFloat fRolloff)
 {
     WARN_IF(!m_iBuffer) return;
 
@@ -232,7 +232,7 @@ void coreSound::PlayPosition(const void* pRef, const coreFloat fVolume, const co
     ASSERT(m_pCurRef || !bLoop)
 
     // retrieve next free audio source
-    m_iCurSource = Core::Audio->NextSource(m_pCurRef, m_iBuffer, fVolume, iType);
+    m_iCurSource = Core::Audio->NextSource(m_pCurRef, m_iBuffer, fVolume, iType, iEffect);
     if(m_iCurSource)
     {
         // add debug label
@@ -266,7 +266,7 @@ void coreSound::PlayPosition(const void* pRef, const coreFloat fVolume, const co
 
 // ****************************************************************
 /* play the sound with relative behavior */
-void coreSound::PlayRelative(const void* pRef, const coreFloat fVolume, const coreFloat fPitch, const coreBool bLoop, const coreUint8 iType)
+void coreSound::PlayRelative(const void* pRef, const coreFloat fVolume, const coreFloat fPitch, const coreBool bLoop, const coreUint8 iType, const coreUint8 iEffect)
 {
     WARN_IF(!m_iBuffer) return;
 
@@ -278,7 +278,7 @@ void coreSound::PlayRelative(const void* pRef, const coreFloat fVolume, const co
     ASSERT(m_pCurRef || !bLoop)
 
     // retrieve next free audio source
-    m_iCurSource = Core::Audio->NextSource(m_pCurRef, m_iBuffer, fVolume, iType);
+    m_iCurSource = Core::Audio->NextSource(m_pCurRef, m_iBuffer, fVolume, iType, iEffect);
     if(m_iCurSource)
     {
         // add debug label

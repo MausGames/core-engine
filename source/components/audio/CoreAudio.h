@@ -11,6 +11,7 @@
 #define _CORE_GUARD_AUDIO_H_
 
 // TODO 5: <old comment style>
+// TODO 3: also implement filter-support (low-pass (behind a wall), high-pass, band-pass (telephone)) (can be attached to source directly or to effect slot)
 
 
 // ****************************************************************
@@ -19,7 +20,10 @@
 #define CORE_AUDIO_SOURCES_SOUND (32u)                                                   // number of audio sources for sound
 #define CORE_AUDIO_SOURCES       (CORE_AUDIO_SOURCES_MUSIC + CORE_AUDIO_SOURCES_SOUND)   // total number of audio sources
 #define CORE_AUDIO_TYPES         (8u)                                                    // number of sound types
+#define CORE_AUDIO_EFFECTS       (4u)                                                    // number of audio effects and audio effect slots
 #define CORE_AUDIO_MUSIC_BUFFER  (0u)                                                    // sound buffer identifier for music
+#define CORE_AUDIO_TYPE_NONE     (CORE_AUDIO_TYPES)                                      // sound type without any association
+#define CORE_AUDIO_EFFECT_NONE   (CORE_AUDIO_EFFECTS)                                    // audio effect index without any association
 #define CORE_AUDIO_MIN_GAIN      (0.0f)                                                  // minimum supported gain per audio source
 #define CORE_AUDIO_MAX_GAIN      (4.0f)                                                  // maximum supported gain per audio source (# configurable)
 #define CORE_AUDIO_MIN_PITCH     (0.5f)                                                  // minimum supported pitch per audio source
@@ -49,6 +53,7 @@ private:
         ALuint      iBuffer;   // current sound buffer      (for identification)
         coreFloat   fVolume;   // current volume
         coreUint8   iType;     // sound type (e.g. effect, ambient, voice)
+        coreUint8   iEffect;   // audio effect index
     };
 
 
@@ -64,10 +69,13 @@ private:
     coreFloat m_afMusicVolume [3];                      // music volume
     coreFloat m_afSoundVolume [3];                      // sound volume
 
-    coreFloat m_afTypeVolume[CORE_AUDIO_TYPES];         // volume for each sound type
+    coreFloat m_afTypeVolume[CORE_AUDIO_TYPES + 1u];    // volume for each sound type (and additional dummy volume)
 
     ALuint         m_aiSource   [CORE_AUDIO_SOURCES];   // audio sources
     coreSourceData m_aSourceData[CORE_AUDIO_SOURCES];   // data associated with audio sources
+
+    ALuint m_aiEffect    [CORE_AUDIO_EFFECTS];          // audio effects
+    ALuint m_aiEffectSlot[CORE_AUDIO_EFFECTS + 1u];     // audio effect slots (and additional disabled audio effect slot)
 
     LPALDEFERUPDATESSOFT   m_nDeferUpdates;             // suspend immediate playback state changes
     LPALPROCESSUPDATESSOFT m_nProcessUpdates;           // catch-up and resume playback state changes
@@ -75,7 +83,7 @@ private:
     coreBool              m_bDeviceCheck;               // periodically check for audio device disconnect
     coreAtomic<coreUint8> m_iDeviceFix;                 // try to recover from audio device issues (1 = changed | 2 = disconnected)
 
-    ALint m_aiAttributes[13];                           // OpenAL context attributes
+    ALint m_aiAttributes[15];                           // OpenAL context attributes
 
 
 private:
@@ -103,10 +111,15 @@ public:
     void CancelSound(const coreUint8 iType = CORE_AUDIO_TYPES);
 
     /* handle audio sources */
-    ALuint   NextSource  (const void* pRef, const ALuint iBuffer, const coreFloat fVolume, const coreUint8 iType);
+    ALuint   NextSource  (const void* pRef, const ALuint iBuffer, const coreFloat fVolume, const coreUint8 iType, const coreUint8 iEffect);
     void     FreeSources (const ALuint iBuffer);
     void     UpdateSource(const ALuint iSource, const coreFloat fVolume);
     coreBool CheckSource (const void* pRef, const ALuint iBuffer, const ALuint iSource)const;
+
+    /* handle audio effects */
+    void ArrangeEffectReverb(const coreUint8 iIndex, const EFXEAXREVERBPROPERTIES& oProperties);
+    void ArrangeEffectNull  (const coreUint8 iIndex);
+    void SetEffectGain      (const coreUint8 iIndex, const coreFloat fGain);
 
     /* combine playback state changes */
     inline void DeferUpdates  ()const {ASSERT(m_nDeferUpdates)   m_nDeferUpdates  ();}

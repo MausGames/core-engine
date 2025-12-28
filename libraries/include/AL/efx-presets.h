@@ -11,23 +11,23 @@ typedef struct {
     float flDiffusion;
     float flGain;
     float flGainHF;
-    float flGainLF;
+    float flGainLF;                // EAX only
     float flDecayTime;
     float flDecayHFRatio;
-    float flDecayLFRatio;
+    float flDecayLFRatio;          // EAX only
     float flReflectionsGain;
     float flReflectionsDelay;
-    float flReflectionsPan[3];
+    float flReflectionsPan[3];     // EAX only
     float flLateReverbGain;
     float flLateReverbDelay;
-    float flLateReverbPan[3];
-    float flEchoTime;
-    float flEchoDepth;
-    float flModulationTime;
-    float flModulationDepth;
+    float flLateReverbPan[3];      // EAX only
+    float flEchoTime;              // EAX only
+    float flEchoDepth;             // EAX only
+    float flModulationTime;        // EAX only
+    float flModulationDepth;       // EAX only
     float flAirAbsorptionGainHF;
-    float flHFReference;
-    float flLFReference;
+    float flHFReference;           // EAX only
+    float flLFReference;           // EAX only
     float flRoomRolloffFactor;
     int   iDecayHFLimit;
 } EFXEAXREVERBPROPERTIES, *LPEFXEAXREVERBPROPERTIES;

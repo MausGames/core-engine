@@ -29,6 +29,19 @@ void coreInitOpenALDevice(ALCdevice* pDevice)
     ASSERT(!alcGetCurrentContext())
     WARN_IF(!pDevice) return;
 
+    // implement ALC_EXT_EFX
+    __CORE_ALC_CHECK(EXT_EFX)
+    {
+        __CORE_ALC_FETCH(alAuxiliaryEffectSlotf)
+        __CORE_ALC_FETCH(alAuxiliaryEffectSloti)
+        __CORE_ALC_FETCH(alDeleteAuxiliaryEffectSlots)
+        __CORE_ALC_FETCH(alDeleteEffects)
+        __CORE_ALC_FETCH(alEffectf)
+        __CORE_ALC_FETCH(alEffecti)
+        __CORE_ALC_FETCH(alGenAuxiliaryEffectSlots)
+        __CORE_ALC_FETCH(alGenEffects)
+    }
+
     // implement ALC_SOFT_HRTF
     __CORE_ALC_CHECK(SOFT_HRTF)
     {

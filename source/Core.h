@@ -364,6 +364,7 @@
     #include <GL/glew.h>
 #endif
 #include <AL/alext.h>
+#include <AL/efx-presets.h>
 #include <zstd/zstd.h>
 #include <opus/opusfile.h>
 

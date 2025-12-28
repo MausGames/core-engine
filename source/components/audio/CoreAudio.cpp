@@ -23,6 +23,8 @@ CoreAudio::CoreAudio()noexcept
 , m_afTypeVolume    {}
 , m_aiSource        {}
 , m_aSourceData     {}
+, m_aiEffect        {}
+, m_aiEffectSlot    {}
 , m_nDeferUpdates   (NULL)
 , m_nProcessUpdates (NULL)
 , m_bDeviceCheck    (false)
@@ -130,6 +132,18 @@ CoreAudio::CoreAudio()noexcept
         alcEventControlSOFT(ARRAY_SIZE(aiEvent), aiEvent, true);
     }
 
+    // init effects extension
+    if(CORE_ALC_SUPPORT(EXT_EFX))
+    {
+        // generate audio effects and audio effect slots
+        alGenEffects             (CORE_AUDIO_EFFECTS, m_aiEffect);
+        alGenAuxiliaryEffectSlots(CORE_AUDIO_EFFECTS, m_aiEffectSlot);
+
+        // preset disabled audio effect slot (for performance)
+        m_aiEffectSlot[CORE_AUDIO_EFFECT_NONE] = AL_EFFECTSLOT_NULL;
+        STATIC_ASSERT(CORE_AUDIO_EFFECT_NONE < ARRAY_SIZE(m_aiEffectSlot))
+    }
+
     // init disconnect extension
     if(CORE_ALC_SUPPORT(EXT_disconnect))
     {
@@ -204,13 +218,15 @@ CoreAudio::CoreAudio()noexcept
     this->__UpdateSources();
 
     // reset sound types
-    for(coreUintW i = 0u; i < CORE_AUDIO_TYPES; ++i)
+    for(coreUintW i = 0u; i < CORE_AUDIO_TYPES + 1u; ++i)
+    {
         m_afTypeVolume[i] = 1.0f;
+    }
 
     // log audio device information
     Core::Log->ListStartInfo("Audio Device Information");
     {
-        ALCint aiStatus[9] = {};
+        ALCint aiStatus[11] = {};
         alcGetIntegerv(m_pDevice, ALC_FREQUENCY,           1, &aiStatus[0]);
         alcGetIntegerv(m_pDevice, ALC_REFRESH,             1, &aiStatus[1]);
         alcGetIntegerv(m_pDevice, ALC_SYNC,                1, &aiStatus[2]);
@@ -220,11 +236,13 @@ CoreAudio::CoreAudio()noexcept
         alcGetIntegerv(m_pDevice, ALC_OUTPUT_LIMITER_SOFT, 1, &aiStatus[6]);
         alcGetIntegerv(m_pDevice, ALC_HRTF_SOFT,           1, &aiStatus[7]);
         alcGetIntegerv(m_pDevice, ALC_HRTF_STATUS_SOFT,    1, &aiStatus[8]);
+        alcGetIntegerv(m_pDevice, ALC_EFX_MAJOR_VERSION,   1, &aiStatus[9]);
+        alcGetIntegerv(m_pDevice, ALC_EFX_MINOR_VERSION,   1, &aiStatus[10]);
 
         Core::Log->ListAdd(CORE_LOG_BOLD("Device:")   " %s (%s, %s (%d), %s)", alcGetString(m_pDevice, ALC_DEVICE_SPECIFIER), alcGetString(m_pDevice, ALC_ALL_DEVICES_SPECIFIER), aiStatus[7] ? alcGetString(m_pDevice, ALC_HRTF_SPECIFIER_SOFT) : "HRTF disabled", aiStatus[8], pcResamplerName ? pcResamplerName : "Unknown Resampler");
         Core::Log->ListAdd(CORE_LOG_BOLD("Vendor:")   " %s",                   alGetString(AL_VENDOR));
         Core::Log->ListAdd(CORE_LOG_BOLD("Renderer:") " %s",                   alGetString(AL_RENDERER));
-        Core::Log->ListAdd(CORE_LOG_BOLD("Version:")  " %s",                   alGetString(AL_VERSION));
+        Core::Log->ListAdd(CORE_LOG_BOLD("Version:")  " %s (EFX %d.%d)",       alGetString(AL_VERSION), aiStatus[9], aiStatus[10]);
         Core::Log->ListAdd(alcGetString(m_pDevice, ALC_EXTENSIONS));
         Core::Log->ListAdd(alGetString(AL_EXTENSIONS));
         Core::Log->ListAdd("ALC_FREQUENCY (%d) ALC_REFRESH (%d) ALC_SYNC (%d) ALC_MONO_SOURCES (%d) ALC_STEREO_SOURCES (%d) ALC_OUTPUT_MODE_SOFT (0x%04X) ALC_OUTPUT_LIMITER_SOFT (%d)", aiStatus[0], aiStatus[1], aiStatus[2], aiStatus[3], aiStatus[4], aiStatus[5], aiStatus[6]);
@@ -245,11 +263,24 @@ CoreAudio::CoreAudio()noexcept
 /* destructor */
 CoreAudio::~CoreAudio()
 {
-    // exit OpenAL
-    coreExitOpenAL();
+    if(CORE_ALC_SUPPORT(EXT_EFX))
+    {
+        // disconnect from all audio effect slots
+        for(coreUintW i = 0u; i < CORE_AUDIO_SOURCES; ++i)
+        {
+            alSource3i(m_aiSource[i], AL_AUXILIARY_SEND_FILTER, AL_EFFECTSLOT_NULL, 0, AL_FILTER_NULL);
+        }
+
+        // delete audio effects and audio effect slots
+        alDeleteAuxiliaryEffectSlots(CORE_AUDIO_EFFECTS, m_aiEffectSlot);
+        alDeleteEffects             (CORE_AUDIO_EFFECTS, m_aiEffect);
+    }
 
     // delete audio sources
     alDeleteSources(CORE_AUDIO_SOURCES, m_aiSource);
+
+    // exit OpenAL
+    coreExitOpenAL();
 
     // delete OpenAL context and close audio device
     alcMakeContextCurrent(NULL);
@@ -374,9 +405,10 @@ void CoreAudio::CancelSound(const coreUint8 iType)
 
 // ****************************************************************
 /* retrieve next free audio source */
-ALuint CoreAudio::NextSource(const void* pRef, const ALuint iBuffer, const coreFloat fVolume, const coreUint8 iType)
+ALuint CoreAudio::NextSource(const void* pRef, const ALuint iBuffer, const coreFloat fVolume, const coreUint8 iType, const coreUint8 iEffect)
 {
-    ASSERT(iType < CORE_AUDIO_TYPES)
+    ASSERT((iType   < CORE_AUDIO_TYPES)   || (iType   == CORE_AUDIO_TYPE_NONE))
+    ASSERT((iEffect < CORE_AUDIO_EFFECTS) || (iEffect == CORE_AUDIO_EFFECT_NONE))
 
     // define search range
     const coreUintW iFrom = (iBuffer == CORE_AUDIO_MUSIC_BUFFER) ? 0u                       : CORE_AUDIO_SOURCES_MUSIC;
@@ -397,11 +429,18 @@ ALuint CoreAudio::NextSource(const void* pRef, const ALuint iBuffer, const coreF
             const coreFloat fBase = (iBuffer == CORE_AUDIO_MUSIC_BUFFER) ? m_afMusicVolume[1] : (m_afSoundVolume[1] * m_afTypeVolume[iType]);
             alSourcef(iSource, AL_GAIN, fVolume * fBase / CORE_AUDIO_MAX_GAIN);
 
+            if(CORE_ALC_SUPPORT(EXT_EFX))
+            {
+                // connect to audio effect slot
+                alSource3i(iSource, AL_AUXILIARY_SEND_FILTER, m_aiEffectSlot[iEffect], 0, AL_FILTER_NULL);
+            }
+
             // save audio source data
             m_aSourceData[i].pRef    = pRef;
             m_aSourceData[i].iBuffer = iBuffer;
             m_aSourceData[i].fVolume = fVolume;
             m_aSourceData[i].iType   = iType;
+            m_aSourceData[i].iEffect = iEffect;
 
             // return audio source
             return iSource;
@@ -480,6 +519,75 @@ coreBool CoreAudio::CheckSource(const void* pRef, const ALuint iBuffer, const AL
         }
     }
     return false;
+}
+
+
+// ****************************************************************
+/* enable and configure reverb effect */
+void CoreAudio::ArrangeEffectReverb(const coreUint8 iIndex, const EFXEAXREVERBPROPERTIES& oProperties)
+{
+    if(CORE_ALC_SUPPORT(EXT_EFX))
+    {
+        ASSERT(iIndex < CORE_AUDIO_EFFECTS)
+        const ALuint iEffect = m_aiEffect    [iIndex];
+        const ALuint iSlot   = m_aiEffectSlot[iIndex];
+
+        // set effect type
+        alEffecti(iEffect, AL_EFFECT_TYPE, AL_EFFECT_REVERB);
+
+        // set effect properties
+        alEffectf(iEffect, AL_REVERB_DENSITY,               oProperties.flDensity);
+        alEffectf(iEffect, AL_REVERB_DIFFUSION,             oProperties.flDiffusion);
+        alEffectf(iEffect, AL_REVERB_GAIN,                  oProperties.flGain);
+        alEffectf(iEffect, AL_REVERB_GAINHF,                oProperties.flGainHF);
+        alEffectf(iEffect, AL_REVERB_DECAY_TIME,            oProperties.flDecayTime);
+        alEffectf(iEffect, AL_REVERB_DECAY_HFRATIO,         oProperties.flDecayHFRatio);
+        alEffectf(iEffect, AL_REVERB_REFLECTIONS_GAIN,      oProperties.flReflectionsGain);
+        alEffectf(iEffect, AL_REVERB_REFLECTIONS_DELAY,     oProperties.flReflectionsDelay);
+        alEffectf(iEffect, AL_REVERB_LATE_REVERB_GAIN,      oProperties.flLateReverbGain);
+        alEffectf(iEffect, AL_REVERB_LATE_REVERB_DELAY,     oProperties.flLateReverbDelay);
+        alEffectf(iEffect, AL_REVERB_AIR_ABSORPTION_GAINHF, oProperties.flAirAbsorptionGainHF);
+        alEffectf(iEffect, AL_REVERB_ROOM_ROLLOFF_FACTOR,   oProperties.flRoomRolloffFactor);
+        alEffecti(iEffect, AL_REVERB_DECAY_HFLIMIT,         oProperties.iDecayHFLimit);
+
+        // attach audio effect to audio effect slot (always)
+        alAuxiliaryEffectSloti(iSlot, AL_EFFECTSLOT_EFFECT, iEffect);
+    }
+}
+
+
+// ****************************************************************
+/* disable any audio effect */
+void CoreAudio::ArrangeEffectNull(const coreUint8 iIndex)
+{
+    if(CORE_ALC_SUPPORT(EXT_EFX))
+    {
+        ASSERT(iIndex < CORE_AUDIO_EFFECTS)
+        const ALuint iEffect = m_aiEffect    [iIndex];
+        const ALuint iSlot   = m_aiEffectSlot[iIndex];
+
+        // set effect type (redundant)
+        alEffecti(iEffect, AL_EFFECT_TYPE, AL_EFFECT_NULL);
+
+        // detach audio effect from audio effect slot
+        alAuxiliaryEffectSloti(iSlot, AL_EFFECTSLOT_EFFECT, AL_EFFECT_NULL);
+    }
+}
+
+
+// ****************************************************************
+/* set audio effect gain */
+void CoreAudio::SetEffectGain(const coreUint8 iIndex, const coreFloat fGain)
+{
+    if(CORE_ALC_SUPPORT(EXT_EFX))
+    {
+        ASSERT(iIndex < CORE_AUDIO_EFFECTS)
+        const ALuint iSlot = m_aiEffectSlot[iIndex];
+
+        // set audio effect slot output level
+        ASSERT((fGain >= 0.0f) && (fGain <= 1.0f))
+        alAuxiliaryEffectSlotf(iSlot, AL_EFFECTSLOT_GAIN, fGain);
+    }
 }
 
 
@@ -742,6 +850,12 @@ const ALint* CoreAudio::__RetrieveAttributes()
             const ALCint iIndex = MIN(Core::Config->GetInt(CORE_CONFIG_AUDIO_HRTFINDEX), iNum - 1);
             if(iIndex > -1) nAttributeFunc(ALC_HRTF_ID_SOFT, iIndex);
         }
+    }
+
+    if(CORE_ALC_SUPPORT(EXT_EFX))
+    {
+        // set maximum number of auxiliary sends per audio source (for effects and filters)
+        nAttributeFunc(ALC_MAX_AUXILIARY_SENDS, 1);
     }
 
     if(CORE_ALC_SUPPORT(EXT_debug) && Core::Debug->IsEnabled())

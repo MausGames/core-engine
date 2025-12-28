@@ -197,7 +197,7 @@ coreStatus coreMusicPlayer::Play()
     if(!m_iSource)
     {
         // retrieve next free audio source
-        const ALuint iSource = Core::Audio->NextSource(NULL, CORE_AUDIO_MUSIC_BUFFER, m_fVolume, 0u);
+        const ALuint iSource = Core::Audio->NextSource(NULL, CORE_AUDIO_MUSIC_BUFFER, m_fVolume, CORE_AUDIO_TYPE_NONE, CORE_AUDIO_EFFECT_NONE);
         WARN_IF(!iSource) return CORE_ERROR_SYSTEM;
 
         // create sound buffers

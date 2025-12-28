@@ -82,8 +82,8 @@ public:
     inline coreResourceType GetResourceType()const final {return CORE_RESOURCE_TYPE_AUDIO;}
 
     /* control playback */
-    void PlayPosition(const void* pRef, const coreFloat fVolume, const coreFloat fPitch, const coreBool bLoop, const coreUint8 iType, const coreVector3 vPosition, const coreFloat fRefDistance = 1.0f, const coreFloat fMaxDistance = FLT_MAX, const coreFloat fRolloff = 0.0f);
-    void PlayRelative(const void* pRef, const coreFloat fVolume, const coreFloat fPitch, const coreBool bLoop, const coreUint8 iType);
+    void PlayPosition(const void* pRef, const coreFloat fVolume, const coreFloat fPitch, const coreBool bLoop, const coreUint8 iType, const coreUint8 iEffect, const coreVector3 vPosition, const coreFloat fRefDistance = 1.0f, const coreFloat fMaxDistance = FLT_MAX, const coreFloat fRolloff = 0.0f);
+    void PlayRelative(const void* pRef, const coreFloat fVolume, const coreFloat fPitch, const coreBool bLoop, const coreUint8 iType, const coreUint8 iEffect);
     void Stop();
     coreBool IsPlaying();
 
