@@ -167,9 +167,10 @@ public:
     void MoveSort  ();
 
     /* bind and unbind 3d-objects */
-    void BindObject  (coreObject3D* pObject);
-    void UnbindObject(coreObject3D* pObject);
-    void Clear       ();
+    void BindObject      (coreObject3D* pObject);
+    void BindObjectUnsafe(coreObject3D* pObject);
+    void UnbindObject    (coreObject3D* pObject);
+    void Clear           ();
 
     /* control memory allocation */
     void        Reallocate (const coreUint32 iSize);

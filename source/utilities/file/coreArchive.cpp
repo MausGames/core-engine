@@ -479,6 +479,9 @@ coreArchive::coreArchive(const coreChar* pcPath)noexcept
     coreUint16 iNumFiles;
     coreFile::__Read(pArchive, &iNumFiles, sizeof(coreUint16), &bSuccess);
 
+    // reserve some memory
+    m_apFile.reserve(iNumFiles);
+
     // read file headers
     for(coreUintW i = iNumFiles; i--; )
     {
@@ -500,7 +503,7 @@ coreArchive::coreArchive(const coreChar* pcPath)noexcept
             coreFile* pNewFile      = new coreFile(acPath, NULL, iSize);
             pNewFile->m_pArchive    = this;
             pNewFile->m_iArchivePos = iArchivePos;
-            m_apFile.emplace_bs(acPath, pNewFile);
+            m_apFile.emplace_bs_unsafe(acPath, pNewFile);
         }
     }
 

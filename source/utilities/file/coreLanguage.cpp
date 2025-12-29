@@ -336,6 +336,7 @@ void coreLanguage::GetAvailableLanguages(const coreChar* pcPath, const coreChar*
     Core::Manager::Resource->DirectoryScan(pcPath, pcFilter, &asFile);
 
     // reserve some memory
+    pasOutput->clear();
     pasOutput->reserve(asFile.size());
 
     FOR_EACH(it, asFile)
@@ -349,7 +350,7 @@ void coreLanguage::GetAvailableLanguages(const coreChar* pcPath, const coreChar*
         }
 
         // save language-name with file-path
-        pasOutput->emplace(std::move(sName), std::move(*it));
+        pasOutput->emplace_unsafe(std::move(sName), std::move(*it));
     }
 }
 

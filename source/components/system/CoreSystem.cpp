@@ -130,7 +130,7 @@ CoreSystem::CoreSystem()noexcept
 
             for(coreUintW i = 0u, ie = iDisplayCount; i < ie; ++i)
             {
-                coreDisplay& oDisplayData = m_aDisplayData.emplace_back();
+                coreDisplay& oDisplayData = m_aDisplayData.emplace_back_unsafe();
 
                 // store display instance ID
                 const SDL_DisplayID iDisplayID = piDisplayList[i];
@@ -171,8 +171,8 @@ CoreSystem::CoreSystem()noexcept
                             const coreVector2 vModeRes = coreVector2(I_TO_F(pMode->w), I_TO_F(pMode->h));
                             if(!oDisplayData.avAvailableRes.count(vModeRes))
                             {
-                                oDisplayData.avAvailableRes  .insert(vModeRes);
-                                oDisplayData.aafAvailableRate.emplace_back();
+                                oDisplayData.avAvailableRes  .insert_unsafe(vModeRes);
+                                oDisplayData.aafAvailableRate.emplace_back_unsafe();
                             }
 
                             // add new refresh rate

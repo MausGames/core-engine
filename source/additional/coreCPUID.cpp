@@ -44,12 +44,12 @@ coreCPUID::__coreCPUID::__coreCPUID()noexcept
     for(coreUint32 i = CORE_CPUID_BASIC; i <= iNum; ++i)
     {
         CORE_CPUID_FUNC(aiPage.data(), i, 0)
-        aaiData.push_back(aiPage);
+        aaiData.push_back_unsafe(aiPage);
     }
     for(coreUint32 i = CORE_CPUID_EXTENDED; i <= iNumEx; ++i)
     {
         CORE_CPUID_FUNC(aiPage.data(), i, 0)
-        aaiDataEx.push_back(aiPage);
+        aaiDataEx.push_back_unsafe(aiPage);
     }
 
     // save processor vendor string

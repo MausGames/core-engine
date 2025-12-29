@@ -526,7 +526,7 @@ inline coreBool coreBackendSteam::DownloadLeaderboard(const corePlatformLeaderbo
                             std::memcpy(oNewScore.aData, aiData, MIN(oNewScore.iDataSize, CORE_PLATFORM_SCORE_DATA_SIZE));
 
                             // add to output list
-                            aScoreCache.push_back(oNewScore);
+                            aScoreCache.push_back_unsafe(oNewScore);
                         }
                     }
 

@@ -617,7 +617,7 @@ void CoreInput::__OpenJoysticks()
 
             for(coreUintW i = 0u, ie = iJoystickCount; i < ie; ++i)
             {
-                coreJoystick& oJoystick = m_aJoystick.emplace_back();
+                coreJoystick& oJoystick = m_aJoystick.emplace_back_unsafe();
 
                 // store joystick instance ID
                 const SDL_JoystickID iJoystickID = piJoystickList[i];

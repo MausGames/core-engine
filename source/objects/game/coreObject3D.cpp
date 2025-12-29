@@ -422,6 +422,15 @@ void coreBatchList::BindObject(coreObject3D* pObject)
     m_eUpdate = CORE_BATCHLIST_UPDATE_ALL;
 }
 
+void coreBatchList::BindObjectUnsafe(coreObject3D* pObject)
+{
+    // add object to list (without reallocation check)
+    m_apObjectList.insert_unsafe(pObject);
+
+    // set the update status
+    m_eUpdate = CORE_BATCHLIST_UPDATE_ALL;
+}
+
 
 // ****************************************************************
 /* unbind 3d-object */

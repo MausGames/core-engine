@@ -149,6 +149,9 @@ inline coreBool coreLoadBlobCache(const coreChar* pcPath)   // # parameter for i
 
     s_CacheLock.Lock();
     {
+        // reserve some memory
+        s_aCacheMap.reserve(iNum);
+
         for(coreUintW i = 0u, ie = iNum; i < ie; ++i)
         {
             coreUint64     iKey;
@@ -163,7 +166,7 @@ inline coreBool coreLoadBlobCache(const coreChar* pcPath)   // # parameter for i
             std::memcpy(oEntry.pData, pCursor, oEntry.iSize); pCursor += oEntry.iSize;
 
             // add entry to map
-            s_aCacheMap.emplace_bs(iKey, oEntry);
+            s_aCacheMap.emplace_bs_unsafe(iKey, oEntry);
             s_iCacheSize += oEntry.iSize;
         }
     }

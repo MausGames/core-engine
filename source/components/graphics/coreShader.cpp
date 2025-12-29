@@ -364,7 +364,7 @@ coreStatus coreProgram::Load(coreFile* pFile)
     if(m_eStatus == CORE_PROGRAM_DEFINED)
     {
         // load all required shader objects
-        if(m_apShader.empty()) FOR_EACH(it, m_apShaderHandle) m_apShader.emplace_back(*it);
+        if(m_apShader.empty()) FOR_EACH(it, m_apShaderHandle) m_apShader.emplace_back_unsafe(*it);
         FOR_EACH(it, m_apShader)
         {
             it->GetHandle()->Update();
@@ -708,6 +708,9 @@ coreBool coreProgram::LoadShaderCache()
 
     s_BinaryLock.Lock();
     {
+        // reserve some memory
+        s_aBinaryMap.reserve(iNum);
+
         for(coreUintW i = 0u, ie = iNum; i < ie; ++i)
         {
             coreUint64 iKey;
@@ -723,7 +726,7 @@ coreBool coreProgram::LoadShaderCache()
             std::memcpy(oEntry.pData, pCursor, oEntry.iSize); pCursor += oEntry.iSize;
 
             // add entry to map
-            s_aBinaryMap.emplace_bs(iKey, oEntry);
+            s_aBinaryMap.emplace_bs_unsafe(iKey, oEntry);
             s_iBinarySize += oEntry.iSize;
         }
     }

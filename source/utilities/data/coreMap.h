@@ -90,12 +90,18 @@ public:
     inline void prepare_bs() {this->sort_asc();}
 
     /* create new entry */
-    template <typename... A> T& emplace   (const I& tKey,                              A&&... vArgs);
-    template <typename... A> T& emplace   (I&&      tKey,                              A&&... vArgs);
-    template <typename... A> T& emplace_bs(const I& tKey,                              A&&... vArgs);
-    template <typename... A> T& emplace_bs(I&&      tKey,                              A&&... vArgs);
-    template <typename... A> T& emplace   (const coreValueIterator& it, const I& tKey, A&&... vArgs);
-    template <typename... A> T& emplace   (const coreValueIterator& it, I&&      tKey, A&&... vArgs);
+    template <typename... A> T& emplace          (const I& tKey,                              A&&... vArgs);
+    template <typename... A> T& emplace          (I&&      tKey,                              A&&... vArgs);
+    template <typename... A> T& emplace_unsafe   (const I& tKey,                              A&&... vArgs);
+    template <typename... A> T& emplace_unsafe   (I&&      tKey,                              A&&... vArgs);
+    template <typename... A> T& emplace_bs       (const I& tKey,                              A&&... vArgs);
+    template <typename... A> T& emplace_bs       (I&&      tKey,                              A&&... vArgs);
+    template <typename... A> T& emplace_bs_unsafe(const I& tKey,                              A&&... vArgs);
+    template <typename... A> T& emplace_bs_unsafe(I&&      tKey,                              A&&... vArgs);
+    template <typename... A> T& emplace          (const coreValueIterator& it, const I& tKey, A&&... vArgs);
+    template <typename... A> T& emplace          (const coreValueIterator& it, I&&      tKey, A&&... vArgs);
+    template <typename... A> T& emplace_unsafe   (const coreValueIterator& it, const I& tKey, A&&... vArgs);
+    template <typename... A> T& emplace_unsafe   (const coreValueIterator& it, I&&      tKey, A&&... vArgs);
 
     /* remove existing entry */
     coreBool                 erase    (const I& tKey);
@@ -192,9 +198,12 @@ public:
     inline void shrink_to_fit()                          {m_asStringList.shrink_to_fit();    this->coreMapStrBase<T>::shrink_to_fit();}
 
     /* create new entry */
-    template <typename... A> inline T& emplace   (const coreHashString& sKey,                                                 A&&... vArgs) {this->__save_string(sKey); return this->coreMapStrBase<T>::emplace   (sKey,     std::forward<A>(vArgs)...);}
-    template <typename... A> inline T& emplace_bs(const coreHashString& sKey,                                                 A&&... vArgs) {this->__save_string(sKey); return this->coreMapStrBase<T>::emplace_bs(sKey,     std::forward<A>(vArgs)...);}
-    template <typename... A> inline T& emplace   (const coreMapStrBase<T>::coreValueIterator& it, const coreHashString& sKey, A&&... vArgs) {this->__save_string(sKey); return this->coreMapStrBase<T>::emplace   (it, sKey, std::forward<A>(vArgs)...);}
+    template <typename... A> inline T& emplace          (const coreHashString& sKey,                                                 A&&... vArgs) {this->__save_string(sKey); return this->coreMapStrBase<T>::emplace          (sKey,     std::forward<A>(vArgs)...);}
+    template <typename... A> inline T& emplace_unsafe   (const coreHashString& sKey,                                                 A&&... vArgs) {this->__save_string(sKey); return this->coreMapStrBase<T>::emplace_unsafe   (sKey,     std::forward<A>(vArgs)...);}
+    template <typename... A> inline T& emplace_bs       (const coreHashString& sKey,                                                 A&&... vArgs) {this->__save_string(sKey); return this->coreMapStrBase<T>::emplace_bs       (sKey,     std::forward<A>(vArgs)...);}
+    template <typename... A> inline T& emplace_bs_unsafe(const coreHashString& sKey,                                                 A&&... vArgs) {this->__save_string(sKey); return this->coreMapStrBase<T>::emplace_bs_unsafe(sKey,     std::forward<A>(vArgs)...);}
+    template <typename... A> inline T& emplace          (const coreMapStrBase<T>::coreValueIterator& it, const coreHashString& sKey, A&&... vArgs) {this->__save_string(sKey); return this->coreMapStrBase<T>::emplace          (it, sKey, std::forward<A>(vArgs)...);}
+    template <typename... A> inline T& emplace_unsafe   (const coreMapStrBase<T>::coreValueIterator& it, const coreHashString& sKey, A&&... vArgs) {this->__save_string(sKey); return this->coreMapStrBase<T>::emplace_unsafe   (it, sKey, std::forward<A>(vArgs)...);}
 
     /* remove existing entry */
     using coreMapStrBase<T>::erase;
@@ -386,6 +395,26 @@ template <typename K, typename I, typename T> template <typename... A> T& coreMa
     return tValue;
 }
 
+template <typename K, typename I, typename T> template <typename... A> T& coreMapGen<K, I, T>::emplace_unsafe(const I& tKey, A&&... vArgs)
+{
+    // copy and move key
+    return this->emplace_unsafe(std::move(I(tKey)), std::forward<A>(vArgs)...);
+}
+
+template <typename K, typename I, typename T> template <typename... A> T& coreMapGen<K, I, T>::emplace_unsafe(I&& tKey, A&&... vArgs)
+{
+    ASSERT(!this->count(tKey))
+
+    // create new entry (without reallocation check)
+    T& tValue = m_atValueList.emplace_back_unsafe(std::forward<A>(vArgs)...);
+    m_atKeyList.push_back_unsafe(std::move(tKey));
+
+    // cache current entry
+    this->_cache_set(m_atValueList.size() - 1u);
+
+    return tValue;
+}
+
 template <typename K, typename I, typename T> template <typename... A> T& coreMapGen<K, I, T>::emplace_bs(const I& tKey, A&&... vArgs)
 {
     // copy and move key
@@ -409,6 +438,29 @@ template <typename K, typename I, typename T> template <typename... A> T& coreMa
     return tValue;
 }
 
+template <typename K, typename I, typename T> template <typename... A> T& coreMapGen<K, I, T>::emplace_bs_unsafe(const I& tKey, A&&... vArgs)
+{
+    // copy and move key
+    return this->emplace_bs_unsafe(std::move(I(tKey)), std::forward<A>(vArgs)...);
+}
+
+template <typename K, typename I, typename T> template <typename... A> T& coreMapGen<K, I, T>::emplace_bs_unsafe(I&& tKey, A&&... vArgs)
+{
+    ASSERT(!this->count_bs(tKey))
+
+    // find target location with binary search
+    auto it = std::lower_bound(m_atKeyList.begin(), m_atKeyList.end(), tKey);
+
+    // create new entry (without reallocation check)
+    T& tValue = (*m_atValueList.emplace_unsafe(this->get_value(it), std::forward<A>(vArgs)...));
+    it = m_atKeyList.insert_unsafe(it, std::move(tKey));
+
+    // cache current entry
+    this->_cache_set(m_atKeyList.index(it));
+
+    return tValue;
+}
+
 template <typename K, typename I, typename T> template <typename... A> T& coreMapGen<K, I, T>::emplace(const coreValueIterator& it, const I& tKey, A&&... vArgs)
 {
     // copy and move key
@@ -422,6 +474,26 @@ template <typename K, typename I, typename T> template <typename... A> T& coreMa
     // create new entry
     const auto et = m_atKeyList.insert(this->get_key(it), std::move(tKey));
     T& tValue = (*m_atValueList.emplace(it, std::forward<A>(vArgs)...));
+
+    // cache current entry
+    this->_cache_set(m_atKeyList.index(et));
+
+    return tValue;
+}
+
+template <typename K, typename I, typename T> template <typename... A> T& coreMapGen<K, I, T>::emplace_unsafe(const coreValueIterator& it, const I& tKey, A&&... vArgs)
+{
+    // copy and move key
+    return this->emplace_unsafe(it, std::move(I(tKey)), std::forward<A>(vArgs)...);
+}
+
+template <typename K, typename I, typename T> template <typename... A> T& coreMapGen<K, I, T>::emplace_unsafe(const coreValueIterator& it, I&& tKey, A&&... vArgs)
+{
+    ASSERT(!this->count(tKey))
+
+    // create new entry (without reallocation check)
+    const auto et = m_atKeyList.insert_unsafe(this->get_key(it), std::move(tKey));
+    T& tValue = (*m_atValueList.emplace_unsafe(it, std::forward<A>(vArgs)...));
 
     // cache current entry
     this->_cache_set(m_atKeyList.index(et));

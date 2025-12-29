@@ -32,6 +32,7 @@ private:
     using coreList<T>::index_first;
     using coreList<T>::index_last;
     using coreList<T>::push_back;
+    using coreList<T>::push_back_unsafe;
     using coreList<T>::push_front;
 
 
@@ -42,14 +43,19 @@ public:
 
     /* insert new unique item */
     using coreList<T>::insert;
-    constexpr void     insert        (const T& tItem) {ASSERT(!this->count   (tItem)) {this->push_back(tItem);}}
-    constexpr void     insert        (T&&      tItem) {ASSERT(!this->count   (tItem)) {this->push_back(std::move(tItem));}}
-    constexpr void     insert_bs     (const T& tItem) {ASSERT(!this->count_bs(tItem)) {const auto it = this->__retrieve_bs(tItem); this->insert(it, tItem);}}
-    constexpr void     insert_bs     (T&&      tItem) {ASSERT(!this->count_bs(tItem)) {const auto it = this->__retrieve_bs(tItem); this->insert(it, std::move(tItem));}}
-    constexpr coreBool insert_once   (const T& tItem) {    if(!this->count   (tItem)) {this->push_back(tItem);                                                         return true;} return false;}
-    constexpr coreBool insert_once   (T&&      tItem) {    if(!this->count   (tItem)) {this->push_back(std::move(tItem));                                              return true;} return false;}
-    constexpr coreBool insert_once_bs(const T& tItem) {    if(!this->count_bs(tItem)) {const auto it = this->__retrieve_bs(tItem); this->insert(it, tItem);            return true;} return false;}
-    constexpr coreBool insert_once_bs(T&&      tItem) {    if(!this->count_bs(tItem)) {const auto it = this->__retrieve_bs(tItem); this->insert(it, std::move(tItem)); return true;} return false;}
+    using coreList<T>::insert_unsafe;
+    constexpr void     insert          (const T& tItem) {ASSERT(!this->count   (tItem)) {this->push_back       (tItem);}}
+    constexpr void     insert          (T&&      tItem) {ASSERT(!this->count   (tItem)) {this->push_back       (std::move(tItem));}}
+    constexpr void     insert_unsafe   (const T& tItem) {ASSERT(!this->count   (tItem)) {this->push_back_unsafe(tItem);}}
+    constexpr void     insert_unsafe   (T&&      tItem) {ASSERT(!this->count   (tItem)) {this->push_back_unsafe(std::move(tItem));}}
+    constexpr void     insert_bs       (const T& tItem) {ASSERT(!this->count_bs(tItem)) {const auto it = this->__retrieve_bs(tItem); this->insert       (it, tItem);}}
+    constexpr void     insert_bs       (T&&      tItem) {ASSERT(!this->count_bs(tItem)) {const auto it = this->__retrieve_bs(tItem); this->insert       (it, std::move(tItem));}}
+    constexpr void     insert_bs_unsafe(const T& tItem) {ASSERT(!this->count_bs(tItem)) {const auto it = this->__retrieve_bs(tItem); this->insert_unsafe(it, tItem);}}
+    constexpr void     insert_bs_unsafe(T&&      tItem) {ASSERT(!this->count_bs(tItem)) {const auto it = this->__retrieve_bs(tItem); this->insert_unsafe(it, std::move(tItem));}}
+    constexpr coreBool insert_once     (const T& tItem) {    if(!this->count   (tItem)) {this->push_back(tItem);                                                         return true;} return false;}
+    constexpr coreBool insert_once     (T&&      tItem) {    if(!this->count   (tItem)) {this->push_back(std::move(tItem));                                              return true;} return false;}
+    constexpr coreBool insert_once_bs  (const T& tItem) {    if(!this->count_bs(tItem)) {const auto it = this->__retrieve_bs(tItem); this->insert(it, tItem);            return true;} return false;}
+    constexpr coreBool insert_once_bs  (T&&      tItem) {    if(!this->count_bs(tItem)) {const auto it = this->__retrieve_bs(tItem); this->insert(it, std::move(tItem)); return true;} return false;}
 
     /* remove existing item */
     using coreList<T>::erase;
