@@ -48,7 +48,7 @@ extern "C" {
  */
 #define SDL_IMAGE_MAJOR_VERSION 3
 #define SDL_IMAGE_MINOR_VERSION 2
-#define SDL_IMAGE_MICRO_VERSION 2
+#define SDL_IMAGE_MICRO_VERSION 6
 
 /**
  * This is the version number macro for the current SDL_image version.
@@ -1977,10 +1977,11 @@ extern SDL_DECLSPEC bool SDLCALL IMG_SaveJPG_IO(SDL_Surface *surface, SDL_IOStre
  */
 typedef struct IMG_Animation
 {
-	int w, h;
-	int count;
-	SDL_Surface **frames;
-	int *delays;
+    int w;                  /**< The width of the frames */
+    int h;                  /**< The height of the frames */
+    int count;              /**< The number of frames */
+    SDL_Surface **frames;   /**< An array of frames */
+    int *delays;            /**< An array of frame delays, in milliseconds */
 } IMG_Animation;
 
 /**
