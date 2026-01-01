@@ -10,7 +10,7 @@
 #ifndef _CORE_GUARD_SHADER_H_
 #define _CORE_GUARD_SHADER_H_
 
-// TODO 3: better integration of instancing (allow instanced and non-instaced shaders to exist in the same program object (on demand, or per registry-attribute))
+// TODO 3: better integration of instancing (allow instanced and non-instanced shaders to exist in the same program object (on demand, or per registry-attribute))
 // TODO 5: check for compressed uniform sends (e.g. colors as byte-array instead of float-vector)
 // TODO 5: <old comment style>
 // TODO 5: shared uniform-buffer layout might be more efficient, but needs many queries

@@ -52,6 +52,7 @@ CoreSystem::CoreSystem()noexcept
 
         // set SDL behavior hints
         SDL_SetHint(SDL_HINT_EVENT_LOGGING,                      DEFINED(_CORE_DEBUG_) ? "1" : "0");
+        SDL_SetHint(SDL_HINT_INVALID_PARAM_CHECKS,               DEFINED(_CORE_DEBUG_) ? "2" : "1");
         SDL_SetHint(SDL_HINT_JOYSTICK_ALLOW_BACKGROUND_EVENTS,   "1");
         SDL_SetHint(SDL_HINT_MOUSE_RELATIVE_MODE_CENTER,         "0");
         SDL_SetHint(SDL_HINT_OPENGL_ES_DRIVER,                   "1");
@@ -415,12 +416,12 @@ CoreSystem::CoreSystem()noexcept
         coreInt32 iSeconds, iPercent;
         const SDL_PowerState ePowerState = SDL_GetPowerInfo(&iSeconds, &iPercent);
 
-        Core::Log->ListAdd(CORE_LOG_BOLD("Operating System:")  " %s",                                             coreData::SystemOsName());
-        Core::Log->ListAdd(CORE_LOG_BOLD("Processor:")         " %s (%s, %d logical cores, %d bytes cache line)", coreData::SystemCpuBrand(), coreData::SystemCpuVendor(), SDL_GetNumLogicalCPUCores(), SDL_GetCPUCacheLineSize());
-        Core::Log->ListAdd(CORE_LOG_BOLD("System Memory:")     " %llu/%llu MB (%.1f%%)",                          iMemoryUsed / (1024u * 1024u), iMemoryTotal / (1024u * 1024u), dMemoryPct);
-        Core::Log->ListAdd(CORE_LOG_BOLD("Disk Space:")        " %llu MB available",                              iSpaceAvailable / (1024u * 1024u));
-        Core::Log->ListAdd(CORE_LOG_BOLD("Preferred Locales:") " %s",                                             sLocaleStr.c_str());
-        Core::Log->ListAdd(CORE_LOG_BOLD("Battery Status:")    " %d (%d%%, %d minutes)",                          ePowerState, MAX0(iPercent), MAX0(iSeconds) / 60);
+        Core::Log->ListAdd(CORE_LOG_BOLD("Operating System:")  " %s",                                                                 coreData::SystemOsName());
+        Core::Log->ListAdd(CORE_LOG_BOLD("Processor:")         " %s (%s, %d logical cores, %d bytes cache line, %d bytes page size)", coreData::SystemCpuBrand(), coreData::SystemCpuVendor(), SDL_GetNumLogicalCPUCores(), SDL_GetCPUCacheLineSize(), SDL_GetSystemPageSize());
+        Core::Log->ListAdd(CORE_LOG_BOLD("System Memory:")     " %llu/%llu MB (%.1f%%)",                                              iMemoryUsed / (1024u * 1024u), iMemoryTotal / (1024u * 1024u), dMemoryPct);
+        Core::Log->ListAdd(CORE_LOG_BOLD("Disk Space:")        " %llu MB available",                                                  iSpaceAvailable / (1024u * 1024u));
+        Core::Log->ListAdd(CORE_LOG_BOLD("Preferred Locales:") " %s",                                                                 sLocaleStr.c_str());
+        Core::Log->ListAdd(CORE_LOG_BOLD("Battery Status:")    " %d (%d%%, %d minutes)",                                              ePowerState, MAX0(iPercent), MAX0(iSeconds) / 60);
     }
     Core::Log->ListEnd();
 

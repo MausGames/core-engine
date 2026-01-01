@@ -21,12 +21,11 @@
 
 // ****************************************************************
 /* system definitions */
-#define CORE_SYSTEM_TIMES          (4u)     // number of dynamic frame times
-#define CORE_SYSTEM_SMOOTHS        (4u)     // number of frame time smoothing intermediate values (including the base value)
-#define CORE_SYSTEM_WINDOW_BORDER  (36u)    // border width used for restricting window size
-#define CORE_SYSTEM_WINDOW_MINIMUM (128u)   // minimum size of the main window
-
-#define CORE_SYSTEM_TIME_DEFAULT (CORE_SYSTEM_TIMES)
+#define CORE_SYSTEM_TIMES          (4u)                  // number of dynamic frame times
+#define CORE_SYSTEM_SMOOTHS        (4u)                  // number of frame time smoothing intermediate values (including the base value)
+#define CORE_SYSTEM_WINDOW_BORDER  (36u)                 // border width used for restricting window size
+#define CORE_SYSTEM_WINDOW_MINIMUM (128u)                // minimum size of the main window
+#define CORE_SYSTEM_TIME_DEFAULT   (CORE_SYSTEM_TIMES)   // dynamic frame time index for the unmodified default time
 
 #define TIME (Core::System->GetTime())
 

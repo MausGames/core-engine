@@ -15,6 +15,10 @@ coreContextGLES g_ContextGLES = {};
 
 coreBool CORE_GL_CORE_es2_restriction = false;
 
+#if defined(_CORE_EMSCRIPTEN_)
+    #define eglGetProcAddress emscripten_webgl_get_proc_address   // faster and more precise lookup
+#endif
+
 #define __CORE_GLES_CHECK(x,b)   (g_ContextGLES.__ ## x = ((b) || g_sExtensions.contains(#x " ")))
 #define __CORE_GLES_FETCH(f,a,b) {g_ContextGLES.__ ## f = r_cast<decltype(g_ContextGLES.__ ## f)>(eglGetProcAddress((b) ? #f : #f #a));}
 

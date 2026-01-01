@@ -10,6 +10,8 @@
 #ifndef _CORE_GUARD_SCOPE_H_
 #define _CORE_GUARD_SCOPE_H_
 
+// TODO 3: look into SDL_PROP_NAME_STRING (in constructor ?)
+
 // NOTE: assigning the same object to multiple scopes is not supported and not detected
 
 
