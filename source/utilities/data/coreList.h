@@ -13,10 +13,8 @@
 // TODO 3: for list, set, map, string (though is used in copyable_function), remove implicit copy operator and create explicit copy function, std::copy(this->begin(), this->end(), A.begin());
 // TODO 4: rename count to contains/exists/other, for list, set and map
 // TODO 3: check on T& and co. parameters for list, set, map, switch-box
-// TODO 3: *_unsafe for MSVC STL does not seem possible without deep hack
-// TODO 3: implement emplace_unsafe
 // TODO 4: cbegin, cend, crbegin, crend
-// TODO 4: the coreIterator<>coreConstIterator split for certain functions is unnecessary and just the const version would be enough (also in other containers)
+// TODO 4: the coreIterator<>coreConstIterator split for certain functions seems unnecessary and just the const version would be enough (also in other containers)
 
 
 // ****************************************************************
@@ -47,8 +45,8 @@ public:
     template <typename... A> constexpr coreIterator emplace_unsafe     (const coreConstIterator& it, A&&... vArgs);
     constexpr void                                  push_back_unsafe   (const T& tItem)                              {this->emplace_back_unsafe(tItem);}
     constexpr void                                  push_back_unsafe   (T&&      tItem)                              {this->emplace_back_unsafe(std::move(tItem));}
-    constexpr coreIterator                          insert_unsafe      (const coreConstIterator& it, const T& tItem) {return this->emplace_unsafe     (it, tItem);}
-    constexpr coreIterator                          insert_unsafe      (const coreConstIterator& it, T&&      tItem) {return this->emplace_unsafe     (it, std::move(tItem));}
+    constexpr coreIterator                          insert_unsafe      (const coreConstIterator& it, const T& tItem) {return this->emplace_unsafe(it, tItem);}
+    constexpr coreIterator                          insert_unsafe      (const coreConstIterator& it, T&&      tItem) {return this->emplace_unsafe(it, std::move(tItem));}
 
     /* remove existing item */
     constexpr coreIterator erase_first(const T& tItem)         {return this->erase(this->__retrieve_first(tItem));}
@@ -86,23 +84,14 @@ template <typename T> template <typename... A> constexpr T& coreList<T>::emplace
 {
     ASSERT(this->size() < this->capacity())
 
-#if defined(_CORE_GLIBCXX_)
+    // access raw container pointers
+    T** pptRaw = r_cast<T**>(this);
+    ASSERT(pptRaw[0] == std::to_address(this->begin()))
+    ASSERT(pptRaw[1] == std::to_address(this->end  ()))
 
     // manually construct object in place
-    CALL_CONSTRUCTOR(this->_M_impl._M_finish, std::forward<A>(vArgs)...);
-    this->_M_impl._M_finish += 1u;
-
-#elif defined(_CORE_LIBCPP_)
-
-    // use internal emplace function
-    this->__emplace_back_assume_capacity(std::forward<A>(vArgs)...);
-
-#else
-
-    // use regular emplace function (with reallocation check)
-    return this->emplace_back(std::forward<A>(vArgs)...);
-
-#endif
+    CALL_CONSTRUCTOR(pptRaw[1], std::forward<A>(vArgs)...);
+    pptRaw[1] += 1u;
 
     return this->back();
 }
@@ -111,8 +100,36 @@ template <typename T> template <typename... A> constexpr coreList<T>::coreIterat
 {
     ASSERT(this->size() < this->capacity())
 
-    // use regular emplace function (with reallocation check)
-    return this->emplace(it, std::forward<A>(vArgs)...);
+    // access raw container pointers
+    T** pptRaw = r_cast<T**>(this);
+    ASSERT(pptRaw[0] == std::to_address(this->begin()))
+    ASSERT(pptRaw[1] == std::to_address(this->end  ()))
+
+    // get target index
+    const coreUintW iIndex = this->index(it);
+    ASSERT(iIndex < this->size() + 1u)
+
+    if(it == this->end())
+    {
+        // manually construct object in place
+        CALL_CONSTRUCTOR(pptRaw[1], std::forward<A>(vArgs)...);
+        pptRaw[1] += 1u;
+    }
+    else
+    {
+        // handle possible aliasing of arguments with container elements
+        T tTemp(std::forward<A>(vArgs)...);
+
+        // move old elements back
+        CALL_CONSTRUCTOR(pptRaw[1], std::move(*(pptRaw[1] - 1u)));
+        std::move_backward(pptRaw[0] + iIndex, pptRaw[1] - 1u, pptRaw[1]);
+
+        // insert new element
+        (*(pptRaw[0] + iIndex)) = std::move(tTemp);
+        pptRaw[1] += 1u;
+    }
+
+    return (this->begin() + iIndex);
 }
 
 
