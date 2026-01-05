@@ -366,6 +366,9 @@ void coreBatchList::MoveSort()
     // reset render-count
     m_iNumEnabled = 0u;
 
+    // cache camera position
+    const coreVector3 vCamPos = Core::Graphics->GetCamPosition();
+
     // compare first object with nothing (never true)
     coreFloat fOldDistance    = 0.0f;
     coreBool  bOldTransparent = false;
@@ -381,7 +384,7 @@ void coreBatchList::MoveSort()
             pObject->Move();
 
             // calculate properties of current object
-            const coreFloat fCurDistance    = (pObject->GetPosition() - Core::Graphics->GetCamPosition()).LengthSq();
+            const coreFloat fCurDistance    = (pObject->GetPosition() - vCamPos).LengthSq();
             const coreBool  bCurTransparent = (pObject->GetAlpha() < 1.0f);
 
             // sort objects (opaque first and from front to back, transparent later and from back to front)

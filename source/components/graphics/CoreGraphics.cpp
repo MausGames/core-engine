@@ -146,7 +146,7 @@ CoreGraphics::CoreGraphics()noexcept
     glPixelStorei(GL_UNPACK_ALIGNMENT, 4);
 
     // setup depth testing
-    if(CORE_GL_SUPPORT(ARB_depth_clamp) && !DEFINED(_CORE_DEBUG_)) glEnable(GL_DEPTH_CLAMP);
+    if(CORE_GL_SUPPORT(ARB_depth_clamp)) glEnable(GL_DEPTH_CLAMP);
     glEnable(GL_DEPTH_TEST);
     glDepthFunc(GL_LEQUAL);
     glDepthMask(true);

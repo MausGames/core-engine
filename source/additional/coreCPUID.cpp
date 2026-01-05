@@ -37,8 +37,8 @@ coreCPUID::__coreCPUID::__coreCPUID()noexcept
     const coreUint32 iNumEx = aiPage[0];
 
     // reserve some memory
-    if(iNum   > CORE_CPUID_BASIC)    aaiData  .reserve(iNum   + 1u - CORE_CPUID_BASIC);
-    if(iNumEx > CORE_CPUID_EXTENDED) aaiDataEx.reserve(iNumEx + 1u - CORE_CPUID_EXTENDED);
+    if(iNum   >= CORE_CPUID_BASIC)    aaiData  .reserve(iNum   - CORE_CPUID_BASIC    + 1u);
+    if(iNumEx >= CORE_CPUID_EXTENDED) aaiDataEx.reserve(iNumEx - CORE_CPUID_EXTENDED + 1u);
 
     // read all available feature bits
     for(coreUint32 i = CORE_CPUID_BASIC; i <= iNum; ++i)
@@ -51,6 +51,7 @@ coreCPUID::__coreCPUID::__coreCPUID()noexcept
         CORE_CPUID_FUNC(aiPage.data(), i, 0)
         aaiDataEx.push_back_unsafe(aiPage);
     }
+    ASSERT(!aaiData.empty())
 
     // save processor vendor string
     if(aaiData[0][1])

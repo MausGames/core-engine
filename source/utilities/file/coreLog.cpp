@@ -32,19 +32,19 @@ coreLog::coreLog(const coreChar* pcPath)noexcept
         const coreChar* pcDateTime = coreData::DateTimeString();
 
         // write basic style sheet
-        std::fputs("<!DOCTYPE html>"                                           "\n", m_pFile);
-        std::fputs("<meta charset=\"utf-8\">"                                  "\n", m_pFile);
-        std::fputs("<style>"                                                   "\n", m_pFile);
-        std::fputs(" :root    {font: 0.95em courier new; color-scheme: dark;}" "\n", m_pFile);
-        std::fputs(" .time    {color: #AAA; white-space: pre;}"                "\n", m_pFile);
-        std::fputs(" .thread1 {color: green;}"                                 "\n", m_pFile);
-        std::fputs(" .thread2 {color: olive;}"                                 "\n", m_pFile);
-        std::fputs(" .data    {color: teal;}"                                  "\n", m_pFile);
-        std::fputs(" .warning {color: coral;}"                                 "\n", m_pFile);
-        std::fputs(" .error   {color: red;}"                                   "\n", m_pFile);
-        std::fputs(" .header  {font-weight: bold; font-size: 1.4em;}"          "\n", m_pFile);
-        std::fputs(" .list    {font-weight: bold;}"                            "\n", m_pFile);
-        std::fputs("</style>"                                                  "\n", m_pFile);
+        std::fputs("<!DOCTYPE html>"                                                 "\n", m_pFile);
+        std::fputs("<meta charset=\"utf-8\">"                                        "\n", m_pFile);
+        std::fputs("<style>"                                                         "\n", m_pFile);
+        std::fputs(" :root    {font: 0.95em courier new; color-scheme: dark light;}" "\n", m_pFile);
+        std::fputs(" .time    {color: #AAA; white-space: pre;}"                      "\n", m_pFile);
+        std::fputs(" .thread1 {color: green;}"                                       "\n", m_pFile);
+        std::fputs(" .thread2 {color: olive;}"                                       "\n", m_pFile);
+        std::fputs(" .data    {color: teal;}"                                        "\n", m_pFile);
+        std::fputs(" .warning {color: coral;}"                                       "\n", m_pFile);
+        std::fputs(" .error   {color: red;}"                                         "\n", m_pFile);
+        std::fputs(" .header  {font-weight: bold; font-size: 1.4em;}"                "\n", m_pFile);
+        std::fputs(" .list    {font-weight: bold;}"                                  "\n", m_pFile);
+        std::fputs("</style>"                                                        "\n", m_pFile);
 
         // write application data
         std::fprintf(m_pFile, "<title>%s | %s</title>"                                 "\n", CoreApp::Settings::Name, pcDateTime);
