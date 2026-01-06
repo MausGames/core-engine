@@ -18,6 +18,7 @@
 // TODO 4: add all missing "shader extensions"
 // TODO 3: CORE_CONFIG_GRAPHICS_DISABLEEXTENSIONS does not work for static version-checked extensions
 // TODO 3: EGL_ANGLE_memory_usage_report
+// TODO 4: integrate WEBGL_provoking_vertex into C++ once available in Emscripten
 
 
 // ****************************************************************
@@ -73,6 +74,16 @@ using PFNGLRENDERBUFFERSTORAGEMULTISAMPLEADVANCEDPROC = void (GL_APIENTRY *) (GL
 
 using PFNGLPOLYGONMODEPROC = void (GL_APIENTRY *) (GLenum face, GLenum mode);
 #define glPolygonMode __CORE_GLES_FUNC(glPolygonMode)
+
+
+// ****************************************************************
+/* GL_ANGLE_provoking_vertex */
+#define CORE_GL_ANGLE_provoking_vertex (__CORE_GLES_VAR(GL_ANGLE_provoking_vertex))
+
+#define GL_FIRST_VERTEX_CONVENTION 0x8E4D
+
+using PFNGLPROVOKINGVERTEXPROC = void (GL_APIENTRY *) (GLenum provokeMode);
+#define glProvokingVertex __CORE_GLES_FUNC(glProvokingVertex)
 
 
 // ****************************************************************
@@ -519,6 +530,7 @@ struct coreContextGLES final
     coreBool __GL_ANDROID_extension_pack_es31a;
     coreBool __GL_ANGLE_pack_reverse_row_order;
     coreBool __GL_ANGLE_polygon_mode;
+    coreBool __GL_ANGLE_provoking_vertex;
     coreBool __GL_ANGLE_texture_usage;
     coreBool __GL_CORE_texture_float;
     coreBool __GL_CORE_vertex_type_2_10_10_10_rev;
@@ -570,6 +582,7 @@ struct coreContextGLES final
 
     PFNGLRENDERBUFFERSTORAGEMULTISAMPLEADVANCEDPROC __glRenderbufferStorageMultisampleAdvanced;
     PFNGLPOLYGONMODEPROC                            __glPolygonMode;
+    PFNGLPROVOKINGVERTEXPROC                        __glProvokingVertex;
     PFNGLBUFFERSTORAGEPROC                          __glBufferStorage;
     PFNGLCLEARTEXIMAGEPROC                          __glClearTexImage;
     PFNGLDISCARDFRAMEBUFFERPROC                     __glDiscardFramebuffer;

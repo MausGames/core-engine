@@ -192,6 +192,12 @@ CoreGraphics::CoreGraphics()noexcept
         glMaxShaderCompilerThreadsARB(0xFFFFFFFFu);
     }
 
+    // enable optimized provoking vertex convention
+    if(CORE_GL_SUPPORT(ANGLE_provoking_vertex))   // not ARB, only supported when more efficient
+    {
+        glProvokingVertex(GL_FIRST_VERTEX_CONVENTION);
+    }
+
     // create uniform buffer objects
     m_Transform3DBuffer.Create(CORE_SHADER_BUFFER_TRANSFORM3D_NUM, CORE_GRAPHICS_UNIFORM_BUFFERS, CORE_GRAPHICS_UNIFORM_TRANSFORM3D_SIZE);
     m_Transform2DBuffer.Create(CORE_SHADER_BUFFER_TRANSFORM2D_NUM, CORE_GRAPHICS_UNIFORM_BUFFERS, CORE_GRAPHICS_UNIFORM_TRANSFORM2D_SIZE);

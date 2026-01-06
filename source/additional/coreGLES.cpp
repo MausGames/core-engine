@@ -76,6 +76,29 @@ void __coreInitOpenGLES()
         __CORE_GLES_FETCH(glPolygonMode, WEBGL, false)
     }
 
+    // implement GL_ANGLE_provoking_vertex
+    if(__CORE_GLES_CHECK(GL_ANGLE_provoking_vertex, false))
+    {
+        __CORE_GLES_FETCH(glProvokingVertex, ANGLE, false)
+    }
+    else
+    {
+    #if defined(_CORE_EMSCRIPTEN_)
+
+        g_ContextGLES.__GL_ANGLE_provoking_vertex = true;   // handle check in JavaScript
+        g_ContextGLES.__glProvokingVertex = [](const GLenum eProvokeMode)
+        {
+            ASSERT(eProvokeMode == GL_FIRST_VERTEX_CONVENTION)
+            EM_ASM
+            ({
+                const pExtension = Module['ctx'].getExtension('WEBGL_provoking_vertex');
+                if(pExtension) pExtension['provokingVertexWEBGL'](pExtension['FIRST_VERTEX_CONVENTION_WEBGL']);
+            });
+        };
+
+    #endif
+    }
+
     // implement GL_ANGLE_texture_usage
     __CORE_GLES_CHECK(GL_ANGLE_texture_usage, false);
 
