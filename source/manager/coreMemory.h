@@ -104,6 +104,8 @@ public:
     coreMemoryPool(coreMemoryPool&& m)noexcept;
     ~coreMemoryPool();
 
+    CUSTOM_COPY(coreMemoryPool)
+
     /* assignment operations */
     coreMemoryPool& operator = (coreMemoryPool&& m)noexcept;
 

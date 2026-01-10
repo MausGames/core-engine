@@ -45,6 +45,7 @@ protected:
 
 
 public:
+    CUSTOM_COPY(coreScope)
     DISABLE_HEAP
 
     /* assignment operations */

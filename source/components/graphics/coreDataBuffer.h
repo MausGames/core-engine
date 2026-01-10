@@ -65,6 +65,8 @@ public:
     inline coreDataBuffer(coreDataBuffer&& m)noexcept;
     ~coreDataBuffer();
 
+    CUSTOM_COPY(coreDataBuffer)
+
     /* assignment operations */
     coreDataBuffer& operator = (coreDataBuffer&& m)noexcept;
 
@@ -146,6 +148,8 @@ public:
     coreVertexBuffer(coreVertexBuffer&& m)noexcept;
     ~coreVertexBuffer();
 
+    CUSTOM_COPY(coreVertexBuffer)
+
     /* assignment operations */
     coreVertexBuffer& operator = (coreVertexBuffer&& m)noexcept;
 
@@ -179,6 +183,8 @@ public:
     coreUniformBuffer()noexcept;
     coreUniformBuffer(coreUniformBuffer&& m)noexcept;
     ~coreUniformBuffer();
+
+    CUSTOM_COPY(coreUniformBuffer)
 
     /* assignment operations */
     coreUniformBuffer& operator = (coreUniformBuffer&& m)noexcept;

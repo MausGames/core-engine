@@ -59,6 +59,7 @@ protected:
 
 public:
     FRIEND_CLASS(coreLanguage)
+    CUSTOM_COPY(coreTranslate)
 
     /* assignment operations */
     coreTranslate& operator = (const coreTranslate& c)noexcept;

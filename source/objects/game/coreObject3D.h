@@ -68,6 +68,8 @@ public:
     coreObject3D(coreObject3D&&      m)noexcept;
     virtual ~coreObject3D();
 
+    CUSTOM_COPY(coreObject3D)
+
     /* assignment operations */
     coreObject3D& operator = (const coreObject3D& c)noexcept;
     coreObject3D& operator = (coreObject3D&&      m)noexcept;

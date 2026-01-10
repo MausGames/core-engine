@@ -50,11 +50,8 @@ protected:
 
 public:
     coreMapGen()noexcept;
-    coreMapGen(const coreMapGen& c)noexcept;
-    coreMapGen(coreMapGen&&      m)noexcept;
 
-    /* assignment operations */
-    coreMapGen& operator = (coreMapGen o)noexcept;
+    ENABLE_COPY(coreMapGen)
 
     /* access specific entry */
     T& operator []   (const I& tKey);
@@ -257,33 +254,6 @@ template <typename K, typename I, typename T> coreMapGen<K, I, T>::coreMapGen()n
 , m_atKeyList   {}
 , m_iCacheIndex (CORE_MAP_INVALID)
 {
-}
-
-template <typename K, typename I, typename T> coreMapGen<K, I, T>::coreMapGen(const coreMapGen& c)noexcept
-: m_atValueList (c.m_atValueList)
-, m_atKeyList   (c.m_atKeyList)
-, m_iCacheIndex (c.m_iCacheIndex)
-{
-}
-
-template <typename K, typename I, typename T> coreMapGen<K, I, T>::coreMapGen(coreMapGen&& m)noexcept
-: m_atValueList (std::move(m.m_atValueList))
-, m_atKeyList   (std::move(m.m_atKeyList))
-, m_iCacheIndex (m.m_iCacheIndex)
-{
-}
-
-
-// ****************************************************************
-/* assignment operations */
-template <typename K, typename I, typename T> coreMapGen<K, I, T>& coreMapGen<K, I, T>::operator = (coreMapGen o)noexcept
-{
-    // swap properties
-    std::swap(m_atValueList, o.m_atValueList);
-    std::swap(m_atKeyList,   o.m_atKeyList);
-    std::swap(m_iCacheIndex, o.m_iCacheIndex);
-
-    return *this;
 }
 
 

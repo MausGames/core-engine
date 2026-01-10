@@ -165,6 +165,7 @@ public:
     virtual ~coreResourceRelation();
 
     FRIEND_CLASS(coreResourceManager)
+    CUSTOM_COPY(coreResourceRelation)
 
 
 private:
@@ -287,6 +288,8 @@ public:
     coreResourcePtr(const coreResourcePtr& c)noexcept;
     coreResourcePtr(coreResourcePtr&&      m)noexcept;
     ~coreResourcePtr();
+
+    CUSTOM_COPY(coreResourcePtr)
 
     /* assignment operations */
     coreResourcePtr& operator = (coreResourcePtr o)noexcept;

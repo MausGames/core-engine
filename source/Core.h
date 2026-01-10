@@ -501,6 +501,7 @@
     c& operator = (const c&) = delete;          \
     c             (c&&)      = delete;          \
     c& operator = (c&&)      = delete;
+#define CUSTOM_COPY(c)   // empty marker
 
 // enable per-member comparison-operations with the defined class
 #define ENABLE_COMPARISON(c) \

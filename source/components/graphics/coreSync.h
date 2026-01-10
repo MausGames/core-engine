@@ -41,6 +41,8 @@ public:
     inline coreSync(coreSync&& m)noexcept;
     ~coreSync();
 
+    CUSTOM_COPY(coreSync)
+
     /* assignment operations */
     coreSync& operator = (coreSync&& m)noexcept;
 

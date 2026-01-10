@@ -78,6 +78,8 @@ public:
     inline coreWorkString(coreWorkString&& m)noexcept;
     ~coreWorkString();
 
+    CUSTOM_COPY(coreWorkString)
+
     /* assignment operations */
     coreWorkString& operator = (coreWorkString&& m)noexcept;
 

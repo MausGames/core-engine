@@ -221,6 +221,7 @@ public:
     ~coreParticleEffect();
 
     FRIEND_CLASS(coreParticleSystem)
+    CUSTOM_COPY(coreParticleSystem)
 
     /* assignment operations */
     coreParticleEffect& operator = (coreParticleEffect&& m)noexcept;
