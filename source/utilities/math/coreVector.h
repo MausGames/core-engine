@@ -127,6 +127,7 @@ public:
     constexpr coreVector2 Normalized      (const coreVector2 vFallback = coreVector2(0.0f,1.0f))const {ASSERT(vFallback.IsNormalized()) WARN_IF(this->IsNull()) return vFallback; return this->NormalizedUnsafe();}
     constexpr coreVector2 NormalizedUnsafe()const                                                     {ASSERT(!this->IsNull())          return coreVector2(x, y) / this->Length();}
     constexpr coreVector2 NormalizedFast  ()const                                                     {ASSERT(!this->IsNull())          return coreVector2(x, y) * RSQRT(this->LengthSq());}
+    constexpr coreVector2 Orthonormalized (const coreVector2 vNormal)const;
 
     /* process vector */
     template <typename F, typename... A> inline coreVector2 Processed(F&& nFunction, A&&... vArgs)const                                                   {return coreVector2(nFunction(x, std::forward<A>(vArgs)...), nFunction(y, std::forward<A>(vArgs)...));}
@@ -166,6 +167,7 @@ public:
     static inline    coreVector2 Rand      (const coreFloat fMinX, const coreFloat fMaxX, const coreFloat fMinY, const coreFloat fMaxY, coreRand* OUTPUT pRand = Core::Rand);
     static inline    coreVector2 RandUni   (coreRand* OUTPUT pRand = Core::Rand);
     static constexpr coreVector2 Reflect   (const coreVector2 vVelocity, const coreVector2 vNormal);
+    static constexpr coreVector2 Refract   (const coreVector2 vIncident, const coreVector2 vNormal, const coreFloat fRatio);
     static constexpr coreVector2 Bound     (const coreVector2 vSize, const coreVector2 vDirection);
     static inline    coreBool    Intersect (const coreVector2 vPosition1, const coreVector2 vDirection1, const coreVector2 vPosition2, const coreVector2 vDirection2, coreVector2* OUTPUT pvIntersection);
 
@@ -285,6 +287,7 @@ public:
     constexpr coreVector3 Normalized      (const coreVector3 vFallback = coreVector3(0.0f,0.0f,1.0f))const {ASSERT(vFallback.IsNormalized()) WARN_IF(this->IsNull()) return vFallback; return this->NormalizedUnsafe();}
     constexpr coreVector3 NormalizedUnsafe()const                                                          {ASSERT(!this->IsNull())          return coreVector3(x, y, z) / this->Length();}
     constexpr coreVector3 NormalizedFast  ()const                                                          {ASSERT(!this->IsNull())          return coreVector3(x, y, z) * RSQRT(this->LengthSq());}
+    constexpr coreVector3 Orthonormalized (const coreVector3 vNormal, coreVector3* OUTPUT pvTangent = NULL)const;
 
     /* process vector */
     template <typename F, typename... A> inline coreVector3 Processed(F&& nFunction, A&&... vArgs)const                                                   {return coreVector3(nFunction(x, std::forward<A>(vArgs)...), nFunction(y, std::forward<A>(vArgs)...), nFunction(z, std::forward<A>(vArgs)...));}
@@ -319,6 +322,7 @@ public:
     static inline    coreVector3 Rand      (const coreFloat fMin, const coreFloat fMax, coreRand* OUTPUT pRand = Core::Rand);
     static inline    coreVector3 Rand      (const coreFloat fMinX, const coreFloat fMaxX, const coreFloat fMinY, const coreFloat fMaxY, const coreFloat fMinZ, const coreFloat fMaxZ, coreRand* OUTPUT pRand = Core::Rand);
     static constexpr coreVector3 Reflect   (const coreVector3 vVelocity, const coreVector3 vNormal);
+    static constexpr coreVector3 Refract   (const coreVector3 vIncident, const coreVector3 vNormal, const coreFloat fRatio);
     static inline    coreBool    Visible   (const coreVector3 vPosition, const coreFloat fFOV, const coreVector3 vViewPosition, const coreVector3 vViewDirection);
 
     /* packing functions */
@@ -540,6 +544,17 @@ constexpr coreVector2 coreVector2::MapStepRotated45(const coreUint8 iStep)const
 
 
 // ****************************************************************
+/* calculate normalized perpendicular vector */
+constexpr coreVector2 coreVector2::Orthonormalized(const coreVector2 vNormal)const
+{
+    ASSERT(vNormal.IsNormalized())
+
+    const coreVector2 vTan = vNormal.Rotated90();
+    return vTan * SIGN(coreVector2::Dot(vTan, *this));
+}
+
+
+// ****************************************************************
 /* calculate minimum readable aspect ratio */
 constexpr coreVector2 coreVector2::AspectRatio2()const
 {
@@ -641,8 +656,22 @@ inline coreVector2 coreVector2::RandUni(coreRand* OUTPUT pRand)
 /* calculate reflected vector */
 constexpr coreVector2 coreVector2::Reflect(const coreVector2 vVelocity, const coreVector2 vNormal)
 {
+    ASSERT(vNormal.IsNormalized())
+
     const coreFloat fDot = coreVector2::Dot(vVelocity, vNormal);
-    return (fDot >= 0.0f) ? vVelocity : (vVelocity - vNormal * (2.0f*fDot));
+    return (fDot >= 0.0f) ? vVelocity : (vVelocity - vNormal * (2.0f * fDot));
+}
+
+
+// ****************************************************************
+/* calculate refracted vector */
+constexpr coreVector2 coreVector2::Refract(const coreVector2 vIncident, const coreVector2 vNormal, const coreFloat fRatio)
+{
+    ASSERT(vIncident.IsNormalized() && vNormal.IsNormalized())
+
+    const coreFloat fDot    = coreVector2::Dot(vIncident, vNormal);
+    const coreFloat fFactor = 1.0f - POW2(fRatio) * (1.0f - POW2(fDot));
+    return (fFactor < 0.0f) ? coreVector2(0.0f,0.0f) : (vIncident * fRatio - vNormal * (fRatio * fDot + SQRT(fFactor)));
 }
 
 
@@ -840,6 +869,20 @@ constexpr coreVector2 coreVector2::UnpackFloat2x32(const coreUint64 iNumber)
 
 
 // ****************************************************************
+/* calculate normalized perpendicular vector */
+constexpr coreVector3 coreVector3::Orthonormalized(const coreVector3 vNormal, coreVector3* OUTPUT pvTangent)const
+{
+    ASSERT(vNormal.IsNormalized())
+
+    const coreVector3 vTan = coreVector3::Cross(vNormal, *this).Normalized();
+    const coreVector3 vDir = coreVector3::Cross(vTan, vNormal);
+
+    if(pvTangent) (*pvTangent) = vTan;
+    return vDir;
+}
+
+
+// ****************************************************************
 /* calculate dot product */
 constexpr coreFloat coreVector3::Dot(const coreVector3 v1, const coreVector3 v2)
 {
@@ -921,8 +964,22 @@ inline coreVector3 coreVector3::Rand(const coreFloat fMinX, const coreFloat fMax
 /* calculate reflected vector */
 constexpr coreVector3 coreVector3::Reflect(const coreVector3 vVelocity, const coreVector3 vNormal)
 {
+    ASSERT(vNormal.IsNormalized())
+
     const coreFloat fDot = coreVector3::Dot(vVelocity, vNormal);
-    return (fDot >= 0.0f) ? vVelocity : (vVelocity - vNormal * (2.0f*fDot));
+    return (fDot >= 0.0f) ? vVelocity : (vVelocity - vNormal * (2.0f * fDot));
+}
+
+
+// ****************************************************************
+/* calculate refracted vector */
+constexpr coreVector3 coreVector3::Refract(const coreVector3 vIncident, const coreVector3 vNormal, const coreFloat fRatio)
+{
+    ASSERT(vIncident.IsNormalized() && vNormal.IsNormalized())
+
+    const coreFloat fDot    = coreVector3::Dot(vIncident, vNormal);
+    const coreFloat fFactor = 1.0f - POW2(fRatio) * (1.0f - POW2(fDot));
+    return (fFactor < 0.0f) ? coreVector3(0.0f,0.0f,0.0f) : (vIncident * fRatio - vNormal * (fRatio * fDot + SQRT(fFactor)));
 }
 
 
