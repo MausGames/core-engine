@@ -424,7 +424,7 @@ void corePlatformExtensions(coreString* OUTPUT psOutput)
 #if defined(_CORE_ANGLE_)
 
     // get connection to default display
-    EGLDisplay pDisplay = eglGetCurrentDisplay();
+    const EGLDisplay pDisplay = eglGetCurrentDisplay();
     if(pDisplay)
     {
         // get full extension string (EGL)

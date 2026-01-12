@@ -372,12 +372,12 @@ void coreFile::FlushFilesystem()
 
     // write in-memory data to persistent data store
     EM_ASM
-    (
+    ({
         FS.syncfs(false, function(sError)
         {
             if(sError) console.error(sError);
         });
-    );
+    });
 
 #endif
 }

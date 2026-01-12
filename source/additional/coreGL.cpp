@@ -406,7 +406,7 @@ void corePlatformExtensions(coreString* OUTPUT psOutput)
                 if(__eglGetCurrentDisplay && __eglQueryString)
                 {
                     // get connection to default display
-                    EGLDisplay pDisplay = __eglGetCurrentDisplay();
+                    const EGLDisplay pDisplay = __eglGetCurrentDisplay();
                     if(pDisplay)
                     {
                         // get full extension string (EGL)

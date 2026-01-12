@@ -437,7 +437,7 @@
     #if defined(_CORE_MSVC_)
         #define ASSERT(c)           {__assume(!!(c));}
     #elif defined(_CORE_GCC_)
-        #define ASSERT(c)           {[[assume(!!(c))]];}
+        #define ASSERT(c)           {if(!(c)) __builtin_unreachable();}
     #elif defined(_CORE_CLANG_)
         #define ASSERT(c)           {__builtin_assume(!!(c));}
     #endif
@@ -479,7 +479,7 @@
     #if defined(_CORE_MSVC_)
         #define LOOP_NONZERO(c)     (__assume((c) > 0), (c))
     #elif defined(_CORE_GCC_)
-        #define LOOP_NONZERO(c)     ([[assume((c) > 0)]], (c))
+        #define LOOP_NONZERO(c)     ((((c) > 0) ? (void)0 : __builtin_unreachable()), (c))
     #elif defined(_CORE_CLANG_)
         #define LOOP_NONZERO(c)     (__builtin_assume((c) > 0), (c))
     #endif

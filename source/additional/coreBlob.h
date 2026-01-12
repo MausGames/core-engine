@@ -267,7 +267,7 @@ inline void coreInitBlobCache()
             if(__eglGetCurrentDisplay && __eglGetProcAddress)
             {
                 // get connection to default display
-                EGLDisplay pDisplay = __eglGetCurrentDisplay();
+                const EGLDisplay pDisplay = __eglGetCurrentDisplay();
                 if(pDisplay)
                 {
                     // get function pointer from extension (EGL_ANDROID_blob_cache)
