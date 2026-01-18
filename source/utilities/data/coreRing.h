@@ -15,10 +15,12 @@
 
 // ****************************************************************
 /* generic ring container class */
-template <typename T, typename S> class coreRingGen final : public S
+template <typename T, typename S, typename U> class coreRingGen final : public S
 {
 private:
-    coreUintW m_iCurIndex;   // index of the current item
+    U m_iCurIndex;   // index of the current item
+
+    STATIC_ASSERT(std::is_integral_v<U> && std::is_unsigned_v<U>)
 
 
 public:
@@ -27,20 +29,20 @@ public:
     ENABLE_COPY(coreRingGen)
 
     /* switch current item */
-    constexpr void select(const coreUintW iIndex) {ASSERT(iIndex < this->size())     m_iCurIndex = iIndex;}
-    constexpr void next    ()                     {if(++m_iCurIndex >= this->size()) m_iCurIndex = 0u;}
-    constexpr void previous()                     {if(--m_iCurIndex >= this->size()) m_iCurIndex = this->size() - 1u;}
+    constexpr void select  (const U iIndex) {ASSERT(iIndex < this->size())     m_iCurIndex = iIndex;}
+    constexpr void next    ()               {if(++m_iCurIndex >= this->size()) m_iCurIndex = 0u;}
+    constexpr void previous()               {if(--m_iCurIndex >= this->size()) m_iCurIndex = this->size() - 1u;}
 
     /* access reference to current item */
-    constexpr       T&         current()      {return (*this)[m_iCurIndex];}
-    constexpr const T&         current()const {return (*this)[m_iCurIndex];}
-    constexpr const coreUintW& index  ()const {return m_iCurIndex;}
+    constexpr       T& current()      {return (*this)[m_iCurIndex];}
+    constexpr const T& current()const {return (*this)[m_iCurIndex];}
+    constexpr const U& index  ()const {return m_iCurIndex;}
 };
 
 
 // ****************************************************************
 /* constructor */
-template <typename T, typename S> constexpr coreRingGen<T, S>::coreRingGen()noexcept
+template <typename T, typename S, typename U> constexpr coreRingGen<T, S, U>::coreRingGen()noexcept
 : S           ()
 , m_iCurIndex (0u)
 {
@@ -49,8 +51,8 @@ template <typename T, typename S> constexpr coreRingGen<T, S>::coreRingGen()noex
 
 // ****************************************************************
 /* default ring container types */
-template <typename T, coreUintW iSize> using coreRing    = coreRingGen<T, std::array<T, iSize>>;
-template <typename T>                  using coreRingDyn = coreRingGen<T, coreList<T>>;
+template <typename T, coreUintW iSize> using coreRing    = coreRingGen<T, std::array<T, iSize>, TIGHTEST_UINT_TYPE(iSize)>;
+template <typename T>                  using coreRingDyn = coreRingGen<T, coreList<T>,          coreUintW>;
 
 
 #endif /* _CORE_GUARD_RING_H_ */
