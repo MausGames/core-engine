@@ -15,7 +15,6 @@
 // TODO 3: make sure outlines of different characters don't interfere which each other (if not wanted, could be fine for animation overlapping)
 // TODO 3: maybe handle width-based newline with back-tracking, so not every word/whitespace needs to be forward-checked
 // TODO 2: width-based newline check should be able to handle style changes which can affect text width
-// TODO 3: do not make newline checks on max-width text
 // TODO 3: on rich-text and label, changing rectify inbetween will not update invalidate<>clear handling (only problematic when disabling rectify), which can result in bleeding
 // TODO 3: handle extremely big fonts completely filling out a render pass texture
 // TODO 3: support adding arbitrary 2d-objects into the text

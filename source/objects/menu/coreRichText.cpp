@@ -550,7 +550,7 @@ void coreRichText::__ParseText()
 
             pcFrom += 1u;
         }
-        else if((*pcFrom) == ' ')
+        else if(((*pcFrom) == ' ') && (m_fMaxWidth < CORE_RICHTEXT_MAX_WIDTH))
         {
             coreBool bNewLine = false;
 
