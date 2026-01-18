@@ -430,7 +430,7 @@ void coreParticleSystem::__Reset(const coreResourceReset eInit)
 
             FOR_EACH(it, m_aInstanceBuffer)
             {
-                // bind vertex array objects
+                // bind vertex array object
                 glBindVertexArray(m_aiVertexArray.current());
                 m_aiVertexArray.next();
 

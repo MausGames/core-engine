@@ -11,9 +11,6 @@ export LD_LIBRARY_PATH=".:$LD_LIBRARY_PATH"
 # use Vulkan (Mesa Zink) instead of OpenGL
 # export MESA_LOADER_DRIVER_OVERRIDE="zink"
 
-# use mimalloc allocator (if available)
-export LD_PRELOAD="libmimalloc.so.2:$LD_PRELOAD"
-
 # launch with gamemode (if available)
 if type gamemoderun &> /dev/null; then
     gamemoderun ./CoreApp.elf "$@"

@@ -486,7 +486,7 @@ void coreBatchList::__Reset(const coreResourceReset eInit)
         // only allocate with enough capacity
         if(m_iNumInstances >= CORE_BATCHLIST_INSTANCE_THRESHOLD)
         {
-            // create vertex array object
+            // create vertex array objects
             coreGenVertexArrays(CORE_BATCHLIST_INSTANCE_BUFFERS, m_aiVertexArray.data());
 
             FOR_EACH(it, m_aInstanceBuffer)

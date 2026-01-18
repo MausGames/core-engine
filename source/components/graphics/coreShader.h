@@ -15,7 +15,7 @@
 // TODO 5: <old comment style>
 // TODO 5: shared uniform-buffer layout might be more efficient, but needs many queries
 // TODO 3: make shader version configurable from config.ini ? (clamp)
-// TODO 3: it's not possible to comment-out includes (both single-line and multi-line)
+// TODO 3: it's not possible to comment-out includes (both single-line and multi-line), because of Core::Debug->IsEnabled()
 // TODO 3: GL_MESH_SHADER_NV, GL_TASK_SHADER_NV, .mesh, .task
 // TODO 3: glUniform1ui etc. required GL3, GLES3, GL_EXT_gpu_shader4 (GL), no GLES ext
 

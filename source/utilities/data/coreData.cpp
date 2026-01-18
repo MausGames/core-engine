@@ -1166,6 +1166,26 @@ void* coreData::OpenLibrary(const coreChar* pcName)
 
 
 // ****************************************************************
+/* close dynamic library */
+coreStatus coreData::CloseLibrary(void* pLibrary)
+{
+    ASSERT(pLibrary)
+
+#if defined(_CORE_WINDOWS_)
+
+    if(FreeLibrary(s_cast<HMODULE>(pLibrary))) return CORE_OK;
+
+#elif defined(_CORE_LINUX_) || defined(_CORE_MACOS_)
+
+    if(!dlclose(pLibrary)) return CORE_OK;
+
+#endif
+
+    return CORE_ERROR_SYSTEM;
+}
+
+
+// ****************************************************************
 /* find symbol in dynamic library */
 void* coreData::GetAddress(void* pLibrary, const coreChar* pcName)
 {
@@ -1184,26 +1204,6 @@ void* coreData::GetAddress(void* pLibrary, const coreChar* pcName)
     return NULL;
 
 #endif
-}
-
-
-// ****************************************************************
-/* close dynamic library */
-coreStatus coreData::CloseLibrary(void* pLibrary)
-{
-    ASSERT(pLibrary)
-
-#if defined(_CORE_WINDOWS_)
-
-    if(FreeLibrary(s_cast<HMODULE>(pLibrary))) return CORE_OK;
-
-#elif defined(_CORE_LINUX_) || defined(_CORE_MACOS_)
-
-    if(!dlclose(pLibrary)) return CORE_OK;
-
-#endif
-
-    return CORE_ERROR_SYSTEM;
 }
 
 

@@ -936,7 +936,7 @@ void coreRichText::__InitPass(corePass* OUTPUT pPass)
     // only allocate with enough capacity
     if(pPass->iNumInstances)
     {
-        // create vertex array object
+        // create vertex array objects
         coreGenVertexArrays(CORE_RICHTEXT_INSTANCE_BUFFERS, pPass->aiVertexArray.data());
 
         FOR_EACH(it, pPass->aInstanceBuffer)

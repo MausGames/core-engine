@@ -188,8 +188,8 @@ public:
     /* handle dynamic libraries */
     static coreBool   TestLibrary (const coreChar* pcName);
     static void*      OpenLibrary (const coreChar* pcName);
-    static void*      GetAddress  (void* pLibrary, const coreChar* pcName);
     static coreStatus CloseLibrary(void* pLibrary);
+    static void*      GetAddress  (void* pLibrary, const coreChar* pcName);
 
     /* handle dynamic memory */
     static                 void* HeapCreate (const coreBool bThreadSafe);
