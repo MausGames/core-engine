@@ -936,10 +936,12 @@ void coreRichText::__InitPass(corePass* OUTPUT pPass)
     // only allocate with enough capacity
     if(pPass->iNumInstances)
     {
+        // create vertex array object
+        coreGenVertexArrays(CORE_RICHTEXT_INSTANCE_BUFFERS, pPass->aiVertexArray.data());
+
         FOR_EACH(it, pPass->aInstanceBuffer)
         {
-            // create vertex array object
-            coreGenVertexArrays(1u, &pPass->aiVertexArray.current());
+            // bind vertex array object
             glBindVertexArray(pPass->aiVertexArray.current());
             pPass->aiVertexArray.next();
 

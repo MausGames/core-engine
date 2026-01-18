@@ -425,10 +425,12 @@ void coreParticleSystem::__Reset(const coreResourceReset eInit)
         // only allocate with enough size
         if(m_iNumParticles)
         {
+            // create vertex array objects
+            coreGenVertexArrays(CORE_PARTICLE_INSTANCE_BUFFERS, m_aiVertexArray.data());
+
             FOR_EACH(it, m_aInstanceBuffer)
             {
-                // create vertex array objects
-                coreGenVertexArrays(1u, &m_aiVertexArray.current());
+                // bind vertex array objects
                 glBindVertexArray(m_aiVertexArray.current());
                 m_aiVertexArray.next();
 
