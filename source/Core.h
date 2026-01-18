@@ -613,6 +613,16 @@ template <typename R,             typename... A> struct INTERFACE coreFunctionTr
 // retrieve compile-time type properties
 #define IS_TRIVIAL(t) (std::is_trivially_copyable_v<t> && std::is_trivially_default_constructible_v<t> && std::is_trivially_destructible_v<t>)
 
+// retrieve compile-time tightest unsigned integer (type)
+template <coreUintW iValue> RETURN_NODISCARD constexpr auto coreTightestUint()
+{
+         if constexpr(std::in_range<coreUint8> (iValue)) return std::numeric_limits<coreUint8> ::max();
+    else if constexpr(std::in_range<coreUint16>(iValue)) return std::numeric_limits<coreUint16>::max();
+    else if constexpr(std::in_range<coreUint32>(iValue)) return std::numeric_limits<coreUint32>::max();
+    else if constexpr(std::in_range<coreUint64>(iValue)) return std::numeric_limits<coreUint64>::max();
+}
+#define TIGHTEST_UINT_TYPE(x) decltype(coreTightestUint<x>())
+
 // safely force compile-time evaluation (without creating symbols)
 template <typename T, T tExpression> struct INTERFACE coreForceCompileTime final
 {
