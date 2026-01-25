@@ -962,7 +962,7 @@ void CoreGraphics::__HandleScreenshot()
                 coreData::DirectoryCreate(coreData::StrDirectory(pcFullPath));
 
                 // save the surface as PNG image
-                IMG_SavePNG(pSurface, pcFullPath);
+                WARN_IF(!SDL_SavePNG(pSurface, pcFullPath)) {}
             }
 
             // unmap buffer
