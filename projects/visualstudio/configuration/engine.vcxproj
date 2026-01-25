@@ -568,6 +568,7 @@
     <None Include="..\..\..\source\additional\emscripten\pre.js" />
     <None Include="..\..\..\source\additional\emscripten\shell.html" />
     <None Include="..\..\..\source\additional\macos\cocoa.mm" />
+    <None Include="..\cpp.hint" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

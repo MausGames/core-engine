@@ -444,5 +444,6 @@
     <None Include="..\..\..\source\additional\macos\cocoa.mm">
       <Filter>additional\macos</Filter>
     </None>
+    <None Include="..\cpp.hint" />
   </ItemGroup>
 </Project>

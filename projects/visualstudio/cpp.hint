@@ -1,0 +1,10 @@
+#define OUTPUT
+#define INTERFACE
+#define UNUSED
+#define THREAD_LOCAL
+#define FORCE_INLINE
+#define DONT_INLINE
+#define FALLTHROUGH
+#define RETURN_RESTRICT
+#define RETURN_NODISCARD
+#define FUNC_TERMINATE
