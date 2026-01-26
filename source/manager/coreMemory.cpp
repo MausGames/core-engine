@@ -53,7 +53,7 @@ void* coreTempStorageAllocate(const coreUintW iSize, const coreUintW iAlign)
 
 // ****************************************************************
 /* free memory from the temp-storage */
-coreBool coreTempStorageFree(void** pPointer)
+coreBool coreTempStorageFree(void** OUTPUT pPointer)
 {
     ASSERT(s_iTempIndex != SIZE_MAX)
     ASSERT(pPointer && (*pPointer))

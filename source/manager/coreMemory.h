@@ -80,7 +80,7 @@
 /* temp-storage functions */
 extern void     coreTempStorageInit    (const coreUintW iIndex);
 extern void*    coreTempStorageAllocate(const coreUintW iSize, const coreUintW iAlign);
-extern coreBool coreTempStorageFree    (void** pPointer);
+extern coreBool coreTempStorageFree    (void** OUTPUT pPointer);
 
 
 // ****************************************************************

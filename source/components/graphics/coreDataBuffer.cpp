@@ -190,7 +190,7 @@ RETURN_RESTRICT coreByte* coreDataBuffer::MapWrite(const coreUint32 iOffset, con
     }
     else
     {
-        if(eMapType == CORE_DATABUFFER_MAP_INVALIDATE_ALL)
+        if((eMapType == CORE_DATABUFFER_MAP_INVALIDATE_ALL) && !DEFINED(_CORE_EMSCRIPTEN_))
         {
             if(CORE_GL_SUPPORT(ARB_direct_state_access))
             {

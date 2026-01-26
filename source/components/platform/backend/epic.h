@@ -25,6 +25,7 @@
 
 // TODO 3: Ukrainian language is currently not supported on the Epic store
 // TODO 2: macOS never seems to work, authentication does nothing, log says nothing, documentation is confusing, I have no idea (currently the game just starts after 5 seconds and achievements won't work)
+// TODO 3: what about "epicuserid" command-line to skip busy-waiting ? only in offline-mode ?
 
 
 // ****************************************************************
