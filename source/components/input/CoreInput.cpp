@@ -162,12 +162,14 @@ coreBool CoreInput::ProcessEvent(const SDL_Event& oEvent)
 
     // press mouse button
     case SDL_EVENT_MOUSE_BUTTON_DOWN:
-        this->SetMouseButton(oEvent.button.button, true);
+        this->SetMouseButton  (oEvent.button.button, true);
+        this->SetMousePosition(coreVector2(oEvent.button.x, -oEvent.button.y) / Core::System->GetResolution() + coreVector2(-0.5f,0.5f));
         break;
 
     // release mouse button
     case SDL_EVENT_MOUSE_BUTTON_UP:
-        this->SetMouseButton(oEvent.button.button, false);
+        this->SetMouseButton  (oEvent.button.button, false);
+        this->SetMousePosition(coreVector2(oEvent.button.x, -oEvent.button.y) / Core::System->GetResolution() + coreVector2(-0.5f,0.5f));
         break;
 
     // move mouse position
@@ -178,7 +180,8 @@ coreBool CoreInput::ProcessEvent(const SDL_Event& oEvent)
 
     // move mouse wheel
     case SDL_EVENT_MOUSE_WHEEL:
-        this->SetMouseWheel(oEvent.wheel.y);
+        this->SetMouseWheel   (oEvent.wheel.y);
+        this->SetMousePosition(coreVector2(oEvent.wheel.mouse_x, -oEvent.wheel.mouse_y) / Core::System->GetResolution() + coreVector2(-0.5f,0.5f));
         break;
 
 #endif
@@ -276,20 +279,27 @@ coreBool CoreInput::ProcessEvent(const SDL_Event& oEvent)
 
     // press finger
     case SDL_EVENT_FINGER_DOWN:
-        this->SetTouchButton  (coreUintW(oEvent.tfinger.fingerID), true);
-        this->SetTouchPosition(coreUintW(oEvent.tfinger.fingerID), coreVector2(oEvent.tfinger.x, -oEvent.tfinger.y) + coreVector2(-0.5f,0.5f));
+        this->SetTouchButton  (oEvent.tfinger.fingerID, true);
+        this->SetTouchPosition(oEvent.tfinger.fingerID, coreVector2(oEvent.tfinger.x, -oEvent.tfinger.y) + coreVector2(-0.5f,0.5f));
         break;
 
     // release finger
     case SDL_EVENT_FINGER_UP:
-        this->SetTouchButton(coreUintW(oEvent.tfinger.fingerID), false);
+        this->SetTouchButton  (oEvent.tfinger.fingerID, false);
+        this->SetTouchPosition(oEvent.tfinger.fingerID, coreVector2(oEvent.tfinger.x, -oEvent.tfinger.y) + coreVector2(-0.5f,0.5f));
+        break;
+
+    // cancel finger
+    case SDL_EVENT_FINGER_CANCELED:
+        this->ClearTouchButton(oEvent.tfinger.fingerID);
+        this->SetTouchPosition(oEvent.tfinger.fingerID, coreVector2(oEvent.tfinger.x, -oEvent.tfinger.y) + coreVector2(-0.5f,0.5f));
         break;
 
     // move finger
     case SDL_EVENT_FINGER_MOTION:
-        this->SetTouchPosition(coreUintW(oEvent.tfinger.fingerID), coreVector2(oEvent.tfinger.x,  -oEvent.tfinger.y)  + coreVector2(-0.5f,0.5f));
-        this->SetTouchRelative(coreUintW(oEvent.tfinger.fingerID), coreVector2(oEvent.tfinger.dx, -oEvent.tfinger.dy) + this->GetTouchRelative(coreUintW(oEvent.tfinger.fingerID)));
-        this->SetTouchPressure(coreUintW(oEvent.tfinger.fingerID), oEvent.tfinger.pressure);
+        this->SetTouchPosition(oEvent.tfinger.fingerID, coreVector2(oEvent.tfinger.x,  -oEvent.tfinger.y)  + coreVector2(-0.5f,0.5f));
+        this->SetTouchRelative(oEvent.tfinger.fingerID, coreVector2(oEvent.tfinger.dx, -oEvent.tfinger.dy) + this->GetTouchRelative(coreUintW(oEvent.tfinger.fingerID)));
+        this->SetTouchPressure(oEvent.tfinger.fingerID, oEvent.tfinger.pressure);
         break;
 
 #endif

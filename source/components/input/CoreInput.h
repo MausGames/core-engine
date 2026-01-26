@@ -24,6 +24,7 @@
 // TODO 3: add option to flip confirm and cancel gamepad buttons for menu
 // TODO 3: implement haptics again
 // TODO 3: ABXY, ACCEPT and CANCEL cannot be detected with iLast (only NORTH, EAST, etc.), and are also added to aiCount
+// TODO 3: mouse events should cause menu interaction on press, touch events should on release (use own coreInputType enum mapped to appropriate value ?)
 
 
 // ****************************************************************
@@ -260,6 +261,7 @@ public:
     inline void ClearKeyboardButton   (const coreInputKey iButton)                      {WARN_IF(iButton >= CORE_INPUT_BUTTONS_KEYBOARD) return; m_Keyboard                   .aiButton[iButton] = 0u;}
     inline void ClearMouseButton      (const coreUint8    iButton)                      {WARN_IF(iButton >= CORE_INPUT_BUTTONS_MOUSE)    return; m_Mouse                      .aiButton[iButton] = 0u;}
     inline void ClearJoystickButton   (const coreUintW iIndex, const coreUint8 iButton) {WARN_IF(iButton >= CORE_INPUT_BUTTONS_JOYSTICK) return; __CORE_INPUT_JOYSTICK(iIndex).aiButton[iButton] = 0u;}
+    inline void ClearTouchButton      (const coreUintW iIndex)                          {WARN_IF(iIndex  >= CORE_INPUT_FINGERS)          return; m_aTouch[iIndex].iButton = 0u;}
     inline void ClearKeyboardButtonAll()                                                {std::memset(m_Keyboard                   .aiButton, 0, sizeof(m_Keyboard                   .aiButton));}
     inline void ClearMouseButtonAll   ()                                                {std::memset(m_Mouse                      .aiButton, 0, sizeof(m_Mouse                      .aiButton));}
     inline void ClearJoystickButtonAll(const coreUintW iIndex)                          {std::memset(__CORE_INPUT_JOYSTICK(iIndex).aiButton, 0, sizeof(__CORE_INPUT_JOYSTICK(iIndex).aiButton));}
