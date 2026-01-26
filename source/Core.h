@@ -41,7 +41,7 @@
 // TODO 4: "WARN_IF" where applicable, "if" where not (check between user-caused errors, system-caused errors, developer errors)
 // TODO 3: automatic Core::Reshape() if not handled, currently it's explicit in every application, CoreApp callback ?
 // TODO 4: noexcept = default, ~T()noexcept
-// TODO 5: re-introduce __declspec(noalias), __attribute__((pure)) and __attribute__((const)) if it ever makes sense again, also __attribute__((noescape)), e.g. for dynamic functions
+// TODO 5: re-introduce __declspec(noalias), __attribute__((pure)), __attribute__((const)) and __attribute__((returns_nonnull)) if it ever makes sense again, also __attribute__((noescape)), e.g. for dynamic functions
 
 
 // ****************************************************************
@@ -200,10 +200,8 @@
     #define THREAD_LOCAL     __declspec(thread)     // thread-local storage without dynamic construction and destruction
     #define FORCE_INLINE     __forceinline          // always inline the function
     #define DONT_INLINE      __declspec(noinline)   // never inline the function
-    #define WITHIN_INLINE                           // inline everything within the function
     #define FALLTHROUGH      [[fallthrough]];       // intentionally fall through to the next switch-label
     #define RETURN_RESTRICT  __declspec(restrict)   // returned object will not be aliased with another pointer
-    #define RETURN_NONNULL   _Ret_notnull_          // returned pointer will not be null
     #define RETURN_NODISCARD [[nodiscard]]          // returned value should not be discarded (but can be cast to void)
     #define FUNC_TERMINATE   [[noreturn]]           // function does not return (e.g. by calling exit(3) or abort(3))
 #else
@@ -213,10 +211,8 @@
     #define THREAD_LOCAL     __thread
     #define FORCE_INLINE     __attribute__((always_inline)) inline
     #define DONT_INLINE      __attribute__((noinline))
-    #define WITHIN_INLINE    __attribute__((flatten))
     #define FALLTHROUGH      [[fallthrough]];
     #define RETURN_RESTRICT  __attribute__((returns_nonnull))
-    #define RETURN_NONNULL   __attribute__((returns_nonnull))
     #define RETURN_NODISCARD [[nodiscard]]
     #define FUNC_TERMINATE   [[noreturn]]
 #endif
