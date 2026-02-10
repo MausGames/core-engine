@@ -127,7 +127,7 @@ constexpr coreUint32 coreHashCRC32C(const coreByte* pData, coreUintW iLength)
 {
     ASSERT(pData && iLength)
 
-#if defined(_CORE_SSE_) && defined(_CORE_MSVC_)
+#if defined(_CORE_SSE_)
 
     if(!std::is_constant_evaluated() && coreCPUID::SSE42())
     {

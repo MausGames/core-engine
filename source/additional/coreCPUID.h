@@ -12,7 +12,7 @@
 
 
 // ****************************************************************
-/* CPUID instruction definition */
+/* CPUID instruction definitions */
 #if defined(_CORE_SSE_)
     #if defined(_CORE_MSVC_)
         #define CORE_CPUID_FUNC(x,a,c) {__cpuidex(x, a, c);}
@@ -28,6 +28,32 @@
 
 #define CORE_CPUID_BASIC    (0x00000000u)
 #define CORE_CPUID_EXTENDED (0x80000000u)
+
+
+// ****************************************************************
+/* SSE instruction wrappers  */
+#if defined(_CORE_SSE_) && (defined(_CORE_GCC_) || defined(_CORE_CLANG_))
+
+inline __m128i    __attribute__((const, target("f16c")))   _core_mm_cvtps_ph  (const __m128     a, const coreInt32  b) {ASSERT(b == _MM_FROUND_CUR_DIRECTION) return _mm_cvtps_ph(a, _MM_FROUND_CUR_DIRECTION);}
+inline __m128     __attribute__((const, target("f16c")))   _core_mm_cvtph_ps  (const __m128i    a)                     {return _mm_cvtph_ps  (a);}
+inline coreInt32  __attribute__((const, target("popcnt"))) _core_mm_popcnt_u32(const coreUint32 a)                     {return _mm_popcnt_u32(a);}
+inline coreInt64  __attribute__((const, target("popcnt"))) _core_mm_popcnt_u64(const coreUint64 a)                     {return _mm_popcnt_u64(a);}
+inline coreUint32 __attribute__((const, target("crc32")))  _core_mm_crc32_u8  (const coreUint32 a, const coreUint8  b) {return _mm_crc32_u8  (a, b);}
+inline coreUint32 __attribute__((const, target("crc32")))  _core_mm_crc32_u16 (const coreUint32 a, const coreUint16 b) {return _mm_crc32_u16 (a, b);}
+inline coreUint32 __attribute__((const, target("crc32")))  _core_mm_crc32_u32 (const coreUint32 a, const coreUint32 b) {return _mm_crc32_u32 (a, b);}
+inline coreUint64 __attribute__((const, target("crc32")))  _core_mm_crc32_u64 (const coreUint64 a, const coreUint64 b) {return _mm_crc32_u64 (a, b);}
+
+#undef  _mm_cvtps_ph
+#define _mm_cvtps_ph   _core_mm_cvtps_ph
+#define _mm_cvtph_ps   _core_mm_cvtph_ps
+#define _mm_popcnt_u32 _core_mm_popcnt_u32
+#define _mm_popcnt_u64 _core_mm_popcnt_u64
+#define _mm_crc32_u8   _core_mm_crc32_u8
+#define _mm_crc32_u16  _core_mm_crc32_u16
+#define _mm_crc32_u32  _core_mm_crc32_u32
+#define _mm_crc32_u64  _core_mm_crc32_u64
+
+#endif
 
 
 // ****************************************************************
