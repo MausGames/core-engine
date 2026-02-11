@@ -12,14 +12,12 @@
 
 // TODO 3: implement constexpr strright
 // TODO 3: add ToChars float precision parameter (+ search for 'PRINT("%f' and 'PRINT("%.')
-// TODO 3: make !temp and !appdata replace instead
 // TODO 3: add compiled/included Windows SDK version to BuildLibrary string
 // TODO 2: implement checks and proper handling for paths exceeding the max length (currently they are truncated and might throw "not enough buffer-space" errors on some APIs)
 // TODO 3: manually convert Win32 paths to \\?\ format, only for absolute paths (expand relative paths ? similar to user-folder ?), and requires changing path-delimiter '/' to '\' (what about SDL RWops ?)
 // TODO 1: handle distinction between user-folder (read+write) and data-folder (read only), for all platforms, and all file+directory functions
 // TODO 3: implement proper UTF8 versions for toupper, tolower, isupper, islower (wchar_t is only 2-bytes on Windows)
 // TODO 2: implement locked/scoped temp-string return
-// TODO 3: localtime_s/_r and gmtime_s/_r
 // TODO 3: getpwuid_r and getlogin_r
 // TODO 3: see if PRINT and wchar-conversion can be used with stack-only buffers (maybe even custom sized (static)), with the same API as now, but avoid alloca
 
@@ -38,8 +36,8 @@ STATIC_ASSERT(CORE_DATA_STRING_LEN >= CORE_DATA_MAX_PATH)
     #define PRINT(...)   (coreData::Print(__VA_ARGS__))
 #endif
 
-#define TIMEMAP_LOCAL(t) ([](const std::time_t iValue) {return std::localtime(&iValue);}(t))
-#define TIMEMAP_GM(t)    ([](const std::time_t iValue) {return std::gmtime   (&iValue);}(t))
+#define TIMEMAP_LOCAL(t) ([](const std::time_t iValue) {static std::tm s_Buffer = {}; return localtime_r(&iValue, &s_Buffer);}(t))
+#define TIMEMAP_GM(t)    ([](const std::time_t iValue) {static std::tm s_Buffer = {}; return gmtime_r   (&iValue, &s_Buffer);}(t))
 #define TIMEMAP_CURRENT  (TIMEMAP_LOCAL(std::time(NULL)))
 
 #define TO_UPPER(c)      (coreChar(std::toupper(coreUint8(c))))
@@ -48,7 +46,9 @@ STATIC_ASSERT(CORE_DATA_STRING_LEN >= CORE_DATA_MAX_PATH)
 #define IS_LOWER(c)      (std::islower(coreUint8(c)))
 
 #if defined(_CORE_MSVC_)
-    #define strtok_r strtok_s
+    #define strtok_r         strtok_s
+    #define localtime_r(a,b) localtime_s(b, a), b
+    #define gmtime_r(a,b)    gmtime_s(b, a), b
 #endif
 
 enum coreEnumType : coreUint8
