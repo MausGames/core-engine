@@ -15,7 +15,6 @@
 // TODO 2: should it be possible to create many log files ? console output and file header then ?
 // TODO 3: escape special HTML characters as normal text, <, >, &
 // TODO 3: log on start of an operation, not the end, to better locate crashes
-// TODO 3: m_iLastTime per thread (thread-id map ?)
 
 
 // ****************************************************************
@@ -43,20 +42,20 @@ ENABLE_BITWISE(coreLogLevel)
 class coreLog final
 {
 private:
-    std::FILE* m_pFile;             // log file stream handle
+    std::FILE* m_pFile;                               // log file stream handle
 
-    coreString   m_sPath;           // relative path of the file
-    coreLogLevel m_eLevel;          // logging level
+    coreString   m_sPath;                             // relative path of the file
+    coreLogLevel m_eLevel;                            // logging level
 
-    coreUint8  m_iListStatus;       // currently writing a list
-    coreUint16 m_iWarnLimit;        // remaining number of warnings (to prevent infinite spam)
+    coreUint8    m_iListStatus;                       // currently writing a list
+    coreUint16   m_iWarnLimit;                        // remaining number of warnings (to prevent infinite spam)
+    SDL_ThreadID m_iThisThread;                       // thread-ID from the creator of this log
 
-    coreUint64   m_iLastTime;       // last time-value for duration approximations
-    SDL_ThreadID m_iThisThread;     // thread-ID from the creator of this log
+    coreMap<SDL_ThreadID, coreUint64> m_aiLastTime;   // last time-value for duration approximations (per thread)
 
-    coreRecursiveLock m_Lock;       // recursive spinlock to prevent concurrent log access
+    coreRecursiveLock m_Lock;                         // recursive spinlock to prevent concurrent log access
 
-    coreWorkString m_sWorkString;   // pre-allocated string for assembling messages
+    coreWorkString m_sWorkString;                     // pre-allocated string for assembling messages
 
 
 public:

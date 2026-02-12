@@ -17,8 +17,8 @@ coreLog::coreLog(const coreChar* pcPath)noexcept
 , m_eLevel      (CORE_LOG_LEVEL_ALL)
 , m_iListStatus (0u)
 , m_iWarnLimit  (1000u)
-, m_iLastTime   (0u)
 , m_iThisThread (0u)
+, m_aiLastTime  {}
 , m_Lock        ()
 , m_sWorkString ("")
 {
@@ -54,9 +54,6 @@ coreLog::coreLog(const coreChar* pcPath)noexcept
 
         // flush log file
         std::fflush(m_pFile);
-
-        // save first time-value (and init tick-counter)
-        m_iLastTime = SDL_GetTicks();
 
         // save thread-ID from the creator
         m_iThisThread = SDL_GetCurrentThreadID();
@@ -100,13 +97,16 @@ void coreLog::__Write(const coreBool bTimeStamp, coreWorkString& sMessage, const
             const coreUint64   iTime   = SDL_GetTicks();
             const SDL_ThreadID iThread = SDL_GetCurrentThreadID();
 
+            // retrieve thread-specific last time-value
+            coreUint64& iLastTime = m_aiLastTime.count(iThread) ? m_aiLastTime.at(iThread) : m_aiLastTime.emplace(iThread, iTime);
+
             // write time-value and thread-ID
             std::fprintf(m_pFile, "<span class=\"time\">[%02llu:%02llu.%03llu - %3llu]</span> <span class=\"%s\">[%04llX]</span> ",
-                         (iTime / 1000u) / 60u, (iTime / 1000u) % 60u, (iTime % 1000u), coreUint64(MIN(iTime - m_iLastTime, 999u)),
+                         (iTime / 1000u) / 60u, (iTime / 1000u) % 60u, (iTime % 1000u), coreUint64(MIN(iTime - iLastTime, 999u)),
                          (iThread == m_iThisThread) ? "thread1" : "thread2", coreUint64(iThread));
 
             // save time-value (for duration approximations)
-            m_iLastTime = iTime;
+            iLastTime = iTime;
         }
 
         // write text
