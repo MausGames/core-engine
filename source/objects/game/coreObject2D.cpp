@@ -233,7 +233,7 @@ void coreObject2D::Move()
         }
 
         // reset the update status
-        m_eUpdate = CORE_OBJECT_UPDATE_NOTHING;
+        REMOVE_FLAG(m_eUpdate, CORE_OBJECT_UPDATE_TRANSFORM)
     }
 }
 

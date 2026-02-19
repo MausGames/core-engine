@@ -211,36 +211,44 @@ void coreObject3D::Move()
         {
             // update rotation quaternion
             m_vRotation = coreMatrix4::Orientation(m_vDirection, m_vOrientation).m123().ToQuat();
+
+            // reset the update status
+            REMOVE_FLAG(m_eUpdate, CORE_OBJECT_UPDATE_TRANSFORM)
         }
         if(HAS_FLAG(m_eUpdate, CORE_OBJECT_UPDATE_COLLISION))
         {
-            // cancel update without valid volume
+            // skip update without valid volume
             const coreModelPtr& pVolume = m_pVolume ? m_pVolume : m_pModel;
-            if(!pVolume.IsUsable()) return;
+            if(pVolume.IsUsable())
+            {
+                // calculate extent and correction
+                const coreVector3 vExtent     = m_vSize * m_vCollisionModifier;
+                const coreVector3 vCorrection = pVolume->GetBoundingRange() / MAX(pVolume->GetBoundingRange().Max(), CORE_MATH_PRECISION);
 
-            // calculate extent and correction
-            const coreVector3 vExtent     = m_vSize * m_vCollisionModifier;
-            const coreVector3 vCorrection = pVolume->GetBoundingRange() / MAX(pVolume->GetBoundingRange().Max(), CORE_MATH_PRECISION);
+                // update collision range and radius
+                m_vCollisionRange  = pVolume->GetBoundingRange () * (vExtent);
+                m_fCollisionRadius = pVolume->GetBoundingRadius() * (vExtent * vCorrection).Max();
 
-            // update collision range and radius
-            m_vCollisionRange  = pVolume->GetBoundingRange () * (vExtent);
-            m_fCollisionRadius = pVolume->GetBoundingRadius() * (vExtent * vCorrection).Max();
+                // reset the update status
+                REMOVE_FLAG(m_eUpdate, CORE_OBJECT_UPDATE_COLLISION)
+            }
         }
         if(HAS_FLAG(m_eUpdate, CORE_OBJECT_UPDATE_VISUAL))
         {
-            // cancel update without valid model
-            if(!m_pModel.IsUsable()) return;
+            // skip update without valid model
+            if(m_pModel.IsUsable())
+            {
+                // calculate correction
+                const coreVector3 vCorrection = m_pModel->GetBoundingRange() / MAX(m_pModel->GetBoundingRange().Max(), CORE_MATH_PRECISION);
 
-            // calculate correction
-            const coreVector3 vCorrection = m_pModel->GetBoundingRange() / MAX(m_pModel->GetBoundingRange().Max(), CORE_MATH_PRECISION);
+                // update visual range and radius
+                m_vVisualRange  = m_pModel->GetBoundingRange () * (m_vSize);
+                m_fVisualRadius = m_pModel->GetBoundingRadius() * (m_vSize * vCorrection).Max();
 
-            // update visual range and radius
-            m_vVisualRange  = m_pModel->GetBoundingRange () * (m_vSize);
-            m_fVisualRadius = m_pModel->GetBoundingRadius() * (m_vSize * vCorrection).Max();
+                // reset the update status
+                REMOVE_FLAG(m_eUpdate, CORE_OBJECT_UPDATE_VISUAL)
+            }
         }
-
-        // reset the update status
-        m_eUpdate = CORE_OBJECT_UPDATE_NOTHING;
     }
 }
 
