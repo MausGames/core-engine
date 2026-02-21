@@ -15,12 +15,10 @@
 
 // ****************************************************************
 /* generic ring container class */
-template <typename T, typename S, typename U> class coreRingGen final : public S
+template <typename T, typename S, std::unsigned_integral U> class coreRingGen final : public S
 {
 private:
     U m_iCurIndex;   // index of the current item
-
-    STATIC_ASSERT(std::is_integral_v<U> && std::is_unsigned_v<U>)
 
 
 public:
@@ -42,7 +40,7 @@ public:
 
 // ****************************************************************
 /* constructor */
-template <typename T, typename S, typename U> constexpr coreRingGen<T, S, U>::coreRingGen()noexcept
+template <typename T, typename S, std::unsigned_integral U> constexpr coreRingGen<T, S, U>::coreRingGen()noexcept
 : S           ()
 , m_iCurIndex (0u)
 {

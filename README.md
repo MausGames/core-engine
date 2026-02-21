@@ -32,7 +32,7 @@ It is **designed to be supportive, versatile and powerful**, and to dynamically 
 - **Data Buffers:** persistent mapping, multi-buffering, explicit orphaning, vertex format spec configuration (interleaved or separate)
 - **Models:** custom model format (for now), pre and post-transform vertex cache optimization, attribute packing, acceleration structure generation
 - **Textures:** PNG (flexible), WebP (fast), animated WebP, pixel-format conversion, block compression (DXT, BC7), mipmap generation, async upload, volume textures (simple), cube textures (simple)
-- **Shaders:** support for various GLSL shader types (vertex, tesselation, geometry, fragment, compute), parallel compilation, shader caching, [driver blob caching](https://registry.khronos.org/EGL/extensions/ANDROID/EGL_ANDROID_blob_cache.txt) (EGL), include system, compatibility layer, utility library, dynamic code injection, error and stats logging
+- **Shaders:** support for various GLSL shader types (vertex, tessellation, geometry, fragment, compute), parallel compilation, shader caching, [driver blob caching](https://registry.khronos.org/EGL/extensions/ANDROID/EGL_ANDROID_blob_cache.txt) (EGL), include system, compatibility layer, utility library, dynamic code injection, error and stats logging
 - **Fonts:** hinting, kerning, text and glyph layouting
 - **Async Screenshots**
 
@@ -114,7 +114,7 @@ It is **designed to be supportive, versatile and powerful**, and to dynamically 
 - **Buttons**
 - **Check Boxes**
 - **Selection Boxes**
-- **Text Input Boxes:** input conceiling (for passwords)
+- **Text Input Boxes:** input concealing (for passwords)
 - **View/Scroll Boxes:** box culling
 
 ### Math
@@ -171,7 +171,7 @@ It is **designed to be supportive, versatile and powerful**, and to dynamically 
 ## Notes
 
 - Please understand that pull requests are currently not accepted, as this engine is mainly a public personal project and learning experience.
-- Some code changes are not yet available as they are still work-in-progress or confidental. There is no guarantee that everything will always work out-of-the-box on other peoples machines.
+- Some code changes are not yet available as they are still work-in-progress or confidential. There is no guarantee that everything will always work out-of-the-box on other peoples machines.
 - Pre-built dependencies can be downloaded with the **complete_repository.bat/.sh** script or manually built from the **Core Library** repository ([GitHub](https://github.com/MausGames/core-library), [GitLab](https://gitlab.com/MausGames/core-library)).
 - If you have any questions, please feel free to open an issue or [contact me](https://www.maus-games.at/) directly.
 

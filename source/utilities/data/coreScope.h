@@ -63,12 +63,8 @@ public:
 
 // ****************************************************************
 /* deferred execution helper */
-template <typename F> class coreDefer final
+template <typename F> class coreDefer final : public F
 {
-private:
-    F m_nFunc;   // deferred function
-
-
 public:
     constexpr coreDefer(F&& nFunc)noexcept;
     ~coreDefer();
@@ -128,7 +124,7 @@ template <typename T> coreScope<T>& coreScope<T>::operator = (coreScope&& m)noex
 // ****************************************************************
 /* constructor */
 template <typename F> constexpr coreDefer<F>::coreDefer(F&& nFunc)noexcept
-: m_nFunc (std::forward<F>(nFunc))
+: F (std::forward<F>(nFunc))
 {
 }
 
@@ -137,7 +133,7 @@ template <typename F> constexpr coreDefer<F>::coreDefer(F&& nFunc)noexcept
 /* destructor */
 template <typename F> coreDefer<F>::~coreDefer()
 {
-    m_nFunc();
+    F::operator()();
 }
 
 

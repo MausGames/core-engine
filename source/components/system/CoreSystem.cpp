@@ -60,7 +60,7 @@ CoreSystem::CoreSystem()noexcept
         SDL_SetHint(SDL_HINT_VIDEO_X11_NET_WM_BYPASS_COMPOSITOR, DEFINED(_CORE_DEBUG_) ? "0" : "1");
 
         // enable SDL debug messages
-        SDL_SetLogPriorities(Core::Debug->IsEnabled() ? SDL_LOG_PRIORITY_INFO : SDL_LOG_PRIORITY_WARN);
+        SDL_SetLogPriorities(Core::Debug->IsEnabled() ? SDL_LOG_PRIORITY_DEBUG : SDL_LOG_PRIORITY_WARN);
 
         // get default log callback (standard output)
         SDL_LogOutputFunction nOldFunc;

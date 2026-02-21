@@ -17,6 +17,7 @@
 // TODO 3: change R and RG targets to RGB if not supported ? also change some other targets if not supported
 // TODO 5: <old comment style>
 // TODO 4: do I still need the name parameter ?
+// TODO 3: Mozilla Developer Network says certain RGB formats (like RGB8) should be changed to RGBA in WebGL for performance reasons
 
 // NOTE: superior objects have to handle resource-resets, to handle resolution-depending properties
 

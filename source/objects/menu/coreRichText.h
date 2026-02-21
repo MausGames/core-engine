@@ -10,9 +10,9 @@
 #ifndef _CORE_GUARD_RICHTEXT_H_
 #define _CORE_GUARD_RICHTEXT_H_
 
-// TODO 3: textures could be made static and shared (clear on reset) (but are bound to style, also static?)
-// TODO 3: do not update buffer when just changing max length
-// TODO 3: make sure outlines of different characters don't interfere which each other (if not wanted, could be fine for animation overlapping)
+// TODO 3: textures could be made static and shared (clear on reset) (but are bound to style, also static?) (move into "shared" object, resides in object-manager)
+// TODO 3: do not update buffer when just changing max length (MaxOrder)
+// TODO 3: make sure outlines of different characters don't interfere which each other (may require per-fragment depth adjustment) (if not wanted, could be fine for animation overlapping)
 // TODO 3: maybe handle width-based newline with back-tracking, so not every word/whitespace needs to be forward-checked
 // TODO 2: width-based newline check should be able to handle style changes which can affect text width
 // TODO 3: on rich-text and label, changing rectify inbetween will not update invalidate<>clear handling (only problematic when disabling rectify), which can result in bleeding

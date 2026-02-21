@@ -18,6 +18,8 @@
 // TODO 4: add all missing "shader extensions"
 // TODO 3: CORE_CONFIG_GRAPHICS_DISABLEEXTENSIONS does not work for static version-checked extensions
 // TODO 3: EGL_ANGLE_memory_usage_report
+// TODO 3: do not use string-contains for checking extensions, and fix all wrappers to handle alt-extensions
+// TODO 4: maybe also move all extension defines up to the top (like in coreAL)
 // TODO 4: integrate WEBGL_provoking_vertex into C++ once available in Emscripten
 
 
