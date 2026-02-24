@@ -150,8 +150,8 @@ private:
 
 
 public:
-    explicit coreSpinLocker(T* pLock)noexcept : m_pLock (pLock) {m_pLock->Lock();}
-    ~coreSpinLocker()                                           {m_pLock->Unlock();}
+    FORCE_INLINE explicit coreSpinLocker(T* pLock)noexcept : m_pLock (pLock) {m_pLock->Lock();}
+    FORCE_INLINE ~coreSpinLocker()                                           {m_pLock->Unlock();}
 
     DISABLE_COPY(coreSpinLocker)
     DISABLE_HEAP

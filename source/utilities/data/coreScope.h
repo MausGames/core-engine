@@ -17,14 +17,14 @@
 
 // ****************************************************************
 /* scope definitions */
-#define CORE_SCOPE_CLASS(c,t,f,g)                                 \
-    class c final : public coreScope<t>                           \
-    {                                                             \
-    public:                                                       \
-        c(t* pObject = NULL)noexcept : coreScope<t> (pObject) {f} \
-        ~c()                                                  {g} \
-                                                                  \
-        ENABLE_COPY(c)                                            \
+#define CORE_SCOPE_CLASS(c,t,f,g)                                              \
+    class c final : public coreScope<t>                                        \
+    {                                                                          \
+    public:                                                                    \
+        FORCE_INLINE c(t* pObject = NULL)noexcept : coreScope<t> (pObject) {f} \
+        FORCE_INLINE ~c()                                                  {g} \
+                                                                               \
+        ENABLE_COPY(c)                                                         \
     };
 
 #define DEFER(x) const coreDefer CONCAT(__d, __LINE__)([&]() {x});
@@ -39,8 +39,8 @@ protected:
 
 
 protected:
-    constexpr coreScope(T* ptObject)noexcept;
-    coreScope(coreScope&& m)noexcept;
+    constexpr FORCE_INLINE coreScope(T* ptObject)noexcept;
+    FORCE_INLINE coreScope(coreScope&& m)noexcept;
     ~coreScope() = default;
 
 
@@ -66,8 +66,8 @@ public:
 template <typename F> class coreDefer final : public F
 {
 public:
-    constexpr coreDefer(F&& nFunc)noexcept;
-    ~coreDefer();
+    constexpr FORCE_INLINE explicit coreDefer(F&& nFunc)noexcept;
+    FORCE_INLINE ~coreDefer();
 
     DISABLE_COPY(coreDefer)
     DISABLE_HEAP
@@ -83,8 +83,8 @@ private:
 
 
 public:
-    coreProperties()noexcept;
-    ~coreProperties();
+    FORCE_INLINE coreProperties()noexcept;
+    FORCE_INLINE ~coreProperties();
 
     DISABLE_COPY(coreProperties)
     DISABLE_HEAP
@@ -96,12 +96,12 @@ public:
 
 // ****************************************************************
 /* constructor */
-template <typename T> constexpr coreScope<T>::coreScope(T* ptObject)noexcept
+template <typename T> constexpr FORCE_INLINE coreScope<T>::coreScope(T* ptObject)noexcept
 : m_ptObject (ptObject)
 {
 }
 
-template <typename T> coreScope<T>::coreScope(coreScope&& m)noexcept
+template <typename T> FORCE_INLINE coreScope<T>::coreScope(coreScope&& m)noexcept
 : m_ptObject (std::exchange(m.m_ptObject, NULL))
 {
 }
@@ -123,7 +123,7 @@ template <typename T> coreScope<T>& coreScope<T>::operator = (coreScope&& m)noex
 
 // ****************************************************************
 /* constructor */
-template <typename F> constexpr coreDefer<F>::coreDefer(F&& nFunc)noexcept
+template <typename F> constexpr FORCE_INLINE coreDefer<F>::coreDefer(F&& nFunc)noexcept
 : F (std::forward<F>(nFunc))
 {
 }
@@ -131,7 +131,7 @@ template <typename F> constexpr coreDefer<F>::coreDefer(F&& nFunc)noexcept
 
 // ****************************************************************
 /* destructor */
-template <typename F> coreDefer<F>::~coreDefer()
+template <typename F> FORCE_INLINE coreDefer<F>::~coreDefer()
 {
     F::operator()();
 }
@@ -139,7 +139,7 @@ template <typename F> coreDefer<F>::~coreDefer()
 
 // ****************************************************************
 /* constructor */
-inline coreProperties::coreProperties()noexcept
+FORCE_INLINE coreProperties::coreProperties()noexcept
 : m_iPropertiesID (0u)
 {
     m_iPropertiesID = SDL_CreateProperties();
@@ -149,7 +149,7 @@ inline coreProperties::coreProperties()noexcept
 
 // ****************************************************************
 /* destructor */
-inline coreProperties::~coreProperties()
+FORCE_INLINE coreProperties::~coreProperties()
 {
     SDL_DestroyProperties(m_iPropertiesID);
 }
