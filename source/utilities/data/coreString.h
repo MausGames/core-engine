@@ -11,6 +11,7 @@
 #define _CORE_GUARD_STRING_H_
 
 // TODO 4: when to use append, when to use += (which is only used rarely) ? change everything to append ?
+// TODO 3: make work-string buffer never be NULL
 
 
 // ****************************************************************
@@ -51,13 +52,13 @@ public:
 
     /* replace all occurrences of a sub-string with another one */
     using coreStringBase::replace;
-    coreString& replace(const coreChar* pcOld, const coreChar* pcNew);
+    constexpr coreString& replace(const coreChar* pcOld, const coreChar* pcNew);
 
     /* replace multiple sub-strings at once */
-    template <typename... A> coreString& replace_many(A&&... vArgs);
+    template <typename... A> constexpr coreString& replace_many(A&&... vArgs);
 
     /* trim string on both sides */
-    coreString& trim(const coreChar* pcRemove = " \n\r\t");
+    constexpr coreString& trim(const coreChar* pcRemove = " \n\r\t");
 };
 
 
@@ -74,7 +75,7 @@ private:
 
 public:
     constexpr coreWorkString()noexcept;
-    inline coreWorkString(const coreChar* pcText)noexcept;
+    inline coreWorkString(const coreChar* pcText, const coreUintW iNum = SIZE_MAX)noexcept;
     inline coreWorkString(coreWorkString&& m)noexcept;
     ~coreWorkString();
 
@@ -92,8 +93,8 @@ public:
     void     shrink_to_fit();
 
     /* add string data */
-    void assign (const coreChar* pcText);
-    void append (const coreChar* pcText);
+    void assign (const coreChar* pcText, const coreUintW iNum = SIZE_MAX);
+    void append (const coreChar* pcText, const coreUintW iNum = SIZE_MAX);
     void replace(const coreChar* pcOld, const coreChar* pcNew);
 
     /* remove string data */
@@ -119,8 +120,31 @@ private:
 
 
 // ****************************************************************
+/* replace all occurrences of a sub-string with another one */
+constexpr coreString& coreString::replace(const coreChar* pcOld, const coreChar* pcNew)
+{
+    ASSERT(pcOld && pcNew)
+
+    coreUintW iPos = 0u;
+
+    // get length of both sub-strings
+    const coreUintW iOldLen = coreStrLenConst(pcOld);
+    const coreUintW iNewLen = coreStrLenConst(pcNew);
+
+    // loop only once and replace all findings
+    while((iPos = this->find(pcOld, iPos, iOldLen)) != coreString::npos)
+    {
+        this->replace(iPos, iOldLen, pcNew, iNewLen);
+        iPos += iNewLen;
+    }
+
+    return *this;
+}
+
+
+// ****************************************************************
 /* replace multiple sub-strings at once */
-template <typename... A> coreString& coreString::replace_many(A&&... vArgs)
+template <typename... A> constexpr coreString& coreString::replace_many(A&&... vArgs)
 {
     STATIC_ASSERT(coreMath::IsAligned(sizeof...(A), 2u))
 
@@ -138,6 +162,24 @@ template <typename... A> coreString& coreString::replace_many(A&&... vArgs)
 
 
 // ****************************************************************
+/* trim string on both sides */
+constexpr coreString& coreString::trim(const coreChar* pcRemove)
+{
+    STATIC_ASSERT(coreString::npos == coreUintW(-1))
+
+    // trim right
+    const coreUintW iLast = this->find_last_not_of(pcRemove);
+    this->erase(iLast + 1u);
+
+    // trim left
+    const coreUintW iFirst = this->find_first_not_of(pcRemove);
+    if(iFirst != coreString::npos) this->erase(0u, iFirst);
+
+    return *this;
+}
+
+
+// ****************************************************************
 /* constructor */
 constexpr coreWorkString::coreWorkString()noexcept
 : m_pcBuffer  (NULL)
@@ -146,11 +188,11 @@ constexpr coreWorkString::coreWorkString()noexcept
 {
 }
 
-inline coreWorkString::coreWorkString(const coreChar* pcText)noexcept
+inline coreWorkString::coreWorkString(const coreChar* pcText, const coreUintW iNum)noexcept
 : coreWorkString ()
 {
     // assign initial string
-    this->assign(pcText);
+    this->assign(pcText, iNum);
 }
 
 inline coreWorkString::coreWorkString(coreWorkString&& m)noexcept

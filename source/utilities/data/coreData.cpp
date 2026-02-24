@@ -2486,10 +2486,10 @@ corePoint2U8 coreData::StrVersion(const coreChar* pcInput)
 /* copy string into another buffer */
 coreUintW coreData::StrCopy(coreChar* OUTPUT pcOutput, const coreUintW iOutputSize, const coreChar* pcInput, const coreUintW iNum)
 {
-    ASSERT(pcOutput && iOutputSize && pcInput && (iNum <= std::strlen(pcInput)))
+    ASSERT(pcOutput && iOutputSize && pcInput && ((iNum <= std::strlen(pcInput)) || (iNum == SIZE_MAX)))
 
     // calculate string length
-    const coreUintW iInputLen  = iNum ? iNum : std::strlen(pcInput);
+    const coreUintW iInputLen  = (iNum == SIZE_MAX) ? std::strlen(pcInput) : iNum;
     const coreUintW iOutputLen = MIN(iInputLen, iOutputSize - 1u);
 
     // copy string with guaranteed null-termination

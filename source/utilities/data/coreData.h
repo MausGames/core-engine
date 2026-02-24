@@ -256,7 +256,7 @@ public:
     static const coreChar*        StrDirectory(const coreChar* pcInput);
     static const coreChar*        StrExtension(const coreChar* pcInput);
     static corePoint2U8           StrVersion  (const coreChar* pcInput);
-    static coreUintW              StrCopy     (coreChar* OUTPUT pcOutput, const coreUintW iOutputSize, const coreChar* pcInput, const coreUintW iNum = 0u);
+    static coreUintW              StrCopy     (coreChar* OUTPUT pcOutput, const coreUintW iOutputSize, const coreChar* pcInput, const coreUintW iNum = SIZE_MAX);
 
     /* operate with containers and arrays */
     template <typename T>             static inline    void      RangeShuffle (const T tBegin, const T tEnd, coreRand* OUTPUT pRand = Core::Rand) {for(coreUintW i = tEnd - tBegin; i-- > 1u; ) std::swap(tBegin[i], tBegin[pRand->Uint(i)]);}

@@ -80,7 +80,7 @@ public:
 
     /* set object properties */
     coreBool    SetText        (const coreChar*       pcText);
-    coreBool    SetText        (const coreChar*       pcText, const coreUint16 iNum);
+    coreBool    SetText        (const coreChar*       pcText, const coreUintW iNum);
     inline void SetTextLanguage(const coreHashString& sKey, coreAssembleFunc nFunc = NULL) {this->_BindString(&m_sText, sKey, std::move(nFunc));}
     inline void SetScale       (const coreVector2     vScale)                              {if(m_vScale != vScale)                      {ADD_FLAG(m_eRefresh, CORE_LABEL_REFRESH_SIZE)      m_vScale = vScale;}}
     inline void SetRectifyX    (const coreBool        bRectify)                            {if(HAS_FLAG(m_iRectify, 0x01u) != bRectify) {ADD_FLAG(m_eUpdate,  CORE_OBJECT_UPDATE_TRANSFORM) SET_FLAG(m_iRectify, 0x01u, bRectify)}}
