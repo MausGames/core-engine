@@ -36,8 +36,8 @@
 
 // ****************************************************************
 /* allocation macros */
-#define MANAGED_NEW(t,...)      (ASSUME_ALIGNED(new(Core::Manager::Memory->Allocate(sizeof(t))) t(__VA_ARGS__), alignof(t)))
-#define MANAGED_DELETE(p)       {if(p) {CALL_DESTRUCTOR(p) Core::Manager::Memory->Free(sizeof(*(p)), r_cast<void**>(&(p)));}}
+#define MANAGED_NEW(t,...)      (ASSUME_ALIGNED(new(Core::Manager::Memory->Allocate(sizeof(t), alignof(t))) t(__VA_ARGS__), alignof(t)))
+#define MANAGED_DELETE(p)       {if(p) {CALL_DESTRUCTOR(p) Core::Manager::Memory->Free(sizeof(*(p)), alignof(decltype(*(p))), r_cast<void**>(&(p)));}}
 
 #define POOLED_NEW(m,t,...)     (ASSUME_ALIGNED(new((m).Allocate()) t(__VA_ARGS__), alignof(t)))
 #define POOLED_DELETE(m,p)      {if(p) {CALL_DESTRUCTOR(p) (m).Free(r_cast<void**>(&(p)));}}
@@ -91,16 +91,17 @@ private:
     coreList<coreByte*> m_apPageList;    // list with memory-pages containing many memory-blocks
     coreList<void*>     m_apFreeStack;   // stack with pointers to free memory-blocks
 
-    coreUintW m_iBlockSize;              // memory-block size (in bytes)
-    coreUintW m_iPageSize;               // memory-page size (in number of containing memory-blocks)
-    coreBool  m_bValid;                  // current working state
+    coreUint16 m_iBlockSize;             // memory-block size (in bytes)
+    coreUint16 m_iPageSize;              // memory-page size (in number of containing memory-blocks)
+    coreUint8  m_iAlign;                 // memory-block address alignment
+    coreBool   m_bValid;                 // current working state
 
     void* m_pHeap;                       // private heap object
 
 
 public:
     coreMemoryPool()noexcept;
-    coreMemoryPool(const coreUintW iBlockSize, const coreUintW iPageSize)noexcept;
+    coreMemoryPool(const coreUint16 iBlockSize, const coreUint16 iPageSize, const coreUint8 iAlign = 1u)noexcept;
     coreMemoryPool(coreMemoryPool&& m)noexcept;
     ~coreMemoryPool();
 
@@ -110,7 +111,7 @@ public:
     coreMemoryPool& operator = (coreMemoryPool&& m)noexcept;
 
     /* control state of the memory-pool */
-    void Configure(const coreUintW iBlockSize, const coreUintW iPageSize);
+    void Configure(const coreUint16 iBlockSize, const coreUint16 iPageSize, const coreUint8 iAlign = 1u);
     void Reset();
     void Shutdown();
 
@@ -134,7 +135,7 @@ class coreMemoryManager final
 {
 private:
     coreMapStr<std::weak_ptr<void>>     m_apPointer;     // list with weak shared memory pointer
-    coreMap<coreUint16, coreMemoryPool> m_aMemoryPool;   // internal memory-pools (each for a different block-size)
+    coreMap<coreUint32, coreMemoryPool> m_aMemoryPool;   // internal memory-pools (each for a different size and alignment)
 
     coreSpinLock m_PoolLock;                             // spinlock to prevent invalid memory-pool access
 
@@ -152,8 +153,8 @@ public:
     template <typename T, typename... A> std::shared_ptr<T> Share(const coreHashString& sName, A&&... vArgs);
 
     /* create and remove memory-blocks through internal memory-pools */
-    RETURN_RESTRICT void* Allocate(const coreUintW iSize);
-    void Free(const coreUintW iSize, void** OUTPUT ppPointer);
+    RETURN_RESTRICT void* Allocate(const coreUint16 iSize, const coreUint8 iAlign);
+    void Free(const coreUint16 iSize, const coreUint8 iAlign, void** OUTPUT ppPointer);
 };
 
 

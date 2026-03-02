@@ -121,15 +121,16 @@ coreMemoryPool::coreMemoryPool()noexcept
 , m_apFreeStack {}
 , m_iBlockSize  (0u)
 , m_iPageSize   (0u)
+, m_iAlign      (0u)
 , m_bValid      (true)
 , m_pHeap       (NULL)
 {
 }
 
-coreMemoryPool::coreMemoryPool(const coreUintW iBlockSize, const coreUintW iPageSize)noexcept
+coreMemoryPool::coreMemoryPool(const coreUint16 iBlockSize, const coreUint16 iPageSize, const coreUint8 iAlign)noexcept
 : coreMemoryPool ()
 {
-    this->Configure(iBlockSize, iPageSize);
+    this->Configure(iBlockSize, iPageSize, iAlign);
 }
 
 coreMemoryPool::coreMemoryPool(coreMemoryPool&& m)noexcept
@@ -137,6 +138,7 @@ coreMemoryPool::coreMemoryPool(coreMemoryPool&& m)noexcept
 , m_apFreeStack (std::move(m.m_apFreeStack))
 , m_iBlockSize  (m.m_iBlockSize)
 , m_iPageSize   (m.m_iPageSize)
+, m_iAlign      (m.m_iAlign)
 , m_bValid      (m.m_bValid)
 , m_pHeap       (std::exchange(m.m_pHeap, NULL))
 {
@@ -164,6 +166,7 @@ coreMemoryPool& coreMemoryPool::operator = (coreMemoryPool&& m)noexcept
     std::swap(m_apFreeStack, m.m_apFreeStack);
     std::swap(m_iBlockSize,  m.m_iBlockSize);
     std::swap(m_iPageSize,   m.m_iPageSize);
+    std::swap(m_iAlign,      m.m_iAlign);
     std::swap(m_bValid,      m.m_bValid);
     std::swap(m_pHeap,       m.m_pHeap);
 
@@ -173,17 +176,15 @@ coreMemoryPool& coreMemoryPool::operator = (coreMemoryPool&& m)noexcept
 
 // ****************************************************************
 /* set required memory-pool properties */
-void coreMemoryPool::Configure(const coreUintW iBlockSize, const coreUintW iPageSize)
+void coreMemoryPool::Configure(const coreUint16 iBlockSize, const coreUint16 iPageSize, const coreUint8 iAlign)
 {
-    ASSERT(iBlockSize && iPageSize)
+    ASSERT(iBlockSize && iPageSize && iAlign && coreMath::IsPot(iAlign) && coreMath::IsAligned(iBlockSize, iAlign))
     ASSERT(m_apPageList.empty())
 
-    // save memory-block and memory-page size
+    // save properties
     m_iBlockSize = iBlockSize;
     m_iPageSize  = iPageSize;
-
-    // reserve memory for the free-stack
-    m_apFreeStack.reserve(iPageSize);
+    m_iAlign     = (iAlign <= ALIGNMENT_NEW) ? 1u : iAlign;
 
     // create private heap object
     if(!m_pHeap) m_pHeap = coreData::HeapCreate(false);
@@ -264,7 +265,7 @@ void coreMemoryPool::Free(void** OUTPUT ppPointer)
 /* check if pointer belongs to the memory-pool */
 coreBool coreMemoryPool::Contains(const void* pPointer)const
 {
-    const coreUintW iTotalSize = m_iBlockSize * m_iPageSize;
+    const coreUintW iTotalSize = m_iBlockSize * m_iPageSize + m_iAlign - 1u;
     return std::any_of(m_apPageList.begin(), m_apPageList.end(), [&](const coreByte* pPage) {return (P_TO_UI(pPointer) - P_TO_UI(pPage) < iTotalSize);});
 }
 
@@ -273,16 +274,22 @@ coreBool coreMemoryPool::Contains(const void* pPointer)const
 /* add new memory-page to memory-pool */
 void coreMemoryPool::__AddPage()
 {
-    ASSERT(m_iBlockSize && m_iPageSize && m_pHeap)
+    ASSERT(m_iBlockSize && m_iPageSize && m_iAlign && m_pHeap)
 
     // create new memory-page
-    coreByte* pNewPage = s_cast<coreByte*>(coreData::HeapMalloc(m_pHeap, m_iBlockSize * m_iPageSize));
+    coreByte* pNewPage = s_cast<coreByte*>(coreData::HeapMalloc(m_pHeap, m_iBlockSize * m_iPageSize + m_iAlign - 1u));
     m_apPageList.push_back(pNewPage);
+
+    // align base address
+    pNewPage = coreMath::CeilAlignPtr(pNewPage, m_iAlign);
+
+    // reserve memory for the free-stack
+    m_apFreeStack.reserve(m_apFreeStack.size() + m_iPageSize);
 
     // add all containing memory-blocks to the free-stack
     for(coreUintW i = m_iPageSize; i--; )
     {
-        m_apFreeStack.push_back(pNewPage + (m_iBlockSize * i));
+        m_apFreeStack.push_back_unsafe(pNewPage + (m_iBlockSize * i));
     }
 }
 
@@ -312,24 +319,30 @@ coreMemoryManager::~coreMemoryManager()
 
 // ****************************************************************
 /* create memory-block from internal memory-pool */
-RETURN_RESTRICT void* coreMemoryManager::Allocate(const coreUintW iSize)
+RETURN_RESTRICT void* coreMemoryManager::Allocate(const coreUint16 iSize, const coreUint8 iAlign)
 {
     const coreSpinLocker oLocker(&m_PoolLock);
 
+    // assemble lookup key
+    const coreUint32 iKey = (coreUint32(iSize) << 16u) | (coreUint32(iAlign));
+
     // check and create memory-pool
-    if(!m_aMemoryPool.count(iSize)) m_aMemoryPool.emplace(iSize, iSize, 128u);
+    if(!m_aMemoryPool.count(iKey)) m_aMemoryPool.emplace(iKey, iSize, 0x1000u / iSize, iAlign);
 
     // forward request to internal memory-pool
-    return m_aMemoryPool.at(iSize).Allocate();
+    return m_aMemoryPool.at(iKey).Allocate();
 }
 
 
 // ****************************************************************
 /* remove memory-block to internal memory-pool */
-void coreMemoryManager::Free(const coreUintW iSize, void** OUTPUT ppPointer)
+void coreMemoryManager::Free(const coreUint16 iSize, const coreUint8 iAlign, void** OUTPUT ppPointer)
 {
     const coreSpinLocker oLocker(&m_PoolLock);
 
+    // assemble lookup key
+    const coreUint32 iKey = (coreUint32(iSize) << 16u) | (coreUint32(iAlign));
+
     // forward request to internal memory-pool
-    m_aMemoryPool.at(iSize).Free(ppPointer);
+    m_aMemoryPool.at(iKey).Free(ppPointer);
 }
