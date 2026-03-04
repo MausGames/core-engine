@@ -137,19 +137,16 @@ coreBool CoreInput::ProcessEvent(const SDL_Event& oEvent)
 
     // press keyboard button
     case SDL_EVENT_KEY_DOWN:
-        if(!SDL_TextInputActive(Core::System->GetWindow()))
-        {
-            this->SetKeyboardChar(SDL_GetKeyFromScancode(oEvent.key.scancode, oEvent.key.mod, false));
-        }
-        if(!oEvent.key.repeat)
-        {
-            this->SetKeyboardButton(oEvent.key.scancode, true);
-        }
+        this->SetKeyboardChar(oEvent.key.key);
         if(oEvent.key.mod & SDL_KMOD_CTRL)
         {
                  if(oEvent.key.scancode == CORE_INPUT_KEY(X)) this->SetKeyboardChar(CORE_INPUT_CHAR(CUT));
             else if(oEvent.key.scancode == CORE_INPUT_KEY(C)) this->SetKeyboardChar(CORE_INPUT_CHAR(COPY));
             else if(oEvent.key.scancode == CORE_INPUT_KEY(V)) this->SetKeyboardChar(CORE_INPUT_CHAR(PASTE));
+        }
+        if(!oEvent.key.repeat)
+        {
+            this->SetKeyboardButton(oEvent.key.scancode, true);
         }
         break;
 
