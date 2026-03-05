@@ -106,6 +106,10 @@ CoreSystem::CoreSystem()noexcept
         // disable screen saver
         SDL_DisableScreenSaver();
 
+        // register custom events
+        const coreUint32 iFocusLoss = SDL_RegisterEvents(1);
+        ASSERT(iFocusLoss == SDL_EVENT_USER)
+
         // disable unwanted events
         constexpr coreUint32 aiDisable[] = {SDL_EVENT_DROP_FILE, SDL_EVENT_DROP_TEXT, SDL_EVENT_DROP_BEGIN, SDL_EVENT_DROP_COMPLETE, SDL_EVENT_DROP_POSITION, SDL_EVENT_KEYMAP_CHANGED, SDL_EVENT_CLIPBOARD_UPDATE};
         for(coreUintW i = 0u; i < ARRAY_SIZE(aiDisable); ++i) SDL_SetEventEnabled(aiDisable[i], false);

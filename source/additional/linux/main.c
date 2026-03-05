@@ -48,6 +48,10 @@ static void SignalHandler(const int iSignal, siginfo_t* pInfo, void* pContext)
         // close file
         fclose(pFile);
     }
+
+    // forward signal to default handler
+    signal(iSignal, SIG_DFL);
+    raise (iSignal);
 }
 
 
@@ -64,10 +68,10 @@ static void InstallSignalHandler(void)
     sigaction(SIGILL,  &oAction, NULL);
     sigaction(SIGABRT, &oAction, NULL);
     sigaction(SIGFPE,  &oAction, NULL);
-    sigaction(SIGBUS,  &oAction, NULL);
     sigaction(SIGSEGV, &oAction, NULL);
-    sigaction(SIGSYS,  &oAction, NULL);
     sigaction(SIGPIPE, &oAction, NULL);
+    sigaction(SIGBUS,  &oAction, NULL);
+    sigaction(SIGSYS,  &oAction, NULL);
 }
 
 

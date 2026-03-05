@@ -195,7 +195,7 @@ coreInt8 coreFont::RetrieveTextShift(const coreChar* pcText, const coreUint16 iH
 
 
 // ****************************************************************
-/* check if a glyph if provided by the font */
+/* check if a glyph is provided by the font */
 coreBool coreFont::IsGlyphProvided(const coreChar32 cGlyph)
 {
     ASSERT(!m_aapFont.empty())

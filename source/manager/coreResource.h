@@ -91,7 +91,7 @@ public:
 
 // ****************************************************************
 /* resource handle class */
-class coreResourceHandle final
+class alignas(ALIGNMENT_CACHE) coreResourceHandle final
 {
 private:
     coreResource* m_pResource;             // handled resource object
@@ -489,6 +489,11 @@ template <typename T> coreResourcePtr<T>& coreResourcePtr<T>::operator = (coreRe
 
     return *this;
 }
+
+
+// ****************************************************************
+/* additional checks */
+STATIC_ASSERT(sizeof(coreResourceHandle) <= ALIGNMENT_CACHE)
 
 
 #endif /* _CORE_GUARD_RESOURCE_H_ */

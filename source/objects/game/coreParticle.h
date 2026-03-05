@@ -348,6 +348,7 @@ template <typename F> void coreParticleEffect::CreateParticle(const coreUintW iN
 // ****************************************************************
 /* additional checks */
 STATIC_ASSERT(IS_TRIVIAL(coreParticle))
+STATIC_ASSERT(sizeof(coreParticle) <= ALIGNMENT_CACHE)
 
 
 #endif /* _CORE_GUARD_PARTICLE_H_ */

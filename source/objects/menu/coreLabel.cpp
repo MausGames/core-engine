@@ -90,16 +90,19 @@ void coreLabel::Render()
         {
             // generate the texture
             this->__GenerateTexture(m_sText.c_str());
+
+            // reset the refresh status
+            REMOVE_FLAG(m_eRefresh, CORE_LABEL_REFRESH_TEXTURE)
         }
         if(HAS_FLAG(m_eRefresh, CORE_LABEL_REFRESH_SIZE))
         {
             // refresh the object size
             this->__RefreshSize();
             this->__MoveRectified();
-        }
 
-        // reset the refresh status
-        m_eRefresh = CORE_LABEL_REFRESH_NOTHING;
+            // reset the refresh status
+            REMOVE_FLAG(m_eRefresh, CORE_LABEL_REFRESH_SIZE)
+        }
     }
 
     // render the 2d-object
