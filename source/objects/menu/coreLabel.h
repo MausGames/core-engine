@@ -109,7 +109,7 @@ private:
     inline void __UpdateTranslate()final {this->RegenerateTexture();}
 
     /* generate the texture */
-    void __GenerateTexture(const coreChar* pcText);
+    void __GenerateTexture();
 
     /* move and adjust the label */
     void __RefreshSize();
@@ -135,7 +135,7 @@ template <typename F> void coreLabel::RetrieveDesiredSize(F&& nRetrieveFunc)cons
             m_pFont->RetrieveTextShift(m_sText.c_str(), iRelHeight, iRelOutline, &iTop, &iBottom);
 
             // return the dimensions of the current text
-            const coreVector2 vDimensions = m_pFont->RetrieveTextDimensions(m_sText.c_str(), iRelHeight, iRelOutline);
+            const coreVector2 vDimensions = m_pFont->RetrieveTextDimensions(m_sText.c_str(), m_sText.length(), iRelHeight, iRelOutline);
             nRetrieveFunc((vDimensions - coreVector2(0.0f, I_TO_F(iTop - iBottom))) * m_vScale * CORE_LABEL_SIZE_FACTOR);
         });
     }

@@ -89,7 +89,7 @@ void coreLabel::Render()
         if(HAS_FLAG(m_eRefresh, CORE_LABEL_REFRESH_TEXTURE))
         {
             // generate the texture
-            this->__GenerateTexture(m_sText.c_str());
+            this->__GenerateTexture();
 
             // reset the refresh status
             REMOVE_FLAG(m_eRefresh, CORE_LABEL_REFRESH_TEXTURE)
@@ -209,7 +209,7 @@ void coreLabel::__Reshape()
 
 // ****************************************************************
 /* generate the texture */
-void coreLabel::__GenerateTexture(const coreChar* pcText)
+void coreLabel::__GenerateTexture()
 {
     ASSERT(m_pFont.IsUsable())
 
@@ -222,14 +222,14 @@ void coreLabel::__GenerateTexture(const coreChar* pcText)
     const coreUint8  iRelOutline = CORE_LABEL_OUTLINE_RELATIVE(m_iOutline);
 
     // create solid text surface data
-    pSolid = m_pFont->CreateText(pcText, iRelHeight);
+    pSolid = m_pFont->CreateText(m_sText.c_str(), m_sText.length(), iRelHeight);
     WARN_IF(!pSolid) return;
     ASSERT((SDL_BITSPERPIXEL(pSolid->format) == 8u) && !SDL_MUSTLOCK(pSolid))
 
     if(iRelOutline)
     {
         // create outlined text surface data
-        pOutline = m_pFont->CreateTextOutline(pcText, iRelHeight, iRelOutline);
+        pOutline = m_pFont->CreateTextOutline(m_sText.c_str(), m_sText.length(), iRelHeight, iRelOutline);
         WARN_IF(!pOutline) return;
         ASSERT((SDL_BITSPERPIXEL(pOutline->format) == 8u) && !SDL_MUSTLOCK(pSolid))
     }
@@ -315,7 +315,7 @@ void coreLabel::__GenerateTexture(const coreChar* pcText)
 
     // retrieve vertical overhang
     coreInt8 iTop, iBottom;
-    m_pFont->RetrieveTextShift(pcText, iRelHeight, iRelOutline, &iTop, &iBottom);
+    m_pFont->RetrieveTextShift(m_sText.c_str(), iRelHeight, iRelOutline, &iTop, &iBottom);
 
     // display only visible texture area
     this->SetTexSize  (coreVector2(I_TO_F(iWidth), I_TO_F(iHeight - iTop + iBottom)) / m_vResolution);
@@ -345,7 +345,7 @@ void coreLabel::__RefreshSize()
     if(HAS_FLAG(m_eRefresh, CORE_LABEL_REFRESH_TEXTURE))
     {
         // set size by text dimensions
-        const coreVector2 vDimensions = m_pFont->RetrieveTextDimensions(m_sText.c_str(), iRelHeight, iRelOutline);
+        const coreVector2 vDimensions = m_pFont->RetrieveTextDimensions(m_sText.c_str(), m_sText.length(), iRelHeight, iRelOutline);
         this->SetSize((vDimensions - coreVector2(0.0f, I_TO_F(iTop - iBottom))) * m_vScale * CORE_LABEL_SIZE_FACTOR);
     }
     else

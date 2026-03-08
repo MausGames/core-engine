@@ -58,17 +58,17 @@ public:
     inline coreResourceType GetResourceType()const final {return CORE_RESOURCE_TYPE_DEFAULT;}
 
     /* create solid text with the font */
-    SDL_Surface* CreateText (const coreChar*  pcText, const coreUint16 iHeight);
-    SDL_Surface* CreateGlyph(const coreChar32 cGlyph, const coreUint16 iHeight);
+    SDL_Surface* CreateText (const coreChar*  pcText, const coreUintW iNum, const coreUint16 iHeight);
+    SDL_Surface* CreateGlyph(const coreChar32 cGlyph,                       const coreUint16 iHeight);
 
     /* create outlined text with the font */
-    SDL_Surface* CreateTextOutline (const coreChar*  pcText, const coreUint16 iHeight, const coreUint8 iOutline);
-    SDL_Surface* CreateGlyphOutline(const coreChar32 cGlyph, const coreUint16 iHeight, const coreUint8 iOutline);
+    SDL_Surface* CreateTextOutline (const coreChar*  pcText, const coreUintW iNum, const coreUint16 iHeight, const coreUint8 iOutline);
+    SDL_Surface* CreateGlyphOutline(const coreChar32 cGlyph,                       const coreUint16 iHeight, const coreUint8 iOutline);
 
     /* retrieve text-related attributes */
     coreBool    AreGlyphsProvided     (const coreChar* pcText);
-    coreVector2 RetrieveTextDimensions(const coreChar* pcText, const coreUint16 iHeight, const coreUint8 iOutline);
-    coreInt8    RetrieveTextShift     (const coreChar* pcText, const coreUint16 iHeight, const coreUint8 iOutline, coreInt8* OUTPUT piTop, coreInt8* OUTPUT piBottom);
+    coreVector2 RetrieveTextDimensions(const coreChar* pcText, const coreUintW iNum, const coreUint16 iHeight, const coreUint8 iOutline);
+    coreInt8    RetrieveTextShift     (const coreChar* pcText,                       const coreUint16 iHeight, const coreUint8 iOutline, coreInt8* OUTPUT piTop, coreInt8* OUTPUT piBottom);
 
     /* retrieve glyph-related attributes */
     coreBool  IsGlyphProvided     (const coreChar32 cGlyph);

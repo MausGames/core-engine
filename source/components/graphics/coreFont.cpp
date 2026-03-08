@@ -80,10 +80,10 @@ coreStatus coreFont::Unload()
 
 // ****************************************************************
 /* create solid text with the font */
-SDL_Surface* coreFont::CreateText(const coreChar* pcText, const coreUint16 iHeight)
+SDL_Surface* coreFont::CreateText(const coreChar* pcText, const coreUintW iNum, const coreUint16 iHeight)
 {
     // render and return the text surface
-    return this->CreateTextOutline(pcText, iHeight, 0u);
+    return this->CreateTextOutline(pcText, iNum, iHeight, 0u);
 }
 
 SDL_Surface* coreFont::CreateGlyph(const coreChar32 cGlyph, const coreUint16 iHeight)
@@ -95,15 +95,18 @@ SDL_Surface* coreFont::CreateGlyph(const coreChar32 cGlyph, const coreUint16 iHe
 
 // ****************************************************************
 /* create outlined text with the font */
-SDL_Surface* coreFont::CreateTextOutline(const coreChar* pcText, const coreUint16 iHeight, const coreUint8 iOutline)
+SDL_Surface* coreFont::CreateTextOutline(const coreChar* pcText, const coreUintW iNum, const coreUint16 iHeight, const coreUint8 iOutline)
 {
-    ASSERT(pcText)
+    ASSERT(pcText && ((iNum <= std::strlen(pcText)) || (iNum == SIZE_MAX)))
 
     // check for requested height and outline
     this->__EnsureHeight(iHeight, iOutline);
 
+    // handle zero-length strings
+    if(!iNum) pcText = " ";
+
     // render and return the text surface
-    return TTF_RenderText_Shaded(m_aapFont.at(iHeight).at(iOutline), (pcText[0] == '\0') ? " " : pcText, 0u, CORE_FONT_COLOR_FRONT, CORE_FONT_COLOR_BACK);
+    return TTF_RenderText_Shaded(m_aapFont.at(iHeight).at(iOutline), pcText, (iNum == SIZE_MAX) ? std::strlen(pcText) : iNum, CORE_FONT_COLOR_FRONT, CORE_FONT_COLOR_BACK);
 }
 
 SDL_Surface* coreFont::CreateGlyphOutline(const coreChar32 cGlyph, const coreUint16 iHeight, const coreUint8 iOutline)
@@ -145,18 +148,23 @@ coreBool coreFont::AreGlyphsProvided(const coreChar* pcText)
 
 // ****************************************************************
 /* retrieve the dimensions of a rendered string of text */
-coreVector2 coreFont::RetrieveTextDimensions(const coreChar* pcText, const coreUint16 iHeight, const coreUint8 iOutline)
+coreVector2 coreFont::RetrieveTextDimensions(const coreChar* pcText, const coreUintW iNum, const coreUint16 iHeight, const coreUint8 iOutline)
 {
-    ASSERT(pcText)
+    ASSERT(pcText && ((iNum <= std::strlen(pcText)) || (iNum == SIZE_MAX)))
 
     // check for requested height and outline
     this->__EnsureHeight(iHeight, iOutline);
 
     // retrieve dimensions
     coreInt32 iX, iY;
-    TTF_GetStringSize(m_aapFont.at(iHeight).at(iOutline), pcText, 0u, &iX, &iY);
-
-    return coreVector2(I_TO_F(iX), I_TO_F(iY));
+    if(iNum && TTF_GetStringSize(m_aapFont.at(iHeight).at(iOutline), pcText, (iNum == SIZE_MAX) ? std::strlen(pcText) : iNum, &iX, &iY))
+    {
+        return coreVector2(I_TO_F(iX), I_TO_F(iY));
+    }
+    else
+    {
+        return coreVector2(0.0f,0.0f);
+    }
 }
 
 
@@ -179,10 +187,11 @@ coreInt8 coreFont::RetrieveTextShift(const coreChar* pcText, const coreUint16 iH
 
         // retrieve vertical bounds
         coreInt32 iMinY, iMaxY;
-        TTF_GetGlyphMetrics(pFont, cGlyph, NULL, NULL, &iMinY, &iMaxY, NULL);
-
-        iTotalMinY = MIN(iTotalMinY, iMinY);
-        iTotalMaxY = MAX(iTotalMaxY, iMaxY);
+        if(TTF_GetGlyphMetrics(pFont, cGlyph, NULL, NULL, &iMinY, &iMaxY, NULL))
+        {
+            iTotalMinY = MIN(iTotalMinY, iMinY);
+            iTotalMaxY = MAX(iTotalMaxY, iMaxY);
+        }
     }
 
     // calculate vertical overhang
@@ -323,7 +332,7 @@ coreBool coreFont::__InitHeight(const coreUint16 iHeight, const coreUint8 iOutli
     TTF_SetFontKerning(pNewFont, m_bKerning);
 
     // enable outlining
-    TTF_SetFontOutline(pNewFont, iOutline);
+    WARN_IF(!TTF_SetFontOutline(pNewFont, iOutline)) {}
 
     // save sub-font
     m_aapFont[iHeight].emplace(iOutline, pNewFont);
