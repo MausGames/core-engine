@@ -18,6 +18,7 @@
 // TODO 3: it's not possible to comment-out includes (both single-line and multi-line), because of Core::Debug->IsEnabled()
 // TODO 3: GL_MESH_SHADER_NV, GL_TASK_SHADER_NV, .mesh, .task
 // TODO 3: glUniform1ui etc. required GL3, GLES3, GL_EXT_gpu_shader4 (GL), no GLES ext
+// TODO 4: v_av4LightDir <> u_av4LightDir (and *Pos) is a bit confusing in shaders (u_ is base, v_ is transformed)
 
 
 // ****************************************************************
@@ -30,9 +31,11 @@
 #define CORE_SHADER_BUFFER_TRANSFORM3D            "b_Transform3D"
 #define CORE_SHADER_BUFFER_TRANSFORM2D            "b_Transform2D"
 #define CORE_SHADER_BUFFER_AMBIENT                "b_Ambient"
+#define CORE_SHADER_BUFFER_DEBUG                  "b_Debug"
 #define CORE_SHADER_BUFFER_TRANSFORM3D_NUM        (0u)
 #define CORE_SHADER_BUFFER_TRANSFORM2D_NUM        (1u)
 #define CORE_SHADER_BUFFER_AMBIENT_NUM            (2u)
+#define CORE_SHADER_BUFFER_DEBUG_NUM              (3u)
 
 #define CORE_SHADER_UNIFORM_VIEWPROJ              "u_m4ViewProj"
 #define CORE_SHADER_UNIFORM_CAMERA                "u_m4Camera"
@@ -90,7 +93,7 @@
 #define CORE_SHADER_OUTPUT_COLOR                  "o_av4OutColor[%zu]"
 #define CORE_SHADER_OUTPUT_COLORS                 (3u)
 
-#define CORE_SHADER_BUFFER_USER_NUM               (3u)
+#define CORE_SHADER_BUFFER_USER_NUM               (4u)
 #define CORE_SHADER_ATTRIBUTE_USER_NUM            (DEFINED(_CORE_GLES_) ? 13u : 9u)
 
 #define CORE_SHADER_OPTION_INSTANCING             "#define _CORE_OPTION_INSTANCING_"     " (1) \n"

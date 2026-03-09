@@ -21,6 +21,8 @@
 // ****************************************************************
 /* debug definitions */
 #define CORE_DEBUG_QUERIES         (4u)        // number of GPU timer-query pairs used for each measure object
+#define CORE_DEBUG_UNIFORM_VALUES  (4u)        // number of different shader debug values
+#define CORE_DEBUG_UNIFORM_BUFFERS (3u)        // number of concurrent uniform buffer objects
 #define CORE_DEBUG_SMOOTH_FACTOR   (0.02)      // factor used to smooth-out time values and reduce flickering (lower = smoother, but slower)
 #define CORE_DEBUG_OVERALL_NAME    "Overall"   // name for the overall performance output object
 
@@ -78,25 +80,29 @@ private:
 
 
 private:
-    coreMap<coreTexture*, coreDisplay*> m_apDisplay;   // display objects to render textures directly on screen
-    coreMapStr<coreMeasure*> m_apMeasure;              // measure objects to display CPU and GPU performance values
-    coreMapStr<coreInspect*> m_apInspect;              // inspect objects to display current values during run-time
-    coreMeasure* m_pOverall;                           // pointer to overall performance output object
+    coreMap<coreTexture*, coreDisplay*> m_apDisplay;                 // display objects to render textures directly on screen
+    coreMapStr<coreMeasure*> m_apMeasure;                            // measure objects to display CPU and GPU performance values
+    coreMapStr<coreInspect*> m_apInspect;                            // inspect objects to display current values during run-time
+    coreMeasure* m_pOverall;                                         // pointer to overall performance output object
 
-    coreObject3D m_DebugCube;                          // debug cube
-    coreObject3D m_DebugSphere;                        // debug sphere
-    coreObject3D m_DebugVolume;                        // debug collision volume
+    coreObject3D m_DebugCube;                                        // debug cube
+    coreObject3D m_DebugSphere;                                      // debug sphere
+    coreObject3D m_DebugVolume;                                      // debug collision volume
 
-    coreObject2D m_Background;                         // background object to increase output readability
-    coreLabel    m_Loading;                            // resource manager loading indicator
+    coreObject2D m_Background;                                       // background object to increase output readability
+    coreLabel    m_Loading;                                          // resource manager loading indicator
 
-    coreRing<coreStat, CORE_DEBUG_STATS> m_aStat;      // statistic objects to retrieve various pipeline statistics
-    coreLabel m_aStatOutput[4];                        // labels for displaying statistic output
+    coreRing<coreStat, CORE_DEBUG_STATS> m_aStat;                    // statistic objects to retrieve various pipeline statistics
+    coreLabel m_aStatOutput[4];                                      // labels for displaying statistic output
 
-    coreBool m_bEnabled;                               // debug-monitor is enabled (debug-build or debug-context)
-    coreBool m_bOverlay;                               // debug overlay is visible
-    coreBool m_bRendering;                             // debug rendering is visible
-    coreBool m_bHolding;                               // holding the current frame
+    coreUniformBuffer m_UniformBuffer;                               // uniform buffer object for debug data
+    coreVector4       m_avUniformValue[CORE_DEBUG_UNIFORM_VALUES];   // shader debug values
+    coreBool          m_bUniformUpdate;                              // update status for the UBO (dirty flag)
+
+    coreBool m_bEnabled;                                             // debug-monitor is enabled (debug-build or debug-context)
+    coreBool m_bOverlay;                                             // debug overlay is visible
+    coreBool m_bRendering;                                           // debug rendering is visible
+    coreBool m_bHolding;                                             // holding the current frame
 
 
 private:
@@ -146,6 +152,9 @@ private:
     /* retrieve various pipeline statistics */
     void __StatStart();
     void __StatEnd();
+
+    /* update debug uniform data */
+    void __UpdateUniform();
 
     /* update and display debug overlay */
     void __UpdateOutput();

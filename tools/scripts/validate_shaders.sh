@@ -30,6 +30,7 @@ for V in "${_VERSION_LIST_[@]}"; do
         echo "#define CORE_NUM_TEXTURES_SHADOW 1" >> temp
         echo "#define CORE_NUM_LIGHTS          4" >> temp
         echo "#define CORE_NUM_OUTPUTS         4" >> temp
+        echo "#define CORE_NUM_DEBUGS          4" >> temp
 
         cat temp "$_GLOBAL_" "$_CUSTOM_" "$file" > temp.vert
         $_EXECUTABLE_ $_PARAMETERS_ temp.vert >> "$_LOG_"
@@ -49,6 +50,7 @@ for V in "${_VERSION_LIST_[@]}"; do
         echo "#define CORE_NUM_TEXTURES_SHADOW 1" >> temp
         echo "#define CORE_NUM_LIGHTS          4" >> temp
         echo "#define CORE_NUM_OUTPUTS         4" >> temp
+        echo "#define CORE_NUM_DEBUGS          4" >> temp
 
         cat temp "$_GLOBAL_" "$_CUSTOM_" "$file" > temp.frag
         $_EXECUTABLE_ $_PARAMETERS_ temp.frag >> "$_LOG_"

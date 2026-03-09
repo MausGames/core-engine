@@ -35,6 +35,7 @@ public:
     constexpr explicit operator coreBool ()const            {for(coreUintW i = 0u; i < iSize; ++i) if(m_atValue[i]) return true; return false;}
     constexpr       T& operator [] (const coreUintW i)      {ASSERT(i < iSize) return m_atValue[i];}
     constexpr const T& operator [] (const coreUintW i)const {ASSERT(i < iSize) return m_atValue[i];}
+    constexpr       T* ptr()                                {return m_atValue;}
     constexpr const T* ptr()const                           {return m_atValue;}
 
     /* operate on all elements */

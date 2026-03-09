@@ -58,21 +58,24 @@ CoreDebug::coreStat::coreStat()noexcept
 // ****************************************************************
 /* constructor */
 CoreDebug::CoreDebug()noexcept
-: m_apDisplay   {}
-, m_apMeasure   {}
-, m_apInspect   {}
-, m_pOverall    (NULL)
-, m_DebugCube   ()
-, m_DebugSphere ()
-, m_DebugVolume ()
-, m_Background  ()
-, m_Loading     ()
-, m_aStat       {}
-, m_aStatOutput ()
-, m_bEnabled    (false)
-, m_bOverlay    (false)
-, m_bRendering  (false)
-, m_bHolding    (false)
+: m_apDisplay      {}
+, m_apMeasure      {}
+, m_apInspect      {}
+, m_pOverall       (NULL)
+, m_DebugCube      ()
+, m_DebugSphere    ()
+, m_DebugVolume    ()
+, m_Background     ()
+, m_Loading        ()
+, m_aStat          {}
+, m_aStatOutput    ()
+, m_UniformBuffer  ()
+, m_avUniformValue {}
+, m_bUniformUpdate (true)
+, m_bEnabled       (false)
+, m_bOverlay       (false)
+, m_bRendering     (false)
+, m_bHolding       (false)
 {
     if(!CoreDebug::IsEnabled()) return;
 
@@ -133,6 +136,9 @@ CoreDebug::CoreDebug()noexcept
             m_aStatOutput[i].SetColor3   (COLOR_PURPLE);
         }
     }
+
+    // create uniform buffer object
+    m_UniformBuffer.Create(CORE_SHADER_BUFFER_DEBUG_NUM, CORE_DEBUG_UNIFORM_BUFFERS, sizeof(coreVector4) * CORE_DEBUG_UNIFORM_VALUES);
 
 #if defined(IMGUI_API)
 
@@ -195,6 +201,9 @@ CoreDebug::~CoreDebug()
     m_apDisplay.clear();
     m_apMeasure.clear();
     m_apInspect.clear();
+
+    // delete uniform buffer object
+    m_UniformBuffer.Delete();
 
 #if defined(IMGUI_API)
 
@@ -518,6 +527,26 @@ void CoreDebug::__StatEnd()
 
 
 // ****************************************************************
+/* update debug uniform data */
+void CoreDebug::__UpdateUniform()
+{
+    // check update status
+    if(!m_bUniformUpdate) return;
+    m_bUniformUpdate = false;
+
+    if(CORE_GL_SUPPORT(ARB_uniform_buffer_object))
+    {
+        // map buffer range
+        coreByte* pRange = m_UniformBuffer.MapWriteNext();
+
+        // update debug data
+        std::memcpy(pRange, &m_avUniformValue, sizeof(coreVector4) * CORE_DEBUG_UNIFORM_VALUES);
+        m_UniformBuffer.Unmap();
+    }
+}
+
+
+// ****************************************************************
 /* update and display debug overlay */
 void CoreDebug::__UpdateOutput()
 {
@@ -570,6 +599,9 @@ void CoreDebug::__UpdateOutput()
         Core::Reset();
         return;
     }
+
+    // try to update debug uniform data
+    this->__UpdateUniform();
 
     if(!m_bOverlay) return;
 
@@ -660,7 +692,8 @@ void CoreDebug::__UpdateOutput()
         static coreBool s_bShowStats          = true;
         static coreBool s_bShowResources      = false;
         static coreBool s_bShowTime           = false;
-        static coreBool s_bShowImages         = true;
+        static coreBool s_bShowTextures       = true;
+        static coreBool s_bShowShaders        = false;
         static coreBool s_bShowImGuiDemo      = false;
         static coreBool s_bShowImGuiMetrics   = false;
         static coreBool s_bShowImGuiDebugLog  = false;
@@ -686,7 +719,8 @@ void CoreDebug::__UpdateOutput()
 
             if(ImGui::BeginMenu("Graphics"))
             {
-                ImGui::MenuItem("Images", NULL, &s_bShowImages);
+                ImGui::MenuItem("Textures", NULL, &s_bShowTextures);
+                ImGui::MenuItem("Shaders",  NULL, &s_bShowShaders);
                 ImGui::EndMenu();
             }
 
@@ -821,14 +855,31 @@ void CoreDebug::__UpdateOutput()
             ImGui::End();
         }
 
-        if(s_bShowImages)
+        if(s_bShowTextures)
         {
-            if(ImGui::Begin("Images", &s_bShowImages))
+            if(ImGui::Begin("Textures", &s_bShowTextures))
             {
                 FOR_EACH(it, m_apDisplay)
                 {
                     ImGui::Image((*m_apDisplay.get_key(it))->GetIdentifier(), (*it)->oOutput.GetSize() * 1000.0f);
                 }
+            }
+
+            ImGui::End();
+        }
+
+        if(s_bShowShaders)
+        {
+            if(ImGui::Begin("Shaders", &s_bShowShaders, ImGuiWindowFlags_AlwaysAutoResize))
+            {
+                ImGui::SeparatorText("Debug Values");
+
+                if(ImGui::DragFloat4("[0]", m_avUniformValue[0].ptr(), 0.001f)) m_bUniformUpdate = true;
+                if(ImGui::DragFloat4("[1]", m_avUniformValue[1].ptr(), 0.001f)) m_bUniformUpdate = true;
+                if(ImGui::ColorEdit4("[2]", m_avUniformValue[2].ptr()))         m_bUniformUpdate = true;
+                if(ImGui::ColorEdit4("[3]", m_avUniformValue[3].ptr()))         m_bUniformUpdate = true;
+
+                STATIC_ASSERT(CORE_DEBUG_UNIFORM_VALUES == 4u)
             }
 
             ImGui::End();
@@ -851,7 +902,7 @@ void CoreDebug::__UpdateOutput()
 
     glDisable(GL_DEPTH_TEST);
     {
-        // render image output
+        // render texture output
         FOR_EACH(it, m_apDisplay)
         {
             (*m_apDisplay.get_key(it))->Enable(0u);

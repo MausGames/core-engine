@@ -187,6 +187,7 @@ void coreShader::__LoadGlobalCode()
     s_asGlobalCode[1].append(PRINT("#define CORE_NUM_TEXTURES_SHADOW" " (%u) \n", CORE_TEXTURE_UNITS_SHADOW));
     s_asGlobalCode[1].append(PRINT("#define CORE_NUM_LIGHTS"          " (%u) \n", CORE_GRAPHICS_LIGHTS));
     s_asGlobalCode[1].append(PRINT("#define CORE_NUM_OUTPUTS"         " (%u) \n", CORE_SHADER_OUTPUT_COLORS));
+    s_asGlobalCode[1].append(PRINT("#define CORE_NUM_DEBUGS"          " (%u) \n", CORE_DEBUG_UNIFORM_VALUES));
 
     // add debug environment flag
     if(Core::Debug->IsEnabled())
@@ -482,9 +483,11 @@ coreStatus coreProgram::Load(coreFile* pFile)
             const GLuint iTransform3DBlock = glGetUniformBlockIndex(m_iIdentifier, CORE_SHADER_BUFFER_TRANSFORM3D);
             const GLuint iTransform2DBlock = glGetUniformBlockIndex(m_iIdentifier, CORE_SHADER_BUFFER_TRANSFORM2D);
             const GLuint iAmbientBlock     = glGetUniformBlockIndex(m_iIdentifier, CORE_SHADER_BUFFER_AMBIENT);
+            const GLuint iDebugBlock       = glGetUniformBlockIndex(m_iIdentifier, CORE_SHADER_BUFFER_DEBUG);
             if(iTransform3DBlock != GL_INVALID_INDEX) glUniformBlockBinding(m_iIdentifier, iTransform3DBlock, CORE_SHADER_BUFFER_TRANSFORM3D_NUM);
             if(iTransform2DBlock != GL_INVALID_INDEX) glUniformBlockBinding(m_iIdentifier, iTransform2DBlock, CORE_SHADER_BUFFER_TRANSFORM2D_NUM);
             if(iAmbientBlock     != GL_INVALID_INDEX) glUniformBlockBinding(m_iIdentifier, iAmbientBlock,     CORE_SHADER_BUFFER_AMBIENT_NUM);
+            if(iDebugBlock       != GL_INVALID_INDEX) glUniformBlockBinding(m_iIdentifier, iDebugBlock,       CORE_SHADER_BUFFER_DEBUG_NUM);
 
             // bind custom uniform buffer objects
             FOR_EACH(it, m_aiBuffer)

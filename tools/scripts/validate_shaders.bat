@@ -28,6 +28,7 @@ FOR %%V IN %_VERSION_LIST_% DO (
         (@ECHO #define CORE_NUM_TEXTURES_SHADOW 1) >> temp
         (@ECHO #define CORE_NUM_LIGHTS          4) >> temp
         (@ECHO #define CORE_NUM_OUTPUTS         4) >> temp
+        (@ECHO #define CORE_NUM_DEBUGS          4) >> temp
 
         COPY /B temp + %_GLOBAL_% + %_CUSTOM_% + "%%G" temp.vert > NUL
         CALL %_EXECUTABLE_% %_PARAMETERS_% temp.vert >> %_LOG_%
@@ -47,6 +48,7 @@ FOR %%V IN %_VERSION_LIST_% DO (
         (@ECHO #define CORE_NUM_TEXTURES_SHADOW 1) >> temp
         (@ECHO #define CORE_NUM_LIGHTS          4) >> temp
         (@ECHO #define CORE_NUM_OUTPUTS         4) >> temp
+        (@ECHO #define CORE_NUM_DEBUGS          4) >> temp
 
         COPY /B temp + %_GLOBAL_% + %_CUSTOM_% + "%%G" temp.frag > NUL
         CALL %_EXECUTABLE_% %_PARAMETERS_% temp.frag >> %_LOG_%

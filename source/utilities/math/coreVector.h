@@ -74,6 +74,7 @@ public:
     constexpr explicit operator coreBool ()const           {return (x != 0.0f) || (y != 0.0f);}
     constexpr       coreFloat& arr(const coreUintW i)      {ASSERT(i < 2u) return (&x)[i];}
     constexpr const coreFloat& arr(const coreUintW i)const {ASSERT(i < 2u) return (&x)[i];}
+    constexpr       coreFloat* ptr()                       {return (&x);}
     constexpr const coreFloat* ptr()const                  {return (&x);}
     constexpr coreVector2      yx ()const                  {return coreVector2(y, x);}
 
@@ -243,6 +244,7 @@ public:
     constexpr explicit operator coreBool ()const           {return (x != 0.0f) || (y != 0.0f) || (z != 0.0f);}
     constexpr       coreFloat& arr(const coreUintW i)      {ASSERT(i < 3u) return (&x)[i];}
     constexpr const coreFloat& arr(const coreUintW i)const {ASSERT(i < 3u) return (&x)[i];}
+    constexpr       coreFloat* ptr()                       {return (&x);}
     constexpr const coreFloat* ptr()const                  {return (&x);}
     constexpr coreVector3      xzy()const                  {return coreVector3(x, z, y);}
     constexpr coreVector3      yxz()const                  {return coreVector3(y, x, z);}
@@ -405,6 +407,7 @@ public:
     constexpr explicit operator coreBool ()const            {return (x != 0.0f) || (y != 0.0f) || (z != 0.0f) || (w != 0.0f);}
     constexpr       coreFloat& arr (const coreUintW i)      {ASSERT(i < 4u) return (&x)[i];}
     constexpr const coreFloat& arr (const coreUintW i)const {ASSERT(i < 4u) return (&x)[i];}
+    constexpr       coreFloat* ptr ()                       {return (&x);}
     constexpr const coreFloat* ptr ()const                  {return (&x);}
     constexpr coreVector3      xyzw()const                  {return coreVector3(x, y, z) * w;}
     constexpr coreVector3      xyz ()const                  {return coreVector3(x, y, z);}

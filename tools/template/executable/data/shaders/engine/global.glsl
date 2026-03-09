@@ -20,6 +20,7 @@
 // #define CORE_NUM_TEXTURES_SHADOW (#)   // number of shadow texture units
 // #define CORE_NUM_LIGHTS          (#)   // number of light sources
 // #define CORE_NUM_OUTPUTS         (#)   // number of output colors
+// #define CORE_NUM_DEBUGS          (#)   // number of debug values
 
 // compiler configuration
 #if defined(GL_ES)

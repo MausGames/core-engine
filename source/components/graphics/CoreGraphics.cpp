@@ -374,7 +374,7 @@ void CoreGraphics::SetLight(const coreUintW iIndex, const coreVector4 vPosition,
 
 
 // ****************************************************************
-/* update transformation data for the uniform buffer objects */
+/* update transformation uniform data */
 void CoreGraphics::UpdateTransformation3D()
 {
     // check update status
@@ -427,7 +427,7 @@ void CoreGraphics::UpdateTransformation2D()
 
 
 // ****************************************************************
-/* update ambient data for the uniform buffer objects */
+/* update ambient uniform data */
 void CoreGraphics::UpdateAmbient()
 {
     // check update status

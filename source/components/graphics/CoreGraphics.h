@@ -114,7 +114,7 @@ public:
     /* control ambient */
     void SetLight(const coreUintW iIndex, const coreVector4 vPosition, const coreVector4 vDirection, const coreVector4 vValue);
 
-    /* update data for the uniform buffer objects */
+    /* update global uniform data */
     void UpdateTransformation3D();
     void UpdateTransformation2D();
     void UpdateAmbient();

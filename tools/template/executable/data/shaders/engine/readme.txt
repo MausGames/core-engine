@@ -233,7 +233,10 @@ Input
 
     vec4 u_v4Color         // color value
 
-    // base light data
+    // light data
     vec4 u_av4LightPos  [CORE_NUM_LIGHTS]
     vec4 u_av4LightDir  [CORE_NUM_LIGHTS]
     vec4 u_av4LightValue[CORE_NUM_LIGHTS]
+
+    // debug data (only valid in debug mode)
+    vec4 u_av4DebugValue[CORE_NUM_DEBUGS]
