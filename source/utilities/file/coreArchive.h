@@ -50,7 +50,7 @@ private:
     coreBool m_bExtern;                  // current file data is not owned and should not be deleted
 
     coreAtomic<coreUint8> m_iRefCount;   // reference-counter to prevent early unloading
-    coreSpinLock          m_DataLock;    // spinlock to prevent concurrent loading and unloading
+    coreLock              m_DataLock;    // lock to prevent concurrent loading and unloading
 
 
 public:

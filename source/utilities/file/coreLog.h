@@ -53,7 +53,7 @@ private:
 
     coreMap<SDL_ThreadID, coreUint64> m_aiLastTime;   // last time-value for duration approximations (per thread)
 
-    coreRecursiveLock m_Lock;                         // recursive spinlock to prevent concurrent log access
+    coreRecursiveLock m_Lock;                         // recursive lock to prevent concurrent log access
 
     coreWorkString m_sWorkString;                     // pre-allocated string for assembling messages
 
@@ -65,9 +65,9 @@ public:
     DISABLE_COPY(coreLog)
 
     /* message functions */
-    template <typename... A> inline         void Header (const coreChar* pcText, A&&... vArgs) {if(HAS_FLAG(m_eLevel, CORE_LOG_LEVEL_INFO))    {const coreSpinLocker oLocker(&m_Lock);                              this->__Write(false, __CORE_LOG_PRINT, "<hr><span class=\"header\">",  "</span><br>");}}
-    template <typename... A> inline         void Info   (const coreChar* pcText, A&&... vArgs) {if(HAS_FLAG(m_eLevel, CORE_LOG_LEVEL_INFO))    {const coreSpinLocker oLocker(&m_Lock);                              this->__Write(true,  __CORE_LOG_PRINT, "[I] ",                         "<br>");}}
-    template <typename... A> inline         void Warning(const coreChar* pcText, A&&... vArgs) {if(HAS_FLAG(m_eLevel, CORE_LOG_LEVEL_WARNING)) {const coreSpinLocker oLocker(&m_Lock); if(this->__CheckWarnLimit()) this->__Write(true,  __CORE_LOG_PRINT, "[W] <span class=\"warning\">", "</span><br>");}}
+    template <typename... A> inline         void Header (const coreChar* pcText, A&&... vArgs) {if(HAS_FLAG(m_eLevel, CORE_LOG_LEVEL_INFO))    {const coreLocker oLocker(&m_Lock);                              this->__Write(false, __CORE_LOG_PRINT, "<hr><span class=\"header\">",  "</span><br>");}}
+    template <typename... A> inline         void Info   (const coreChar* pcText, A&&... vArgs) {if(HAS_FLAG(m_eLevel, CORE_LOG_LEVEL_INFO))    {const coreLocker oLocker(&m_Lock);                              this->__Write(true,  __CORE_LOG_PRINT, "[I] ",                         "<br>");}}
+    template <typename... A> inline         void Warning(const coreChar* pcText, A&&... vArgs) {if(HAS_FLAG(m_eLevel, CORE_LOG_LEVEL_WARNING)) {const coreLocker oLocker(&m_Lock); if(this->__CheckWarnLimit()) this->__Write(true,  __CORE_LOG_PRINT, "[W] <span class=\"warning\">", "</span><br>");}}
     template <typename... A> FUNC_TERMINATE void Error  (const coreChar* pcText, A&&... vArgs);
 
     /* list functions */

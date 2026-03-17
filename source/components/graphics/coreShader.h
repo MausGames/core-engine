@@ -123,11 +123,11 @@ private:
 
     coreString m_sCustomCode;                        // custom shader code added to the beginning of the shader
 
-    static coreString   s_asGlobalCode[8];           // global shader code (0 = version | 1 = global shader file | >1 = type shader files)
-    static coreSpinLock s_GlobalLock;                // spinlock to prevent concurrent initialization of global shader code
+    static coreString s_asGlobalCode[8];             // global shader code (0 = version | 1 = global shader file | >1 = type shader files)
+    static coreLock   s_GlobalLock;                  // lock to prevent concurrent initialization of global shader code
 
     static coreMapStr<coreString> s_asIncludeCode;   // include shader code
-    static coreRecursiveLock      s_IncludeLock;     // recursive spinlock for asynchronous include shader code access
+    static coreRecursiveLock      s_IncludeLock;     // recursive lock for asynchronous include shader code access
 
 
 public:
@@ -209,7 +209,7 @@ private:
 
     static coreBinaryMap s_aBinaryMap;                // shader-program binary map (shader-cache)
     static coreUint32    s_iBinarySize;               // total size of all data in the map (in bytes)
-    static coreSpinLock  s_BinaryLock;                // spinlock to prevent concurrent map access
+    static coreLock      s_BinaryLock;                // lock to prevent concurrent map access
 
 
 public:

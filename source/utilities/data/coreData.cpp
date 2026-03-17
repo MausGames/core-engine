@@ -45,8 +45,8 @@ coreMapStrFull<const coreChar*>       coreData::s_apcCommandLine     = {};
 coreString                            coreData::s_sUserFolder        = "";
 ZSTD_CCtx*                            coreData::s_pCompressContext   = ZSTD_createCCtx();   // never cleaned up
 ZSTD_DCtx*                            coreData::s_pDecompressContext = ZSTD_createDCtx();
-coreSpinLock                          coreData::s_CompressLock       = coreSpinLock();
-coreSpinLock                          coreData::s_DecompressLock     = coreSpinLock();
+coreLock                              coreData::s_CompressLock       = coreLock();
+coreLock                              coreData::s_DecompressLock     = coreLock();
 
 extern "C" const coreChar* g_pcUserFolder = "";   // to allow access from C files
 
@@ -2235,7 +2235,7 @@ coreStatus coreData::Compress(const coreByte* pInput, const coreUint32 iInputSiz
     const coreUintW iBound  = ZSTD_compressBound(iInputSize);
     coreByte*       pBuffer = new coreByte[iBound + sizeof(coreUint32)];
 
-    const coreSpinLocker oLocker(&s_CompressLock);
+    const coreLocker oLocker(&s_CompressLock);
 
     // compress data
     const coreUintW iWritten = ZSTD_compressCCtx(s_pCompressContext, pBuffer + sizeof(coreUint32), iBound, pInput, iInputSize, iLevel);
@@ -2271,7 +2271,7 @@ coreStatus coreData::Compress(const coreByte* pInput, const coreUint32 iInputSiz
         return CORE_INVALID_DATA;
     }
 
-    const coreSpinLocker oLocker(&s_CompressLock);
+    const coreLocker oLocker(&s_CompressLock);
 
     // compress data
     const coreUintW iWritten = ZSTD_compressCCtx(s_pCompressContext, pOutput + sizeof(coreUint32), iBound, pInput, iInputSize, iLevel);
@@ -2309,7 +2309,7 @@ coreStatus coreData::Decompress(const coreByte* pInput, const coreUint32 iInputS
     const coreUint32 iBound  = MIN(*r_cast<const coreUint32*>(pInput), iLimit);
     coreByte*        pBuffer = new coreByte[iBound];
 
-    const coreSpinLocker oLocker(&s_DecompressLock);
+    const coreLocker oLocker(&s_DecompressLock);
 
     // decompress data
     const coreUintW iWritten = ZSTD_decompressDCtx(s_pDecompressContext, pBuffer, iBound, pInput + sizeof(coreUint32), iInputSize - sizeof(coreUint32));
@@ -2350,7 +2350,7 @@ coreStatus coreData::Decompress(const coreByte* pInput, const coreUint32 iInputS
         return CORE_INVALID_DATA;
     }
 
-    const coreSpinLocker oLocker(&s_DecompressLock);
+    const coreLocker oLocker(&s_DecompressLock);
 
     // decompress data
     const coreUintW iWritten = ZSTD_decompressDCtx(s_pDecompressContext, pOutput, iBound, pInput + sizeof(coreUint32), iInputSize - sizeof(coreUint32));

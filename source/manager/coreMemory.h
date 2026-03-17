@@ -137,7 +137,7 @@ private:
     coreMapStr<std::weak_ptr<void>>     m_apPointer;     // list with weak shared memory pointer
     coreMap<coreUint32, coreMemoryPool> m_aMemoryPool;   // internal memory-pools (each for a different size and alignment)
 
-    coreSpinLock m_PoolLock;                             // spinlock to prevent invalid memory-pool access
+    coreLock m_PoolLock;                                 // lock to prevent invalid memory-pool access
 
 
 private:

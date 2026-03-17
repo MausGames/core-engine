@@ -7,56 +7,55 @@
 //*-----------------------------------------------------*//
 ///////////////////////////////////////////////////////////
 #pragma once
-#ifndef _CORE_GUARD_SPINLOCK_H_
-#define _CORE_GUARD_SPINLOCK_H_
+#ifndef _CORE_GUARD_LOCK_H_
+#define _CORE_GUARD_LOCK_H_
 
 // TODO 3: get rid of the mutable mutexes (due to IsLocked)
 // TODO 3: use fetch_min and fetch_max with C++26
-// TODO 4: rename everything from spinlock to just lock? (including comments) as it can also be a mutex
 
 
 // ****************************************************************
-/* spinlock definitions */
+/* lock definitions */
 #if defined(_CORE_X86_)
     #if defined(_CORE_MSVC_)
-        #define CORE_SPINLOCK_YIELD {_mm_pause();}                          // processor level
+        #define CORE_LOCK_YIELD {_mm_pause();}                          // processor level
     #else
-        #define CORE_SPINLOCK_YIELD {asm volatile("pause");}                // processor level
+        #define CORE_LOCK_YIELD {asm volatile("pause");}                // processor level
     #endif
 #elif defined(_CORE_ARM_)
     #if defined(_CORE_MSVC_)
-        #define CORE_SPINLOCK_YIELD {__yield();}                            // processor level
+        #define CORE_LOCK_YIELD {__yield();}                            // processor level
     #else
-        #define CORE_SPINLOCK_YIELD {asm volatile("yield" ::: "memory");}   // processor level
+        #define CORE_LOCK_YIELD {asm volatile("yield" ::: "memory");}   // processor level
     #endif
 #else
     #if defined(_CORE_WINDOWS_)
-        #define CORE_SPINLOCK_YIELD {Sleep(0u);}                            // OS level
+        #define CORE_LOCK_YIELD {Sleep(0u);}                            // OS level
     #else
-        #define CORE_SPINLOCK_YIELD {sched_yield();}                        // OS level
+        #define CORE_LOCK_YIELD {sched_yield();}                        // OS level
     #endif
 #endif
 
 #if defined(_CORE_EMSCRIPTEN_)
-    #define CORE_SPINLOCK_DISABLED   // disable locking (if multi-threading is not supported or required)
+    #define CORE_LOCK_DISABLED   // disable locking (if multi-threading is not supported or required)
 #elif defined(_CORE_SWITCH_)
-    #define CORE_SPINLOCK_MUTEX      // use regular mutexes (to prevent starvation)
+    #define CORE_LOCK_MUTEX      // use regular mutexes (to prevent starvation)
 #endif
 
-#if defined(CORE_SPINLOCK_MUTEX)
+#if defined(CORE_LOCK_MUTEX)
     #include <mutex>
     #include <shared_mutex>
 #endif
 
 
 // ****************************************************************
-/* spinlock class */
-class coreSpinLock final
+/* lock class */
+class coreLock final
 {
 private:
-#if defined(CORE_SPINLOCK_DISABLED)
+#if defined(CORE_LOCK_DISABLED)
     coreBool m_State;             // simple boolean (instead of spinlock)
-#elif defined(CORE_SPINLOCK_MUTEX)
+#elif defined(CORE_LOCK_MUTEX)
     mutable std::mutex m_State;   // regular mutex (instead of spinlock)
 #else
     std::atomic_flag m_State;     // atomic lock state
@@ -64,11 +63,11 @@ private:
 
 
 public:
-    constexpr coreSpinLock()noexcept : m_State () {}
+    constexpr coreLock()noexcept : m_State () {}
 
-    DISABLE_COPY(coreSpinLock)
+    DISABLE_COPY(coreLock)
 
-    /* acquire and release the spinlock */
+    /* acquire and release the lock */
     FORCE_INLINE void     Lock();
     FORCE_INLINE void     Unlock();
     FORCE_INLINE coreBool TryLock();
@@ -79,13 +78,13 @@ public:
 
 
 // ****************************************************************
-/* recursive spinlock class */
+/* recursive lock class */
 class coreRecursiveLock final
 {
 private:
-#if defined(CORE_SPINLOCK_DISABLED)
+#if defined(CORE_LOCK_DISABLED)
     UNUSED coreBool m_State;             // simple boolean (instead of spinlock)
-#elif defined(CORE_SPINLOCK_MUTEX)
+#elif defined(CORE_LOCK_MUTEX)
     std::recursive_mutex m_State;        // regular recursive mutex (instead of spinlock)
 #else
     std::atomic<SDL_ThreadID> m_State;   // atomic thread-ID of the current owner
@@ -99,7 +98,7 @@ public:
 
     DISABLE_COPY(coreRecursiveLock)
 
-    /* acquire and release the recursive spinlock */
+    /* acquire and release the recursive lock */
     FORCE_INLINE void     Lock();
     FORCE_INLINE void     Unlock();
     FORCE_INLINE coreBool TryLock();
@@ -110,13 +109,13 @@ public:
 
 
 // ****************************************************************
-/* shared spinlock class */
+/* shared lock class */
 class coreSharedLock final
 {
 private:
-#if defined(CORE_SPINLOCK_DISABLED)
+#if defined(CORE_LOCK_DISABLED)
     coreBool m_State;                    // simple boolean (instead of spinlock)
-#elif defined(CORE_SPINLOCK_MUTEX)
+#elif defined(CORE_LOCK_MUTEX)
     mutable std::shared_mutex m_State;   // regular shared mutex (instead of spinlock)
 #else
     std::atomic<coreUint8> m_State;      // atomic read count (255 = write)
@@ -128,7 +127,7 @@ public:
 
     DISABLE_COPY(coreSharedLock)
 
-    /* acquire and release the shared spinlock */
+    /* acquire and release the shared lock */
     FORCE_INLINE void     LockWrite();
     FORCE_INLINE void     LockRead();
     FORCE_INLINE void     UnlockWrite();
@@ -142,18 +141,18 @@ public:
 
 
 // ****************************************************************
-/* spinlock helper class */
-template <typename T> class coreSpinLocker final
+/* lock helper class */
+template <typename T> class coreLocker final
 {
 private:
-    T* m_pLock;   // associated spinlock
+    T* m_pLock;   // associated lock
 
 
 public:
-    FORCE_INLINE explicit coreSpinLocker(T* pLock)noexcept : m_pLock (pLock) {m_pLock->Lock();}
-    FORCE_INLINE ~coreSpinLocker()                                           {m_pLock->Unlock();}
+    FORCE_INLINE explicit coreLocker(T* pLock)noexcept : m_pLock (pLock) {m_pLock->Lock();}
+    FORCE_INLINE ~coreLocker()                                           {m_pLock->Unlock();}
 
-    DISABLE_COPY(coreSpinLocker)
+    DISABLE_COPY(coreLocker)
     DISABLE_HEAP
 };
 
@@ -179,6 +178,7 @@ public:
 
     /* access atomic value */
     FORCE_INLINE operator T ()const;
+    FORCE_INLINE T       Get()const;
 
     /* change atomic value */
     FORCE_INLINE T FetchAdd(const T tValue) {return m_tValue.fetch_add(tValue, std::memory_order::relaxed);}
@@ -207,28 +207,28 @@ public:
 
 
 // ****************************************************************
-/* acquire the spinlock */
-FORCE_INLINE void coreSpinLock::Lock()
+/* acquire the lock */
+FORCE_INLINE void coreLock::Lock()
 {
-#if defined(CORE_SPINLOCK_DISABLED)
+#if defined(CORE_LOCK_DISABLED)
     m_State = true;
-#elif defined(CORE_SPINLOCK_MUTEX)
+#elif defined(CORE_LOCK_MUTEX)
     m_State.lock();
 #else
-    while(!this->TryLock()) CORE_SPINLOCK_YIELD
+    while(!this->TryLock()) CORE_LOCK_YIELD
 #endif
 }
 
 
 // ****************************************************************
-/* release the spinlock */
-FORCE_INLINE void coreSpinLock::Unlock()
+/* release the lock */
+FORCE_INLINE void coreLock::Unlock()
 {
     ASSERT(this->IsLocked())
 
-#if defined(CORE_SPINLOCK_DISABLED)
+#if defined(CORE_LOCK_DISABLED)
     m_State = false;
-#elif defined(CORE_SPINLOCK_MUTEX)
+#elif defined(CORE_LOCK_MUTEX)
     m_State.unlock();
 #else
     m_State.clear(std::memory_order::release);
@@ -237,12 +237,12 @@ FORCE_INLINE void coreSpinLock::Unlock()
 
 
 // ****************************************************************
-/* try to acquire the spinlock */
-FORCE_INLINE coreBool coreSpinLock::TryLock()
+/* try to acquire the lock */
+FORCE_INLINE coreBool coreLock::TryLock()
 {
-#if defined(CORE_SPINLOCK_DISABLED)
+#if defined(CORE_LOCK_DISABLED)
     return m_State ? false : (m_State = true, true);
-#elif defined(CORE_SPINLOCK_MUTEX)
+#elif defined(CORE_LOCK_MUTEX)
     return m_State.try_lock();
 #else
     return !m_State.test(std::memory_order::relaxed) && !m_State.test_and_set(std::memory_order::acquire);
@@ -252,11 +252,11 @@ FORCE_INLINE coreBool coreSpinLock::TryLock()
 
 // ****************************************************************
 /* check for current lock state */
-FORCE_INLINE coreBool coreSpinLock::IsLocked()const
+FORCE_INLINE coreBool coreLock::IsLocked()const
 {
-#if defined(CORE_SPINLOCK_DISABLED)
+#if defined(CORE_LOCK_DISABLED)
     return m_State;
-#elif defined(CORE_SPINLOCK_MUTEX)
+#elif defined(CORE_LOCK_MUTEX)
     return m_State.try_lock() ? (m_State.unlock(), false) : true;
 #else
     return m_State.test(std::memory_order::relaxed);
@@ -265,28 +265,28 @@ FORCE_INLINE coreBool coreSpinLock::IsLocked()const
 
 
 // ****************************************************************
-/* acquire the recursive spinlock */
+/* acquire the recursive lock */
 FORCE_INLINE void coreRecursiveLock::Lock()
 {
-#if defined(CORE_SPINLOCK_DISABLED)
+#if defined(CORE_LOCK_DISABLED)
     m_iCount++;
-#elif defined(CORE_SPINLOCK_MUTEX)
+#elif defined(CORE_LOCK_MUTEX)
     m_State.lock(); m_iCount++;
 #else
-    while(!this->TryLock()) CORE_SPINLOCK_YIELD
+    while(!this->TryLock()) CORE_LOCK_YIELD
 #endif
 }
 
 
 // ****************************************************************
-/* release the recursive spinlock */
+/* release the recursive lock */
 FORCE_INLINE void coreRecursiveLock::Unlock()
 {
     ASSERT(this->IsLocked())
 
-#if defined(CORE_SPINLOCK_DISABLED)
+#if defined(CORE_LOCK_DISABLED)
     m_iCount--;
-#elif defined(CORE_SPINLOCK_MUTEX)
+#elif defined(CORE_LOCK_MUTEX)
     m_iCount--; m_State.unlock();
 #else
     if(!(--m_iCount)) m_State.store(0u, std::memory_order::release);
@@ -295,12 +295,12 @@ FORCE_INLINE void coreRecursiveLock::Unlock()
 
 
 // ****************************************************************
-/* try to acquire the recursive spinlock */
+/* try to acquire the recursive lock */
 FORCE_INLINE coreBool coreRecursiveLock::TryLock()
 {
-#if defined(CORE_SPINLOCK_DISABLED)
+#if defined(CORE_LOCK_DISABLED)
     return (m_iCount++, true);
-#elif defined(CORE_SPINLOCK_MUTEX)
+#elif defined(CORE_LOCK_MUTEX)
     return m_State.try_lock() ? (m_iCount++, true) : false;
 #else
 
@@ -328,42 +328,42 @@ FORCE_INLINE coreBool coreRecursiveLock::IsLocked()const
 
 
 // ****************************************************************
-/* acquire the shared spinlock (exclusive) */
+/* acquire the shared lock (exclusive) */
 FORCE_INLINE void coreSharedLock::LockWrite()
 {
-#if defined(CORE_SPINLOCK_DISABLED)
+#if defined(CORE_LOCK_DISABLED)
     m_State = true;
-#elif defined(CORE_SPINLOCK_MUTEX)
+#elif defined(CORE_LOCK_MUTEX)
     m_State.lock();
 #else
-    while(!this->TryLockWrite()) CORE_SPINLOCK_YIELD
+    while(!this->TryLockWrite()) CORE_LOCK_YIELD
 #endif
 }
 
 
 // ****************************************************************
-/* acquire the shared spinlock (shared) */
+/* acquire the shared lock (shared) */
 FORCE_INLINE void coreSharedLock::LockRead()
 {
-#if defined(CORE_SPINLOCK_DISABLED)
+#if defined(CORE_LOCK_DISABLED)
     m_State = true;
-#elif defined(CORE_SPINLOCK_MUTEX)
+#elif defined(CORE_LOCK_MUTEX)
     m_State.lock_shared();
 #else
-    while(!this->TryLockRead()) CORE_SPINLOCK_YIELD
+    while(!this->TryLockRead()) CORE_LOCK_YIELD
 #endif
 }
 
 
 // ****************************************************************
-/* release the shared spinlock (exclusive) */
+/* release the shared lock (exclusive) */
 FORCE_INLINE void coreSharedLock::UnlockWrite()
 {
     ASSERT(this->IsLocked())
 
-#if defined(CORE_SPINLOCK_DISABLED)
+#if defined(CORE_LOCK_DISABLED)
     m_State = false;
-#elif defined(CORE_SPINLOCK_MUTEX)
+#elif defined(CORE_LOCK_MUTEX)
     m_State.unlock();
 #else
     m_State.store(0u, std::memory_order::release);
@@ -372,14 +372,14 @@ FORCE_INLINE void coreSharedLock::UnlockWrite()
 
 
 // ****************************************************************
-/* release the shared spinlock (shared) */
+/* release the shared lock (shared) */
 FORCE_INLINE void coreSharedLock::UnlockRead()
 {
     ASSERT(this->IsLocked())
 
-#if defined(CORE_SPINLOCK_DISABLED)
+#if defined(CORE_LOCK_DISABLED)
     m_State = false;
-#elif defined(CORE_SPINLOCK_MUTEX)
+#elif defined(CORE_LOCK_MUTEX)
     m_State.unlock_shared();
 #else
     m_State.fetch_sub(1u, std::memory_order::release);
@@ -388,12 +388,12 @@ FORCE_INLINE void coreSharedLock::UnlockRead()
 
 
 // ****************************************************************
-/* try to acquire the shared spinlock (exclusive) */
+/* try to acquire the shared lock (exclusive) */
 FORCE_INLINE coreBool coreSharedLock::TryLockWrite()
 {
-#if defined(CORE_SPINLOCK_DISABLED)
+#if defined(CORE_LOCK_DISABLED)
     return m_State ? false : (m_State = true, true);
-#elif defined(CORE_SPINLOCK_MUTEX)
+#elif defined(CORE_LOCK_MUTEX)
     return m_State.try_lock();
 #else
 
@@ -411,12 +411,12 @@ FORCE_INLINE coreBool coreSharedLock::TryLockWrite()
 
 
 // ****************************************************************
-/* try to acquire the shared spinlock (shared) */
+/* try to acquire the shared lock (shared) */
 FORCE_INLINE coreBool coreSharedLock::TryLockRead()
 {
-#if defined(CORE_SPINLOCK_DISABLED)
+#if defined(CORE_LOCK_DISABLED)
     return m_State ? false : (m_State = true, true);
-#elif defined(CORE_SPINLOCK_MUTEX)
+#elif defined(CORE_LOCK_MUTEX)
     return m_State.try_lock_shared();
 #else
 
@@ -443,9 +443,9 @@ FORCE_INLINE coreBool coreSharedLock::TryLockRead()
 /* check for current lock state */
 FORCE_INLINE coreBool coreSharedLock::IsLocked()const
 {
-#if defined(CORE_SPINLOCK_DISABLED)
+#if defined(CORE_LOCK_DISABLED)
     return m_State;
-#elif defined(CORE_SPINLOCK_MUTEX)
+#elif defined(CORE_LOCK_MUTEX)
     return m_State.try_lock() ? (m_State.unlock(), false) : true;
 #else
     return m_State.load(std::memory_order::relaxed);
@@ -469,5 +469,10 @@ template <typename T> FORCE_INLINE coreAtomic<T>::operator T ()const
     return m_tValue.load(std::memory_order::relaxed);
 }
 
+template <typename T> FORCE_INLINE T coreAtomic<T>::Get()const
+{
+    return m_tValue.load(std::memory_order::relaxed);
+}
 
-#endif /* _CORE_GUARD_SPINLOCK_H_ */
+
+#endif /* _CORE_GUARD_LOCK_H_ */

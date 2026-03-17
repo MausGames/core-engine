@@ -81,7 +81,7 @@ private:
     coreUint32 m_aiScissorData[4];                  // current scissor test properties
 
     coreSet<coreScreenshot*> m_apScreenshotQueue;   // screenshot requests
-    coreSpinLock             m_ScreenshotLock;      // spinlock to prevent concurrent screenshot requests access
+    coreLock                 m_ScreenshotLock;      // lock to prevent concurrent screenshot requests access
 
     coreUint8 m_iOverrideState;                     // track recently overridden properties
 

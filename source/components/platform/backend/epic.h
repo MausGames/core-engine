@@ -395,7 +395,7 @@ inline coreBool coreBackendEpic::Init()
         const std::time_t iLimit = std::time(NULL) + (bInterface ? 30 : 5);
         do
         {
-            CORE_SPINLOCK_YIELD
+            CORE_LOCK_YIELD
             nEOS_Platform_Tick(m_pPlatform);
         }
         while(!m_bAgain && !HAS_BIT(m_iState, 0u) && (std::time(NULL) < iLimit));

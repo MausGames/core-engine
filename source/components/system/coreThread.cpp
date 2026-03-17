@@ -98,7 +98,7 @@ coreBool coreThread::DetachFunction(const coreUint32 iToken)
 {
     if(!m_anFuncNew.empty())
     {
-        const coreSpinLocker oLocker(&m_LockNew);
+        const coreLocker oLocker(&m_LockNew);
 
         // search through new custom functions
         FOR_EACH(it, m_anFuncNew)
@@ -116,7 +116,7 @@ coreBool coreThread::DetachFunction(const coreUint32 iToken)
 
     if(!m_anFuncActive.empty())
     {
-        const coreSpinLocker oLocker(&m_LockActive);
+        const coreLocker oLocker(&m_LockActive);
 
         // search through active custom functions
         FOR_EACH(it, m_anFuncActive)
@@ -140,11 +140,11 @@ coreBool coreThread::DetachFunction(const coreUint32 iToken)
 /* call and manage custom functions */
 void coreThread::UpdateFunctions()
 {
-    const coreSpinLocker oLocker(&m_LockActive);
+    const coreLocker oLocker(&m_LockActive);
 
     if(!m_anFuncNew.empty())
     {
-        const coreSpinLocker oLocker2(&m_LockNew);
+        const coreLocker oLocker2(&m_LockNew);
 
         // collect new custom functions
         FOR_EACH(it, m_anFuncNew) m_anFuncActive.push_back(std::move(*it));
@@ -200,7 +200,7 @@ coreStatus coreThread::__Main()
         else
         {
             // always yield
-            CORE_SPINLOCK_YIELD
+            CORE_LOCK_YIELD
         }
 
         // check for shut down

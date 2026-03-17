@@ -71,10 +71,10 @@ coreBool GLEW_CORE_gl2_compatibility = false;
 /* pool structure */
 struct coreNamePool final
 {
-    GLuint       aiArray[CORE_GL_POOL_SIZE];   // actual pool holding all pre-generated resource names
-    coreUintW    iNext = CORE_GL_POOL_SIZE;    // next unused resource name in the pool
-    coreUintW    iAll  = 0u;                   // number of active resource names
-    coreSpinLock oLock = coreSpinLock();       // spinlock to allow multiple threads to access the pool
+    GLuint    aiArray[CORE_GL_POOL_SIZE];   // actual pool holding all pre-generated resource names
+    coreUintW iNext = CORE_GL_POOL_SIZE;    // next unused resource name in the pool
+    coreUintW iAll  = 0u;                   // number of active resource names
+    coreLock  oLock = coreLock();           // lock to allow multiple threads to access the pool
 };
 
 static coreNamePool s_PoolTextures2D;
@@ -90,14 +90,14 @@ void coreGenTextures2D(coreUintW iCount, GLuint* OUTPUT pNames)
     const auto nCreateFunc = [](coreUintW iCount, GLuint* OUTPUT pNames) {glCreateTextures(GL_TEXTURE_2D, iCount, pNames);};
 
     // generate 2D texture names
-    const coreSpinLocker oLocker(&s_PoolTextures2D.oLock);
+    const coreLocker oLocker(&s_PoolTextures2D.oLock);
     CORE_GL_POOL_GENERATE(s_PoolTextures2D, nCreateFunc, glGenTextures)
 }
 
 void coreGenBuffers(coreUintW iCount, GLuint* OUTPUT pNames)
 {
     // generate data buffer names
-    const coreSpinLocker oLocker(&s_PoolBuffers.oLock);
+    const coreLocker oLocker(&s_PoolBuffers.oLock);
     CORE_GL_POOL_GENERATE(s_PoolBuffers, glCreateBuffers, glGenBuffers)
 }
 
@@ -115,14 +115,14 @@ void coreGenVertexArrays(coreUintW iCount, GLuint* OUTPUT pNames)
 void coreDelTextures2D(coreUintW iCount, const GLuint* pNames)
 {
     // delete 2D texture names
-    const coreSpinLocker oLocker(&s_PoolTextures2D.oLock);
+    const coreLocker oLocker(&s_PoolTextures2D.oLock);
     CORE_GL_POOL_DELETE(s_PoolTextures2D, glDeleteTextures)
 }
 
 void coreDelBuffers(coreUintW iCount, const GLuint* pNames)
 {
     // delete data buffer names
-    const coreSpinLocker oLocker(&s_PoolBuffers.oLock);
+    const coreLocker oLocker(&s_PoolBuffers.oLock);
     CORE_GL_POOL_DELETE(s_PoolBuffers, glDeleteBuffers)
 }
 

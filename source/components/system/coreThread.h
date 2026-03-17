@@ -38,8 +38,8 @@ private:
     coreList<coreCustomFunc> m_anFuncActive;   // active custom functions
     coreAtomic<coreUint16>   m_iFuncNum;       // total number of custom functions (new and active)
 
-    coreSpinLock m_LockNew;                    // spinlock for collecting new functions
-    coreSpinLock m_LockActive;                 // spinlock for executing active functions
+    coreLock m_LockNew;                        // lock for collecting new functions
+    coreLock m_LockActive;                     // lock for executing active functions
 
     coreUint32 m_iTokenCount;                  // number of assigned function tokens
 
@@ -89,7 +89,7 @@ private:
 /* attach custom function */
 template <typename F> coreUint32 coreThread::AttachFunction(F&& nFunction, const coreUint32 iDependency)
 {
-    const coreSpinLocker oLocker(&m_LockNew);
+    const coreLocker oLocker(&m_LockNew);
 
     // get unique token
     const coreUint32 iToken = (++m_iTokenCount);

@@ -114,10 +114,10 @@ private:
     static coreMapStrFull<const coreChar*> s_apcCommandLine;   // parsed command line arguments
     static coreString                      s_sUserFolder;      // selected user folder
 
-    static ZSTD_CCtx*   s_pCompressContext;                    // reusable compression context
-    static ZSTD_DCtx*   s_pDecompressContext;                  // reusable decompression context
-    static coreSpinLock s_CompressLock;                        // compression context spinlock
-    static coreSpinLock s_DecompressLock;                      // decompression context spinlock
+    static ZSTD_CCtx*  s_pCompressContext;                     // reusable compression context
+    static ZSTD_DCtx*  s_pDecompressContext;                   // reusable decompression context
+    static coreLock    s_CompressLock;                         // compression context lock
+    static coreLock    s_DecompressLock;                       // decompression context lock
 
 
 public:

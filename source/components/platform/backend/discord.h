@@ -196,7 +196,7 @@ inline coreBool coreBackendDiscord::Init()
     const std::time_t iLimit = std::time(NULL) + 5;
     do
     {
-        CORE_SPINLOCK_YIELD
+        CORE_LOCK_YIELD
         m_pCore->run_callbacks(m_pCore);
     }
     while(!HAS_BIT(m_iState, 0u) && (std::time(NULL) < iLimit));

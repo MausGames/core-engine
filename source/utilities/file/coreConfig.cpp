@@ -55,7 +55,7 @@ coreConfig::~coreConfig()
 /* load configuration file */
 coreStatus coreConfig::Load()
 {
-    const coreSpinLocker oLocker(&m_Lock);
+    const coreLocker oLocker(&m_Lock);
 
     // load configuration file
     coreFile oFile(m_sPath.c_str());
@@ -145,7 +145,7 @@ coreStatus coreConfig::Save()
     // check for pending changes
     if(!m_bDirty) return CORE_BUSY;
 
-    const coreSpinLocker oLocker(&m_Lock);
+    const coreLocker oLocker(&m_Lock);
 
     // prepare target buffer
     coreString sBuffer;
@@ -256,7 +256,7 @@ coreBool coreConfig::__RetrieveEntry(const coreHashString& sSection, const coreH
 /* change configuration entry */
 void coreConfig::__ChangeEntry(const coreHashString& sSection, const coreHashString& sKey, const coreChar* pcValue)
 {
-    const coreSpinLocker oLocker(&m_Lock);
+    const coreLocker oLocker(&m_Lock);
 
     // retrieve configuration entry
     coreString* psEntry;

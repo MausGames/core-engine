@@ -94,7 +94,7 @@
 		5BB8C38B27C94E4200BBB338 /* coreRand.h in Headers */ = {isa = PBXBuildFile; fileRef = 5BB8C31A27C94E4100BBB338 /* coreRand.h */; };
 		5BB8C38C27C94E4200BBB338 /* coreData.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5BB8C31B27C94E4100BBB338 /* coreData.cpp */; };
 		5BB8C38D27C94E4200BBB338 /* coreData.h in Headers */ = {isa = PBXBuildFile; fileRef = 5BB8C31C27C94E4100BBB338 /* coreData.h */; };
-		5BB8C38E27C94E4200BBB338 /* coreSpinLock.h in Headers */ = {isa = PBXBuildFile; fileRef = 5BB8C31D27C94E4100BBB338 /* coreSpinLock.h */; };
+		5BB8C38E27C94E4200BBB338 /* coreLock.h in Headers */ = {isa = PBXBuildFile; fileRef = 5BB8C31D27C94E4100BBB338 /* coreLock.h */; };
 		5BB8C38F27C94E4200BBB338 /* coreSet.h in Headers */ = {isa = PBXBuildFile; fileRef = 5BB8C31E27C94E4100BBB338 /* coreSet.h */; };
 		5BB8C39027C94E4200BBB338 /* coreHashString.h in Headers */ = {isa = PBXBuildFile; fileRef = 5BB8C31F27C94E4100BBB338 /* coreHashString.h */; };
 		5BB8C39127C94E4200BBB338 /* coreRing.h in Headers */ = {isa = PBXBuildFile; fileRef = 5BB8C32027C94E4100BBB338 /* coreRing.h */; };
@@ -224,7 +224,7 @@
 		5BB8C31A27C94E4100BBB338 /* coreRand.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = coreRand.h; sourceTree = "<group>"; };
 		5BB8C31B27C94E4100BBB338 /* coreData.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = coreData.cpp; sourceTree = "<group>"; };
 		5BB8C31C27C94E4100BBB338 /* coreData.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = coreData.h; sourceTree = "<group>"; };
-		5BB8C31D27C94E4100BBB338 /* coreSpinLock.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = coreSpinLock.h; sourceTree = "<group>"; };
+		5BB8C31D27C94E4100BBB338 /* coreLock.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = coreLock.h; sourceTree = "<group>"; };
 		5BB8C31E27C94E4100BBB338 /* coreSet.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = coreSet.h; sourceTree = "<group>"; };
 		5BB8C31F27C94E4100BBB338 /* coreHashString.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = coreHashString.h; sourceTree = "<group>"; };
 		5BB8C32027C94E4100BBB338 /* coreRing.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = coreRing.h; sourceTree = "<group>"; };
@@ -536,7 +536,7 @@
 				5BB8C32027C94E4100BBB338 /* coreRing.h */,
 				5BB8C31227C94E4100BBB338 /* coreScope.h */,
 				5BB8C31E27C94E4100BBB338 /* coreSet.h */,
-				5BB8C31D27C94E4100BBB338 /* coreSpinLock.h */,
+				5BB8C31D27C94E4100BBB338 /* coreLock.h */,
 				5BB8C32127C94E4100BBB338 /* coreString.cpp */,
 				5BB8C31027C94E4100BBB338 /* coreString.h */,
 				5BB8C31927C94E4100BBB338 /* coreVariant.h */,
@@ -694,7 +694,7 @@
 				5BB8C37E27C94E4200BBB338 /* coreVector.h in Headers */,
 				5BB8C39F27C94E4200BBB338 /* coreSwitchBox.h in Headers */,
 				5BB8C36327C94E4200BBB338 /* coreFont.h in Headers */,
-				5BB8C38E27C94E4200BBB338 /* coreSpinLock.h in Headers */,
+				5BB8C38E27C94E4200BBB338 /* coreLock.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

@@ -848,7 +848,7 @@ private:
 #include "utilities/data/hash/XXH.h"
 #include "utilities/data/coreString.h"
 #include "utilities/data/coreHashString.h"
-#include "utilities/data/coreSpinLock.h"
+#include "utilities/data/coreLock.h"
 #include "utilities/data/coreList.h"
 #include "utilities/data/coreSet.h"
 #include "utilities/data/coreMap.h"

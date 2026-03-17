@@ -543,6 +543,7 @@
     <ClInclude Include="..\..\..\source\utilities\data\coreHashString.h" />
     <ClInclude Include="..\..\..\source\utilities\data\coreMap.h" />
     <ClInclude Include="..\..\..\source\utilities\data\coreList.h" />
+    <ClInclude Include="..\..\..\source\utilities\data\coreLock.h" />
     <ClInclude Include="..\..\..\source\utilities\data\coreProtect.h" />
     <ClInclude Include="..\..\..\source\utilities\data\coreRand.h" />
     <ClInclude Include="..\..\..\source\utilities\data\coreScope.h" />

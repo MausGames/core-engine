@@ -63,9 +63,9 @@ private:
 private:
     coreMapStrFull<coreSection> m_aasSection;   // configuration sections with configuration entries
 
-    coreString   m_sPath;                       // relative path of the file
-    coreBool     m_bDirty;                      // status flag for pending changes
-    coreSpinLock m_Lock;                        // spinlock to prevent concurrent configuration access
+    coreString m_sPath;                         // relative path of the file
+    coreBool   m_bDirty;                        // status flag for pending changes
+    coreLock   m_Lock;                          // lock to prevent concurrent configuration access
 
 
 public:
@@ -93,10 +93,10 @@ public:
     inline void SetString(const coreHashString& sSection, const coreHashString& sKey,                  const coreChar* pcValue) {this->__ChangeEntry(sSection, sKey, pcValue);}
 
     /* get configuration values */
-    inline coreBool        GetBool  (const coreHashString& sSection, const coreHashString& sKey, const coreBool  bDefault)  {const coreSpinLocker oLocker(&m_Lock); coreString* psEntry; if(!this->__RetrieveEntry(sSection, sKey, &psEntry)) {m_bDirty = true; (*psEntry) = coreConfig::__FromBool (bDefault);} return coreConfig::__ToBool (*psEntry);}
-    inline coreInt32       GetInt   (const coreHashString& sSection, const coreHashString& sKey, const coreInt32 iDefault)  {const coreSpinLocker oLocker(&m_Lock); coreString* psEntry; if(!this->__RetrieveEntry(sSection, sKey, &psEntry)) {m_bDirty = true; (*psEntry) = coreConfig::__FromInt  (iDefault);} return coreConfig::__ToInt  (*psEntry);}
-    inline coreFloat       GetFloat (const coreHashString& sSection, const coreHashString& sKey, const coreFloat fDefault)  {const coreSpinLocker oLocker(&m_Lock); coreString* psEntry; if(!this->__RetrieveEntry(sSection, sKey, &psEntry)) {m_bDirty = true; (*psEntry) = coreConfig::__FromFloat(fDefault);} return coreConfig::__ToFloat(*psEntry);}
-    inline const coreChar* GetString(const coreHashString& sSection, const coreHashString& sKey, const coreChar* pcDefault) {const coreSpinLocker oLocker(&m_Lock); coreString* psEntry; if(!this->__RetrieveEntry(sSection, sKey, &psEntry)) {m_bDirty = true; (*psEntry) = pcDefault;}                         return psEntry->c_str();}
+    inline coreBool        GetBool  (const coreHashString& sSection, const coreHashString& sKey, const coreBool  bDefault)  {const coreLocker oLocker(&m_Lock); coreString* psEntry; if(!this->__RetrieveEntry(sSection, sKey, &psEntry)) {m_bDirty = true; (*psEntry) = coreConfig::__FromBool (bDefault);} return coreConfig::__ToBool (*psEntry);}
+    inline coreInt32       GetInt   (const coreHashString& sSection, const coreHashString& sKey, const coreInt32 iDefault)  {const coreLocker oLocker(&m_Lock); coreString* psEntry; if(!this->__RetrieveEntry(sSection, sKey, &psEntry)) {m_bDirty = true; (*psEntry) = coreConfig::__FromInt  (iDefault);} return coreConfig::__ToInt  (*psEntry);}
+    inline coreFloat       GetFloat (const coreHashString& sSection, const coreHashString& sKey, const coreFloat fDefault)  {const coreLocker oLocker(&m_Lock); coreString* psEntry; if(!this->__RetrieveEntry(sSection, sKey, &psEntry)) {m_bDirty = true; (*psEntry) = coreConfig::__FromFloat(fDefault);} return coreConfig::__ToFloat(*psEntry);}
+    inline const coreChar* GetString(const coreHashString& sSection, const coreHashString& sKey, const coreChar* pcDefault) {const coreLocker oLocker(&m_Lock); coreString* psEntry; if(!this->__RetrieveEntry(sSection, sKey, &psEntry)) {m_bDirty = true; (*psEntry) = pcDefault;}                         return psEntry->c_str();}
 
     /* get object properties */
     inline const coreChar* GetPath()const {return m_sPath.c_str();}

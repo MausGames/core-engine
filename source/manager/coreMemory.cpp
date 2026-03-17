@@ -321,7 +321,7 @@ coreMemoryManager::~coreMemoryManager()
 /* create memory-block from internal memory-pool */
 RETURN_RESTRICT void* coreMemoryManager::Allocate(const coreUint16 iSize, const coreUint8 iAlign)
 {
-    const coreSpinLocker oLocker(&m_PoolLock);
+    const coreLocker oLocker(&m_PoolLock);
 
     // assemble lookup key
     const coreUint32 iKey = (coreUint32(iSize) << 16u) | (coreUint32(iAlign));
@@ -338,7 +338,7 @@ RETURN_RESTRICT void* coreMemoryManager::Allocate(const coreUint16 iSize, const 
 /* remove memory-block to internal memory-pool */
 void coreMemoryManager::Free(const coreUint16 iSize, const coreUint8 iAlign, void** OUTPUT ppPointer)
 {
-    const coreSpinLocker oLocker(&m_PoolLock);
+    const coreLocker oLocker(&m_PoolLock);
 
     // assemble lookup key
     const coreUint32 iKey = (coreUint32(iSize) << 16u) | (coreUint32(iAlign));

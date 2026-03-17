@@ -9,13 +9,13 @@
 #include "Core.h"
 
 coreString                 coreShader ::s_asGlobalCode[8] = {};
-coreSpinLock               coreShader ::s_GlobalLock      = coreSpinLock();
+coreLock                   coreShader ::s_GlobalLock      = coreLock();
 coreMapStr<coreString>     coreShader ::s_asIncludeCode   = {};
 coreRecursiveLock          coreShader ::s_IncludeLock     = coreRecursiveLock();
 coreProgram*               coreProgram::s_pCurrent        = NULL;
 coreProgram::coreBinaryMap coreProgram::s_aBinaryMap      = {};
 coreUint32                 coreProgram::s_iBinarySize     = 0u;
-coreSpinLock               coreProgram::s_BinaryLock      = coreSpinLock();
+coreLock                   coreProgram::s_BinaryLock      = coreLock();
 
 
 // ****************************************************************
@@ -155,8 +155,8 @@ coreStatus coreShader::Unload()
 /* clear global shader code */
 void coreShader::ClearGlobalCode()
 {
-    const coreSpinLocker oLocker1(&s_GlobalLock);
-    const coreSpinLocker oLocker2(&s_IncludeLock);
+    const coreLocker oLocker1(&s_GlobalLock);
+    const coreLocker oLocker2(&s_IncludeLock);
 
     // delete global shader code
     for(coreUintW i = 0u; i < ARRAY_SIZE(s_asGlobalCode); ++i)
@@ -173,7 +173,7 @@ void coreShader::ClearGlobalCode()
 /* load global shader code */
 void coreShader::__LoadGlobalCode()
 {
-    const coreSpinLocker oLocker(&s_GlobalLock);
+    const coreLocker oLocker(&s_GlobalLock);
 
     if(!s_asGlobalCode[0].empty()) return;
 
@@ -274,7 +274,7 @@ void coreShader::__ReduceSize(coreString* OUTPUT psCode)
 /* resolve include directives */
 void coreShader::__ResolveIncludes(coreString* OUTPUT psCode, const coreFile* pFile)
 {
-    const coreSpinLocker oLocker(&s_IncludeLock);
+    const coreLocker oLocker(&s_IncludeLock);
 
     constexpr coreChar  acText[] = "#include \"";
     constexpr coreUintW iTextLen = ARRAY_SIZE(acText) - 1u;
@@ -799,7 +799,7 @@ void coreProgram::SaveShaderCache()
 /* remove all entries from the shader-cache */
 void coreProgram::ClearShaderCache()
 {
-    const coreSpinLocker oLocker(&s_BinaryLock);
+    const coreLocker oLocker(&s_BinaryLock);
 
     // delete entries
     FOR_EACH(it, s_aBinaryMap)
@@ -826,7 +826,7 @@ coreBool coreProgram::__LoadBinary()
     // indicate the intention to retrieve the shader-program binary
     glProgramParameteri(m_iIdentifier, GL_PROGRAM_BINARY_RETRIEVABLE_HINT, 1);
 
-    const coreSpinLocker oLocker(&s_BinaryLock);
+    const coreLocker oLocker(&s_BinaryLock);
 
     if(s_aBinaryMap.count_bs(m_iHash))
     {
@@ -861,7 +861,7 @@ void coreProgram::__SaveBinary()const
 
     if(iSize)
     {
-        const coreSpinLocker oLocker(&s_BinaryLock);
+        const coreLocker oLocker(&s_BinaryLock);
 
         coreBinary& oEntry = s_aBinaryMap.bs(m_iHash);
 

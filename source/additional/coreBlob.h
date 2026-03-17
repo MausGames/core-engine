@@ -33,10 +33,10 @@ struct coreCacheEntry final
     coreUint32 iSize;   // size of the data (in bytes)
 };
 
-static coreMap<coreUint64, coreCacheEntry> s_aCacheMap   = {};               // driver-blob map (blob-cache)
-static coreUint32                          s_iCacheSize  = 0u;               // total size of all data in the map (in bytes)
-static coreSpinLock                        s_CacheLock   = coreSpinLock();   // spinlock to prevent concurrent map access
-static coreAtomic<coreBool>                s_bCacheState = false;            // dedicated ready state (as changing or removing the callbacks is not possible)
+static coreMap<coreUint64, coreCacheEntry> s_aCacheMap   = {};           // driver-blob map (blob-cache)
+static coreUint32                          s_iCacheSize  = 0u;           // total size of all data in the map (in bytes)
+static coreLock                            s_CacheLock   = coreLock();   // lock to prevent concurrent map access
+static coreAtomic<coreBool>                s_bCacheState = false;        // dedicated ready state (as changing or removing the callbacks is not possible)
 
 using PFNEGLSETBLOBFUNCANDROIDPROC       = void            (SDLCALL     *) (const void* pKey, khronos_ssize_t iKeySize, const void* pValue, khronos_ssize_t iValueSize);
 using PFNEGLGETBLOBFUNCANDROIDPROC       = khronos_ssize_t (SDLCALL     *) (const void* pKey, khronos_ssize_t iKeySize, void*       pValue, khronos_ssize_t iValueSize);
@@ -60,7 +60,7 @@ static void SDLCALL coreSetBlobValue(const void* pKey, khronos_ssize_t iKeySize,
     // hash key into simpler form
     const coreUint64 iHash = coreHashXXH64(s_cast<const coreByte*>(pKey), iKeySize);
 
-    const coreSpinLocker oLocker(&s_CacheLock);
+    const coreLocker oLocker(&s_CacheLock);
 
     if(s_bCacheState)
     {
@@ -89,7 +89,7 @@ static khronos_ssize_t SDLCALL coreGetBlobValue(const void* pKey, khronos_ssize_
     // hash key into simpler form
     const coreUint64 iHash = coreHashXXH64(s_cast<const coreByte*>(pKey), iKeySize);
 
-    const coreSpinLocker oLocker(&s_CacheLock);
+    const coreLocker oLocker(&s_CacheLock);
 
     if(s_bCacheState)
     {
@@ -233,7 +233,7 @@ inline void coreSaveBlobCache()
 /* remove all entries from the blob-cache */
 inline void coreClearBlobCache()
 {
-    const coreSpinLocker oLocker(&s_CacheLock);
+    const coreLocker oLocker(&s_CacheLock);
 
     // delete entries
     FOR_EACH(it, s_aCacheMap)

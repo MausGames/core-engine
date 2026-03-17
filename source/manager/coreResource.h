@@ -104,7 +104,7 @@ private:
 
     coreResourceIndex m_iIndex;            // unique resource index
 
-    coreSpinLock           m_UpdateLock;   // spinlock to prevent concurrent resource loading
+    coreLock               m_UpdateLock;   // lock to prevent concurrent resource loading
     coreStatus             m_eStatus;      // current resource status
     coreAtomic<coreUint16> m_iRefCount;    // simple reference-counter
 
@@ -131,12 +131,12 @@ public:
     inline void RefDecrease() {ASSERT(m_iRefCount) if(!m_iRefCount.SubFetch(1u)) m_bUnload = true;}
 
     /* handle resource loading */
-    inline coreBool Update () {if(!m_bProxy) {const coreSpinLocker oLocker(&m_UpdateLock); if(this->IsLoading() && !m_bAutomatic)      {m_eStatus = m_pResource->Load(m_pFile);                      return true;}} return false;}
-    inline coreBool Reload () {if(!m_bProxy) {const coreSpinLocker oLocker(&m_UpdateLock); m_pResource->Unload(); if(this->IsLoaded()) {m_eStatus = m_pResource->Load(m_pFile);                      return true;}} return false;}
-    inline coreBool Nullify() {if(!m_bProxy) {const coreSpinLocker oLocker(&m_UpdateLock); m_pResource->Unload(); if(this->IsLoaded()) {m_eStatus = (m_pFile || m_bAutomatic) ? CORE_BUSY : CORE_OK; return true;}} return false;}
+    inline coreBool Update () {if(!m_bProxy) {const coreLocker oLocker(&m_UpdateLock); if(this->IsLoading() && !m_bAutomatic)      {m_eStatus = m_pResource->Load(m_pFile);                      return true;}} return false;}
+    inline coreBool Reload () {if(!m_bProxy) {const coreLocker oLocker(&m_UpdateLock); m_pResource->Unload(); if(this->IsLoaded()) {m_eStatus = m_pResource->Load(m_pFile);                      return true;}} return false;}
+    inline coreBool Nullify() {if(!m_bProxy) {const coreLocker oLocker(&m_UpdateLock); m_pResource->Unload(); if(this->IsLoaded()) {m_eStatus = (m_pFile || m_bAutomatic) ? CORE_BUSY : CORE_OK; return true;}} return false;}
 
     /* lock direct resource object access */
-    template <typename F> inline void LockResource(F&& nFunction) {const coreSpinLocker oLocker(&m_UpdateLock); nFunction(d_cast<typename TRAIT_ARG_TYPE(F, 0u)>(m_pResource));}   // [](coreResource* OUTPUT pResource) -> void
+    template <typename F> inline void LockResource(F&& nFunction) {const coreLocker oLocker(&m_UpdateLock); nFunction(d_cast<typename TRAIT_ARG_TYPE(F, 0u)>(m_pResource));}   // [](coreResource* OUTPUT pResource) -> void
 
     /* attach asynchronous callbacks */
     template <typename F> coreUint32 OnLoadedOnce(F&& nFunction, const coreUint32 iDependency = 0u)const;   // [](void) -> void
@@ -191,9 +191,9 @@ private:
 
     coreSet<coreResourceRelation*> m_apRelation;                           // objects to reset with the resource manager
 
-    coreSpinLock m_ResourceLock;                                           // spinlock to prevent invalid resource handle access
-    coreSpinLock m_FileLock;                                               // spinlock to prevent invalid resource file access
-    coreBool     m_bActive;                                                // current management status
+    coreLock m_ResourceLock;                                               // lock to prevent invalid resource handle access
+    coreLock m_FileLock;                                                   // lock to prevent invalid resource file access
+    coreBool m_bActive;                                                    // current management status
 
     static coreResourceHandle* s_apHandleTable  [CORE_RESOURCE_INDICES];   // resource handle index table
     static coreResource*       s_apResourceTable[CORE_RESOURCE_INDICES];   // resource object index table (to remove one indirection)
@@ -438,7 +438,7 @@ template <typename T> void coreResourceManager::Free(coreResourcePtr<T>* OUTPUT 
         }
 
         // wait on possible resource loading
-        while(pHandle->m_UpdateLock.IsLocked()) CORE_SPINLOCK_YIELD   // # locked again in destructor
+        while(pHandle->m_UpdateLock.IsLocked()) CORE_LOCK_YIELD   // # locked again in destructor
 
         // delete resource handle
         (*pptResourcePtr) = NULL;
