@@ -180,12 +180,12 @@ It is **designed to be supportive, versatile and powerful**, and to dynamically 
 | Name | Description | Links |
 | --- | --- | --- |
 | [Eigengrau](https://store.steampowered.com/app/1624320/Eigengrau/) | Colorful shoot'em up with varied and diverse gameplay | [GitHub](https://github.com/MausGames/project-one), [GitLab](https://gitlab.com/MausGames/project-one) |
+| [Last Fall](https://mausgames.itch.io/last-fall) | Tricky arcade puzzler made for [Ludum Dare 49](https://ldjam.com/events/ludum-dare/49/last-fall) | [GitHub](https://github.com/MausGames/last-fall), [GitLab](https://gitlab.com/MausGames/last-fall) |
+| [Ink Jump](https://mausgames.itch.io/ink-jump) | Reflective precision platformer made on [Mi'pu'mi][1] day  | [GitHub](https://github.com/MausGames/ink-jump), [GitLab](https://gitlab.com/MausGames/ink-jump) |
+| [Endless Journey](https://mausgames.itch.io/endless-journey) | Spiritual arcade climber made on [Mi'pu'mi][1] day | [GitHub](https://github.com/MausGames/endless-journey), [GitLab](https://gitlab.com/MausGames/endless-journey) |
 | [Disco Rock](https://gamejolt.com/games/disco-rock/18996/) | Very simple endless-runner inspired by the 70s disco era | [GitHub](https://github.com/MausGames/disco-rock), [GitLab](https://gitlab.com/MausGames/disco-rock) |
 | Flip It | Competitive territory game made on [Mi'pu'mi][1] day | [GitHub](https://github.com/MausGames/flip-it), [GitLab](https://gitlab.com/MausGames/flip-it) |
 | Party Raider | Multiplayer platform shooter made on [Mi'pu'mi][1] day | [GitHub](https://github.com/MausGames/party-raider), [GitLab](https://gitlab.com/MausGames/party-raider) |
-| [Endless Journey](https://mausgames.itch.io/endless-journey) | Spiritual arcade climber made on [Mi'pu'mi][1] day | [GitHub](https://github.com/MausGames/endless-journey), [GitLab](https://gitlab.com/MausGames/endless-journey) |
-| [Last Fall](https://mausgames.itch.io/last-fall) | Tricky arcade puzzler made for [Ludum Dare 49](https://ldjam.com/events/ludum-dare/49/last-fall) | [GitHub](https://github.com/MausGames/last-fall), [GitLab](https://gitlab.com/MausGames/last-fall) |
-| [Ink Jump](https://mausgames.itch.io/ink-jump) | Reflective precision platformer made on [Mi'pu'mi][1] day  | [GitHub](https://github.com/MausGames/ink-jump), [GitLab](https://gitlab.com/MausGames/ink-jump) |
 
 <br>
 
