@@ -703,7 +703,9 @@ void coreBatchList::__RenderDefault(const coreProgramPtr& pProgramInstanced, con
 
             // set vertex data (model only)
             for(coreUintW i = 0u, ie = pModel->GetNumVertexBuffers(); i < ie; ++i)
+            {
                 pModel->GetVertexBuffer(i)->Activate(0u);
+            }
 
             // set index data
             if(pModel->GetIndexBuffer()->IsValid())

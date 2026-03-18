@@ -229,17 +229,17 @@ coreInt32 SDLCALL coreMain(coreInt32 argc, coreChar** argv)
     coreTempStorageInit(0u);
 
     // run command
-    const coreStatus eStatus = Core::RunCommand();
+    const coreStatus eStatus = Core::__RunCommand();
     if(eStatus != CORE_BUSY) return eStatus;
 
     // run engine
-    return Core::RunEngine();
+    return Core::__RunEngine();
 }
 
 
 // ****************************************************************
 /* run engine */
-coreStatus Core::RunEngine()
+coreStatus Core::__RunEngine()
 {
     // create engine instance
     Core Engine;
@@ -330,7 +330,7 @@ coreStatus Core::RunEngine()
 
 // ****************************************************************
 /* run command */
-coreStatus Core::RunCommand()
+coreStatus Core::__RunCommand()
 {
 #if !defined(_CORE_EMSCRIPTEN_) && !defined(_CORE_SWITCH_)
 

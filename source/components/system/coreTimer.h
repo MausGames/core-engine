@@ -95,9 +95,9 @@ public:
     ENABLE_COPY(coreFlow)
 
     /* access the flowing value */
+    constexpr const coreFloat& Get      ()const {return m_fValue;}
     constexpr operator       coreFloat& ()      {return m_fValue;}
     constexpr operator const coreFloat& ()const {return m_fValue;}
-    constexpr const coreFloat& ToFloat  ()const {return m_fValue;}
 
     /* update the flowing value */
     inline void Update(const coreFloat fSpeed)                          {m_fValue += fSpeed * Core::System->GetTime();}

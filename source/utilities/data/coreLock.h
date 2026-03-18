@@ -177,8 +177,8 @@ public:
     FORCE_INLINE coreAtomic& operator = (const T tValue)noexcept;
 
     /* access atomic value */
+    FORCE_INLINE T Get      ()const;
     FORCE_INLINE operator T ()const;
-    FORCE_INLINE T       Get()const;
 
     /* change atomic value */
     FORCE_INLINE T FetchAdd(const T tValue) {return m_tValue.fetch_add(tValue, std::memory_order::relaxed);}
@@ -464,12 +464,12 @@ template <typename T> FORCE_INLINE coreAtomic<T>& coreAtomic<T>::operator = (con
 
 // ****************************************************************
 /* access atomic value */
-template <typename T> FORCE_INLINE coreAtomic<T>::operator T ()const
+template <typename T> FORCE_INLINE T coreAtomic<T>::Get()const
 {
     return m_tValue.load(std::memory_order::relaxed);
 }
 
-template <typename T> FORCE_INLINE T coreAtomic<T>::Get()const
+template <typename T> FORCE_INLINE coreAtomic<T>::operator T ()const
 {
     return m_tValue.load(std::memory_order::relaxed);
 }

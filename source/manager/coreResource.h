@@ -298,7 +298,7 @@ public:
     inline T*                       GetResource()const {return d_cast<T*>(coreResourceManager::FetchResource(m_iIndex));}
     inline coreResourceHandle*      GetHandle  ()const {return coreResourceManager::FetchHandle(m_iIndex);}
     inline const coreResourceIndex& GetIndex   ()const {return m_iIndex;}
-    inline explicit operator coreBool          ()const {return m_iIndex;}
+    inline explicit operator coreBool          ()const {return m_iIndex != 0u;}
     inline T*       operator ->                ()const {return  this->GetResource();}
     inline T&       operator *                 ()const {return *this->GetResource();}
 

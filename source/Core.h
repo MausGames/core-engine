@@ -823,8 +823,8 @@ private:
     friend coreInt32 SDLCALL coreMain(coreInt32 argc, coreChar** argv);
 
     /* run engine or command */
-    static coreStatus RunEngine();
-    static coreStatus RunCommand();
+    static coreStatus __RunEngine();
+    static coreStatus __RunCommand();
 
     /* perform deferred application restart */
     static void __PerformRestart();

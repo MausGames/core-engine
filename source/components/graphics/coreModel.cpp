@@ -462,7 +462,9 @@ void coreModel::Enable()
 
         // set vertex data
         for(coreUintW i = 0u, ie = m_aVertexBuffer.size(); i < ie; ++i)
+        {
             m_aVertexBuffer[i].Activate(0u);
+        }
 
         // set index data
         if(m_IndexBuffer.IsValid()) m_IndexBuffer.Bind();
