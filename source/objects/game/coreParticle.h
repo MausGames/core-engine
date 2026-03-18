@@ -19,6 +19,7 @@
 // TODO 3: sorting based on position
 // TODO 3: culling (also on instancing)
 // TODO 5: <old comment style>
+// TODO 3: also allow advancing simulation of already created particles
 
 
 // ****************************************************************
@@ -72,8 +73,8 @@ public:
     ENABLE_COPY (coreParticle)
 
     /* check current status */
-    inline coreBool IsActive()const {return (m_fValue > 0.0f);}
-    inline void     Disable ()      {m_fValue = 0.0f;}
+    inline coreBool IsActive  ()const {return (m_fValue > 0.0f);}
+    inline void     Deactivate()      {m_fValue = 0.0f;}
 
     /* animate the particle absolute */
     inline void SetPositionAbs(const coreVector3 vBegin, const coreVector3 vEnd) {m_BeginState.vPosition = vBegin;                m_EndState.vPosition = vEnd;}
@@ -207,7 +208,7 @@ private:
 class coreParticleEffect final
 {
 private:
-    coreFlow m_fCreation;            // status value for particle creation
+    coreFlow m_fCreation;            // status value for continuous particle creation
 
     coreUint8     m_iTimeID;         // ID of the used frame time
     coreObject3D* m_pOrigin;         // origin object for relative movement
@@ -234,6 +235,9 @@ public:
     /* unbind and remove particles */
     inline void Unbind() {if(m_pSystem) m_pSystem->Unbind(this);}
     inline void Clear () {if(m_pSystem) m_pSystem->Clear (this);}
+
+    /* advance continuous particle creation */
+    inline void AdvanceCreation(const coreFloat fTicks) {ASSERT(fTicks > 0.0f) m_fCreation += fTicks;}
 
     /* update particles with custom simulation */
     template <typename F> inline void ForEachParticle(F&& nUpdateFunc) {ASSERT(m_pSystem) m_pSystem->ForEachParticle(this, std::forward<F>(nUpdateFunc));}   // [](coreParticle* OUTPUT pParticle, const coreUintW i) -> void
@@ -266,7 +270,7 @@ inline void coreParticle::__Update()
 inline void coreParticle::__Adjust(const coreFloat fTime)
 {
     // adjust current simulation value
-    m_fValue -= m_fSpeed * fTime;
+    m_fValue = MAX(m_fValue - m_fSpeed * fTime, FLT_MIN);   // prevent immediate deactivation
 }
 
 

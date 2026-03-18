@@ -251,6 +251,16 @@ coreParticle* coreParticleSystem::CreateParticle(coreParticleEffect* pEffect)
         coreParticle* pParticle = &m_aParticle[m_iCurParticle];
         if(!pParticle->IsActive())
         {
+        #if defined(_CORE_DEBUG_)
+
+            // check for duplicate particles
+            FOR_EACH(it, m_apRenderList)
+            {
+                ASSERT((*it) != pParticle)
+            }
+
+        #endif
+
             // prepare particle and add to render list
             pParticle->__Prepare(pEffect);
             m_apRenderList.push_back(pParticle);
@@ -339,7 +349,7 @@ void coreParticleSystem::Clear(const coreParticleEffect* pEffect)
         if(pParticle->GetEffect() == pEffect)
         {
             // reset particle state
-            pParticle->Disable();
+            pParticle->Deactivate();
 
             // remove particle
             DYN_REMOVE(it, m_apRenderList)
@@ -376,7 +386,7 @@ void coreParticleSystem::UnbindAll()
 void coreParticleSystem::ClearAll()
 {
     // reset all particle states
-    FOR_EACH(it, m_apRenderList) (*it)->Disable();
+    FOR_EACH(it, m_apRenderList) (*it)->Deactivate();
 
     // clear memory
     m_apRenderList.clear();
