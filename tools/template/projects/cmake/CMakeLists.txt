@@ -3,7 +3,14 @@ cmake_minimum_required(VERSION 3.31)
 set(BASE_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/../..)
 set(ENGINE_DIRECTORY ${BASE_DIRECTORY}/../core-engine)
 
-project(CoreApp VERSION 0.0.1)
+project(
+    CoreApp
+    VERSION 0.0.1
+    DESCRIPTION ""
+    HOMEPAGE_URL "https://www.maus-games.at"
+    LANGUAGES C CXX
+)
+
 add_subdirectory(${ENGINE_DIRECTORY}/projects/cmake CoreEngine)
 add_executable(CoreApp)
 

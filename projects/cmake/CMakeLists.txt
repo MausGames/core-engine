@@ -2,7 +2,14 @@ cmake_minimum_required(VERSION 3.31)
 
 set(BASE_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/../..)
 
-project(CoreEngine VERSION 1.0.0)
+project(
+    CoreEngine
+    VERSION 1.0.0
+    DESCRIPTION "C++ Coding Framework for Windows, Linux, macOS and Browser games"
+    HOMEPAGE_URL "https://www.maus-games.at"
+    LANGUAGES C CXX
+)
+
 add_library(CoreEngine STATIC)
 
 set_target_properties(
@@ -125,7 +132,7 @@ else()
     target_compile_options(
         CoreEngine PUBLIC
         -msse3 -pipe -Wall -Wextra -Wpedantic
-        $<IF:$<CONFIG:DEBUG>, -O0 -g3 -glldb -gsplit-dwarf -gz=zlib -ftrivial-auto-var-init=pattern, -Os -flto -fvisibility=hidden -fwhole-program-vtables -fvirtual-function-elimination -fforce-emit-vtables -fstrict-vtable-pointers -fno-strict-overflow -ffinite-math-only -fno-signed-zeros -fno-trapping-math -fno-math-errno -ffp-contract=off -fno-rtti -fno-exceptions -Werror>
+        $<IF:$<CONFIG:DEBUG>, -O0 -g3 -gsplit-dwarf -gz=zlib -ftrivial-auto-var-init=pattern, -Os -flto -fvisibility=hidden -fwhole-program-vtables -fvirtual-function-elimination -fforce-emit-vtables -fstrict-vtable-pointers -fno-strict-overflow -ffinite-math-only -fno-signed-zeros -fno-trapping-math -fno-math-errno -ffp-contract=off -fno-rtti -fno-exceptions -Werror>
     )
 
     target_link_directories(
