@@ -84,6 +84,13 @@ template <typename T> template <typename... A> constexpr T& coreList<T>::emplace
 {
     ASSERT(this->size() < this->capacity())
 
+#if defined(_CORE_TEST_)
+
+    // disable in test mode
+    return this->emplace_back(std::forward<A>(vArgs)...);
+
+#endif
+
     // access raw container pointers
     T** pptRaw = r_cast<T**>(this);
     ASSERT(pptRaw[0] == std::to_address(this->begin()))
@@ -99,6 +106,13 @@ template <typename T> template <typename... A> constexpr T& coreList<T>::emplace
 template <typename T> template <typename... A> constexpr coreList<T>::coreIterator coreList<T>::emplace_unsafe(const coreConstIterator& it, A&&... vArgs)
 {
     ASSERT(this->size() < this->capacity())
+
+#if defined(_CORE_TEST_)
+
+    // disable in test mode
+    return this->emplace(it, std::forward<A>(vArgs)...);
+
+#endif
 
     // access raw container pointers
     T** pptRaw = r_cast<T**>(this);
