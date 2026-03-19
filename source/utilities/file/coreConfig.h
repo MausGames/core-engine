@@ -18,6 +18,7 @@
 // ****************************************************************
 /* configuration definitions */
 #define CORE_CONFIG_BASE_LANGUAGE               "Base",     "Language",           ("")
+#define CORE_CONFIG_BASE_FONTSCALE              "Base",     "FontScale",          (1.0f)
 #define CORE_CONFIG_BASE_DEBUGMODE              "Base",     "DebugMode",          (false)   // enable debug features and extended logging
 #define CORE_CONFIG_BASE_ASYNCMODE              "Base",     "AsyncMode",          (true)    // enable asynchronous processing and resource loading
 #define CORE_CONFIG_BASE_PERSISTMODE            "Base",     "PersistMode",        (false)   // load all resources on startup and keep them in memory

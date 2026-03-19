@@ -80,6 +80,7 @@ private:
 
     coreFloat   m_fCanonBase;                           // canonical base resolution (major axis)
     coreVector2 m_vCanonSize;                           // canonical transform size
+    coreFloat   m_fFontFactor;                          // global font factor (relative to current base resolution)
 
     SDL_ThreadID m_iMainThread;                         // thread-ID from the main-thread
 
@@ -133,6 +134,7 @@ public:
     inline const coreUint64&     GetPerfTime       ()const                       {return m_iPerfTime;}
     inline const coreFloat&      GetCanonBase      ()const                       {return m_fCanonBase;}
     inline const coreVector2&    GetCanonSize      ()const                       {return m_vCanonSize;}
+    inline const coreFloat&      GetFontFactor     ()const                       {return m_fFontFactor;}
     inline const SDL_ThreadID&   GetMainThread     ()const                       {return m_iMainThread;}
     inline const coreBool&       GetWinFocusLost   ()const                       {return m_bWinFocusLost;}
     inline const coreBool&       GetWinPosChanged  ()const                       {return m_bWinPosChanged;}

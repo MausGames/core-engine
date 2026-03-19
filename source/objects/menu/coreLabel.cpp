@@ -346,12 +346,12 @@ void coreLabel::__RefreshSize()
     {
         // set size by text dimensions
         const coreVector2 vDimensions = m_pFont->RetrieveTextDimensions(m_sText.c_str(), m_sText.length(), iRelHeight, iRelOutline);
-        this->SetSize((vDimensions - coreVector2(0.0f, I_TO_F(iTop - iBottom))) * m_vScale * CORE_LABEL_SIZE_FACTOR);
+        this->SetSize((vDimensions - coreVector2(0.0f, I_TO_F(iTop - iBottom))) * m_vScale / CORE_LABEL_DETAIL);
     }
     else
     {
         // set size by texture coordinates
-        this->SetSize(this->GetTexSize() * m_vResolution * m_vScale * CORE_LABEL_SIZE_FACTOR);
+        this->SetSize(this->GetTexSize() * m_vResolution * m_vScale / CORE_LABEL_DETAIL);
     }
 }
 

@@ -19,12 +19,10 @@
 
 // ****************************************************************
 /* menu label definitions */
-#define CORE_LABEL_DETAIL        (Core::System->GetCanonBase())
-#define CORE_LABEL_SIZE_FACTOR   (1.0f / CORE_LABEL_DETAIL)     // map texture resolution on current window resolution
-#define CORE_LABEL_HEIGHT_FACTOR (CORE_LABEL_DETAIL / 800.0f)   // set real font height relative to current window resolution
-#define CORE_LABEL_TEXTURE       (1u)                           // default texture unit (other than 0, to reduce texture switches)
+#define CORE_LABEL_DETAIL  (Core::System->GetCanonBase())   // depend font texture resolution on current base resolution
+#define CORE_LABEL_TEXTURE (1u)                             // default texture unit (other than 0, to reduce texture switches)
 
-#define CORE_LABEL_HEIGHT_RELATIVE(x)  (F_TO_UI(I_TO_F(x) * CORE_LABEL_HEIGHT_FACTOR))
+#define CORE_LABEL_HEIGHT_RELATIVE(x)  (F_TO_UI(I_TO_F(x) * Core::System->GetFontFactor()))
 #define CORE_LABEL_OUTLINE_RELATIVE(x) ((x) ? MAX(CORE_LABEL_HEIGHT_RELATIVE(x), 1u) : 0u)
 
 enum coreLabelRefresh : coreUint8
@@ -136,7 +134,7 @@ template <typename F> void coreLabel::RetrieveDesiredSize(F&& nRetrieveFunc)cons
 
             // return the dimensions of the current text
             const coreVector2 vDimensions = m_pFont->RetrieveTextDimensions(m_sText.c_str(), m_sText.length(), iRelHeight, iRelOutline);
-            nRetrieveFunc((vDimensions - coreVector2(0.0f, I_TO_F(iTop - iBottom))) * m_vScale * CORE_LABEL_SIZE_FACTOR);
+            nRetrieveFunc((vDimensions - coreVector2(0.0f, I_TO_F(iTop - iBottom))) * m_vScale / CORE_LABEL_DETAIL);
         });
     }
     else

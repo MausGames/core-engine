@@ -30,6 +30,7 @@ CoreSystem::CoreSystem()noexcept
 , m_iPerfTime        (0u)
 , m_fCanonBase       (0.0f)
 , m_vCanonSize       (coreVector2(0.0f,0.0f))
+, m_fFontFactor      (0.0f)
 , m_iMainThread      (0u)
 , m_bWinFocusLost    (false)
 , m_bWinPosChanged   (false)
@@ -765,9 +766,12 @@ void CoreSystem::__RefreshCanonAspectRatio()
     static const coreVector4 s_vCanonFullRatio = coreVector4(coreVector2(coreFloat(CoreApp::Settings::System::AspectRatio), 1.0f).HighRatio(),
                                                              coreVector2(1.0f, coreFloat(CoreApp::Settings::System::AspectRatio)).LowRatio());
 
-    // calculate new properties
+    // calculate new canonical properties
     m_fCanonBase = (m_vResolution * s_vCanonFullRatio.zw()).Min();
     m_vCanonSize = (m_vResolution * s_vCanonFullRatio.yx()).HighRatio() * s_vCanonFullRatio.xy();   // high precision
+
+    // calculate new font factor
+    m_fFontFactor = (m_fCanonBase / 800.0f) * Core::Config->GetFloat(CORE_CONFIG_BASE_FONTSCALE);
 }
 
 

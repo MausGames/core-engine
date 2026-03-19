@@ -90,7 +90,7 @@ void coreRichText::Render()
     {
         // calculate base parameters
         const coreVector2 vPosition  = oAnim.vPosition + coreVector2::UnpackFloat2x16(oCharacter.iPosition);
-        const coreVector2 vSize      = oPass.avTexParams[oCharacter.iTexParamsIndex].xy() * CORE_RICHTEXT_TEXTURE_SIZE * CORE_LABEL_SIZE_FACTOR;
+        const coreVector2 vSize      = oPass.avTexParams[oCharacter.iTexParamsIndex].xy() * CORE_RICHTEXT_TEXTURE_SIZE / CORE_LABEL_DETAIL;
         const coreVector2 vDirection = oAnim.vDirection;
 
         // calculate resolution-modified transformation parameters
@@ -708,7 +708,7 @@ void coreRichText::__ParseText()
 
             // create new arranged character
             coreCharacter oCharacter;
-            oCharacter.iPosition       = ((vCurPos + coreVector2(I_TO_F(iMinX), I_TO_F(iMinY - iDescent))) * CORE_LABEL_SIZE_FACTOR).PackFloat2x16();
+            oCharacter.iPosition       = ((vCurPos + coreVector2(I_TO_F(iMinX), I_TO_F(iMinY - iDescent))) / CORE_LABEL_DETAIL).PackFloat2x16();
             oCharacter.iColorIndex     = iColorIndex;
             oCharacter.iTexParamsIndex = oEntry.iIndex;
             oCharacter.iOrder          = m_iNumOrders++;
@@ -737,7 +737,7 @@ void coreRichText::__ParseText()
     }
 
     // set object size
-    this->SetSize(vCurSize * CORE_LABEL_SIZE_FACTOR);
+    this->SetSize(vCurSize / CORE_LABEL_DETAIL);
 
     // adjust render pass capacities
     FOR_EACH(it, m_aStyle) FOR_EACH(et, it->aPass) this->__ReallocatePass(&(*et), et->aCharacter.size());
