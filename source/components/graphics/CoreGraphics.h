@@ -91,8 +91,8 @@ private:
     coreUint8    m_aiMaxSamplesCSAA[2];             // max coverage sampling anti aliasing levels (coverage, color)
     coreUint8    m_iMaxAnisotropy;                  // max anisotropic texture filter level
     coreUint8    m_iMaxTextures;                    // max number of texture units (only for fragment shader)
-    corePoint2U8 m_VersionOpenGL;                   // available OpenGL version
-    corePoint2U8 m_VersionGLSL;                     // available GLSL version
+    corePoint3U8 m_VersionOpenGL;                   // available OpenGL version
+    corePoint3U8 m_VersionGLSL;                     // available GLSL version
 
 
 private:

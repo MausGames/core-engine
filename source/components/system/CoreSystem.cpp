@@ -293,11 +293,11 @@ CoreSystem::CoreSystem()noexcept
             if(pContext)
             {
                 // get highest OpenGL version
-                const corePoint2U8 oVersion = coreData::StrVersion(r_cast<const coreChar*>(glGetString(GL_VERSION)));
+                const corePoint3U8 oVersion = coreData::StrVersion(r_cast<const coreChar*>(glGetString(GL_VERSION)));
                 SDL_GL_DestroyContext(pContext);
 
                 // set version and request core profile
-                if((oVersion >= corePoint2U8(3u, 0u)) || DEFINED(_CORE_MACOS_))
+                if((oVersion >= corePoint3U8(3u, 0u, 0u)) || DEFINED(_CORE_MACOS_))
                 {
                     SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, oVersion[0]);
                     SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, oVersion[1]);

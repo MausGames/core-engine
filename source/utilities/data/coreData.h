@@ -255,7 +255,7 @@ public:
     static const coreChar*        StrFilename (const coreChar* pcInput, const coreBool bExtension = true);
     static const coreChar*        StrDirectory(const coreChar* pcInput);
     static const coreChar*        StrExtension(const coreChar* pcInput);
-    static corePoint2U8           StrVersion  (const coreChar* pcInput);
+    static corePoint3U8           StrVersion  (const coreChar* pcInput);
     static coreUintW              StrCopy     (coreChar* OUTPUT pcOutput, const coreUintW iOutputSize, const coreChar* pcInput, const coreUintW iNum = SIZE_MAX);
 
     /* operate with containers and arrays */

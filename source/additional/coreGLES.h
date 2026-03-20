@@ -523,7 +523,7 @@ using PFNGLGETBUFFERSUBDATAPROC = void (GL_APIENTRY *) (GLenum target, GLintptr 
 /* context structure */
 struct coreContextGLES final
 {
-    corePoint2U8 __oVersion;
+    corePoint3U8 __oVersion;
     coreBool     __bES30;
     coreBool     __bES31;
     coreBool     __bES32;

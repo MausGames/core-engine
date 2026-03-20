@@ -2472,13 +2472,33 @@ const coreChar* coreData::StrExtension(const coreChar* pcInput)
 
 
 // ****************************************************************
-/* safely get version number (with single digits) */
-corePoint2U8 coreData::StrVersion(const coreChar* pcInput)
+/* safely get version number (up to three parts, 1.23.4) */
+corePoint3U8 coreData::StrVersion(const coreChar* pcInput)
 {
-    WARN_IF(!pcInput) return corePoint2U8(0u, 0u);
+    WARN_IF(!pcInput) return corePoint3U8(0u, 0u, 0u);
 
-    const coreChar* pcDot = std::strchr(pcInput, '.');
-    return (P_TO_UI(pcDot) > P_TO_UI(pcInput)) ? corePoint2U8((pcDot - 1u)[0] - '0', (pcDot + 1u)[0] - '0') : corePoint2U8(0u, 0u);   // # handle first character
+    const coreChar* pcCursor = pcInput;
+
+    // search for first part
+    while((*pcCursor) && !std::isdigit(*pcCursor)) ++pcCursor;
+
+    const coreChar* A[4];
+    A[0] = pcCursor;
+
+    for(coreUintW i = 1u; i < ARRAY_SIZE(A); ++i)
+    {
+        // move to next part (or end)
+        while(std::isdigit(*pcCursor)) ++pcCursor;
+        while((*pcCursor) == '.')      ++pcCursor;
+
+        // save pointer
+        A[i] = pcCursor;
+    }
+
+    // return extracted version number
+    return corePoint3U8((A[1] > A[0]) ? coreData::FromChars<coreUint8>(A[0], A[1] - A[0]) : 0u,
+                        (A[2] > A[1]) ? coreData::FromChars<coreUint8>(A[1], A[2] - A[1]) : 0u,
+                        (A[3] > A[2]) ? coreData::FromChars<coreUint8>(A[2], A[3] - A[2]) : 0u);
 }
 
 
