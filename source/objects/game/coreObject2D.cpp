@@ -172,7 +172,7 @@ coreBool coreObject2D::Prepare(const coreProgramPtr& pProgram)
     ASSERT(pLocal->RetrieveUniform(CORE_SHADER_UNIFORM_2D_POSITION) >= 0)
 
     // enable all active textures
-    coreTexture::EnableAll(m_apTexture);
+    if(pLocal->GetNumTextures()) coreTexture::EnableAll(m_apTexture);
     return true;
 }
 

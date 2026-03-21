@@ -91,7 +91,7 @@ void coreParticleSystem::Render()
     if(!m_pProgram->Enable())  return;
 
     // enable all active textures
-    coreTexture::EnableAll(m_apTexture);
+    if(m_pProgram->GetNumTextures()) coreTexture::EnableAll(m_apTexture);
 
     if(m_aInstanceBuffer[0].IsValid())
     {

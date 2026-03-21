@@ -202,6 +202,7 @@ private:
 
     coreUint64 m_iHash;                               // combined shader code hash-value
     coreBool   m_bBinary;                             // shader-program binary loaded
+    coreUint8  m_iNumTextures;                        // number of used texture units
 
     coreSync m_Sync;                                  // sync object for asynchronous shader-program loading
 
@@ -265,6 +266,7 @@ public:
     inline coreShader*         GetShader      (const coreUintW iIndex)const {ASSERT(iIndex < m_apShaderHandle.size()) return d_cast<coreShader*>(m_apShaderHandle[iIndex]->GetRawResource());}
     inline coreResourceHandle* GetShaderHandle(const coreUintW iIndex)const {ASSERT(iIndex < m_apShaderHandle.size()) return m_apShaderHandle[iIndex];}
     inline coreUintW           GetNumShaders  ()const                       {return m_apShaderHandle.size();}
+    inline const coreUint8&    GetNumTextures ()const                       {return m_iNumTextures;}
 
     /* load and save shader-cache */
     static coreBool LoadShaderCache();

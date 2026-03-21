@@ -333,6 +333,7 @@ coreProgram::coreProgram()noexcept
 , m_avCache        {}
 , m_iHash          (0u)
 , m_bBinary        (false)
+, m_iNumTextures   (0u)
 , m_Sync           ()
 {
 }
@@ -474,8 +475,16 @@ coreStatus coreProgram::Load(coreFile* pFile)
         s_pCurrent = NULL;
 
         // bind texture units
-        for(coreUintW i = 0u; i < CORE_TEXTURE_UNITS_2D;     ++i) glUniform1i(glGetUniformLocation(m_iIdentifier, s_asTexture2D    [i].GetString()), i);
-        for(coreUintW i = 0u; i < CORE_TEXTURE_UNITS_SHADOW; ++i) glUniform1i(glGetUniformLocation(m_iIdentifier, s_asTextureShadow[i].GetString()), i + CORE_TEXTURE_SHADOW);
+        for(coreUintW i = 0u; i < CORE_TEXTURE_UNITS_2D; ++i)
+        {
+            const GLint iLocation = glGetUniformLocation(m_iIdentifier, s_asTexture2D[i].GetString());
+            if(iLocation >= 0) {glUniform1i(iLocation, i); m_iNumTextures += 1u;}
+        }
+        for(coreUintW i = 0u; i < CORE_TEXTURE_UNITS_SHADOW; ++i)
+        {
+            const GLint iLocation = glGetUniformLocation(m_iIdentifier, s_asTextureShadow[i].GetString());
+            if(iLocation >= 0) {glUniform1i(iLocation, i + CORE_TEXTURE_SHADOW); m_iNumTextures += 1u;}
+        }
 
         if(CORE_GL_SUPPORT(ARB_uniform_buffer_object))
         {
@@ -534,10 +543,11 @@ coreStatus coreProgram::Unload()
     m_Sync.Delete();
 
     // reset properties
-    m_iIdentifier = 0u;
-    m_eStatus     = CORE_PROGRAM_DEFINED;
-    m_iHash       = 0u;
-    m_bBinary     = false;
+    m_iIdentifier  = 0u;
+    m_eStatus      = CORE_PROGRAM_DEFINED;
+    m_iHash        = 0u;
+    m_bBinary      = false;
+    m_iNumTextures = 0u;
 
     // clear uniform locations and cache
     m_aiUniform.clear();
@@ -953,6 +963,9 @@ void coreProgram::__WriteInterface()const
             FOR_EACH(it, m_apShader) Core::Log->ListAdd((*it)->GetName());
         }
         Core::Log->ListEnd();
+
+        // write number of used texture units
+        Core::Log->ListAdd(CORE_LOG_BOLD("Textures:") " %u", m_iNumTextures);
 
         if(CORE_GL_SUPPORT(ARB_program_interface_query))
         {

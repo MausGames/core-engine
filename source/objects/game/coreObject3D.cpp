@@ -165,7 +165,7 @@ coreBool coreObject3D::Prepare(const coreProgramPtr& pProgram)
     ASSERT(pLocal->RetrieveUniform(CORE_SHADER_UNIFORM_3D_POSITION) >= 0)
 
     // enable all active textures
-    coreTexture::EnableAll(m_apTexture);
+    if(pLocal->GetNumTextures()) coreTexture::EnableAll(m_apTexture);
 
     // enable the model
     m_pModel->Enable();
@@ -601,7 +601,7 @@ void coreBatchList::__RenderDefault(const coreProgramPtr& pProgramInstanced, con
         if(!pProgramInstanced->Enable())  return;
 
         // enable all active textures
-        coreTexture::EnableAll(&pFirst->GetTexture(0u));
+        if(pProgramInstanced->GetNumTextures()) coreTexture::EnableAll(&pFirst->GetTexture(0u));
 
         if(HAS_FLAG(m_eUpdate, CORE_BATCHLIST_UPDATE_INSTANCE))
         {
