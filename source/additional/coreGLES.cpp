@@ -384,6 +384,15 @@ void __coreInitOpenGLES()
         g_ContextGLES.__GL_CORE_texture_float = true;
     }
 
+    // try to retrieve Mesa driver version
+    const coreChar* pcMesa = std::strstr(r_cast<const coreChar*>(glGetString(GL_VERSION)), "Mesa");
+
+    // # AMD/Mesa hotfix: prevent driver crash due to incorrect storage sample handling
+    if((Core::Graphics->SystemGpuType() == CORE_GPU_TYPE_AMD) && pcMesa && (coreData::StrVersion(pcMesa) < corePoint3U8(25u, 3u, 3u)))
+    {
+        g_ContextGLES.__GL_AMD_framebuffer_multisample_advanced = false;
+    }
+
     // # Nvidia hotfix: prevent hang when trying to retrieve shader-program binaries
     if((Core::Graphics->SystemGpuType() == CORE_GPU_TYPE_NVIDIA) && DEFINED(_CORE_ANGLE_))
     {

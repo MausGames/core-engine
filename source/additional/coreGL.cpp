@@ -301,8 +301,17 @@ void __coreInitOpenGL()
     }
     #undef __REMAP
 
-    // # AMD hotfix: prevent elusive driver crash (especially with shared context, but also with RenderDoc)
-    if((Core::Graphics->SystemGpuType() == CORE_GPU_TYPE_AMD) && (DEFINED(_CORE_LINUX_) || coreData::DetectWine()))
+    // try to retrieve Mesa driver version
+    const coreChar* pcMesa = std::strstr(r_cast<const coreChar*>(glGetString(GL_VERSION)), "Mesa");
+
+    // # AMD/Mesa hotfix: prevent driver crash due to incorrect storage sample handling
+    if((Core::Graphics->SystemGpuType() == CORE_GPU_TYPE_AMD) && pcMesa && (coreData::StrVersion(pcMesa) < corePoint3U8(25u, 3u, 3u)))
+    {
+        __GLEW_AMD_framebuffer_multisample_advanced = false;
+    }
+
+    // # AMD/Mesa hotfix: prevent elusive driver crash (especially with shared context, but also with RenderDoc)
+    if((Core::Graphics->SystemGpuType() == CORE_GPU_TYPE_AMD) && pcMesa)
     {
         __GLEW_ARB_map_buffer_range = false;
     }
