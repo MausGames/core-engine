@@ -31,6 +31,7 @@ CoreDebug::coreMeasure::coreMeasure()noexcept
 , aaiQuery    {}
 , dCurrentCPU (0.0)
 , dCurrentGPU (0.0)
+, aaiCounter  {}
 , oOutput     ()
 {
 }
@@ -67,6 +68,7 @@ CoreDebug::CoreDebug()noexcept
 , m_DebugVolume    ()
 , m_Background     ()
 , m_Loading        ()
+, m_aiCounter      {}
 , m_aStat          {}
 , m_aStatOutput    ()
 , m_UniformBuffer  ()
@@ -307,8 +309,17 @@ void CoreDebug::MeasureStart(const coreHashString& sName)
     pMeasure->iPerfTime = SDL_GetPerformanceCounter();
     if(pMeasure->aaiQuery[0][0]) glQueryCounter(pMeasure->aaiQuery[0].current(), GL_TIMESTAMP);
 
-    // start pipeline statistics
-    if(pMeasure == m_pOverall) this->__StatStart();
+    if(pMeasure == m_pOverall)
+    {
+        // start pipeline statistics
+        this->__StatStart();
+
+        // reset debug counters
+        this->CounterReset();
+    }
+
+    // copy current debug counters
+    std::memcpy(pMeasure->aaiCounter[0], m_aiCounter, sizeof(m_aiCounter));
 }
 
 
@@ -356,8 +367,17 @@ void CoreDebug::MeasureEnd(const coreHashString& sName)
     const coreDouble dDifferenceCPU = coreDouble(SDL_GetPerformanceCounter() - pMeasure->iPerfTime) / Core::System->GetPerfFrequency() * 1.0e03;
     pMeasure->dCurrentCPU = LERP(pMeasure->dCurrentCPU, dDifferenceCPU, CORE_DEBUG_SMOOTH_FACTOR);
 
+    // calculate debug counter differences
+    for(coreUintW i = 0u; i < CORE_DEBUG_COUNTERS; ++i)
+    {
+        pMeasure->aaiCounter[1][i] = m_aiCounter[i] - pMeasure->aaiCounter[0][i];
+    }
+
     // write formatted values to output label
-    pMeasure->oOutput.SetText(DEFINED(IMGUI_API) ? pcName : PRINT("%s (CPU %.2fms / GPU %.2fms)", pcName, pMeasure->dCurrentCPU, pMeasure->dCurrentGPU));
+    pMeasure->oOutput.SetText(DEFINED(IMGUI_API) ? pcName : PRINT("%s (CPU %.2fms / GPU %.2fms / %u (%u) / %u-%u-%u-%u)",
+                              pcName, pMeasure->dCurrentCPU, pMeasure->dCurrentGPU,
+                              pMeasure->aaiCounter[1][CORE_DEBUG_COUNTER_DRAW_CALLS],        pMeasure->aaiCounter[1][CORE_DEBUG_COUNTER_INSTANCES],
+                              pMeasure->aaiCounter[1][CORE_DEBUG_COUNTER_BINDS_FRAMEBUFFER], pMeasure->aaiCounter[1][CORE_DEBUG_COUNTER_BINDS_PROGRAM], pMeasure->aaiCounter[1][CORE_DEBUG_COUNTER_BINDS_TEXTURE], pMeasure->aaiCounter[1][CORE_DEBUG_COUNTER_BINDS_MODEL]));
 }
 
 
@@ -506,9 +526,6 @@ void CoreDebug::__StatStart()
             glBeginQuery(m_aStat.current().iTarget, m_aStat.current().iQuery);
             m_aStat.current().iStatus = 1u;
         }
-
-        // write draw statistics
-        m_aStatOutput[3].SetText(PRINT("Draw Calls: %'u (%'u instances)", coreModel::ConsumeDrawCallCount(), coreModel::ConsumeInstanceCount()));
     }
 }
 
@@ -761,11 +778,13 @@ void CoreDebug::__UpdateOutput()
         {
             if(ImGui::Begin("Stats", &s_bShowStats, ImGuiWindowFlags_AlwaysAutoResize))
             {
-                if(ImGui::BeginTable("Measurement", 3, ImGuiTableFlags_Resizable | ImGuiTableFlags_RowBg | ImGuiTableFlags_Borders | ImGuiTableFlags_SizingFixedFit))
+                if(ImGui::BeginTable("Measurement", 5, ImGuiTableFlags_Resizable | ImGuiTableFlags_RowBg | ImGuiTableFlags_Borders | ImGuiTableFlags_SizingFixedFit))
                 {
                     ImGui::TableSetupColumn("Name");
                     ImGui::TableSetupColumn("CPU");
                     ImGui::TableSetupColumn("GPU");
+                    ImGui::TableSetupColumn("Draws");
+                    ImGui::TableSetupColumn("Binds");
                     ImGui::TableHeadersRow();
 
                     FOR_EACH(it, m_apMeasure)
@@ -773,6 +792,8 @@ void CoreDebug::__UpdateOutput()
                         ImGui::TableNextColumn(); ImGui::TextUnformatted((*it)->oOutput.GetText());
                         ImGui::TableNextColumn(); ImGui::TextColored(coreVector4(LERP(COLOR_WHITE, COLOR_RED, STEP(0.0, 0.5, (*it)->dCurrentCPU)), 1.0f), "%.2f", (*it)->dCurrentCPU);
                         ImGui::TableNextColumn(); ImGui::TextColored(coreVector4(LERP(COLOR_WHITE, COLOR_RED, STEP(0.0, 0.5, (*it)->dCurrentGPU)), 1.0f), "%.2f", (*it)->dCurrentGPU);
+                        ImGui::TableNextColumn(); ImGui::Text("%u (%u)",     (*it)->aaiCounter[1][CORE_DEBUG_COUNTER_DRAW_CALLS],        (*it)->aaiCounter[1][CORE_DEBUG_COUNTER_INSTANCES]);
+                        ImGui::TableNextColumn(); ImGui::Text("%u-%u-%u-%u", (*it)->aaiCounter[1][CORE_DEBUG_COUNTER_BINDS_FRAMEBUFFER], (*it)->aaiCounter[1][CORE_DEBUG_COUNTER_BINDS_PROGRAM], (*it)->aaiCounter[1][CORE_DEBUG_COUNTER_BINDS_TEXTURE], (*it)->aaiCounter[1][CORE_DEBUG_COUNTER_BINDS_MODEL]);
                     }
 
                     ImGui::EndTable();

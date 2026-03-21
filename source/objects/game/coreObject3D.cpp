@@ -717,6 +717,9 @@ void coreBatchList::__RenderDefault(const coreProgramPtr& pProgramInstanced, con
 
         // draw the model instanced
         pModel->DrawInstanced(iRenderCount);
+
+        // update debug counters
+        Core::Debug->CounterAdd(CORE_DEBUG_COUNTER_BINDS_MODEL, 1u);
     }
     else
     {

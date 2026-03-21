@@ -492,6 +492,9 @@ void coreTexture::EnableAll(const coreResourcePtr<coreTexture>* ppTextureArray)
                 // set range of texture units
                 if(iStart < 0) iStart = i;
                 iEnd = i;
+
+                // update debug counters
+                Core::Debug->CounterAdd(CORE_DEBUG_COUNTER_BINDS_TEXTURE, 1u);
             }
             else
             {
@@ -789,6 +792,9 @@ void coreTexture::__BindTexture(const coreUintW iUnit, coreTexture* pTexture)
         // bind texture to current unit
         glBindTexture(GL_TEXTURE_2D, pTexture ? pTexture->GetIdentifier() : 0u);
     }
+
+    // update debug counters
+    if(pTexture) Core::Debug->CounterAdd(CORE_DEBUG_COUNTER_BINDS_TEXTURE, 1u);
 }
 
 

@@ -304,6 +304,9 @@ void coreFrameBuffer::StartDraw()
 
     // set view frustum
     Core::Graphics->SetView(m_vResolution, m_fFOV, m_fNearClip, m_fFarClip, m_fAspectRatio);
+
+    // update debug counters
+    Core::Debug->CounterAdd(CORE_DEBUG_COUNTER_BINDS_FRAMEBUFFER, 1u);
 }
 
 
@@ -313,13 +316,16 @@ void coreFrameBuffer::EndDraw()
 {
     if(!s_pCurrent) return;
 
-    // reset frame buffer
+    // reset frame buffer (back to default frame buffer)
     glBindFramebuffer(GL_FRAMEBUFFER, 0u);
     s_pCurrent = NULL;
 
     // reset view frustum
     Core::Graphics->SetView(coreVector2(s_afViewData[0], s_afViewData[1]), s_afViewData[2], s_afViewData[3], s_afViewData[4], s_afViewData[5]);
     std::memset(s_afViewData, 0, sizeof(s_afViewData));
+
+    // update debug counters
+    Core::Debug->CounterAdd(CORE_DEBUG_COUNTER_BINDS_FRAMEBUFFER, 1u);
 }
 
 

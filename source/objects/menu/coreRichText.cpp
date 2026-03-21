@@ -223,6 +223,9 @@ void coreRichText::Render()
                 // draw the model instanced
                 glBindVertexArray(oPass.aiVertexArray.current());
                 Core::Manager::Object->GetLowQuad()->DrawArraysInstanced(oPass.iNumEnabled);
+
+                // update debug counters
+                Core::Debug->CounterAdd(CORE_DEBUG_COUNTER_BINDS_MODEL, 1u);
             }
             else
             {

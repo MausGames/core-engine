@@ -588,6 +588,9 @@ coreBool coreProgram::Enable()
         }
     }
 
+    // update debug counters
+    Core::Debug->CounterAdd(CORE_DEBUG_COUNTER_BINDS_PROGRAM, 1u);
+
     return true;
 }
 
@@ -598,7 +601,12 @@ void coreProgram::Disable(const coreBool bFull)
 {
     // reset current shader-program
     s_pCurrent = NULL;
-    if(bFull) glUseProgram(0u);
+
+    if(bFull)
+    {
+        // disable shader-program
+        glUseProgram(0u);
+    }
 }
 
 

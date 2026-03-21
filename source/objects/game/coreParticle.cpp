@@ -179,6 +179,9 @@ void coreParticleSystem::Render()
         // draw the model instanced
         glBindVertexArray(m_aiVertexArray.current());
         Core::Manager::Object->GetLowQuad()->DrawArraysInstanced(m_apRenderList.size());
+
+        // update debug counters
+        Core::Debug->CounterAdd(CORE_DEBUG_COUNTER_BINDS_MODEL, 1u);
     }
     else
     {

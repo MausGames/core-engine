@@ -26,11 +26,25 @@
 #define CORE_DEBUG_SMOOTH_FACTOR   (0.02)      // factor used to smooth-out time values and reduce flickering (lower = smoother, but slower)
 #define CORE_DEBUG_OVERALL_NAME    "Overall"   // name for the overall performance output object
 
-#define CORE_DEBUG_STAT_PRIMITIVES (0u)        // submitted primitives
-#define CORE_DEBUG_STAT_CLIPPING   (1u)        // primitives output by the clipping stage
-#define CORE_DEBUG_STAT_VERTEX     (2u)        // vertex shader invocations
-#define CORE_DEBUG_STAT_FRAGMENT   (3u)        // fragment shader invocations
-#define CORE_DEBUG_STATS           (4u)        // total number of pipeline statistics
+enum coreDebugCounter : coreUint8
+{
+    CORE_DEBUG_COUNTER_DRAW_CALLS        = 0u,   // draw calls (single and instanced)
+    CORE_DEBUG_COUNTER_INSTANCES         = 1u,   // rendered instances
+    CORE_DEBUG_COUNTER_BINDS_FRAMEBUFFER = 2u,   // frame buffer binds
+    CORE_DEBUG_COUNTER_BINDS_PROGRAM     = 3u,   // shader-program binds
+    CORE_DEBUG_COUNTER_BINDS_TEXTURE     = 4u,   // texture binds
+    CORE_DEBUG_COUNTER_BINDS_MODEL       = 5u,   // model binds (vertex array objects)
+    CORE_DEBUG_COUNTERS                  = 6u    // total number of debug counters
+};
+
+enum coreDebugStat : coreUint8
+{
+    CORE_DEBUG_STAT_PRIMITIVES = 0u,   // submitted primitives
+    CORE_DEBUG_STAT_CLIPPING   = 1u,   // primitives output by the clipping stage
+    CORE_DEBUG_STAT_VERTEX     = 2u,   // vertex shader invocations
+    CORE_DEBUG_STAT_FRAGMENT   = 3u,   // fragment shader invocations
+    CORE_DEBUG_STATS           = 4u    // total number of pipeline statistics
+};
 
 
 // ****************************************************************
@@ -54,6 +68,7 @@ private:
         coreRing<GLuint, CORE_DEBUG_QUERIES> aaiQuery[2];   // asynchronous GPU timer-query objects
         coreDouble dCurrentCPU;                             // current CPU performance value
         coreDouble dCurrentGPU;                             // current GPU performance value
+        coreUint16 aaiCounter[2][CORE_DEBUG_COUNTERS];      // current debug counters (old, diff)
         coreLabel  oOutput;                                 // label for displaying output
 
         coreMeasure()noexcept;
@@ -92,8 +107,10 @@ private:
     coreObject2D m_Background;                                       // background object to increase output readability
     coreLabel    m_Loading;                                          // resource manager loading indicator
 
+    coreUint16 m_aiCounter[CORE_DEBUG_COUNTERS];                     // various simple debug counters
+
     coreRing<coreStat, CORE_DEBUG_STATS> m_aStat;                    // statistic objects to retrieve various pipeline statistics
-    coreLabel m_aStatOutput[4];                                      // labels for displaying statistic output
+    coreLabel                            m_aStatOutput[3];           // labels for displaying statistic output
 
     coreUniformBuffer m_UniformBuffer;                               // uniform buffer object for debug data
     coreVector4       m_avUniformValue[CORE_DEBUG_UNIFORM_VALUES];   // shader debug values
@@ -143,6 +160,10 @@ public:
     void RenderSphere   (const coreVector3   vPosition, const coreFloat fRadius);
     void RenderSphere   (const coreObject3D* pObject);
     void RenderCollision(const coreObject3D* pObject);
+
+    /* handle debug counters */
+    inline void CounterAdd  (const coreDebugCounter eCounter, const coreUint16 iValue) {m_aiCounter[eCounter] += iValue;}
+    inline void CounterReset()                                                         {std::memset(m_aiCounter, 0, sizeof(m_aiCounter));}
 
     /* check for debug status */
     static const coreBool& IsEnabled();
