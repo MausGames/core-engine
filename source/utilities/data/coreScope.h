@@ -165,4 +165,11 @@ template <typename T> CORE_SCOPE_CLASS(coreAllocScope, T, {}, {if(this->m_ptObje
 template <typename T> CORE_SCOPE_CLASS(coreDataScope,  T, {}, {SAFE_DELETE_ARRAY(this->m_ptObject)})
 
 
+// ****************************************************************
+/* user-defined deduction guides */
+template<typename F> coreDefer     (F&&) -> coreDefer     <F>;
+template<typename T> coreAllocScope(T*)  -> coreAllocScope<T>;
+template<typename T> coreDataScope (T*)  -> coreDataScope <T>;
+
+
 #endif /* _CORE_GUARD_SCOPE_H_ */

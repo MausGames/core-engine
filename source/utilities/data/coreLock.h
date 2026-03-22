@@ -475,4 +475,9 @@ template <typename T> FORCE_INLINE coreAtomic<T>::operator T ()const
 }
 
 
+// ****************************************************************
+/* user-defined deduction guides */
+template<typename T> coreLocker(T*) -> coreLocker<T>;
+
+
 #endif /* _CORE_GUARD_LOCK_H_ */
