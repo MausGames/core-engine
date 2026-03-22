@@ -215,11 +215,17 @@ coreArchive* coreResourceManager::RetrieveArchive(const coreHashString& sPath)
     const coreLocker oLocker(&m_FileLock);
 
     // check for existing archive
-    if(m_apArchive.count_bs(sPath)) return m_apArchive.at_bs(sPath);
+    if(m_apArchive.count(sPath)) return m_apArchive.at(sPath);
+
+    // insert in ascending order (earlier archives have higher precedence)
+    const auto it = std::lower_bound(m_apArchive.begin(), m_apArchive.end(), sPath, [](const coreArchive* A, const coreHashString& B)
+    {
+        return (std::strcmp(A->GetPath(), B.GetString()) < 0);
+    });
 
     // load new archive
     coreArchive* pNewArchive = MANAGED_NEW(coreArchive, sPath.GetString());
-    m_apArchive.emplace_bs(sPath, pNewArchive);
+    m_apArchive.emplace(it, sPath, pNewArchive);
 
     return pNewArchive;
 }
