@@ -70,7 +70,7 @@ CoreSystem::CoreSystem()noexcept
         // register new log callback
         SDL_SetLogOutputFunction([](void* pUserData, const coreInt32 iCategory, const SDL_LogPriority ePriority, const coreChar* pcMessage)
         {
-            if((iCategory == SDL_LOG_CATEGORY_APPLICATION) || (iCategory == SDL_LOG_CATEGORY_ASSERT))
+            if((iCategory == SDL_LOG_CATEGORY_APPLICATION) || (iCategory == SDL_LOG_CATEGORY_ASSERT) || !STATIC_ISVALID(Core::Log))
             {
                 // forward text to the standard output
                 r_cast<SDL_LogOutputFunction>(pUserData)(NULL, iCategory, ePriority, pcMessage);
@@ -155,6 +155,9 @@ CoreSystem::CoreSystem()noexcept
                 // retrieve display scale
                 const coreFloat fScale = SDL_GetDisplayContentScale(iDisplayID);
 
+                // retrieve display orientation
+                const SDL_DisplayOrientation eOrientation = SDL_GetCurrentDisplayOrientation(iDisplayID);
+
                 // retrieve HDR support
                 const coreBool bHdr = SDL_GetBooleanProperty(SDL_GetDisplayProperties(iDisplayID), SDL_PROP_DISPLAY_HDR_ENABLED_BOOLEAN, false);
 
@@ -163,7 +166,7 @@ CoreSystem::CoreSystem()noexcept
                 coreAllocScope ppModeList = SDL_GetFullscreenDisplayModes(iDisplayID, &iModeCount);
                 if(iModeCount)
                 {
-                    Core::Log->ListDeeper(CORE_LOG_BOLD("Display %u:") " %s (%d x %d @ %.2f Hz, %.0f%% scale, %d/%d offset, %s)", i, SDL_GetDisplayName(iDisplayID), pDesktop->w, pDesktop->h, pDesktop->refresh_rate, fScale * 100.0f, oWorkArea.x, oWorkArea.y, bHdr ? "HDR" : "no HDR");
+                    Core::Log->ListDeeper(CORE_LOG_BOLD("Display %u:") " %s (%d x %d @ %.2f Hz, %.0f%% scale, %d/%d offset, orientation %d, %s)", i, SDL_GetDisplayName(iDisplayID), pDesktop->w, pDesktop->h, pDesktop->refresh_rate, fScale * 100.0f, oWorkArea.x, oWorkArea.y, eOrientation, bHdr ? "HDR" : "no HDR");
                     {
                         // reserve some memory
                         oDisplayData.avAvailableRes  .reserve(iModeCount);
@@ -183,9 +186,10 @@ CoreSystem::CoreSystem()noexcept
 
                             // add new refresh rate
                             ASSERT(oDisplayData.avAvailableRes.back() == vModeRes)
-                            oDisplayData.aafAvailableRate.back().insert_once(pMode->refresh_rate);
-
-                            Core::Log->ListAdd("%4d x %4d @ %.2f Hz", pMode->w, pMode->h, pMode->refresh_rate);
+                            if(oDisplayData.aafAvailableRate.back().insert_once(pMode->refresh_rate))
+                            {
+                                Core::Log->ListAdd("%4d x %4d @ %.2f Hz", pMode->w, pMode->h, pMode->refresh_rate);
+                            }
                         }
 
                         // copy highest resolution
@@ -361,7 +365,7 @@ CoreSystem::CoreSystem()noexcept
         m_pWindow = SDL_CreateWindowWithProperties(oProps);
         if(!m_pWindow) Core::Log->Error("Main window could not be created (SDL: %s)", SDL_GetError());
     }
-    Core::Log->Info("Main window created (%s, %s, %.0f x %.0f, display %u, mode %u, theme %d)", SDL_GetCurrentVideoDriver(), SDL_GetPixelFormatName(SDL_GetWindowPixelFormat(m_pWindow)), m_vResolution.x, m_vResolution.y, m_iDisplayIndex, m_eMode, SDL_GetSystemTheme());
+    Core::Log->Info("Main window created (%s, %s, %.0f x %.0f, %.2f density, display %u, mode %u, theme %d)", SDL_GetCurrentVideoDriver(), SDL_GetPixelFormatName(SDL_GetWindowPixelFormat(m_pWindow)), m_vResolution.x, m_vResolution.y, SDL_GetWindowPixelDensity(m_pWindow), m_iDisplayIndex, m_eMode, SDL_GetSystemTheme());
 
     // set fullscreen mode
     if(m_eMode == CORE_SYSTEM_MODE_FULLSCREEN)

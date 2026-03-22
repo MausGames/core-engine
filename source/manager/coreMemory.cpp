@@ -249,8 +249,8 @@ void coreMemoryPool::Free(void** OUTPUT ppPointer)
     if(m_bValid)
     {
         // find target location with binary search
-        ASSERT(std::is_sorted(m_apFreeStack.begin(), m_apFreeStack.end(), std::greater()))
-        const auto it = std::lower_bound(m_apFreeStack.begin(), m_apFreeStack.end(), *ppPointer, std::greater());
+        ASSERT(std::is_sorted(m_apFreeStack.begin(), m_apFreeStack.end(), std::greater<>()))
+        const auto it = std::lower_bound(m_apFreeStack.begin(), m_apFreeStack.end(), *ppPointer, std::greater<>());
 
         // return pointer to the free-stack
         m_apFreeStack.insert(it, *ppPointer);

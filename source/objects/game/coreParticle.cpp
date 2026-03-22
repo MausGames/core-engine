@@ -254,15 +254,7 @@ coreParticle* coreParticleSystem::CreateParticle(coreParticleEffect* pEffect)
         coreParticle* pParticle = &m_aParticle[m_iCurParticle];
         if(!pParticle->IsActive())
         {
-        #if defined(_CORE_DEBUG_)
-
-            // check for duplicate particles
-            FOR_EACH(it, m_apRenderList)
-            {
-                ASSERT((*it) != pParticle)
-            }
-
-        #endif
+            ASSERT(!coreData::RangeContains(m_apRenderList.begin(), m_apRenderList.end(), pParticle))
 
             // prepare particle and add to render list
             pParticle->__Prepare(pEffect);

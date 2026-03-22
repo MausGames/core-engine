@@ -82,7 +82,7 @@ private:
     coreBool m_bIntelMorph;                                       // apply conservative morphological anti aliasing
 
     static coreFrameBuffer* s_pCurrent;                           // currently active frame buffer object (NULL = default frame buffer)
-    static coreFloat s_afViewData[6];                             // view properties of the default frame buffer
+    static coreFloat        s_afViewData[6];                      // view properties of the default frame buffer
 
 
 public:
@@ -98,11 +98,11 @@ public:
     /* attach render targets */
     coreRenderTarget* AttachTargetTexture(const coreFrameBufferTarget eTarget, const coreUintW iColorIndex, const coreTextureSpec& oSpec, const coreTextureMode eMode, const coreChar* pcName = NULL);
     coreRenderTarget* AttachTargetBuffer (const coreFrameBufferTarget eTarget, const coreUintW iColorIndex, const coreTextureSpec& oSpec);
-    void DetachTargets();
+    void              DetachTargets      ();
 
     /* enable rendering to the frame buffer */
-    void StartDraw();
-    static void EndDraw();
+    void        StartDraw();
+    static void EndDraw  ();
 
     /* copy content to another frame buffer */
     void Blit(const coreFrameBufferTarget eTargets, coreFrameBuffer* OUTPUT pDestination, const coreUint32 iSrcX, const coreUint32 iSrcY, const coreUint32 iDstX, const coreUint32 iDstY, const coreUint32 iWidth, const coreUint32 iHeight)const;

@@ -15,7 +15,7 @@
         // debug uniforms
         layout(std140) uniform b_Debug
         {
-            layoutEx(align = 16) highp vec4 u_av4DebugValue[CORE_NUM_DEBUGS];   // # AMD hotfix: use explicit alignment (everywhere)
+            layoutEx(align = 16) highp vec4 u_av4DebugValue[CORE_NUM_DEBUGS];
         };
 
     #endif

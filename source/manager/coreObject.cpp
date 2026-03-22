@@ -537,7 +537,7 @@ void coreObjectManager::__BindObject(coreObject3D* pObject, const coreInt32 iTyp
     // check for duplicate objects
     FOR_EACH(it, m_aapObjectList)
     {
-        FOR_EACH(et, *it) ASSERT((*et) != pObject)
+        ASSERT(!coreData::RangeContains(it->begin(), it->end(), pObject))
     }
 
 #endif

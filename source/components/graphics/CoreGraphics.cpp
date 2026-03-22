@@ -85,7 +85,7 @@ CoreGraphics::CoreGraphics()noexcept
                 corePoint2I32* pModeList = TEMP_NEW(corePoint2I32, iValue);
 
                 glGetIntegerv(GL_MULTISAMPLE_COVERAGE_MODES_NV, r_cast<GLint*>(pModeList));
-                std::sort(pModeList, pModeList + iValue, std::greater());
+                std::sort(pModeList, pModeList + iValue, std::greater<>());
 
                 m_aiMaxSamplesCSAA[0] = MAX(pModeList[0][0], 0);
                 m_aiMaxSamplesCSAA[1] = MAX(pModeList[0][1], 0);
@@ -797,7 +797,7 @@ void CoreGraphics::__UpdateScene()
 
 #if defined(_CORE_ANGLE_)
 
-    // # Steam hotfix: overlay injection invalidates UBO content
+    // # ANGLE/Steam hotfix: overlay injection invalidates UBO content
     ADD_BIT(m_iUniformUpdate, 0u)
     ADD_BIT(m_iUniformUpdate, 1u)
     ADD_BIT(m_iUniformUpdate, 2u)

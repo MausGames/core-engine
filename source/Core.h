@@ -535,12 +535,12 @@
 #define t_ident std::type_identity_t
 
 // type conversion macros
-#define F_TO_SI(x) ((coreInt32)            (x))   // float to signed int
-#define F_TO_UI(x) ((coreUint32)(coreInt32)(x))   // float to unsigned int (force [_mm_cvtt_ss2si])
-#define I_TO_F(x)  ((coreFloat)(coreInt32) (x))   // int to float          (force [_mm_cvtepi32_ps])
-#define P_TO_SI(x) ((std::intptr_t)(void*) (x))   // pointer to signed int
-#define P_TO_UI(x) ((std::uintptr_t)(void*)(x))   // pointer to unsigned int
-#define I_TO_P(x)  ((void*)(std::intptr_t) (x))   // int to pointer
+#define F_TO_SI(x) ((coreInt32)                    (x))   // float to signed int
+#define F_TO_UI(x) ((coreUint32)(coreInt32)        (x))   // float to unsigned int (force [_mm_cvtt_ss2si])
+#define I_TO_F(x)  ((coreFloat)(coreInt32)         (x))   // int to float          (force [_mm_cvtepi32_ps])
+#define P_TO_SI(x) ((std::intptr_t)                (x))   // pointer to signed int
+#define P_TO_UI(x) ((std::uintptr_t)(std::intptr_t)(x))   // pointer to unsigned int
+#define I_TO_P(x)  ((void*)(std::intptr_t)         (x))   // int to pointer
 
 // type definitions
 using coreInt8   = std::int8_t;
