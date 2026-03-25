@@ -1456,10 +1456,12 @@ coreInt64 coreData::FileSize(const coreChar* pcPath)
 
 
 // ****************************************************************
-/* retrieve file write time */
-std::time_t coreData::FileWriteTime(const coreChar* pcPath)
+/* retrieve full file info */
+coreFileStats coreData::FileStats(const coreChar* pcPath)
 {
     ASSERT(pcPath)
+
+    coreFileStats oStats = {};
 
 #if defined(_CORE_WINDOWS_)
 
@@ -1468,24 +1470,58 @@ std::time_t coreData::FileWriteTime(const coreChar* pcPath)
     // get extended file attributes
     if(GetFileAttributesExW(coreData::__ToWideChar(pcPath), GetFileExInfoStandard, &oAttributes))
     {
-        // return converted file write time
-        return r_cast<coreUint64&>(oAttributes.ftLastWriteTime) / 10000000ull - 11644473600ull;
+        oStats.bDirectory      = HAS_FLAG(oAttributes.dwFileAttributes, FILE_ATTRIBUTE_DIRECTORY);
+        oStats.iSize           = (coreInt64(oAttributes.nFileSizeHigh) << 32u) | (coreInt64(oFile.nFileSizeLow));
+        oStats.iLastAccessTime = r_cast<coreUint64&>(oAttributes.ftLastAccessTime) / 10000000ull - 11644473600ull;
+        oStats.iLastWriteTime  = r_cast<coreUint64&>(oAttributes.ftLastWriteTime)  / 10000000ull - 11644473600ull;
+        oStats.iCreationTime   = r_cast<coreUint64&>(oAttributes.ftCreationTime)   / 10000000ull - 11644473600ull;
     }
 
-#elif defined(_CORE_LINUX_) || defined(_CORE_MACOS_) || defined(_CORE_EMSCRIPTEN_) || defined(_CORE_SWITCH_)
+#elif defined(_CORE_LINUX_) || defined(_CORE_EMSCRIPTEN_)
+
+    struct statx oBuffer;
+
+    // get extended POSIX file info
+    if(!statx(AT_FDCWD, pcPath, AT_STATX_SYNC_AS_STAT, STATX_TYPE | STATX_SIZE | STATX_ATIME | STATX_MTIME | STATX_BTIME, &oBuffer))
+    {
+        oStats.bDirectory      = S_ISDIR(oBuffer.stx_mode);
+        oStats.iSize           = oBuffer.stx_size;
+        oStats.iLastAccessTime = oBuffer.stx_atime.tv_sec;
+        oStats.iLastWriteTime  = oBuffer.stx_mtime.tv_sec;
+        oStats.iCreationTime   = oBuffer.stx_btime.tv_sec;
+    }
+
+#elif defined(_CORE_MACOS_)
+
+    struct stat64 oBuffer;
+
+    // get custom POSIX file info
+    if(!stat64(pcPath, &oBuffer))
+    {
+        oStats.bDirectory      = S_ISDIR(oBuffer.st_mode);
+        oStats.iSize           = oBuffer.st_size;
+        oStats.iLastAccessTime = oBuffer.st_atimespec    .tv_sec;
+        oStats.iLastWriteTime  = oBuffer.st_mtimespec    .tv_sec;
+        oStats.iCreationTime   = oBuffer.st_birthtimespec.tv_sec;
+    }
+
+#elif defined(_CORE_SWITCH_)
 
     struct stat oBuffer;
 
-    // get POSIX file info
+    // get simple POSIX file info
     if(!stat(pcPath, &oBuffer))
     {
-        // return file write time
-        return oBuffer.st_mtime;
+        oStats.bDirectory      = S_ISDIR(oBuffer.st_mode);
+        oStats.iSize           = oBuffer.st_size;
+        oStats.iLastAccessTime = oBuffer.st_atim.tv_sec;
+        oStats.iLastWriteTime  = oBuffer.st_mtim.tv_sec;
+        oStats.iCreationTime   = 0;
     }
 
 #endif
 
-    return -1;
+    return oStats;
 }
 
 
@@ -2040,8 +2076,10 @@ coreStatus coreData::DirectoryEnum(const coreChar* pcPath, const coreChar* pcFil
                 // query additional file info
                 if(HAS_FLAG(eEnumType, CORE_ENUM_TYPE_STATS))
                 {
-                    oStats.iSize      = (coreInt64(oFile.nFileSizeHigh) << 32u) | (coreInt64(oFile.nFileSizeLow));
-                    oStats.iWriteTime = r_cast<coreUint64&>(oFile.ftLastWriteTime) / 10000000ull - 11644473600ull;
+                    oStats.iSize           = (coreInt64(oFile.nFileSizeHigh) << 32u) | (coreInt64(oFile.nFileSizeLow));
+                    oStats.iLastAccessTime = r_cast<coreUint64&>(oFile.ftLastAccessTime) / 10000000ull - 11644473600ull;
+                    oStats.iLastWriteTime  = r_cast<coreUint64&>(oFile.ftLastWriteTime)  / 10000000ull - 11644473600ull;
+                    oStats.iCreationTime   = r_cast<coreUint64&>(oFile.ftCreationTime)   / 10000000ull - 11644473600ull;
                 }
 
                 // enumerate child
@@ -2089,14 +2127,7 @@ coreStatus coreData::DirectoryEnum(const coreChar* pcPath, const coreChar* pcFil
                 // query additional file info
                 if(HAS_FLAG(eEnumType, CORE_ENUM_TYPE_STATS))
                 {
-                    struct stat oBuffer;
-
-                    // get POSIX file info
-                    if(!stat(pcFullPath, &oBuffer))
-                    {
-                        oStats.iSize      = oBuffer.st_size;
-                        oStats.iWriteTime = oBuffer.st_mtime;
-                    }
+                    oStats = coreData::FileStats(pcFullPath);
                 }
 
                 // enumerate child

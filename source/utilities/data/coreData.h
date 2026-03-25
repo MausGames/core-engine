@@ -61,9 +61,11 @@ ENABLE_BITWISE(coreEnumType)
 
 struct coreFileStats final
 {
-    coreBool    bDirectory;   // directory state
-    coreInt64   iSize;        // file size       (additional)
-    std::time_t iWriteTime;   // file write time (additional)
+    coreBool    bDirectory;        // directory state
+    coreInt64   iSize;             // file size        (additional)
+    std::time_t iLastAccessTime;   // last access time (additional)
+    std::time_t iLastWriteTime;    // last write time  (additional)
+    std::time_t iCreationTime;     // creation time    (additional)
 };
 
 struct coreFileMap final
@@ -200,25 +202,25 @@ public:
     static                 void  HeapFree   (void* pHeap, void** OUTPUT ppPointer);
 
     /* handle physical files and directories */
-    static std::FILE*  FileOpen         (const coreChar* pcPath, const coreChar* pcMode);
-    static coreBool    FileExists       (const coreChar* pcPath);
-    static coreInt64   FileSize         (const coreChar* pcPath);
-    static std::time_t FileWriteTime    (const coreChar* pcPath);
-    static coreStatus  FileCopy         (const coreChar* pcFrom, const coreChar* pcTo);
-    static coreStatus  FileMove         (const coreChar* pcFrom, const coreChar* pcTo);
-    static coreStatus  FileDelete       (const coreChar* pcPath);
-    static coreStatus  FileMap          (const coreChar* pcPath, const coreInt64 iOffset, const coreInt64 iLength, coreFileMap* OUTPUT pMap);
-    static coreStatus  FileUnmap        (const coreFileMap* pMap);
-    static coreBool    DirectoryExists  (const coreChar* pcPath);
-    static coreBool    DirectoryWritable(const coreChar* pcPath);
-    static coreStatus  DirectoryCopy    (const coreChar* pcFrom, const coreChar* pcTo);
-    static coreStatus  DirectoryMove    (const coreChar* pcFrom, const coreChar* pcTo);
-    static coreStatus  DirectoryDelete  (const coreChar* pcPath, const coreBool bWithContent);
-    static coreStatus  DirectoryCreate  (const coreChar* pcPath);
-    static coreStatus  DirectoryScan    (const coreChar* pcPath, const coreChar* pcFilter, coreList<coreString>* OUTPUT pasOutput);
-    static coreStatus  DirectoryScanTree(const coreChar* pcPath, const coreChar* pcFilter, coreList<coreString>* OUTPUT pasOutput);
-    static coreStatus  DirectoryEnum    (const coreChar* pcPath, const coreChar* pcFilter, const coreEnumType eEnumType, void* pEnumData, const coreEnumFunc nEnumFunc);   // [](const coreChar* pcPath, const coreFileStats& oStats, void* pData) -> void
-    static coreStatus  SymlinkCreate    (const coreChar* pcPath, const coreChar* pcTarget);
+    static std::FILE*    FileOpen         (const coreChar* pcPath, const coreChar* pcMode);
+    static coreBool      FileExists       (const coreChar* pcPath);
+    static coreInt64     FileSize         (const coreChar* pcPath);
+    static coreFileStats FileStats        (const coreChar* pcPath);
+    static coreStatus    FileCopy         (const coreChar* pcFrom, const coreChar* pcTo);
+    static coreStatus    FileMove         (const coreChar* pcFrom, const coreChar* pcTo);
+    static coreStatus    FileDelete       (const coreChar* pcPath);
+    static coreStatus    FileMap          (const coreChar* pcPath, const coreInt64 iOffset, const coreInt64 iLength, coreFileMap* OUTPUT pMap);
+    static coreStatus    FileUnmap        (const coreFileMap* pMap);
+    static coreBool      DirectoryExists  (const coreChar* pcPath);
+    static coreBool      DirectoryWritable(const coreChar* pcPath);
+    static coreStatus    DirectoryCopy    (const coreChar* pcFrom, const coreChar* pcTo);
+    static coreStatus    DirectoryMove    (const coreChar* pcFrom, const coreChar* pcTo);
+    static coreStatus    DirectoryDelete  (const coreChar* pcPath, const coreBool bWithContent);
+    static coreStatus    DirectoryCreate  (const coreChar* pcPath);
+    static coreStatus    DirectoryScan    (const coreChar* pcPath, const coreChar* pcFilter, coreList<coreString>* OUTPUT pasOutput);
+    static coreStatus    DirectoryScanTree(const coreChar* pcPath, const coreChar* pcFilter, coreList<coreString>* OUTPUT pasOutput);
+    static coreStatus    DirectoryEnum    (const coreChar* pcPath, const coreChar* pcFilter, const coreEnumType eEnumType, void* pEnumData, const coreEnumFunc nEnumFunc);   // [](const coreChar* pcPath, const coreFileStats& oStats, void* pData) -> void
+    static coreStatus    SymlinkCreate    (const coreChar* pcPath, const coreChar* pcTarget);
 
     /* check for system errors */
     static coreBool CheckLastError();
