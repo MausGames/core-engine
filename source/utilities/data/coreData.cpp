@@ -50,6 +50,18 @@ coreLock                              coreData::s_DecompressLock     = coreLock(
 
 extern "C" const coreChar* g_pcUserFolder = "";   // to allow access from C files
 
+#if defined(_CORE_LINUX_)
+    #include <sys/syscall.h>
+    #if !__GLIBC_PREREQ(2, 27)
+        #define copy_file_range(...) syscall(SYS_copy_file_range, __VA_ARGS__)
+    #endif
+    #if !__GLIBC_PREREQ(2, 28)
+        #include <linux/fcntl.h>
+        #include <linux/stat.h>
+        #define statx(...) syscall(SYS_statx, __VA_ARGS__)
+    #endif
+#endif
+
 
 // ****************************************************************
 /* create formatted string */
