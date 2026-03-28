@@ -99,7 +99,7 @@ if(CORE_EMSCRIPTEN)
 
     target_link_directories(
         CoreEngine INTERFACE
-        ${BASE_DIRECTORY}/libraries/bin/emscripten
+        $<IF:$<CONFIG:DEBUG>, ${BASE_DIRECTORY}/libraries/bin/emscripten/debug, ${BASE_DIRECTORY}/libraries/bin/emscripten/release>
     )
 
     target_link_libraries(
@@ -137,7 +137,7 @@ else()
 
     target_link_directories(
         CoreEngine INTERFACE
-        ${BASE_DIRECTORY}/libraries/bin/linux_x86_64
+        $<IF:$<CONFIG:DEBUG>, ${BASE_DIRECTORY}/libraries/bin/linux_x86_64/debug, ${BASE_DIRECTORY}/libraries/bin/linux_x86_64/release>
     )
 
     target_link_libraries(
@@ -154,8 +154,8 @@ else()
 
     if(NOT CORE_DEBUG)
 
-        set(LIBCXX_DIRECTORY ${BASE_DIRECTORY}/../core-library/output/libcxx)
-        set(GLIBC_DIRECTORY ${BASE_DIRECTORY}/../core-library/output/glibc)
+        set(LIBCXX_DIRECTORY ${BASE_DIRECTORY}/../core-library/output/library/libcxx)
+        set(GLIBC_DIRECTORY ${BASE_DIRECTORY}/../core-library/output/library/glibc)
 
         target_sources(
             CoreEngine INTERFACE

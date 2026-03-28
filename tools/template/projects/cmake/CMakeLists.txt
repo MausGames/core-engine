@@ -20,8 +20,6 @@ set_target_properties(
     CXX_STANDARD 23
     CXX_SCAN_FOR_MODULES OFF
     DEBUG_POSTFIX _debug
-    BUILD_WITH_INSTALL_RPATH TRUE
-    INSTALL_RPATH $ORIGIN
 )
 
 target_sources(
@@ -62,6 +60,12 @@ else()
     )
 
     if(NOT CORE_DEBUG)
+
+        set_target_properties(
+            CoreApp PROPERTIES
+            BUILD_WITH_INSTALL_RPATH TRUE
+            INSTALL_RPATH $ORIGIN
+        )
 
         add_custom_command(
             TARGET CoreApp POST_BUILD
