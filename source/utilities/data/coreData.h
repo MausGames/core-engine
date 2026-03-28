@@ -148,6 +148,7 @@ public:
     static const coreChar*    SystemOsName    ();
     static       coreUint32   SystemUserID    ();
     static const coreChar*    SystemUserName  ();
+    static const coreChar*    SystemHostName  ();
     static const coreChar*    SystemCpuVendor ();
     static const coreChar*    SystemCpuBrand  ();
     static const coreCpuType& SystemCpuType   ();

@@ -470,6 +470,36 @@ const coreChar* coreData::SystemUserName()
 
 
 // ****************************************************************
+/* get host name */
+const coreChar* coreData::SystemHostName()
+{
+#if defined(_CORE_WINDOWS_)
+
+    coreWchar acName[MAX_COMPUTERNAME_LENGTH + 1u];
+    coreUlong iSize = ARRAY_SIZE(acName);
+
+    // get NetBIOS name of the local computer
+    if(GetComputerNameW(acName, &iSize)) return coreData::__ToAnsiChar(acName);
+
+#elif defined(_CORE_LINUX_) || defined(_CORE_MACOS_)
+
+    coreChar* pcString = coreData::__NextTempString();
+
+    // get host name from UTS namespace of calling process
+    if(!gethostname(pcString, CORE_DATA_STRING_LEN))
+    {
+        // add possible missing null-terminator and return
+        pcString[CORE_DATA_STRING_LEN - 1u] = '\0';
+        return pcString;
+    }
+
+#endif
+
+    return "";
+}
+
+
+// ****************************************************************
 /* get processor vendor string */
 const coreChar* coreData::SystemCpuVendor()
 {
