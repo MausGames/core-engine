@@ -70,6 +70,9 @@
     <Filter Include="additional\emscripten">
       <UniqueIdentifier>{e28246a5-c19a-4893-bdd5-3c1ed027ca80}</UniqueIdentifier>
     </Filter>
+    <Filter Include="additional\engine">
+      <UniqueIdentifier>{3b7aa0b3-ce20-49e7-b2d0-8e6cbb7b21c9}</UniqueIdentifier>
+    </Filter>
     <Filter Include="additional\macos">
       <UniqueIdentifier>{0eac98f1-d6b9-4ba9-b6fe-d5db834d737f}</UniqueIdentifier>
     </Filter>
@@ -182,6 +185,12 @@
     </ClCompile>
     <ClCompile Include="..\..\..\source\additional\coreAL.cpp">
       <Filter>additional</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\source\additional\engine\coreCommand.cpp">
+      <Filter>additional\engine</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\source\additional\engine\coreTest.cpp">
+      <Filter>additional\engine</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\source\additional\coreGL.cpp">
       <Filter>additional</Filter>

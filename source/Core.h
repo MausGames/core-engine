@@ -822,9 +822,10 @@ private:
     /* main function */
     friend coreInt32 SDLCALL coreMain(coreInt32 argc, coreChar** argv);
 
-    /* run engine or command */
+    /* run engine, commands or tests */
     static coreStatus __RunEngine();
     static coreStatus __RunCommand();
+    static coreStatus __RunTest();
 
     /* perform deferred application restart */
     static void __PerformRestart();

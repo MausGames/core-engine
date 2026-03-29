@@ -424,6 +424,8 @@
     <ClCompile Include="..\..\..\source\additional\emscripten\main.c">
       <ExcludedFromBuild>true</ExcludedFromBuild>
     </ClCompile>
+    <ClCompile Include="..\..\..\source\additional\engine\coreCommand.cpp" />
+    <ClCompile Include="..\..\..\source\additional\engine\coreTest.cpp" />
     <ClCompile Include="..\..\..\source\additional\linux\main.c">
       <ExcludedFromBuild>true</ExcludedFromBuild>
     </ClCompile>

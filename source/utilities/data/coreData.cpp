@@ -48,7 +48,9 @@ ZSTD_DCtx*                            coreData::s_pDecompressContext = ZSTD_crea
 coreLock                              coreData::s_CompressLock       = coreLock();
 coreLock                              coreData::s_DecompressLock     = coreLock();
 
-extern "C" const coreChar* g_pcUserFolder = "";   // to allow access from C files
+extern "C" const coreChar*        g_pcUserFolder = "";   // to allow access from C files
+extern "C" coreInt32              g_iArgc        = 0;
+extern "C" const coreChar* const* g_ppcArgv      = NULL;
 
 #if defined(_CORE_LINUX_)
     #include <sys/syscall.h>
@@ -1003,6 +1005,10 @@ void coreData::SetCommandLine(const coreInt32 iArgc, const coreChar* const* ppcA
             }
         }
     }
+
+    // save raw command line arguments
+    g_iArgc   = iArgc;
+    g_ppcArgv = ppcArgv;
 }
 
 
