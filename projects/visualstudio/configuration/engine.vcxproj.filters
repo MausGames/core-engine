@@ -28,7 +28,7 @@
     <Filter Include="components\debug">
       <UniqueIdentifier>{68a5ae1a-9672-4c10-b6a0-6f3a58979ae5}</UniqueIdentifier>
     </Filter>
-    <Filter Include="manager">
+    <Filter Include="managers">
       <UniqueIdentifier>{353c709e-a8dd-4a60-876c-948f7b466c41}</UniqueIdentifier>
     </Filter>
     <Filter Include="objects">
@@ -99,14 +99,14 @@
     <ClCompile Include="..\..\..\source\components\system\coreTimer.cpp">
       <Filter>components\system</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\source\manager\coreResource.cpp">
-      <Filter>manager</Filter>
+    <ClCompile Include="..\..\..\source\managers\coreResource.cpp">
+      <Filter>managers</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\source\components\graphics\coreModel.cpp">
       <Filter>components\graphics</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\source\manager\coreMemory.cpp">
-      <Filter>manager</Filter>
+    <ClCompile Include="..\..\..\source\managers\coreMemory.cpp">
+      <Filter>managers</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\source\components\audio\coreMusic.cpp">
       <Filter>components\audio</Filter>
@@ -126,8 +126,8 @@
     <ClCompile Include="..\..\..\source\utilities\file\coreLog.cpp">
       <Filter>utilities\file</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\source\manager\coreObject.cpp">
-      <Filter>manager</Filter>
+    <ClCompile Include="..\..\..\source\managers\coreObject.cpp">
+      <Filter>managers</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\source\components\system\CoreSystem.cpp">
       <Filter>components\system</Filter>
@@ -252,14 +252,14 @@
     <ClInclude Include="..\..\..\source\components\system\coreTimer.h">
       <Filter>components\system</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\source\manager\coreResource.h">
-      <Filter>manager</Filter>
+    <ClInclude Include="..\..\..\source\managers\coreResource.h">
+      <Filter>managers</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\source\components\graphics\coreModel.h">
       <Filter>components\graphics</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\source\manager\coreMemory.h">
-      <Filter>manager</Filter>
+    <ClInclude Include="..\..\..\source\managers\coreMemory.h">
+      <Filter>managers</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\source\components\audio\coreMusic.h">
       <Filter>components\audio</Filter>
@@ -291,8 +291,8 @@
     <ClInclude Include="..\..\..\source\utilities\math\coreVector.h">
       <Filter>utilities\math</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\source\manager\coreObject.h">
-      <Filter>manager</Filter>
+    <ClInclude Include="..\..\..\source\managers\coreObject.h">
+      <Filter>managers</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\source\components\system\CoreSystem.h">
       <Filter>components\system</Filter>

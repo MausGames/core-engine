@@ -466,14 +466,14 @@
     <ClCompile Include="..\..\..\source\Core.cpp">
       <PrecompiledHeader>Create</PrecompiledHeader>
     </ClCompile>
-    <ClCompile Include="..\..\..\source\manager\coreMemory.cpp" />
-    <ClCompile Include="..\..\..\source\manager\coreObject.cpp">
+    <ClCompile Include="..\..\..\source\managers\coreMemory.cpp" />
+    <ClCompile Include="..\..\..\source\managers\coreObject.cpp">
       <Optimization Condition="'$(Configuration)'=='Release'">MaxSpeed</Optimization>
       <Optimization Condition="'$(Configuration)'=='Release_angle'">MaxSpeed</Optimization>
       <PrecompiledHeader Condition="'$(Configuration)'=='Release'">NotUsing</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)'=='Release_angle'">NotUsing</PrecompiledHeader>
     </ClCompile>
-    <ClCompile Include="..\..\..\source\manager\coreResource.cpp" />
+    <ClCompile Include="..\..\..\source\managers\coreResource.cpp" />
     <ClCompile Include="..\..\..\source\objects\game\coreObject2D.cpp" />
     <ClCompile Include="..\..\..\source\objects\game\coreObject3D.cpp" />
     <ClCompile Include="..\..\..\source\objects\game\coreParticle.cpp" />
@@ -526,9 +526,9 @@
     <ClInclude Include="..\..\..\source\components\system\coreThread.h" />
     <ClInclude Include="..\..\..\source\components\system\coreTimer.h" />
     <ClInclude Include="..\..\..\source\Core.h" />
-    <ClInclude Include="..\..\..\source\manager\coreMemory.h" />
-    <ClInclude Include="..\..\..\source\manager\coreObject.h" />
-    <ClInclude Include="..\..\..\source\manager\coreResource.h" />
+    <ClInclude Include="..\..\..\source\managers\coreMemory.h" />
+    <ClInclude Include="..\..\..\source\managers\coreObject.h" />
+    <ClInclude Include="..\..\..\source\managers\coreResource.h" />
     <ClInclude Include="..\..\..\source\objects\game\coreObject2D.h" />
     <ClInclude Include="..\..\..\source\objects\game\coreObject3D.h" />
     <ClInclude Include="..\..\..\source\objects\game\coreParticle.h" />

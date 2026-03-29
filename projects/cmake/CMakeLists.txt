@@ -45,9 +45,9 @@ target_sources(
     ${BASE_DIRECTORY}/source/components/system/CoreSystem.cpp
     ${BASE_DIRECTORY}/source/components/system/coreThread.cpp
     ${BASE_DIRECTORY}/source/components/system/coreTimer.cpp
-    ${BASE_DIRECTORY}/source/manager/coreMemory.cpp
-    ${BASE_DIRECTORY}/source/manager/coreObject.cpp
-    ${BASE_DIRECTORY}/source/manager/coreResource.cpp
+    ${BASE_DIRECTORY}/source/managers/coreMemory.cpp
+    ${BASE_DIRECTORY}/source/managers/coreObject.cpp
+    ${BASE_DIRECTORY}/source/managers/coreResource.cpp
     ${BASE_DIRECTORY}/source/objects/game/coreObject2D.cpp
     ${BASE_DIRECTORY}/source/objects/game/coreObject3D.cpp
     ${BASE_DIRECTORY}/source/objects/game/coreParticle.cpp
@@ -203,7 +203,7 @@ if(NOT CORE_DEBUG)
     set_source_files_properties(
         ${BASE_DIRECTORY}/source/components/graphics/coreModel.cpp
         ${BASE_DIRECTORY}/source/components/graphics/coreTexture.cpp
-        ${BASE_DIRECTORY}/source/manager/coreObject.cpp
+        ${BASE_DIRECTORY}/source/managers/coreObject.cpp
         PROPERTIES
         COMPILE_FLAGS -O3
         SKIP_PRECOMPILE_HEADERS ON

@@ -284,7 +284,7 @@
 				5BB8C29927C9489900BBB338 /* Products */,
 				5BB8C2B827C94E4100BBB338 /* additional */,
 				5BB8C2CE27C94E4100BBB338 /* components */,
-				5BB8C33927C94E4100BBB338 /* manager */,
+				5BB8C33927C94E4100BBB338 /* managers */,
 				5BB8C32227C94E4100BBB338 /* objects */,
 				5BB8C30027C94E4100BBB338 /* utilities */,
 				5BB8C34027C94E4200BBB338 /* Core.cpp */,
@@ -601,7 +601,7 @@
 			path = menu;
 			sourceTree = "<group>";
 		};
-		5BB8C33927C94E4100BBB338 /* manager */ = {
+		5BB8C33927C94E4100BBB338 /* managers */ = {
 			isa = PBXGroup;
 			children = (
 				5BB8C33E27C94E4200BBB338 /* coreMemory.cpp */,
@@ -611,8 +611,8 @@
 				5BB8C33B27C94E4200BBB338 /* coreResource.cpp */,
 				5BB8C33A27C94E4200BBB338 /* coreResource.h */,
 			);
-			name = manager;
-			path = ../../source/manager;
+			name = managers;
+			path = ../../source/managers;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
