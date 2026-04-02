@@ -409,6 +409,9 @@
     <ClInclude Include="..\..\..\source\utilities\data\coreLock.h">
       <Filter>utilities\data</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\source\utilities\data\coreAtomic.h">
+      <Filter>utilities\data</Filter>
+    </ClInclude>
     <ClInclude Include="..\..\..\source\components\audio\codec\ALAW.h">
       <Filter>components\audio\codec</Filter>
     </ClInclude>

@@ -540,14 +540,15 @@
     <ClInclude Include="..\..\..\source\objects\menu\coreSwitchBox.h" />
     <ClInclude Include="..\..\..\source\objects\menu\coreTextBox.h" />
     <ClInclude Include="..\..\..\source\objects\menu\coreViewBox.h" />
-    <ClInclude Include="..\..\..\source\utilities\data\coreRing.h" />
+    <ClInclude Include="..\..\..\source\utilities\data\coreAtomic.h" />
     <ClInclude Include="..\..\..\source\utilities\data\coreData.h" />
     <ClInclude Include="..\..\..\source\utilities\data\coreHashString.h" />
-    <ClInclude Include="..\..\..\source\utilities\data\coreMap.h" />
     <ClInclude Include="..\..\..\source\utilities\data\coreList.h" />
     <ClInclude Include="..\..\..\source\utilities\data\coreLock.h" />
+    <ClInclude Include="..\..\..\source\utilities\data\coreMap.h" />
     <ClInclude Include="..\..\..\source\utilities\data\coreProtect.h" />
     <ClInclude Include="..\..\..\source\utilities\data\coreRand.h" />
+    <ClInclude Include="..\..\..\source\utilities\data\coreRing.h" />
     <ClInclude Include="..\..\..\source\utilities\data\coreScope.h" />
     <ClInclude Include="..\..\..\source\utilities\data\coreSet.h" />
     <ClInclude Include="..\..\..\source\utilities\data\coreVariant.h" />
