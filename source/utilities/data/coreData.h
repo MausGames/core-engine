@@ -37,7 +37,7 @@ STATIC_ASSERT(CORE_DATA_STRING_LEN >= CORE_DATA_MAX_PATH)
 #endif
 
 #define TIMEMAP_LOCAL(t) ([](const std::time_t iValue) {static std::tm s_Buffer = {}; return localtime_r(&iValue, &s_Buffer);}(t))
-#define TIMEMAP_GM(t)    ([](const std::time_t iValue) {static std::tm s_Buffer = {}; return gmtime_r   (&iValue, &s_Buffer);}(t))
+#define TIMEMAP_UTC(t)   ([](const std::time_t iValue) {static std::tm s_Buffer = {}; return gmtime_r   (&iValue, &s_Buffer);}(t))
 #define TIMEMAP_CURRENT  (TIMEMAP_LOCAL(std::time(NULL)))
 
 #define TO_UPPER(c)      (coreChar(std::toupper(coreUint8(c))))
@@ -116,10 +116,10 @@ private:
     static coreMapStrFull<const coreChar*> s_apcCommandLine;   // parsed command line arguments
     static coreString                      s_sUserFolder;      // selected user folder
 
-    static ZSTD_CCtx*  s_pCompressContext;                     // reusable compression context
-    static ZSTD_DCtx*  s_pDecompressContext;                   // reusable decompression context
-    static coreLock    s_CompressLock;                         // compression context lock
-    static coreLock    s_DecompressLock;                       // decompression context lock
+    static ZSTD_CCtx* s_pCompressContext;                      // reusable compression context
+    static ZSTD_DCtx* s_pDecompressContext;                    // reusable decompression context
+    static coreLock   s_CompressLock;                          // compression context lock
+    static coreLock   s_DecompressLock;                        // decompression context lock
 
 
 public:
@@ -174,9 +174,9 @@ public:
     static const coreChar*  GetCurDir();
 
     /* control command line arguments */
-    static        void            LogCommandLine();
-    static        void            SetCommandLine(const coreInt32 iArgc, const coreChar* const* ppcArgv);
-    static inline const coreChar* GetCommandLine(const coreHashString& sArgument) {ASSERT(coreData::StrIsLower(sArgument.GetString())) return s_apcCommandLine.count(sArgument) ? s_apcCommandLine.at(sArgument) : NULL;}
+    static void            LogCommandLine();
+    static void            SetCommandLine(const coreInt32 iArgc, const coreChar* const* ppcArgv);
+    static const coreChar* GetCommandLine(const coreHashString& sArgument);
 
     /* control environment variables */
     static void            LogEnvironment();

@@ -188,8 +188,8 @@ public:
     template <std::integral     T> static constexpr T  FloorPot     (const T  tInput)                          {ASSERT(tInput >= T(0)) return std::bit_floor(std::make_unsigned_t<T>(tInput));}
     template <std::integral     T> static constexpr T  CeilAlign    (const T  tInput,  const coreUintW iAlign) {ASSERT(tInput >= T(0)) const T k = tInput + iAlign - T(1); return k - (k % iAlign);}
     template <std::integral     T> static constexpr T  FloorAlign   (const T  tInput,  const coreUintW iAlign) {ASSERT(tInput >= T(0)) const T k = tInput;                 return k - (k % iAlign);}
-    template <typename          T> static constexpr T* CeilAlignPtr (const T* ptInput, const coreUintW iAlign) {ASSERT(coreMath::IsPot(iAlign)) const coreUintW k = iAlign - 1u; return ASSUME_ALIGNED(s_cast<T*>(I_TO_P((P_TO_UI(ptInput) + k) & ~k)), iAlign);}
-    template <typename          T> static constexpr T* FloorAlignPtr(const T* ptInput, const coreUintW iAlign) {ASSERT(coreMath::IsPot(iAlign)) const coreUintW k = iAlign - 1u; return ASSUME_ALIGNED(s_cast<T*>(I_TO_P((P_TO_UI(ptInput))     & ~k)), iAlign);}
+    template <typename          T> static constexpr T* CeilAlignPtr (const T* ptInput, const coreUintW iAlign) {ASSERT(coreMath::IsPot(iAlign)) const coreUintW k = iAlign - 1u; return s_cast<T*>(I_TO_P((P_TO_UI(ptInput) + k) & ~k));}
+    template <typename          T> static constexpr T* FloorAlignPtr(const T* ptInput, const coreUintW iAlign) {ASSERT(coreMath::IsPot(iAlign)) const coreUintW k = iAlign - 1u; return s_cast<T*>(I_TO_P((P_TO_UI(ptInput))     & ~k));}
 
     /* analyzing operations */
     template <std::integral T> static constexpr coreBool IsPot    (const T tInput)                                                         {ASSERT(tInput >= T(0)) return (tInput && !(tInput & (tInput - T(1))));}

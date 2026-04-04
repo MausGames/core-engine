@@ -493,7 +493,7 @@ template <typename T> coreResourcePtr<T>& coreResourcePtr<T>::operator = (coreRe
 
 // ****************************************************************
 /* additional checks */
-STATIC_ASSERT(sizeof(coreResourceHandle) <= ALIGNMENT_CACHE)
+STATIC_ASSERT((sizeof(coreResourceHandle) <= ALIGNMENT_CACHE) || DEFINED(_CORE_DEBUG_))
 
 
 #endif /* _CORE_GUARD_RESOURCE_H_ */

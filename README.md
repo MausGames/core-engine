@@ -53,7 +53,7 @@ It is **designed to be supportive, versatile and powerful**, and to dynamically 
 
 - **HTML Log:** colorful, thread-safe, with extensive system and resource logging
 - **CPU and GPU Performance Monitoring:** total and scope timings, total memory
-- **Pipeline Statistics:** vertex and fragment shader stats, culling stats, draw call and instance numbers
+- **Pipeline Statistics:** vertex and fragment shader stats, culling stats, draw call and instance numbers, resource bind numbers
 - **Realtime Value and Texture Inspection**
 - **GPU Object Labels:** for driver logging and [RenderDoc](https://renderdoc.org/)
 - **Debug Drawing:** collision volumes, wireframe

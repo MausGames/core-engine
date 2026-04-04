@@ -427,6 +427,9 @@ void coreFile::__Read(SDL_IOStream* pFile, void* pPointer, const coreUintW iSize
         // reset output memory
         std::memset(pPointer, 0, iSize);
     }
+
+    ASSERT((SDL_GetIOStatus(pFile) != SDL_IO_STATUS_ERROR) &&
+           (SDL_GetIOStatus(pFile) != SDL_IO_STATUS_WRITEONLY))
 }
 
 
@@ -437,7 +440,13 @@ void coreFile::__Write(SDL_IOStream* pFile, const void* pPointer, const coreUint
     ASSERT(pFile && pPointer && iSize && pbSuccess)
 
     // write and check for errors
-    if(*pbSuccess) (*pbSuccess) = (SDL_WriteIO(pFile, pPointer, iSize) == iSize);
+    WARN_IF(!(*pbSuccess) || !((*pbSuccess) = (SDL_WriteIO(pFile, pPointer, iSize) == iSize)))
+    {
+        // nothing
+    }
+
+    ASSERT((SDL_GetIOStatus(pFile) != SDL_IO_STATUS_ERROR) &&
+           (SDL_GetIOStatus(pFile) != SDL_IO_STATUS_READONLY))
 }
 
 

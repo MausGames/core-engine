@@ -737,7 +737,7 @@ SDL_Surface* coreTexture::CreateReduction(const coreUintW iComponents, const SDL
     ASSERT(iTarget < iSource)
 
     // create SDL surface (on demand)
-    if(!pOutput) pOutput = SDL_CreateSurface(pInput->w, pInput->h, SDL_PixelFormat(SDL_DEFINE_PIXELFORMAT(SDL_PIXELTYPE_ARRAYU8, SDL_PACKEDORDER_NONE, SDL_PACKEDLAYOUT_NONE, 8 * iTarget, iTarget)));
+    if(!pOutput) pOutput = SDL_CreateSurface(pInput->w, pInput->h, SDL_PixelFormat(SDL_DEFINE_PIXELFORMAT(SDL_PIXELTYPE_ARRAYU8, SDL_ARRAYORDER_NONE, 0, 8 * iTarget, iTarget)));
     ASSERT((pOutput->w == pInput->w) && (pOutput->h == pInput->h) && (SDL_BYTESPERPIXEL(pOutput->format) == iTarget))
 
     // assume no memory aliasing

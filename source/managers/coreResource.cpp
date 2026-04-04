@@ -365,7 +365,7 @@ void coreResourceManager::ApplyNullify()
 /* reset all resources and relation-objects */
 void coreResourceManager::Reset(const coreResourceReset eInit)
 {
-    const coreBool bActive = eInit ? true : false;
+    const coreBool bActive = (eInit == CORE_RESOURCE_RESET_INIT);
 
     // check and set current status
     if(m_bActive == bActive) return;

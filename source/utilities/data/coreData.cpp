@@ -160,7 +160,6 @@ coreUint64 coreData::ProcessMemory()
 /* get full application path */
 const coreChar* coreData::ProcessPath()
 {
-    UNUSED coreChar* pcString = coreData::__NextTempString();
 
 #if defined(_CORE_WINDOWS_)
 
@@ -175,6 +174,8 @@ const coreChar* coreData::ProcessPath()
 
 #elif defined(_CORE_LINUX_)
 
+    coreChar* pcString = coreData::__NextTempString();
+
     // get content of the symbolic link
     const coreIntW iLen = readlink("/proc/self/exe", pcString, CORE_DATA_STRING_LEN - 1u);
     if(iLen >= 0)
@@ -185,6 +186,8 @@ const coreChar* coreData::ProcessPath()
     }
 
 #elif defined(_CORE_MACOS_)
+
+    coreChar* pcString = coreData::__NextTempString();
 
     // get path of the current executable
     coreUint32 iLen = CORE_DATA_STRING_LEN;
@@ -676,6 +679,10 @@ const coreChar* coreData::SystemDirTemp()
     if(pRecord && pRecord->pw_dir && (pcPath = coreData::__PrepareSystemDir(PRINT("%s/.cache", pRecord->pw_dir))))
         return pcPath;
 
+    // just use global temporary directory
+    if((pcPath = coreData::__PrepareSystemDir("/tmp")))
+        return pcPath;
+
 #elif defined(_CORE_MACOS_)
 
     const coreChar* pcPath;
@@ -1020,6 +1027,15 @@ void coreData::SetCommandLine(const coreInt32 iArgc, const coreChar* const* ppcA
     // save raw command line arguments
     g_iArgc   = iArgc;
     g_ppcArgv = ppcArgv;
+}
+
+
+// ****************************************************************
+/* get command line arguments */
+const coreChar* coreData::GetCommandLine(const coreHashString& sArgument)
+{
+    ASSERT(coreData::StrIsLower(sArgument.GetString()))
+    return s_apcCommandLine.count(sArgument) ? s_apcCommandLine.at(sArgument) : NULL;
 }
 
 

@@ -96,7 +96,7 @@ if(CORE_EMSCRIPTEN)
         CoreEngine PUBLIC
         -msse3 -pipe -Wall -Wextra -Wpedantic
         -matomics -mbulk-memory -mextended-const -mmultivalue -mmutable-globals -mnontrapping-fptoint -mreference-types -msign-ext -msimd128 -mtail-call
-        $<IF:$<CONFIG:DEBUG>, -O0 -g3 -gsource-map -gsplit-dwarf -gz=zlib -ftrivial-auto-var-init=pattern, -Os -flto -fwhole-program-vtables -fvirtual-function-elimination -fforce-emit-vtables -fstrict-vtable-pointers -fno-strict-overflow -ffinite-math-only -fno-signed-zeros -fno-trapping-math -fno-math-errno -ffp-contract=off -fno-rtti -fno-exceptions -Werror>
+        $<IF:$<CONFIG:DEBUG>, -O0 -g3 -gsource-map -gsplit-dwarf -gz=zlib -ftrivial-auto-var-init=pattern, -Os -flto -ftrivial-auto-var-init=uninitialized -fwhole-program-vtables -fvirtual-function-elimination -fforce-emit-vtables -fstrict-vtable-pointers -fno-strict-overflow -ffinite-math-only -fno-signed-zeros -fno-trapping-math -fno-math-errno -ffp-contract=off -fno-rtti -fno-exceptions -Werror>
     )
 
     target_link_directories(
@@ -134,7 +134,7 @@ else()
     target_compile_options(
         CoreEngine PUBLIC
         -msse3 -pipe -Wall -Wextra -Wpedantic
-        $<IF:$<CONFIG:DEBUG>, -O0 -g3 -gsplit-dwarf -gz=zlib -ftrivial-auto-var-init=pattern, -Os -flto -fvisibility=hidden -fwhole-program-vtables -fvirtual-function-elimination -fforce-emit-vtables -fstrict-vtable-pointers -fno-strict-overflow -ffinite-math-only -fno-signed-zeros -fno-trapping-math -fno-math-errno -ffp-contract=off -fno-rtti -fno-exceptions -Werror>
+        $<IF:$<CONFIG:DEBUG>, -O0 -g3 -gsplit-dwarf -gz=zlib -ftrivial-auto-var-init=pattern, -Os -flto -fvisibility=hidden -ftrivial-auto-var-init=uninitialized -fwhole-program-vtables -fvirtual-function-elimination -fforce-emit-vtables -fstrict-vtable-pointers -fno-strict-overflow -ffinite-math-only -fno-signed-zeros -fno-trapping-math -fno-math-errno -ffp-contract=off -fno-rtti -fno-exceptions -Werror>
     )
 
     target_link_directories(

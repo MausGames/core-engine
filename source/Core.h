@@ -847,6 +847,7 @@ private:
 #include "utilities/data/hash/FNV1.h"
 #include "utilities/data/hash/Murmur.h"
 #include "utilities/data/hash/XXH.h"
+#include "utilities/data/coreAtomic.h"
 #include "utilities/data/coreString.h"
 #include "utilities/data/coreHashString.h"
 #include "utilities/data/coreLock.h"
