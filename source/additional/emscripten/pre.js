@@ -46,8 +46,8 @@ Module["canvas"] = g_pCanvas;
 // ****************************************************************
 function PreRun()
 {
-    FS.mkdir("/user");
-    FS.mount(IDBFS, {}, "/user");
+    FS.mkdir("/core");
+    FS.mount(IDBFS, {autoPersist : false}, "/core");
 
     FS.syncfs(true, function(sError)
     {

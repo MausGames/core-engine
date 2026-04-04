@@ -627,8 +627,11 @@ const coreChar* coreData::SystemDirAppData()
 
 #elif defined(_CORE_EMSCRIPTEN_)
 
-    // use no specific path
-    return "";
+    const coreChar* pcPath;
+
+    // use IDBFS root directory
+    if((pcPath = coreData::__PrepareSystemDir("/core")))
+        return pcPath;
 
 #elif defined(_CORE_SWITCH_)
 
@@ -688,6 +691,14 @@ const coreChar* coreData::SystemDirTemp()
     // get directory from password database
     const passwd* pRecord = getpwuid(getuid());
     if(pRecord && pRecord->pw_dir && (pcPath = coreData::__PrepareSystemDir(PRINT("%s/Library/Caches", pRecord->pw_dir))))
+        return pcPath;
+
+#elif defined(_CORE_EMSCRIPTEN_)
+
+    const coreChar* pcPath;
+
+    // use MEMFS root directory
+    if((pcPath = coreData::__PrepareSystemDir("/")))
         return pcPath;
 
 #endif
