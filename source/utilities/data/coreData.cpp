@@ -1882,13 +1882,13 @@ coreBool coreData::DirectoryWritable(const coreChar* pcPath)
 {
     ASSERT(pcPath)
 
-    // get temporary file name
-    const coreChar* pcTemp = PRINT("%s/check_%u", pcPath, coreData::ProcessID());
-
 #if defined(_CORE_WINDOWS_)
 
+    // get test file name
+    const coreChar* pcCheck = PRINT("%s/check_%u", pcPath, coreData::ProcessID());
+
     // create temporary file
-    const HANDLE pFile = CreateFileW(coreData::__ToWideChar(pcTemp), GENERIC_WRITE, 0u, NULL, CREATE_ALWAYS, FILE_ATTRIBUTE_TEMPORARY | FILE_FLAG_DELETE_ON_CLOSE, NULL);
+    const HANDLE pFile = CreateFileW(coreData::__ToWideChar(pcCheck), GENERIC_WRITE, 0u, NULL, CREATE_ALWAYS, FILE_ATTRIBUTE_TEMPORARY | FILE_FLAG_DELETE_ON_CLOSE, NULL);
     if(pFile != INVALID_HANDLE_VALUE)
     {
         // close and (automatically) delete file again
@@ -1899,13 +1899,30 @@ coreBool coreData::DirectoryWritable(const coreChar* pcPath)
 
 #else
 
-    // create temporary file
-    SDL_IOStream* pFile = SDL_IOFromFile(pcTemp, CORE_FILE_OPEN_WRITE);
+    #if defined(_CORE_LINUX_)
+
+        // create temporary file (not supported on every filesystem)
+        const coreInt32 iFile = open(pcPath, O_WRONLY | O_TMPFILE, S_IRWXU);
+        if(iFile != -1)
+        {
+            // close and (automatically) delete file again
+            close(iFile);
+
+            return true;
+        }
+
+    #endif
+
+    // get test file name
+    const coreChar* pcCheck = PRINT("%s/check_%u", pcPath, coreData::ProcessID());
+
+    // create regular file
+    SDL_IOStream* pFile = SDL_IOFromFile(pcCheck, CORE_FILE_OPEN_WRITE);
     if(pFile)
     {
         // close and delete file again
         SDL_CloseIO(pFile);
-        coreData::FileDelete(pcTemp);
+        coreData::FileDelete(pcCheck);
 
         return true;
     }
