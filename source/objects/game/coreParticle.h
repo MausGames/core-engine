@@ -228,8 +228,8 @@ public:
     coreParticleEffect& operator = (coreParticleEffect&& m)noexcept;
 
     /* create new particles */
-    template <typename F> void CreateParticle(const coreUintW iNum, const coreFloat fFrequency, F&& nInitFunc);   // [](coreParticle* OUTPUT pParticle) -> void
-    template <typename F> void CreateParticle(const coreUintW iNum,                             F&& nInitFunc);   // [](coreParticle* OUTPUT pParticle) -> void
+    template <typename F> void CreateParticle(const coreUintW iNum, const coreFloat fFrequency, F&& nInitFunc);   // [](coreParticle* OUTPUT pParticle, const coreUintW i) -> void
+    template <typename F> void CreateParticle(const coreUintW iNum,                             F&& nInitFunc);   // [](coreParticle* OUTPUT pParticle, const coreUintW i) -> void
     inline coreParticle* CreateParticle() {ASSERT(m_pSystem) return m_pSystem->CreateParticle(this);}
 
     /* unbind and remove particles */
@@ -330,7 +330,7 @@ template <typename F> void coreParticleEffect::CreateParticle(const coreUintW iN
             {
                 // create particles and call init function
                 coreParticle* pParticle = this->CreateParticle();
-                nInitFunc(pParticle);
+                nInitFunc(pParticle, i);
 
                 // adjust simulation value
                 pParticle->__Adjust(fTime);
@@ -344,7 +344,7 @@ template <typename F> void coreParticleEffect::CreateParticle(const coreUintW iN
     // create particles and call init function
     for(coreUintW i = iNum; i--; )
     {
-        nInitFunc(this->CreateParticle());
+        nInitFunc(this->CreateParticle(), i);
     }
 }
 
