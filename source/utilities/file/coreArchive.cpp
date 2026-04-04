@@ -77,7 +77,7 @@ coreStatus coreFile::Save(const coreChar* pcPath)
     const coreChar* pcTemp = DEFINED(CORE_FILE_SAFEWRITE) ? PRINT("%s.temp_%u", m_sPath.c_str(), coreData::ProcessID()) : m_sPath.c_str();
 
     // open file
-    SDL_IOStream* pFile = SDL_IOFromFile(pcTemp, "wb");
+    SDL_IOStream* pFile = SDL_IOFromFile(pcTemp, CORE_FILE_OPEN_WRITE);
     if(!pFile)
     {
         Core::Log->Warning("File (%s) could not be saved (SDL: %s)", m_sPath.c_str(), SDL_GetError());
@@ -204,7 +204,7 @@ SDL_IOStream* coreFile::CreateReadStream()const
     else if(m_pArchive)
     {
         // open archive
-        pFile = SDL_IOFromFile(m_pArchive->GetPath(), "rb");
+        pFile = SDL_IOFromFile(m_pArchive->GetPath(), CORE_FILE_OPEN_READ);
         if(!pFile) return NULL;
 
         // seek file data position
@@ -217,7 +217,7 @@ SDL_IOStream* coreFile::CreateReadStream()const
     else
     {
         // open direct file
-        pFile = SDL_IOFromFile(m_sPath.c_str(), "rb");
+        pFile = SDL_IOFromFile(m_sPath.c_str(), CORE_FILE_OPEN_READ);
         if(!pFile) return NULL;
     }
 
@@ -273,7 +273,7 @@ coreStatus coreFile::LoadData(const coreBool bMapped)
     if(m_pArchive)
     {
         // open archive
-        pFile = SDL_IOFromFile(m_pArchive->GetPath(), "rb");
+        pFile = SDL_IOFromFile(m_pArchive->GetPath(), CORE_FILE_OPEN_READ);
         if(!pFile) return CORE_ERROR_FILE;
 
         // seek file data position
@@ -286,7 +286,7 @@ coreStatus coreFile::LoadData(const coreBool bMapped)
     else
     {
         // open direct file
-        pFile = SDL_IOFromFile(m_sPath.c_str(), "rb");
+        pFile = SDL_IOFromFile(m_sPath.c_str(), CORE_FILE_OPEN_READ);
         if(!pFile) return CORE_ERROR_FILE;
     }
 
@@ -454,7 +454,7 @@ coreArchive::coreArchive(const coreChar* pcPath)noexcept
 , m_apFile {}
 {
     // open archive
-    SDL_IOStream* pArchive = SDL_IOFromFile(m_sPath.c_str(), "rb");
+    SDL_IOStream* pArchive = SDL_IOFromFile(m_sPath.c_str(), CORE_FILE_OPEN_READ);
     if(!pArchive)
     {
         Core::Log->Warning("Archive (%s) could not be opened (SDL: %s)", m_sPath.c_str(), SDL_GetError());
@@ -549,7 +549,7 @@ coreStatus coreArchive::Save(const coreChar* pcPath)
     const coreChar* pcTemp = DEFINED(CORE_FILE_SAFEWRITE) ? PRINT("%s.temp_%u", m_sPath.c_str(), coreData::ProcessID()) : m_sPath.c_str();
 
     // open archive
-    SDL_IOStream* pArchive = SDL_IOFromFile(pcTemp, "wb");
+    SDL_IOStream* pArchive = SDL_IOFromFile(pcTemp, CORE_FILE_OPEN_WRITE);
     if(!pArchive)
     {
         Core::Log->Warning("Archive (%s) could not be saved (SDL: %s)", m_sPath.c_str(), SDL_GetError());

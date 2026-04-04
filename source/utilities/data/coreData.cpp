@@ -125,7 +125,7 @@ coreUint64 coreData::ProcessMemory()
 #elif defined(_CORE_LINUX_)
 
     // open memory pseudo-file
-    std::FILE* pFile = coreData::FileOpen("/proc/self/statm", "rb");
+    std::FILE* pFile = coreData::FileOpen("/proc/self/statm", CORE_FILE_OPEN_READ);
     if(pFile)
     {
         coreUint64 iPages;
@@ -790,7 +790,7 @@ coreBool coreData::DetectDebugger()
 #elif defined(_CORE_LINUX_)
 
     // open status pseudo-file
-    std::FILE* pFile = coreData::FileOpen("/proc/self/status", "rb");
+    std::FILE* pFile = coreData::FileOpen("/proc/self/status", CORE_FILE_OPEN_READ);
     if(pFile)
     {
         coreChar acBuffer[0x1000];
@@ -1412,17 +1412,10 @@ std::FILE* coreData::FileOpen(const coreChar* pcPath, const coreChar* pcMode)
 
 #if defined(_CORE_WINDOWS_)
 
-    // optimize caching for sequential access
-    return _wfopen(coreData::__ToWideChar(pcPath), coreData::__ToWideChar(PRINT("%sS", pcMode)));
-
-#elif defined(_CORE_LINUX_)
-
-    // disable thread cancellation points
-    return std::fopen(pcPath, PRINT("%sc", pcMode));
+    return _wfopen(coreData::__ToWideChar(pcPath), coreData::__ToWideChar(pcMode));
 
 #else
 
-    // just open regular file stream
     return std::fopen(pcPath, pcMode);
 
 #endif
@@ -1452,7 +1445,7 @@ coreBool coreData::FileExists(const coreChar* pcPath)
 #else
 
     // open file
-    SDL_IOStream* pFile = SDL_IOFromFile(pcPath, "rb");
+    SDL_IOStream* pFile = SDL_IOFromFile(pcPath, CORE_FILE_OPEN_READ);
     if(pFile)
     {
         // file exists
@@ -1498,7 +1491,7 @@ coreInt64 coreData::FileSize(const coreChar* pcPath)
 #else
 
     // open file
-    SDL_IOStream* pFile = SDL_IOFromFile(pcPath, "rb");
+    SDL_IOStream* pFile = SDL_IOFromFile(pcPath, CORE_FILE_OPEN_READ);
     if(pFile)
     {
         // get size from stream
@@ -1658,11 +1651,11 @@ coreStatus coreData::FileCopy(const coreChar* pcFrom, const coreChar* pcTo)
 #else
 
     // open source file
-    std::FILE* pFileFrom = coreData::FileOpen(pcFrom, "rb");
+    std::FILE* pFileFrom = coreData::FileOpen(pcFrom, CORE_FILE_OPEN_READ);
     if(pFileFrom)
     {
         // open destination file
-        std::FILE* pFileTo = coreData::FileOpen(pcTo, "wb");
+        std::FILE* pFileTo = coreData::FileOpen(pcTo, CORE_FILE_OPEN_WRITE);
         if(pFileTo)
         {
             alignas(ALIGNMENT_PAGE) BIG_STATIC coreByte s_aBuffer[0x4000u];
@@ -1907,7 +1900,7 @@ coreBool coreData::DirectoryWritable(const coreChar* pcPath)
 #else
 
     // create temporary file
-    SDL_IOStream* pFile = SDL_IOFromFile(pcTemp, "wb");
+    SDL_IOStream* pFile = SDL_IOFromFile(pcTemp, CORE_FILE_OPEN_WRITE);
     if(pFile)
     {
         // close and delete file again

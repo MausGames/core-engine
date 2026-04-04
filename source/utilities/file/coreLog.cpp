@@ -25,7 +25,7 @@ coreLog::coreLog(const coreChar* pcPath)noexcept
 #if !defined(_CORE_EMSCRIPTEN_) && !defined(_CORE_SWITCH_)
 
     // open and reset log file
-    m_pFile = coreData::FileOpen(m_sPath.c_str(), "wb");
+    m_pFile = coreData::FileOpen(m_sPath.c_str(), CORE_FILE_OPEN_WRITE);
     if(m_pFile)
     {
         // retrieve current date and time

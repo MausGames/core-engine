@@ -28,6 +28,17 @@
 #define __CORE_FILE_TYPE_DIRECT (0u)
 #define __CORE_FILE_TYPE_MEMORY (1u)
 
+#if defined(_CORE_WINDOWS_)
+    #define CORE_FILE_OPEN_READ  "rbS"   // optimize caching for sequential access
+    #define CORE_FILE_OPEN_WRITE "wbS"
+#elif defined(_CORE_LINUX_)
+    #define CORE_FILE_OPEN_READ  "rbc"   // disable thread cancellation points
+    #define CORE_FILE_OPEN_WRITE "wbc"
+#else
+    #define CORE_FILE_OPEN_READ  "rb"    // just open regular file stream
+    #define CORE_FILE_OPEN_WRITE "wb"
+#endif
+
 #if !defined(_CORE_EMSCRIPTEN_) && !defined(_CORE_SWITCH_)
     #define CORE_FILE_SAFEWRITE   // always write to temporary file first (to improve robustness)
 #endif
