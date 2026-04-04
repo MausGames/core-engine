@@ -221,7 +221,7 @@ coreInt32 SDLCALL coreMain(coreInt32 argc, coreChar** argv)
     coreData::InitDefaultFolders();
 
     // set floating-point behavior
-    coreMath::EnableExceptions();
+    coreMath::ControlExceptions(true);
     coreMath::EnableRoundToNearest();
     coreMath::DisableDenormals();
 

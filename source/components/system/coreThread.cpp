@@ -230,7 +230,7 @@ coreInt32 SDLCALL coreThreadMain(void* pData)
     coreThread* pThread = s_cast<coreThread*>(pData);
 
     // set floating-point behavior
-    coreMath::EnableExceptions();
+    coreMath::ControlExceptions(true);
     coreMath::EnableRoundToNearest();
     coreMath::DisableDenormals();
 

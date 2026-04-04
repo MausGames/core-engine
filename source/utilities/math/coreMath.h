@@ -223,7 +223,7 @@ public:
     static constexpr coreFloat  Float16To32(const coreUint16 iInput);
 
     /* miscellaneous functions */
-    static inline void EnableExceptions();
+    static inline void ControlExceptions(const coreBool bEnabled);
     static inline void EnableRoundToNearest();
     static inline void DisableDenormals();
 };
@@ -911,25 +911,25 @@ constexpr coreFloat coreMath::Float16To32(const coreUint16 iInput)
 
 
 // ****************************************************************
-/* enable relevant floating-point exceptions (per thread) */
-inline void coreMath::EnableExceptions()
+/* control relevant floating-point exceptions (per thread) */
+inline void coreMath::ControlExceptions(const coreBool bEnabled)
 {
-#if defined(_CORE_DEBUG_) && !defined(_CORE_WINDOWS_) && !defined(_CORE_MACOS_)
+#if defined(_CORE_DEBUG_)
 
     #if defined(_CORE_SSE_)
 
-        // enable in the MXCSR control register (for SSE)
-        _MM_SET_EXCEPTION_MASK(~(_MM_MASK_OVERFLOW | _MM_MASK_DIV_ZERO | _MM_MASK_INVALID) & _MM_MASK_MASK);
+        // set in the MXCSR control register (for SSE)
+        _MM_SET_EXCEPTION_MASK(bEnabled ? (~(_MM_MASK_OVERFLOW | _MM_MASK_DIV_ZERO | _MM_MASK_INVALID) & _MM_MASK_MASK) : _MM_MASK_MASK);
 
     #elif defined(_CORE_NEON_)
 
-        // enable in the FPCR control register (for NEON, on 64-bit only)
+        // set in the FPCR control register (for NEON, on 64-bit only)
         coreUint64 iValue;
         asm volatile("mrs %0, fpcr" : "=r" (iValue));
 
-        ADD_BIT(iValue, 10u)   // OFE (overflow)
-        ADD_BIT(iValue, 9u)    // DZE (divide by zero)
-        ADD_BIT(iValue, 8u)    // IOE (invalid operation)
+        SET_BIT(iValue, 10u, bEnabled)   // OFE (overflow)
+        SET_BIT(iValue, 9u,  bEnabled)   // DZE (divide by zero)
+        SET_BIT(iValue, 8u,  bEnabled)   // IOE (invalid operation)
 
         asm volatile("msr fpcr, %0" :: "r" (iValue));
 
@@ -937,13 +937,14 @@ inline void coreMath::EnableExceptions()
 
     #if defined(_CORE_WINDOWS_)
 
-        // enable with Windows function (for x87 and SSE)
-        _controlfp(~(_EM_OVERFLOW | _EM_ZERODIVIDE | _EM_INVALID) & _MCW_EM, _MCW_EM);
+        // set with Windows function (for x87 and SSE)
+        _controlfp(bEnabled ? (~(_EM_OVERFLOW | _EM_ZERODIVIDE | _EM_INVALID) & _MCW_EM) : _MCW_EM, _MCW_EM);
 
     #elif defined(_CORE_LINUX_)
 
-        // enable with Linux/glibc function (for x87 and SSE)
-        feenableexcept(FE_OVERFLOW | FE_DIVBYZERO | FE_INVALID);
+        // set with Linux/glibc function (for x87 and SSE)
+        if(bEnabled) feenableexcept (FE_OVERFLOW | FE_DIVBYZERO | FE_INVALID);
+                else fedisableexcept(FE_OVERFLOW | FE_DIVBYZERO | FE_INVALID);
 
     #endif
 
