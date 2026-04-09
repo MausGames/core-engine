@@ -11,20 +11,20 @@ It is **designed to be supportive, versatile and powerful**, and to dynamically 
 
 ## Features
 
-### Architecture
+### 📐 Architecture
 
 - **Unconventional but Efficient:** no default entity-component system, no default scene-graph, no default renderer, no redundant features, no redundant file formats, anything can be added on top
 - **Dual-Threaded Low-Latency Architecture:** main-thread and support-thread, sequential execution of move and render
 - **Strict Separation of Engine and Game:** even possible to reset the engine at any time or restart the game without restarting the process
 
-### System
+### 💻 System
 
 - **Windows and Events:** resizable window mode, exclusive fullscreen mode, window configuration (icon, title), focus loss detection
 - **Displays:** resolutions, refresh rates, hot plugging
 - **Threads:** precise update rate, recursive work queue
 - **Time:** delta smoothing, speed configuration, simple timers (single float), complex timers (ticks/loops, state)
 
-### Graphics
+### 🌈 Graphics
 
 - **OpenGL, OpenGL ES, WebGL:** extension-based feature selection, forward-compatibility with tons of fallbacks, state caching, explicit synchronization, ANGLE support (DirectX, Vulkan, Metal)
 - **Render State Handling:** camera and view frustum, lighting (simple), stencil testing, scissor testing, conservative rasterization, canonical aspect ratio (for sizing viewport and UI)
@@ -36,20 +36,20 @@ It is **designed to be supportive, versatile and powerful**, and to dynamically 
 - **Fonts:** hinting, kerning, text and glyph layouting
 - **Async Screenshots**
 
-### Audio
+### 🎺 Audio
 
 - **OpenAL:** spatial mixing, state caching, operation batching, audio modes (mono, speakers, headphones), audio effects (reverb), [HRTF](https://en.wikipedia.org/wiki/Head-related_transfer_function), resampler handling, device change and error recovery
 - **Music Files:** [Opus](https://opus-codec.org/), threaded streaming, seamless transitioning and looping, music player system, pitch/speed controls
 - **Sound Effects:** Opus, Wave, [A-law](https://en.wikipedia.org/wiki/A-law_algorithm) and [μ-law](https://en.wikipedia.org/wiki/%CE%9C-law_algorithm) memory compression, sound categorization, pause and resume
 
-### Input
+### 🕹️ Input
 
 - **Mouse:** cursor graphics, visibility, keyboard and gamepad controls
 - **Keyboard:** [IME](https://en.wikipedia.org/wiki/Input_method) support, screen keyboard support
 - **Joysticks/Gamepads:** aggregation, hot plugging, rumble, led colors, both location and label-specific button testing
 - **Touch:** for mobile and desktop (including Steam Deck)
 
-### Debug
+### 🔬 Debug
 
 - **HTML Log:** colorful, thread-safe, with extensive system and resource logging
 - **CPU and GPU Performance Monitoring:** total and scope timings, total memory
@@ -62,7 +62,7 @@ It is **designed to be supportive, versatile and powerful**, and to dynamically 
 - **Crash Dumps:** Windows (full), Linux (custom)
 - **Pedantic Checking:** assertions everywhere, code sanitizer support (undefined behaviour, address, leak), floating-point exceptions
 
-### Platform
+### 🏆 Platform
 
 - **Dynamic Backend Loading:** select and use backend without static linking, Steamworks, Epic Online Services, Discord (only rich presence)
 - **User Management:** user name and ID, preferred language, ownership and connection check, per-user save folder (cloud compatible)
@@ -71,7 +71,7 @@ It is **designed to be supportive, versatile and powerful**, and to dynamically 
 - **Rich Presence:** localization, basic [Steam Timeline](https://partner.steamgames.com/doc/features/timeline) support
 - **File Sharing:** public upload and download, download progress
 
-### Resource Management
+### 📚 Resource Management
 
 - **Resource Handles:** reference counting, deferred unloading, indices instead of pointers, custom configuration and permutation
 - **Asynchronous and Parallel Loading**
@@ -79,27 +79,27 @@ It is **designed to be supportive, versatile and powerful**, and to dynamically 
 - **Dynamic Indirections/Proxies**
 - **Hot Reloading**
 
-### Memory Management
+### 🧠 Memory Management
 
 - **Memory Pools:** batch allocations, address sorting, memory arenas/heaps
 - **Static Allocations:** dynamically construct objects in predefined memory buffers without pointer-dereferencing on access
 - **Special Allocations:** zeroed, aligned, dynamic (realloc), temporary (very fast)
 
-### Configuration
+### ⚙️ Configuration
 
 - **Simple and Fast INI Files**
 - **Command Line Handling**
 - **Environment Variable Handling**
 - **Project Specific Settings**
 
-### Localization
+### 🌍 Localization
 
 - **Language Files:** simple key-value format, custom properties, value-placeholder assembly
 - **Realtime Language Switching**
 - **UTF-8 Support**
 - **Hot Reloading**
 
-### Game Objects
+### 🚀 Game Objects
 
 - **3D Objects:** non-uniform scaling, two-vector rotation (quaternion-based)
 - **2D Objects:** screen layouting (anchor/center, alignment), depth ordering
@@ -107,7 +107,7 @@ It is **designed to be supportive, versatile and powerful**, and to dynamically 
 - **Precise Collision Detection:** 3-level cluster hierarchy, down to triangle-triangle and ray-triangle testing, intersection points, collision-pair tracking, separation between visual geometry and collision geometry (for simplification)
 - **Instancing/Batching**
 
-### Menu Objects
+### 📜 Menu Objects 
 
 - **Labels:** outlining, automatic resolution-dependent resizing, pixel aligned rendering, fast and lightweight
 - **Richtext:** same as labels but heavier, inline formatting, per-character animations, automatic line wrapping
@@ -117,7 +117,7 @@ It is **designed to be supportive, versatile and powerful**, and to dynamically 
 - **Text Input Boxes:** input concealing (for passwords)
 - **View/Scroll Boxes:** box culling
 
-### Math
+### 🔢 Math
 
 - **Vectors:** 2D, 3D, 4D/quaterions, tons of utilities
 - **Matrices:** 2x2, 3x3, 4x4, other variants, also tons of utilities
@@ -129,7 +129,7 @@ It is **designed to be supportive, versatile and powerful**, and to dynamically 
 - **Value Packing:** half-float, various GPU formats, other general-purpose formats
 - **Bit and Byte Operations:** counting, rotating, reversing, converting
 
-### Utilities
+### ✏️ Utilities
 
 - **Containers:** list (contiguous), set (contiguous, unsorted/sorted), map (contiguous, unsorted/sorted, string-key optimization, access caching)
 - **Random Numbers:** [PCG-XSH-RR 64/32](https://www.pcg-random.org/), individual state objects
@@ -146,7 +146,7 @@ It is **designed to be supportive, versatile and powerful**, and to dynamically 
 - **Inline Preprocessor Testing**: check for any preprocessor symbol like a regular boolean
 - **... and everything from SDL**
 
-### Tools
+### 🛠️ Tools
 
 - **Launcher:** Windows (application, script), Linux (script), Browser (page), for custom pre-launch processing
 - **Project Template:** default resources, update scripts
@@ -156,7 +156,7 @@ It is **designed to be supportive, versatile and powerful**, and to dynamically 
 - **Automatic Code Signing (Windows)**
 - **Debug Data Separation (Linux)**
 
-### Building
+### 🚧 Building
 
 - **Project Files:** Visual Studio (Windows), CMake/CLion (Linux, [Emscripten](https://emscripten.org/)), Xcode (macOS)
 - **Compiler Support:** MSVC, Clang with [Mold](https://github.com/rui314/mold), GCC (unmaintained), usually only the newest versions
