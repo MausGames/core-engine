@@ -15,8 +15,10 @@
 // TODO 5: <old comment style>
 // TODO 3: handle saving config on maximized window, also save last window position ?
 // TODO 2: as of now, setting window position does not work on Wayland and returns false + SDL_GetError (in Wayland_SetWindowPosition)
-// TODO 3: handle high DPI better ? NSHighResolutionCapable (macOS), SDL_PROP_WINDOW_CREATE_HIGH_PIXEL_DENSITY_BOOLEAN
+// TODO 3: handle high DPI better ? NSHighResolutionCapable (macOS), SDL_PROP_WINDOW_CREATE_HIGH_PIXEL_DENSITY_BOOLEAN, SDL_GetWindowDisplayScale(), SDL_GetWindowPixelDensity(), SDL_GetWindowSizeInPixels()
 // TODO 4: SDL_IsMainThread
+// TODO 3: setting SDL_SetWindowFullscreen to true on Gamescope will prevent resolution changes (after max res?) until the window is recreated
+// TODO 2: Wayland returns something else on SDL_GetWindowSize (fix) as would be expected based on vWorkAreaRes, so g_vGameResolution in Eigengrau is not correct on a Reset
 
 
 // ****************************************************************
@@ -24,7 +26,7 @@
 #define CORE_SYSTEM_TIMES          (4u)                  // number of dynamic frame times
 #define CORE_SYSTEM_SMOOTHS        (4u)                  // number of frame time smoothing intermediate values (including the base value)
 #define CORE_SYSTEM_WINDOW_BORDER  (36u)                 // border width used for restricting window size
-#define CORE_SYSTEM_WINDOW_MINIMUM (128u)                // minimum size of the main window
+#define CORE_SYSTEM_WINDOW_MINIMUM (128u)                // minimum size of the main window (per axis)
 #define CORE_SYSTEM_TIME_DEFAULT   (CORE_SYSTEM_TIMES)   // dynamic frame time index for the unmodified default time
 
 #define TIME (Core::System->GetTime())
@@ -151,6 +153,9 @@ private:
 
     /* update the high-precision time */
     void __UpdateTime();
+
+    /* apply remaining window adjustments */
+    void __FinishWindowSetup();
 
     /* refresh canonical aspect ratio */
     void __RefreshCanonAspectRatio();

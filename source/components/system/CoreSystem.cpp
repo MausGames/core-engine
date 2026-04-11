@@ -229,11 +229,14 @@ CoreSystem::CoreSystem()noexcept
     const coreDisplay& oTarget = m_aDisplayData[m_iDisplayIndex];
 
     // sanitize screen resolution
-    if(oTarget.avAvailableRes.size() == 1u) m_vResolution = oTarget.vWorkAreaRes;
+    if(DEFINED(_CORE_EMSCRIPTEN_)) m_vResolution = oTarget.vWorkAreaRes;
+    if(DEFINED(_CORE_SWITCH_))     m_vResolution = oTarget.vWorkAreaRes;
     this->SetWindowResolution(m_vResolution);
 
     // sanitize fullscreen mode
-    if(oTarget.avAvailableRes.size() == 1u) m_eMode = CORE_SYSTEM_MODE_WINDOWED;
+    if(coreData::DetectGamescope()) m_eMode = CORE_SYSTEM_MODE_WINDOWED;
+    if(DEFINED(_CORE_EMSCRIPTEN_))  m_eMode = CORE_SYSTEM_MODE_WINDOWED;
+    if(DEFINED(_CORE_SWITCH_))      m_eMode = CORE_SYSTEM_MODE_BORDERLESS;
     m_eMode = CLAMP(m_eMode, CORE_SYSTEM_MODE_WINDOWED, CORE_SYSTEM_MODE_FULLSCREEN);
 
     // configure the OpenGL context
@@ -348,15 +351,16 @@ CoreSystem::CoreSystem()noexcept
 
     // set function properties
     coreProperties oProps;
-    SDL_SetNumberProperty (oProps, SDL_PROP_WINDOW_CREATE_X_NUMBER,              iPos);
-    SDL_SetNumberProperty (oProps, SDL_PROP_WINDOW_CREATE_Y_NUMBER,              iPos);
-    SDL_SetNumberProperty (oProps, SDL_PROP_WINDOW_CREATE_WIDTH_NUMBER,          iSizeX);
-    SDL_SetNumberProperty (oProps, SDL_PROP_WINDOW_CREATE_HEIGHT_NUMBER,         iSizeY);
-    SDL_SetBooleanProperty(oProps, SDL_PROP_WINDOW_CREATE_OPENGL_BOOLEAN,        true);
-    SDL_SetBooleanProperty(oProps, SDL_PROP_WINDOW_CREATE_FULLSCREEN_BOOLEAN,    (m_eMode == CORE_SYSTEM_MODE_FULLSCREEN) || ((m_eMode == CORE_SYSTEM_MODE_BORDERLESS) && (m_vResolution == oTarget.vDesktopRes)));
-    SDL_SetBooleanProperty(oProps, SDL_PROP_WINDOW_CREATE_MOUSE_GRABBED_BOOLEAN, (m_eMode == CORE_SYSTEM_MODE_FULLSCREEN) && !DEFINED(_CORE_DEBUG_));
-    SDL_SetBooleanProperty(oProps, SDL_PROP_WINDOW_CREATE_BORDERLESS_BOOLEAN,    (m_eMode != CORE_SYSTEM_MODE_WINDOWED));
-    SDL_SetBooleanProperty(oProps, SDL_PROP_WINDOW_CREATE_RESIZABLE_BOOLEAN,     (m_eMode == CORE_SYSTEM_MODE_WINDOWED));
+    SDL_SetNumberProperty (oProps, SDL_PROP_WINDOW_CREATE_X_NUMBER,                   iPos);
+    SDL_SetNumberProperty (oProps, SDL_PROP_WINDOW_CREATE_Y_NUMBER,                   iPos);
+    SDL_SetNumberProperty (oProps, SDL_PROP_WINDOW_CREATE_WIDTH_NUMBER,               iSizeX);
+    SDL_SetNumberProperty (oProps, SDL_PROP_WINDOW_CREATE_HEIGHT_NUMBER,              iSizeY);
+    SDL_SetBooleanProperty(oProps, SDL_PROP_WINDOW_CREATE_FULLSCREEN_BOOLEAN,         false);
+    SDL_SetBooleanProperty(oProps, SDL_PROP_WINDOW_CREATE_HIGH_PIXEL_DENSITY_BOOLEAN, false);
+    SDL_SetBooleanProperty(oProps, SDL_PROP_WINDOW_CREATE_OPENGL_BOOLEAN,             true);
+    SDL_SetBooleanProperty(oProps, SDL_PROP_WINDOW_CREATE_MOUSE_GRABBED_BOOLEAN,      (m_eMode == CORE_SYSTEM_MODE_FULLSCREEN) && !DEFINED(_CORE_DEBUG_));
+    SDL_SetBooleanProperty(oProps, SDL_PROP_WINDOW_CREATE_BORDERLESS_BOOLEAN,         (m_eMode != CORE_SYSTEM_MODE_WINDOWED));
+    SDL_SetBooleanProperty(oProps, SDL_PROP_WINDOW_CREATE_RESIZABLE_BOOLEAN,          (m_eMode == CORE_SYSTEM_MODE_WINDOWED));
 
     // create main window object
     m_pWindow = SDL_CreateWindowWithProperties(oProps);
@@ -376,26 +380,11 @@ CoreSystem::CoreSystem()noexcept
     }
     Core::Log->Info("Main window created (%s, %s, %.0f x %.0f, %.2f density, display %u, mode %u, theme %d)", SDL_GetCurrentVideoDriver(), SDL_GetPixelFormatName(SDL_GetWindowPixelFormat(m_pWindow)), m_vResolution.x, m_vResolution.y, SDL_GetWindowPixelDensity(m_pWindow), m_iDisplayIndex, m_eMode, SDL_GetSystemTheme());
 
-    // set fullscreen mode
-    if(m_eMode == CORE_SYSTEM_MODE_FULLSCREEN)
-    {
-        SDL_DisplayMode oMode;
-        SDL_SetWindowFullscreenMode(m_pWindow, SDL_GetClosestFullscreenDisplayMode(oTarget.iDisplayID, iSizeX, iSizeY, m_fRefreshRate, true, &oMode) ? &oMode : NULL);
-    }
-
     // restrict window size
     SDL_SetWindowMinimumSize(m_pWindow, CORE_SYSTEM_WINDOW_MINIMUM, CORE_SYSTEM_WINDOW_MINIMUM);
 
-    // fix screen resolution if necessary
-    coreInt32 iNewX, iNewY;
-    if(SDL_GetWindowSize(m_pWindow, &iNewX, &iNewY) && ((iNewX != iSizeX) || (iNewY != iSizeY)))
-    {
-        m_vResolution = coreVector2(I_TO_F(iNewX), I_TO_F(iNewY));
-        this->__RefreshCanonAspectRatio();
-    }
-
-    // ignore code-generated window events
-    SDL_FlushEvents(SDL_EVENT_WINDOW_FIRST, SDL_EVENT_WINDOW_LAST);
+    // apply remaining window adjustments
+    this->__FinishWindowSetup();
 
     // init high-precision time
     m_dPerfFrequency = coreDouble(SDL_GetPerformanceFrequency());
@@ -524,59 +513,39 @@ void CoreSystem::SetWindowIcon(const coreChar* pcPath)
 /* change the resolution of the window (clamped) */
 void CoreSystem::SetWindowResolution(const coreVector2 vResolution)
 {
+#if !defined(_CORE_EMSCRIPTEN_) && !defined(_CORE_SWITCH_)
+
     const coreDisplay& oCurrent = m_aDisplayData[m_iDisplayIndex];
 
-    // skip on restricted target systems
-    if(oCurrent.avAvailableRes.size() != 1u)
+    // save new resolution
+    m_vResolution = vResolution;
+    if(m_vResolution.x <= 0.0f) m_vResolution.x = oCurrent.vDesktopRes.x;
+    if(m_vResolution.y <= 0.0f) m_vResolution.y = oCurrent.vDesktopRes.y;
+
+    // clamp to bounds
+    const coreVector2 vMaximum = (m_eMode == CORE_SYSTEM_MODE_FULLSCREEN) ? oCurrent.vMaximumRes : ((m_eMode == CORE_SYSTEM_MODE_BORDERLESS) ? oCurrent.vDesktopRes : (oCurrent.vWorkAreaRes - I_TO_F(CORE_SYSTEM_WINDOW_BORDER)).Processed(coreMath::RoundFactor, 2.0f));
+    m_vResolution.x = CLAMP(m_vResolution.x, I_TO_F(CORE_SYSTEM_WINDOW_MINIMUM), vMaximum.x);
+    m_vResolution.y = CLAMP(m_vResolution.y, I_TO_F(CORE_SYSTEM_WINDOW_MINIMUM), vMaximum.y);
+
+    if(m_pWindow)
     {
-        // save new resolution
-        m_vResolution = vResolution;
-        if(m_vResolution.x <= 0.0f) m_vResolution.x = oCurrent.vDesktopRes.x;
-        if(m_vResolution.y <= 0.0f) m_vResolution.y = oCurrent.vDesktopRes.y;
+        // always leave fullscreen (otherwise many following changes will be ignored)
+        SDL_SetWindowFullscreen(m_pWindow, false);
 
-        // clamp to bounds
-        const coreVector2 vMaximum = (m_eMode == CORE_SYSTEM_MODE_FULLSCREEN) ? oCurrent.vMaximumRes : ((m_eMode == CORE_SYSTEM_MODE_BORDERLESS) ? oCurrent.vDesktopRes : (oCurrent.vWorkAreaRes - I_TO_F(CORE_SYSTEM_WINDOW_BORDER)).Processed(coreMath::RoundFactor, 2.0f));
-        m_vResolution.x = CLAMP(m_vResolution.x, I_TO_F(CORE_SYSTEM_WINDOW_MINIMUM), vMaximum.x);
-        m_vResolution.y = CLAMP(m_vResolution.y, I_TO_F(CORE_SYSTEM_WINDOW_MINIMUM), vMaximum.y);
+        // define window appearance
+        const coreInt32 iPos   = SDL_WINDOWPOS_CENTERED_DISPLAY(oCurrent.iDisplayID);
+        const coreInt32 iSizeX = F_TO_SI(m_vResolution.x);
+        const coreInt32 iSizeY = F_TO_SI(m_vResolution.y);
 
-        if(m_pWindow)
-        {
-            // always leave fullscreen (otherwise many following changes will be ignored)
-            SDL_SetWindowFullscreen(m_pWindow, false);
+        // set new size and position
+        SDL_SetWindowSize    (m_pWindow, iSizeX, iSizeY);   // first
+        SDL_SetWindowPosition(m_pWindow, iPos,   iPos);
 
-            // define window appearance
-            const coreInt32 iPos   = SDL_WINDOWPOS_CENTERED_DISPLAY(oCurrent.iDisplayID);
-            const coreInt32 iSizeX = F_TO_SI(m_vResolution.x);
-            const coreInt32 iSizeY = F_TO_SI(m_vResolution.y);
-
-            // set new size and position
-            SDL_SetWindowSize    (m_pWindow, iSizeX, iSizeY);
-            SDL_SetWindowPosition(m_pWindow, iPos,   iPos);
-
-            // set new fullscreen mode
-            if(m_eMode == CORE_SYSTEM_MODE_FULLSCREEN)
-            {
-                SDL_DisplayMode oMode;
-                SDL_SetWindowFullscreenMode(m_pWindow, SDL_GetClosestFullscreenDisplayMode(oCurrent.iDisplayID, iSizeX, iSizeY, m_fRefreshRate, true, &oMode) ? &oMode : NULL);
-                SDL_SetWindowFullscreen    (m_pWindow, true);
-            }
-            else if((m_eMode == CORE_SYSTEM_MODE_BORDERLESS) && (m_vResolution == oCurrent.vDesktopRes))
-            {
-                SDL_SetWindowFullscreenMode(m_pWindow, NULL);
-                SDL_SetWindowFullscreen    (m_pWindow, true);
-            }
-
-            // sync window (# and pump events)
-            SDL_SyncWindow(m_pWindow);
-
-            // ignore code-generated window events
-            SDL_FlushEvent(SDL_EVENT_WINDOW_MOVED);
-            SDL_FlushEvent(SDL_EVENT_WINDOW_RESIZED);
-        }
+        // apply remaining window adjustments
+        this->__FinishWindowSetup();
     }
 
-    // refresh canonical aspect ratio
-    this->__RefreshCanonAspectRatio();
+#endif
 }
 
 
@@ -584,6 +553,8 @@ void CoreSystem::SetWindowResolution(const coreVector2 vResolution)
 /* change everything of the window (in correct order) */
 void CoreSystem::SetWindowAll(const coreUint8 iDisplayIndex, const coreVector2 vResolution, const coreFloat fRefreshRate, const coreSystemMode eMode)
 {
+#if !defined(_CORE_EMSCRIPTEN_) && !defined(_CORE_SWITCH_)
+
     if(m_iDisplayIndex != iDisplayIndex)
     {
         // change the display
@@ -611,6 +582,8 @@ void CoreSystem::SetWindowAll(const coreUint8 iDisplayIndex, const coreVector2 v
     this->SetWindowResolution(vResolution);
     Core::Config->SetInt(CORE_CONFIG_SYSTEM_WIDTH,  F_TO_SI(vResolution.x));   // # use unmodified resolution
     Core::Config->SetInt(CORE_CONFIG_SYSTEM_HEIGHT, F_TO_SI(vResolution.y));
+
+#endif
 }
 
 
@@ -651,6 +624,7 @@ void CoreSystem::__UpdateEvents()
             break;
 
         // window focus lost
+        case SDL_EVENT_WINDOW_OCCLUDED:
         case SDL_EVENT_WINDOW_HIDDEN:
         case SDL_EVENT_WINDOW_MINIMIZED:
         case SDL_EVENT_WINDOW_MAXIMIZED:
@@ -704,8 +678,10 @@ void CoreSystem::__UpdateEvents()
 /* update the main window */
 void CoreSystem::__UpdateWindow()
 {
+#if !defined(_CORE_EMSCRIPTEN_) && !defined(_CORE_SWITCH_)
+
     // reduce overhead if window is not visible
-    if(SDL_GetWindowFlags(m_pWindow) & (SDL_WINDOW_HIDDEN | SDL_WINDOW_MINIMIZED))
+    if(SDL_GetWindowFlags(m_pWindow) & (SDL_WINDOW_OCCLUDED | SDL_WINDOW_HIDDEN | SDL_WINDOW_MINIMIZED))
         SDL_Delay(30u);
 
     // toggle between borderless and windowed mode
@@ -719,6 +695,8 @@ void CoreSystem::__UpdateWindow()
         m_bWinPosChanged  = true;
         m_bWinSizeChanged = true;
     }
+
+#endif
 }
 
 
@@ -766,6 +744,46 @@ void CoreSystem::__UpdateTime()
 
     // increase current frame number
     ++m_iCurFrame;
+}
+
+
+// ****************************************************************
+/* apply remaining window adjustments */
+void CoreSystem::__FinishWindowSetup()
+{
+    const coreDisplay& oCurrent = m_aDisplayData[m_iDisplayIndex];
+    const coreInt32    iSizeX   = F_TO_SI(m_vResolution.x);
+    const coreInt32    iSizeY   = F_TO_SI(m_vResolution.y);
+
+    // set fullscreen mode
+    if(m_eMode == CORE_SYSTEM_MODE_FULLSCREEN)
+    {
+        SDL_DisplayMode oMode;
+        SDL_SetWindowFullscreenMode(m_pWindow, SDL_GetClosestFullscreenDisplayMode(oCurrent.iDisplayID, iSizeX, iSizeY, m_fRefreshRate, true, &oMode) ? &oMode : NULL);
+        SDL_SetWindowFullscreen    (m_pWindow, true);
+    }
+    else if((m_eMode == CORE_SYSTEM_MODE_BORDERLESS) && (m_vResolution == oCurrent.vDesktopRes))
+    {
+        SDL_SetWindowFullscreenMode(m_pWindow, NULL);
+        SDL_SetWindowFullscreen    (m_pWindow, true);
+    }
+
+    // sync window
+    WARN_IF(!SDL_SyncWindow(m_pWindow)) {}
+
+    // ignore code-generated window events
+    SDL_PumpEvents();
+    SDL_FlushEvents(SDL_EVENT_WINDOW_FIRST, SDL_EVENT_WINDOW_LAST);
+
+    // fix screen resolution if necessary
+    coreInt32 iNewX, iNewY;
+    if(SDL_GetWindowSize(m_pWindow, &iNewX, &iNewY) && ((iNewX != iSizeX) || (iNewY != iSizeY)))
+    {
+        m_vResolution = coreVector2(I_TO_F(iNewX), I_TO_F(iNewY));
+    }
+
+    // refresh canonical aspect ratio
+    this->__RefreshCanonAspectRatio();
 }
 
 
