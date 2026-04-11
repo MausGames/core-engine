@@ -3605,6 +3605,17 @@ typedef void (GLAPIENTRY * PFNGLINVALIDATETEXSUBIMAGEPROC) (GLuint texture, GLin
 
 #endif /* GL_ARB_invalidate_subdata */
 
+/* ---------------------- GL_ARB_map_buffer_alignment ---------------------- */
+
+#ifndef GL_ARB_map_buffer_alignment
+#define GL_ARB_map_buffer_alignment 1
+
+#define GL_MIN_MAP_BUFFER_ALIGNMENT 0x90BC
+
+#define GLEW_ARB_map_buffer_alignment GLEW_GET_VAR(__GLEW_ARB_map_buffer_alignment)
+
+#endif /* GL_ARB_map_buffer_alignment */
+
 /* ------------------------ GL_ARB_map_buffer_range ------------------------ */
 
 #ifndef GL_ARB_map_buffer_range
@@ -3789,6 +3800,15 @@ typedef void (GLAPIENTRY * PFNGLPROVOKINGVERTEXPROC) (GLenum mode);
 #define GLEW_ARB_provoking_vertex GLEW_GET_VAR(__GLEW_ARB_provoking_vertex)
 
 #endif /* GL_ARB_provoking_vertex */
+
+/* ------------------ GL_ARB_robust_buffer_access_behavior ----------------- */
+
+#ifndef GL_ARB_robust_buffer_access_behavior
+#define GL_ARB_robust_buffer_access_behavior 1
+
+#define GLEW_ARB_robust_buffer_access_behavior GLEW_GET_VAR(__GLEW_ARB_robust_buffer_access_behavior)
+
+#endif /* GL_ARB_robust_buffer_access_behavior */
 
 /* --------------------------- GL_ARB_robustness --------------------------- */
 
@@ -5456,6 +5476,18 @@ typedef void (GLAPIENTRY * PFNGLAPPLYFRAMEBUFFERATTACHMENTCMAAINTELPROC) (void);
 
 #endif /* GL_INTEL_framebuffer_CMAA */
 
+/* ---------------------- GL_KHR_context_flush_control --------------------- */
+
+#ifndef GL_KHR_context_flush_control
+#define GL_KHR_context_flush_control 1
+
+#define GL_CONTEXT_RELEASE_BEHAVIOR 0x82FB
+#define GL_CONTEXT_RELEASE_BEHAVIOR_FLUSH 0x82FC
+
+#define GLEW_KHR_context_flush_control GLEW_GET_VAR(__GLEW_KHR_context_flush_control)
+
+#endif /* GL_KHR_context_flush_control */
+
 /* ------------------------------ GL_KHR_debug ----------------------------- */
 
 #ifndef GL_KHR_debug
@@ -5556,6 +5588,15 @@ typedef void (GLAPIENTRY * PFNGLMAXSHADERCOMPILERTHREADSKHRPROC) (GLuint count);
 #define GLEW_KHR_parallel_shader_compile GLEW_GET_VAR(__GLEW_KHR_parallel_shader_compile)
 
 #endif /* GL_KHR_parallel_shader_compile */
+
+/* ------------------ GL_KHR_robust_buffer_access_behavior ----------------- */
+
+#ifndef GL_KHR_robust_buffer_access_behavior
+#define GL_KHR_robust_buffer_access_behavior 1
+
+#define GLEW_KHR_robust_buffer_access_behavior GLEW_GET_VAR(__GLEW_KHR_robust_buffer_access_behavior)
+
+#endif /* GL_KHR_robust_buffer_access_behavior */
 
 /* --------------------------- GL_KHR_robustness --------------------------- */
 
@@ -6824,6 +6865,7 @@ GLEW_VAR_EXPORT GLboolean __GLEW_ARB_half_float_vertex;
 GLEW_VAR_EXPORT GLboolean __GLEW_ARB_imaging;
 GLEW_VAR_EXPORT GLboolean __GLEW_ARB_instanced_arrays;
 GLEW_VAR_EXPORT GLboolean __GLEW_ARB_invalidate_subdata;
+GLEW_VAR_EXPORT GLboolean __GLEW_ARB_map_buffer_alignment;
 GLEW_VAR_EXPORT GLboolean __GLEW_ARB_map_buffer_range;
 GLEW_VAR_EXPORT GLboolean __GLEW_ARB_multi_bind;
 GLEW_VAR_EXPORT GLboolean __GLEW_ARB_parallel_shader_compile;
@@ -6831,6 +6873,7 @@ GLEW_VAR_EXPORT GLboolean __GLEW_ARB_pipeline_statistics_query;
 GLEW_VAR_EXPORT GLboolean __GLEW_ARB_pixel_buffer_object;
 GLEW_VAR_EXPORT GLboolean __GLEW_ARB_program_interface_query;
 GLEW_VAR_EXPORT GLboolean __GLEW_ARB_provoking_vertex;
+GLEW_VAR_EXPORT GLboolean __GLEW_ARB_robust_buffer_access_behavior;
 GLEW_VAR_EXPORT GLboolean __GLEW_ARB_robustness;
 GLEW_VAR_EXPORT GLboolean __GLEW_ARB_sample_shading;
 GLEW_VAR_EXPORT GLboolean __GLEW_ARB_seamless_cube_map;
@@ -6871,9 +6914,11 @@ GLEW_VAR_EXPORT GLboolean __GLEW_EXT_texture_filter_anisotropic;
 GLEW_VAR_EXPORT GLboolean __GLEW_EXT_texture_storage;
 GLEW_VAR_EXPORT GLboolean __GLEW_INTEL_conservative_rasterization;
 GLEW_VAR_EXPORT GLboolean __GLEW_INTEL_framebuffer_CMAA;
+GLEW_VAR_EXPORT GLboolean __GLEW_KHR_context_flush_control;
 GLEW_VAR_EXPORT GLboolean __GLEW_KHR_debug;
 GLEW_VAR_EXPORT GLboolean __GLEW_KHR_no_error;
 GLEW_VAR_EXPORT GLboolean __GLEW_KHR_parallel_shader_compile;
+GLEW_VAR_EXPORT GLboolean __GLEW_KHR_robust_buffer_access_behavior;
 GLEW_VAR_EXPORT GLboolean __GLEW_KHR_robustness;
 GLEW_VAR_EXPORT GLboolean __GLEW_MESA_pack_invert;
 GLEW_VAR_EXPORT GLboolean __GLEW_NVX_gpu_memory_info;

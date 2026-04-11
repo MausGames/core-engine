@@ -150,39 +150,41 @@ void __coreInitOpenGL()
         coreString A, B, C;
 
         __IMPROVE(GLEW_AMD_framebuffer_multisample_advanced, false)
-        __IMPROVE(GLEW_AMD_gpu_shader_half_float,            false)                                                  // shader extension
-        __IMPROVE(GLEW_AMD_shader_trinary_minmax,            false)                                                  // shader extension
+        __IMPROVE(GLEW_AMD_gpu_shader_half_float,            false)                                                        // shader extension
+        __IMPROVE(GLEW_AMD_shader_trinary_minmax,            false)                                                        // shader extension
         __IMPROVE(GLEW_ARB_buffer_storage,                   GLEW_VERSION_4_4)
         __IMPROVE(GLEW_ARB_clear_buffer_object,              GLEW_VERSION_4_3)
         __IMPROVE(GLEW_ARB_clear_texture,                    GLEW_VERSION_4_4)
         __IMPROVE(GLEW_ARB_compute_shader,                   GLEW_VERSION_4_3)
-        __IMPROVE(GLEW_ARB_conservative_depth,               GLEW_VERSION_4_2 || GLEW_AMD_conservative_depth)        // shader extension
+        __IMPROVE(GLEW_ARB_conservative_depth,               GLEW_VERSION_4_2 || GLEW_AMD_conservative_depth)              // shader extension
         __IMPROVE(GLEW_ARB_copy_buffer,                      GLEW_VERSION_3_1)
         __IMPROVE(GLEW_ARB_copy_image,                       GLEW_VERSION_4_3 || GLEW_NV_copy_image)
         __IMPROVE(GLEW_ARB_depth_buffer_float,               GLEW_VERSION_3_0)
         __IMPROVE(GLEW_ARB_depth_clamp,                      GLEW_VERSION_3_2 || GLEW_NV_depth_clamp)
         __IMPROVE(GLEW_ARB_direct_state_access,              GLEW_VERSION_4_5)
-        __IMPROVE(GLEW_ARB_enhanced_layouts,                 GLEW_VERSION_4_4)                                       // shader extension
+        __IMPROVE(GLEW_ARB_enhanced_layouts,                 GLEW_VERSION_4_4)                                             // shader extension
         __IMPROVE(GLEW_ARB_framebuffer_sRGB,                 GLEW_VERSION_3_0 || GLEW_EXT_framebuffer_sRGB)
         __IMPROVE(GLEW_ARB_geometry_shader4,                 GLEW_VERSION_3_2 || GLEW_EXT_geometry_shader4)
         __IMPROVE(GLEW_ARB_get_program_binary,               GLEW_VERSION_4_1)
-        __IMPROVE(GLEW_ARB_gpu_shader5,                      GLEW_VERSION_4_0)                                       // shader extension
+        __IMPROVE(GLEW_ARB_gpu_shader5,                      GLEW_VERSION_4_0)                                             // shader extension
         __IMPROVE(GLEW_ARB_half_float_vertex,                GLEW_VERSION_3_0)
         __IMPROVE(GLEW_ARB_instanced_arrays,                 GLEW_VERSION_3_3)
         __IMPROVE(GLEW_ARB_invalidate_subdata,               GLEW_VERSION_4_3)
+        __IMPROVE(GLEW_ARB_map_buffer_alignment,             GLEW_VERSION_4_2)
         __IMPROVE(GLEW_ARB_map_buffer_range,                 GLEW_VERSION_3_0)
         __IMPROVE(GLEW_ARB_multi_bind,                       GLEW_VERSION_4_4)
         __IMPROVE(GLEW_ARB_parallel_shader_compile,          false            || GLEW_KHR_parallel_shader_compile)
         __IMPROVE(GLEW_ARB_pipeline_statistics_query,        GLEW_VERSION_4_6)
         __IMPROVE(GLEW_ARB_pixel_buffer_object,              GLEW_VERSION_2_1 || GLEW_EXT_pixel_buffer_object)
         __IMPROVE(GLEW_ARB_program_interface_query,          GLEW_VERSION_4_3)
+        __IMPROVE(GLEW_ARB_robust_buffer_access_behavior,    false            || GLEW_KHR_robust_buffer_access_behavior)   // indirectly used
         __IMPROVE(GLEW_ARB_robustness,                       GLEW_VERSION_4_5 || GLEW_KHR_robustness)
-        __IMPROVE(GLEW_ARB_sample_shading,                   GLEW_VERSION_4_0)                                       // shader extension (also)
+        __IMPROVE(GLEW_ARB_sample_shading,                   GLEW_VERSION_4_0)                                             // shader extension (also)
         __IMPROVE(GLEW_ARB_seamless_cube_map,                GLEW_VERSION_3_1)
-        __IMPROVE(GLEW_ARB_shader_group_vote,                GLEW_VERSION_4_6)                                       // shader extension
-        __IMPROVE(GLEW_ARB_shader_image_load_store,          GLEW_VERSION_4_2 || GLEW_EXT_shader_image_load_store)   // shader extension (also)
-        __IMPROVE(GLEW_ARB_shader_texture_lod,               GLEW_VERSION_3_0)                                       // shader extension
-        __IMPROVE(GLEW_ARB_shading_language_packing,         GLEW_VERSION_4_2)                                       // shader extension
+        __IMPROVE(GLEW_ARB_shader_group_vote,                GLEW_VERSION_4_6)                                             // shader extension
+        __IMPROVE(GLEW_ARB_shader_image_load_store,          GLEW_VERSION_4_2 || GLEW_EXT_shader_image_load_store)         // shader extension (also)
+        __IMPROVE(GLEW_ARB_shader_texture_lod,               GLEW_VERSION_3_0)                                             // shader extension
+        __IMPROVE(GLEW_ARB_shading_language_packing,         GLEW_VERSION_4_2)                                             // shader extension
         __IMPROVE(GLEW_ARB_sync,                             GLEW_VERSION_3_2)
         __IMPROVE(GLEW_ARB_tessellation_shader,              GLEW_VERSION_4_0)
         __IMPROVE(GLEW_ARB_texture_compression_bptc,         GLEW_VERSION_4_2)
@@ -193,28 +195,29 @@ void __coreInitOpenGL()
         __IMPROVE(GLEW_ARB_texture_stencil8,                 GLEW_VERSION_4_4)
         __IMPROVE(GLEW_ARB_texture_storage,                  GLEW_VERSION_4_2 || GLEW_EXT_texture_storage)
         __IMPROVE(GLEW_ARB_timer_query,                      GLEW_VERSION_3_2)
-        __IMPROVE(GLEW_ARB_uniform_buffer_object,            GLEW_VERSION_3_1)                                       // shader extension (also)
+        __IMPROVE(GLEW_ARB_uniform_buffer_object,            GLEW_VERSION_3_1)                                             // shader extension (also)
         __IMPROVE(GLEW_ARB_vertex_array_object,              GLEW_VERSION_3_0)
         __IMPROVE(GLEW_ARB_vertex_attrib_binding,            GLEW_VERSION_4_3)
         __IMPROVE(GLEW_ARB_vertex_type_2_10_10_10_rev,       GLEW_VERSION_3_3)
-        __IMPROVE(GLEW_EXT_demote_to_helper_invocation,      false)                                                  // shader extension
+        __IMPROVE(GLEW_EXT_demote_to_helper_invocation,      false)                                                        // shader extension
         __IMPROVE(GLEW_EXT_direct_state_access,              false)
-        __IMPROVE(GLEW_EXT_framebuffer_blit,                 GLEW_VERSION_3_0 || GLEW_ARB_framebuffer_object)        // split up
-        __IMPROVE(GLEW_EXT_framebuffer_multisample,          GLEW_VERSION_3_0 || GLEW_ARB_framebuffer_object)        // split up
-        __IMPROVE(GLEW_EXT_framebuffer_object,               GLEW_VERSION_3_0 || GLEW_ARB_framebuffer_object)        // split up
-        __IMPROVE(GLEW_EXT_gpu_shader4,                      GLEW_VERSION_3_0)                                       // shader extension (also)
-        __IMPROVE(GLEW_EXT_packed_depth_stencil,             GLEW_VERSION_3_0 || GLEW_ARB_framebuffer_object)        // split up
+        __IMPROVE(GLEW_EXT_framebuffer_blit,                 GLEW_VERSION_3_0 || GLEW_ARB_framebuffer_object)              // split up
+        __IMPROVE(GLEW_EXT_framebuffer_multisample,          GLEW_VERSION_3_0 || GLEW_ARB_framebuffer_object)              // split up
+        __IMPROVE(GLEW_EXT_framebuffer_object,               GLEW_VERSION_3_0 || GLEW_ARB_framebuffer_object)              // split up
+        __IMPROVE(GLEW_EXT_gpu_shader4,                      GLEW_VERSION_3_0)                                             // shader extension (also)
+        __IMPROVE(GLEW_EXT_packed_depth_stencil,             GLEW_VERSION_3_0 || GLEW_ARB_framebuffer_object)              // split up
         __IMPROVE(GLEW_EXT_packed_float,                     GLEW_VERSION_3_0)
         __IMPROVE(GLEW_EXT_texture_compression_s3tc,         false)
         __IMPROVE(GLEW_INTEL_conservative_rasterization,     false)
         __IMPROVE(GLEW_INTEL_framebuffer_CMAA,               false)
         __IMPROVE(GLEW_KHR_debug,                            GLEW_VERSION_4_3)
-        __IMPROVE(GLEW_KHR_no_error,                         GLEW_VERSION_4_6)                                       // indirectly used
+        __IMPROVE(GLEW_KHR_context_flush_control,            false)                                                        // indirectly used
+        __IMPROVE(GLEW_KHR_no_error,                         GLEW_VERSION_4_6)                                             // indirectly used
         __IMPROVE(GLEW_MESA_pack_invert,                     false)
         __IMPROVE(GLEW_NVX_gpu_memory_info,                  false)
         __IMPROVE(GLEW_NV_conservative_raster,               false)
         __IMPROVE(GLEW_NV_framebuffer_multisample_coverage,  false)
-        __IMPROVE(GLEW_NV_gpu_shader5,                       false)                                                  // shader extension
+        __IMPROVE(GLEW_NV_gpu_shader5,                       false)                                                        // shader extension
         __IMPROVE(GLEW_NV_multisample_filter_hint,           false)
 
         Core::Log->ListStartInfo("Extensions loaded");

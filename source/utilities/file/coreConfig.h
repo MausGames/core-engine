@@ -39,6 +39,7 @@
 #define CORE_CONFIG_GRAPHICS_SHADERCACHE        "Graphics", "ShaderCache",        (true)
 #define CORE_CONFIG_GRAPHICS_DISABLEEXTENSIONS  "Graphics", "DisableExtensions",  ("")
 #define CORE_CONFIG_GRAPHICS_COMPATCONTEXT      "Graphics", "CompatContext",      (false)
+#define CORE_CONFIG_GRAPHICS_ROBUSTCONTEXT      "Graphics", "RobustContext",      (false)
 
 #define CORE_CONFIG_AUDIO_MODE                  "Audio",    "Mode",               (0)
 #define CORE_CONFIG_AUDIO_HRTFINDEX             "Audio",    "HRTFIndex",          (-1)

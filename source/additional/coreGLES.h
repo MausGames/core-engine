@@ -29,6 +29,7 @@
 #define CORE_GL_ARB_compute_shader                  (__CORE_GLES_VAR(bES31) && !DEFINED(_CORE_EMSCRIPTEN_))
 #define CORE_GL_ARB_depth_buffer_float              (__CORE_GLES_VAR(bES30))
 #define CORE_GL_ARB_direct_state_access             (false)
+#define CORE_GL_ARB_map_buffer_alignment            (false)
 #define CORE_GL_ARB_map_buffer_range                (__CORE_GLES_VAR(bES30) && !DEFINED(_CORE_EMSCRIPTEN_) && !DEFINED(_CORE_ANGLE_))
 #define CORE_GL_ARB_multi_bind                      (false)
 #define CORE_GL_ARB_multisample                     (false)
@@ -454,6 +455,7 @@ using PFNGLGETBUFFERSUBDATAPROC = void (GL_APIENTRY *) (GLenum target, GLintptr 
 #define GL_LUMINANCE8                                   0x8040
 #define GL_LUMINANCE16                                  0x8042
 #define GL_MAX_MULTISAMPLE_COVERAGE_MODES_NV            0x8E11
+#define GL_MIN_MAP_BUFFER_ALIGNMENT                     0x90BC
 #define GL_MULTISAMPLE                                  0x809D
 #define GL_MULTISAMPLE_COVERAGE_MODES_NV                0x8E12
 #define GL_MULTISAMPLE_FILTER_HINT_NV                   0x8534

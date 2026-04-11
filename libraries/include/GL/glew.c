@@ -1293,6 +1293,7 @@ GLboolean __GLEW_ARB_half_float_vertex = GL_FALSE;
 GLboolean __GLEW_ARB_imaging = GL_FALSE;
 GLboolean __GLEW_ARB_instanced_arrays = GL_FALSE;
 GLboolean __GLEW_ARB_invalidate_subdata = GL_FALSE;
+GLboolean __GLEW_ARB_map_buffer_alignment = GL_FALSE;
 GLboolean __GLEW_ARB_map_buffer_range = GL_FALSE;
 GLboolean __GLEW_ARB_multi_bind = GL_FALSE;
 GLboolean __GLEW_ARB_parallel_shader_compile = GL_FALSE;
@@ -1300,6 +1301,7 @@ GLboolean __GLEW_ARB_pipeline_statistics_query = GL_FALSE;
 GLboolean __GLEW_ARB_pixel_buffer_object = GL_FALSE;
 GLboolean __GLEW_ARB_program_interface_query = GL_FALSE;
 GLboolean __GLEW_ARB_provoking_vertex = GL_FALSE;
+GLboolean __GLEW_ARB_robust_buffer_access_behavior = GL_FALSE;
 GLboolean __GLEW_ARB_robustness = GL_FALSE;
 GLboolean __GLEW_ARB_sample_shading = GL_FALSE;
 GLboolean __GLEW_ARB_seamless_cube_map = GL_FALSE;
@@ -1340,9 +1342,11 @@ GLboolean __GLEW_EXT_texture_filter_anisotropic = GL_FALSE;
 GLboolean __GLEW_EXT_texture_storage = GL_FALSE;
 GLboolean __GLEW_INTEL_conservative_rasterization = GL_FALSE;
 GLboolean __GLEW_INTEL_framebuffer_CMAA = GL_FALSE;
+GLboolean __GLEW_KHR_context_flush_control = GL_FALSE;
 GLboolean __GLEW_KHR_debug = GL_FALSE;
 GLboolean __GLEW_KHR_no_error = GL_FALSE;
 GLboolean __GLEW_KHR_parallel_shader_compile = GL_FALSE;
+GLboolean __GLEW_KHR_robust_buffer_access_behavior = GL_FALSE;
 GLboolean __GLEW_KHR_robustness = GL_FALSE;
 GLboolean __GLEW_MESA_pack_invert = GL_FALSE;
 GLboolean __GLEW_NVX_gpu_memory_info = GL_FALSE;
@@ -1429,6 +1433,9 @@ static const char * _glewExtensionLookup[] = {
 #ifdef GL_ARB_invalidate_subdata
   "GL_ARB_invalidate_subdata",
 #endif
+#ifdef GL_ARB_map_buffer_alignment
+  "GL_ARB_map_buffer_alignment",
+#endif
 #ifdef GL_ARB_map_buffer_range
   "GL_ARB_map_buffer_range",
 #endif
@@ -1449,6 +1456,9 @@ static const char * _glewExtensionLookup[] = {
 #endif
 #ifdef GL_ARB_provoking_vertex
   "GL_ARB_provoking_vertex",
+#endif
+#ifdef GL_ARB_robust_buffer_access_behavior
+  "GL_ARB_robust_buffer_access_behavior",
 #endif
 #ifdef GL_ARB_robustness
   "GL_ARB_robustness",
@@ -1570,6 +1580,9 @@ static const char * _glewExtensionLookup[] = {
 #ifdef GL_INTEL_framebuffer_CMAA
   "GL_INTEL_framebuffer_CMAA",
 #endif
+#ifdef GL_KHR_context_flush_control
+  "GL_KHR_context_flush_control",
+#endif
 #ifdef GL_KHR_debug
   "GL_KHR_debug",
 #endif
@@ -1578,6 +1591,9 @@ static const char * _glewExtensionLookup[] = {
 #endif
 #ifdef GL_KHR_parallel_shader_compile
   "GL_KHR_parallel_shader_compile",
+#endif
+#ifdef GL_KHR_robust_buffer_access_behavior
+  "GL_KHR_robust_buffer_access_behavior",
 #endif
 #ifdef GL_KHR_robustness
   "GL_KHR_robustness",
@@ -1743,6 +1759,9 @@ static GLboolean* _glewExtensionEnabled[] = {
 #ifdef GL_ARB_invalidate_subdata
   &__GLEW_ARB_invalidate_subdata,
 #endif
+#ifdef GL_ARB_map_buffer_alignment
+  &__GLEW_ARB_map_buffer_alignment,
+#endif
 #ifdef GL_ARB_map_buffer_range
   &__GLEW_ARB_map_buffer_range,
 #endif
@@ -1763,6 +1782,9 @@ static GLboolean* _glewExtensionEnabled[] = {
 #endif
 #ifdef GL_ARB_provoking_vertex
   &__GLEW_ARB_provoking_vertex,
+#endif
+#ifdef GL_ARB_robust_buffer_access_behavior
+  &__GLEW_ARB_robust_buffer_access_behavior,
 #endif
 #ifdef GL_ARB_robustness
   &__GLEW_ARB_robustness,
@@ -1884,6 +1906,9 @@ static GLboolean* _glewExtensionEnabled[] = {
 #ifdef GL_INTEL_framebuffer_CMAA
   &__GLEW_INTEL_framebuffer_CMAA,
 #endif
+#ifdef GL_KHR_context_flush_control
+  &__GLEW_KHR_context_flush_control,
+#endif
 #ifdef GL_KHR_debug
   &__GLEW_KHR_debug,
 #endif
@@ -1892,6 +1917,9 @@ static GLboolean* _glewExtensionEnabled[] = {
 #endif
 #ifdef GL_KHR_parallel_shader_compile
   &__GLEW_KHR_parallel_shader_compile,
+#endif
+#ifdef GL_KHR_robust_buffer_access_behavior
+  &__GLEW_KHR_robust_buffer_access_behavior,
 #endif
 #ifdef GL_KHR_robustness
   &__GLEW_KHR_robustness,
@@ -4696,6 +4724,13 @@ GLboolean GLEWAPIENTRY glewIsSupported (const char* name)
           continue;
         }
 #endif
+#ifdef GL_ARB_map_buffer_alignment
+        if (_glewStrSame3(&pos, &len, (const GLubyte*)"map_buffer_alignment", 20))
+        {
+          ret = GLEW_ARB_map_buffer_alignment;
+          continue;
+        }
+#endif
 #ifdef GL_ARB_map_buffer_range
         if (_glewStrSame3(&pos, &len, (const GLubyte*)"map_buffer_range", 16))
         {
@@ -4742,6 +4777,13 @@ GLboolean GLEWAPIENTRY glewIsSupported (const char* name)
         if (_glewStrSame3(&pos, &len, (const GLubyte*)"provoking_vertex", 16))
         {
           ret = GLEW_ARB_provoking_vertex;
+          continue;
+        }
+#endif
+#ifdef GL_ARB_robust_buffer_access_behavior
+        if (_glewStrSame3(&pos, &len, (const GLubyte*)"robust_buffer_access_behavior", 29))
+        {
+          ret = GLEW_ARB_robust_buffer_access_behavior;
           continue;
         }
 #endif
@@ -5034,6 +5076,13 @@ GLboolean GLEWAPIENTRY glewIsSupported (const char* name)
       }
       if (_glewStrSame2(&pos, &len, (const GLubyte*)"KHR_", 4))
       {
+#ifdef GL_KHR_context_flush_control
+        if (_glewStrSame3(&pos, &len, (const GLubyte*)"context_flush_control", 21))
+        {
+          ret = GLEW_KHR_context_flush_control;
+          continue;
+        }
+#endif
 #ifdef GL_KHR_debug
         if (_glewStrSame3(&pos, &len, (const GLubyte*)"debug", 5))
         {
@@ -5052,6 +5101,13 @@ GLboolean GLEWAPIENTRY glewIsSupported (const char* name)
         if (_glewStrSame3(&pos, &len, (const GLubyte*)"parallel_shader_compile", 23))
         {
           ret = GLEW_KHR_parallel_shader_compile;
+          continue;
+        }
+#endif
+#ifdef GL_KHR_robust_buffer_access_behavior
+        if (_glewStrSame3(&pos, &len, (const GLubyte*)"robust_buffer_access_behavior", 29))
+        {
+          ret = GLEW_KHR_robust_buffer_access_behavior;
           continue;
         }
 #endif

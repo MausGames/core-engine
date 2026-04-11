@@ -3266,6 +3266,13 @@ extern SDL_DECLSPEC bool SDLCALL SDL_GL_SetAttribute(SDL_GLAttr attr, int value)
  */
 extern SDL_DECLSPEC bool SDLCALL SDL_GL_GetAttribute(SDL_GLAttr attr, int *value);
 
+/* custom declarations */
+inline int SDL_GL_GetAttributeInline(SDL_GLAttr attr)
+{
+    int value;
+    return SDL_GL_GetAttribute(attr, &value) ? value : 0;
+}
+
 /**
  * Create an OpenGL context for an OpenGL window, and make it current.
  *
