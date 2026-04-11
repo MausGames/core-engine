@@ -224,7 +224,7 @@ void coreConfig::ApplyGlobalFile()
     {
         FOR_EACH(et, *it)
         {
-            // retrieve section an key
+            // retrieve section and key
             const coreChar* pcSection = oOverride.m_aasSection.get_string(it);
             const coreChar* pcKey     = it->get_string(et);
 

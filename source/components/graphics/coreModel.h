@@ -112,7 +112,7 @@ public:
     void        DrawElementsInstanced(const coreUint32 iCount)const;
 
     /* enable and disable the model */
-    void Enable();
+    void        Enable ();
     static void Disable(const coreBool bFull);
 
     /* generate custom model resource data */

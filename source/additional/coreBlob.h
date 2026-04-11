@@ -117,6 +117,7 @@ inline coreBool coreLoadBlobCache(const coreChar* pcPath)   // # parameter for i
 
     // load and decompress file
     coreFile oFile(pcPath);
+    oFile.LoadData(true);
     oFile.Decompress();
 
     // get file data

@@ -511,13 +511,13 @@
     void  operator delete[] (void*)       = delete;
 
 // enable bitwise-operations with the defined enumeration
-#define ENABLE_BITWISE(e)                                                                                                                                                \
-    RETURN_NODISCARD constexpr e  operator ~  (const e   a)            {return s_cast<e>(~s_cast<std::underlying_type_t<e>>(a));}                                        \
-    RETURN_NODISCARD constexpr e  operator &  (const e   a, const e b) {return s_cast<e>( s_cast<std::underlying_type_t<e>>(a) & s_cast<std::underlying_type_t<e>>(b));} \
-    RETURN_NODISCARD constexpr e  operator |  (const e   a, const e b) {return s_cast<e>( s_cast<std::underlying_type_t<e>>(a) | s_cast<std::underlying_type_t<e>>(b));} \
-    RETURN_NODISCARD constexpr e  operator ^  (const e   a, const e b) {return s_cast<e>( s_cast<std::underlying_type_t<e>>(a) ^ s_cast<std::underlying_type_t<e>>(b));} \
-    constexpr                  e& operator &= (e& OUTPUT a, const e b) {return (a = a & b);}                                                                             \
-    constexpr                  e& operator |= (e& OUTPUT a, const e b) {return (a = a | b);}                                                                             \
+#define ENABLE_BITWISE(e)                                                                                                                  \
+    RETURN_NODISCARD constexpr e  operator ~  (const e   a)            {return s_cast<e>(~std::to_underlying(a));}                         \
+    RETURN_NODISCARD constexpr e  operator &  (const e   a, const e b) {return s_cast<e>( std::to_underlying(a) & std::to_underlying(b));} \
+    RETURN_NODISCARD constexpr e  operator |  (const e   a, const e b) {return s_cast<e>( std::to_underlying(a) | std::to_underlying(b));} \
+    RETURN_NODISCARD constexpr e  operator ^  (const e   a, const e b) {return s_cast<e>( std::to_underlying(a) ^ std::to_underlying(b));} \
+    constexpr                  e& operator &= (e& OUTPUT a, const e b) {return (a = a & b);}                                               \
+    constexpr                  e& operator |= (e& OUTPUT a, const e b) {return (a = a | b);}                                               \
     constexpr                  e& operator ^= (e& OUTPUT a, const e b) {return (a = a ^ b);}
 
 // safely convert pointers and references along the inheritance hierarchy
@@ -672,14 +672,10 @@ enum coreStatus : coreInt8
 
 // ****************************************************************
 /* forward declarations */
-class  coreVector2;
-class  coreVector3;
-class  coreVector4;
 class  coreMatrix2;
 class  coreMatrix3;
 class  coreMatrix4;
 class  coreString;
-class  coreFile;
 class  coreArchive;
 class  coreObject2D;
 class  coreObject3D;

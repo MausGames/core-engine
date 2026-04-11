@@ -89,7 +89,7 @@ public:
     coreStatus UnloadData();
 
     /* edit file data directly */
-    inline coreByte* EditData() {this->LoadData(); return m_pData;}
+    inline coreByte* EditData() {this->LoadData(); ASSERT(!m_bMapped) return m_pData;}
 
     /* handle concurrent file access */
     inline void Acquire() {m_iRefCount.FetchAdd(1u); ASSERT(m_iRefCount)}

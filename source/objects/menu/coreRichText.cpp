@@ -552,6 +552,7 @@ void coreRichText::__ParseText()
             }
 
             pcFrom += 1u;
+            continue;
         }
         else if(((*pcFrom) == ' ') && (m_fMaxWidth < CORE_RICHTEXT_MAX_WIDTH))
         {

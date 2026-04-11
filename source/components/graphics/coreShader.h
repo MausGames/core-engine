@@ -227,7 +227,7 @@ public:
     inline coreResourceType GetResourceType()const final {return CORE_RESOURCE_TYPE_GRAPHICS;}
 
     /* enable and disable the shader-program */
-    coreBool Enable();
+    coreBool    Enable ();
     static void Disable(const coreBool bFull);
 
     /* execute compute shader-program */

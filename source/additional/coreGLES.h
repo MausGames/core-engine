@@ -193,12 +193,8 @@ using PFNGLVERTEXATTRIBDIVISORPROC   = void (GL_APIENTRY *) (GLuint index, GLuin
 #define GL_UNKNOWN_CONTEXT_RESET  0x8255
 
 using PFNGLGETGRAPHICSRESETSTATUSPROC = GLenum (GL_APIENTRY *) ();
-using PFNGLGETNUNIFORMFVPROC          = void   (GL_APIENTRY *) (GLuint program, GLint location, GLsizei bufSize, GLfloat* params);
-using PFNGLGETNUNIFORMIVPROC          = void   (GL_APIENTRY *) (GLuint program, GLint location, GLsizei bufSize, GLint* params);
 using PFNGLREADNPIXELSPROC            = void   (GL_APIENTRY *) (GLint x, GLint y, GLsizei width, GLsizei height, GLenum format, GLenum type, GLsizei bufSize, void* data);
 #define glGetGraphicsResetStatus __CORE_GLES_FUNC(glGetGraphicsResetStatus)
-#define glGetnUniformfv          __CORE_GLES_FUNC(glGetnUniformfv)
-#define glGetnUniformiv          __CORE_GLES_FUNC(glGetnUniformiv)
 #define glReadnPixels            __CORE_GLES_FUNC(glReadnPixels)
 
 
@@ -599,8 +595,6 @@ struct coreContextGLES final
     PFNGLDRAWELEMENTSINSTANCEDPROC                  __glDrawElementsInstanced;
     PFNGLVERTEXATTRIBDIVISORPROC                    __glVertexAttribDivisor;
     PFNGLGETGRAPHICSRESETSTATUSPROC                 __glGetGraphicsResetStatus;
-    PFNGLGETNUNIFORMFVPROC                          __glGetnUniformfv;
-    PFNGLGETNUNIFORMIVPROC                          __glGetnUniformiv;
     PFNGLREADNPIXELSPROC                            __glReadnPixels;
     PFNGLTEXSTORAGE2DPROC                           __glTexStorage2D;
     PFNGLAPPLYFRAMEBUFFERATTACHMENTCMAAPROC         __glApplyFramebufferAttachmentCMAA;

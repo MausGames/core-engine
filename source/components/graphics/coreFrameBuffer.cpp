@@ -70,8 +70,8 @@ coreStatus coreFrameBuffer::Create(const coreVector2 vResolution, const coreFram
     // check for multisampling
     const coreUint8 iSamples     = CLAMP(Core::Config->GetInt(CORE_CONFIG_GRAPHICS_ANTIALIASING), 0, Core::Graphics->GetMaxSamples());
     const coreBool  bIntelMorph  = CORE_GL_SUPPORT(INTEL_framebuffer_CMAA)               && (eType == CORE_FRAMEBUFFER_CREATE_MULTISAMPLED) && (iSamples == 1u);
-    const coreBool  bAmdAdvanced = CORE_GL_SUPPORT(AMD_framebuffer_multisample_advanced) && (eType == CORE_FRAMEBUFFER_CREATE_MULTISAMPLED) && (iSamples >= 2u);
-    const coreBool  bNvCoverage  = CORE_GL_SUPPORT(NV_framebuffer_multisample_coverage)  && (eType == CORE_FRAMEBUFFER_CREATE_MULTISAMPLED) && (iSamples >= 4u);
+    const coreBool  bAmdAdvanced = CORE_GL_SUPPORT(AMD_framebuffer_multisample_advanced) && (eType == CORE_FRAMEBUFFER_CREATE_MULTISAMPLED) && (iSamples >= 2u) && (iSamples <= Core::Graphics->GetMaxSamplesEQAA(2u));
+    const coreBool  bNvCoverage  = CORE_GL_SUPPORT(NV_framebuffer_multisample_coverage)  && (eType == CORE_FRAMEBUFFER_CREATE_MULTISAMPLED) && (iSamples >= 4u) && (iSamples <= Core::Graphics->GetMaxSamplesCSAA(1u));
     const coreBool  bMultisample = CORE_GL_SUPPORT(EXT_framebuffer_multisample)          && (eType == CORE_FRAMEBUFFER_CREATE_MULTISAMPLED) && (iSamples >= 1u);
 
     // set additional properties

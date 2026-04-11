@@ -61,7 +61,7 @@ Core::Core()noexcept
     // init debug component
     STATIC_NEW(Debug)
 
-    // load language file
+    // load language file (deferred)
     Language->Load(Config->GetString(CORE_CONFIG_BASE_LANGUAGE));
 
     // apply project settings

@@ -173,6 +173,8 @@ coreStatus coreFile::Scramble(const coreUint64 iKey)
     this->LoadData();
     if(!m_pData || !m_iSize) return CORE_INVALID_CALL;
 
+    ASSERT(!m_bMapped)
+
     // scramble data
     coreData::Scramble(m_pData, m_iSize, iKey);
     return CORE_OK;
@@ -183,6 +185,8 @@ coreStatus coreFile::Unscramble(const coreUint64 iKey)
     // check file data
     this->LoadData();
     if(!m_pData || !m_iSize) return CORE_INVALID_CALL;
+
+    ASSERT(!m_bMapped)
 
     // scramble data
     coreData::Unscramble(m_pData, m_iSize, iKey);

@@ -696,6 +696,7 @@ coreBool coreProgram::LoadShaderCache()
 
     // load and decompress file
     coreFile oFile(coreData::UserFolderShared(CORE_SHADER_CACHE_NAME));
+    oFile.LoadData(true);
     oFile.Decompress();
 
     // get file data
