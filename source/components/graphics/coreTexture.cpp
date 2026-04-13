@@ -81,10 +81,11 @@ coreStatus coreTexture::Load(coreFile* pFile)
     // check load configuration
     const coreTextureMode eMode = ((!HAS_FLAG(m_eLoad, CORE_TEXTURE_LOAD_NO_COMPRESS) && coreMath::IsPot(pData->w) && coreMath::IsPot(pData->h)) ? (HAS_FLAG(m_eLoad, CORE_TEXTURE_LOAD_COMPRESS_HIGH) ? CORE_TEXTURE_MODE_COMPRESS_HIGH : CORE_TEXTURE_MODE_COMPRESS) : CORE_TEXTURE_MODE_DEFAULT) |
                                   ((!HAS_FLAG(m_eLoad, CORE_TEXTURE_LOAD_NO_FILTER)) ? CORE_TEXTURE_MODE_FILTER  : CORE_TEXTURE_MODE_DEFAULT) |
-                                  ((!HAS_FLAG(m_eLoad, CORE_TEXTURE_LOAD_NEAREST))   ? CORE_TEXTURE_MODE_DEFAULT : CORE_TEXTURE_MODE_NEAREST);
+                                  ((!HAS_FLAG(m_eLoad, CORE_TEXTURE_LOAD_NEAREST))   ? CORE_TEXTURE_MODE_DEFAULT : CORE_TEXTURE_MODE_NEAREST) |
+                                  ((!HAS_FLAG(m_eLoad, CORE_TEXTURE_LOAD_REPEAT))    ? CORE_TEXTURE_MODE_DEFAULT : CORE_TEXTURE_MODE_REPEAT);
 
     // create texture
-    this->Create(pData->w, pData->h, CORE_TEXTURE_SPEC_COMPONENTS(iComponents), eMode | CORE_TEXTURE_MODE_REPEAT);
+    this->Create(pData->w, pData->h, CORE_TEXTURE_SPEC_COMPONENTS(iComponents), eMode);
     this->Modify(0u, 0u, pData->w, pData->h, iDataSize, s_cast<coreByte*>(pData->pixels));
 
     // add debug label

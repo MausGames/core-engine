@@ -86,9 +86,10 @@ enum coreTextureLoad : coreUint8
     CORE_TEXTURE_LOAD_NO_COMPRESS   = 0x01u,   // disable color texture compression
     CORE_TEXTURE_LOAD_NO_FILTER     = 0x02u,   // disable anisotropic filtering and mipmapping
     CORE_TEXTURE_LOAD_NEAREST       = 0x04u,   // enable nearest texture sampling (instead of linear)
-    CORE_TEXTURE_LOAD_COMPRESS_HIGH = 0x08u,   // enable high quality texture compression
-    CORE_TEXTURE_LOAD_R             = 0x10u,   // convert to R texture (if supported)
-    CORE_TEXTURE_LOAD_RG            = 0x20u    // convert to RG texture (if supported)
+    CORE_TEXTURE_LOAD_REPEAT        = 0x08u,   // enable repeating texture sampling (for coordinates outside 0.0 and 1.0)
+    CORE_TEXTURE_LOAD_COMPRESS_HIGH = 0x10u,   // enable high quality texture compression
+    CORE_TEXTURE_LOAD_R             = 0x20u,   // convert to R texture (if supported)
+    CORE_TEXTURE_LOAD_RG            = 0x40u    // convert to RG texture (if supported)
 };
 ENABLE_BITWISE(coreTextureLoad)
 
