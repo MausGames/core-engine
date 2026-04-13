@@ -104,6 +104,7 @@ public:
     /* control window */
     void SetWindowTitle     (const coreChar*   pcTitle);
     void SetWindowIcon      (const coreChar*   pcPath);
+    void SetWindowProgress  (const coreFloat   fProgress);
     void SetWindowResolution(const coreVector2 vResolution);
     void SetWindowAll       (const coreUint8   iDisplayIndex, const coreVector2 vResolution, const coreFloat fRefreshRate, const coreSystemMode eMode);
 

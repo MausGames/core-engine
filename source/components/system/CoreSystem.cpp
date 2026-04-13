@@ -510,6 +510,18 @@ void CoreSystem::SetWindowIcon(const coreChar* pcPath)
 
 
 // ****************************************************************
+/* change the progress bar of the window */
+void CoreSystem::SetWindowProgress(const coreFloat fProgress)
+{
+    ASSERT((fProgress >= 0.0f) && (fProgress <= 1.0f))
+
+    // set new progress bar
+    SDL_SetWindowProgressState(m_pWindow, fProgress ? SDL_PROGRESS_STATE_NORMAL : SDL_PROGRESS_STATE_NONE);
+    SDL_SetWindowProgressValue(m_pWindow, fProgress);
+}
+
+
+// ****************************************************************
 /* change the resolution of the window (clamped) */
 void CoreSystem::SetWindowResolution(const coreVector2 vResolution)
 {
