@@ -14,6 +14,7 @@
     #include <Shlobj.h>
     #include <Lmcons.h>
 #elif defined(_CORE_LINUX_)
+    #include <sys/sysinfo.h>
     #include <sys/sendfile.h>
     #include <gnu/libc-version.h>
 #elif defined(_CORE_MACOS_)
@@ -221,16 +222,13 @@ coreBool coreData::SystemMemory(coreUint64* OUTPUT piAvailable, coreUint64* OUTP
 
 #elif defined(_CORE_LINUX_)
 
-    // retrieve runtime system parameters
-    const coreInt64 iPageSize  = sysconf(_SC_PAGESIZE);
-    const coreInt64 iAvailable = sysconf(_SC_AVPHYS_PAGES);
-    const coreInt64 iTotal     = sysconf(_SC_PHYS_PAGES);
+    struct sysinfo oInfo;
 
-    // only allow positive non-zero values (-1 on error)
-    if((iPageSize > 0) && (iAvailable > 0) && (iTotal > 0))
+    // retrieve system memory information
+    if(!sysinfo(&oInfo))
     {
-        if(piAvailable) (*piAvailable) = iPageSize * iAvailable;   // without file cache
-        if(piTotal)     (*piTotal)     = iPageSize * iTotal;
+        if(piAvailable) (*piAvailable) = oInfo.freeram;   // without file cache
+        if(piTotal)     (*piTotal)     = oInfo.totalram;
         return true;
     }
 
