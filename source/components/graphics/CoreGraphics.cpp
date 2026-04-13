@@ -817,11 +817,12 @@ void CoreGraphics::__UpdateScene()
         coreSync::Flush();
     }
 
-    // swap color buffers
-    SDL_GL_SwapWindow(Core::System->GetWindow());
-
     // measure overall performance
-    Core::Debug->MeasureEnd  (CORE_DEBUG_OVERALL_NAME);
+    Core::Debug->MeasureEnd(CORE_DEBUG_OVERALL_NAME);
+    {
+        // swap color buffers
+        SDL_GL_SwapWindow(Core::System->GetWindow());
+    }
     Core::Debug->MeasureStart(CORE_DEBUG_OVERALL_NAME);
 
 #if !defined(_CORE_EMSCRIPTEN_)
@@ -833,7 +834,7 @@ void CoreGraphics::__UpdateScene()
     }
 
     // clear color, depth and stencil buffer
-    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | (CoreApp::Settings::Graphics::StencilSize ? GL_STENCIL_BUFFER_BIT : 0u));
+    glClear(GL_COLOR_BUFFER_BIT | (CoreApp::Settings::Graphics::DepthSize ? GL_DEPTH_BUFFER_BIT : 0u) | (CoreApp::Settings::Graphics::StencilSize ? GL_STENCIL_BUFFER_BIT : 0u));
 
 #endif
 }
@@ -861,7 +862,7 @@ void CoreGraphics::__UpdateEmscripten()
     }
 
     // clear color, depth and stencil buffer
-    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | (CoreApp::Settings::Graphics::StencilSize ? GL_STENCIL_BUFFER_BIT : 0u));
+    glClear(GL_COLOR_BUFFER_BIT | (CoreApp::Settings::Graphics::DepthSize ? GL_DEPTH_BUFFER_BIT : 0u) | (CoreApp::Settings::Graphics::StencilSize ? GL_STENCIL_BUFFER_BIT : 0u));
 
 #endif
 }

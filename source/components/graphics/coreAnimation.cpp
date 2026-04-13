@@ -105,7 +105,7 @@ coreStatus coreAnimation::Load(coreFile* pFile)
     const coreUint32 iPackWidth  = pAnim->w * m_Division[0];
     const coreUint32 iPackHeight = pAnim->h * m_Division[1];
     const coreUint32 iPackSize   = iPackWidth * iPackHeight * iComponents;
-    coreByte*        pPackData   = ZERO_NEW(coreByte, iPackSize);
+    coreByte*        pPackData   = TEMP_ZERO_NEW(coreByte, iPackSize);
 
     // allocate frame delays
     m_piTime = new coreUint16[m_iFrameCount];
@@ -138,7 +138,7 @@ coreStatus coreAnimation::Load(coreFile* pFile)
     // create grid texture
     m_pTexture->Create(iPackWidth, iPackHeight, CORE_TEXTURE_SPEC_COMPONENTS(iComponents), eMode);
     m_pTexture->Modify(0u, 0u, iPackWidth, iPackHeight, iPackSize, pPackData);
-    ZERO_DELETE(pPackData)
+    TEMP_ZERO_DELETE(pPackData)
 
     // add debug label
     Core::Graphics->LabelOpenGL(GL_TEXTURE, m_pTexture->GetIdentifier(), m_sName.c_str());

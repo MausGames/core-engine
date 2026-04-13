@@ -171,8 +171,8 @@ public:
     inline const coreUint8&    GetMaxSamplesCSAA(const coreUintW iIndex)const {ASSERT(iIndex < ARRAY_SIZE(m_aiMaxSamplesCSAA)) return m_aiMaxSamplesCSAA[iIndex];}
     inline const coreUint8&    GetMaxAnisotropy ()const                       {return m_iMaxAnisotropy;}
     inline const coreUint8&    GetMaxTextures   ()const                       {return m_iMaxTextures;}
-    inline const corePoint2U8& GetVersionOpenGL ()const                       {return m_VersionOpenGL;}
-    inline const corePoint2U8& GetVersionGLSL   ()const                       {return m_VersionGLSL;}
+    inline const corePoint3U8& GetVersionOpenGL ()const                       {return m_VersionOpenGL;}
+    inline const corePoint3U8& GetVersionGLSL   ()const                       {return m_VersionGLSL;}
 
 
 private:

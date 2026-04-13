@@ -50,8 +50,7 @@ static void SignalHandler(const int iSignal, siginfo_t* pInfo, void* pContext)
     }
 
     // forward signal to default handler
-    signal(iSignal, SIG_DFL);
-    raise (iSignal);
+    raise(iSignal);
 }
 
 

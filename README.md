@@ -42,7 +42,7 @@ It is **designed to be supportive, versatile and powerful**, and to dynamically 
 - **Music Files:** [Opus](https://opus-codec.org/), threaded streaming, seamless transitioning and looping, music player system, pitch/speed controls
 - **Sound Effects:** Opus, Wave, [A-law](https://en.wikipedia.org/wiki/A-law_algorithm) and [μ-law](https://en.wikipedia.org/wiki/%CE%9C-law_algorithm) memory compression, sound categorization, pause and resume
 
-### 🕹 Input
+### 🕹️ Input
 
 - **Mouse:** cursor graphics, visibility, keyboard and gamepad controls
 - **Keyboard:** [IME](https://en.wikipedia.org/wiki/Input_method) support, screen keyboard support
@@ -146,7 +146,7 @@ It is **designed to be supportive, versatile and powerful**, and to dynamically 
 - **Inline Preprocessor Testing**: check for any preprocessor symbol like a regular boolean
 - **... and everything from SDL**
 
-### 🛠 Tools
+### 🛠️ Tools
 
 - **Launcher:** Windows (application, script), Linux (script), Browser (page), for custom pre-launch processing
 - **Project Template:** default resources, update scripts
