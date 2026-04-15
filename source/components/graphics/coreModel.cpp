@@ -288,10 +288,10 @@ coreStatus coreModel::Load(coreFile* pFile)
 
             // create vertex buffer
             coreVertexBuffer* pBuffer = this->CreateVertexBuffer(m_iNumVertices, 20u, pPackedData, CORE_DATABUFFER_STORAGE_STATIC);
-            pBuffer->DefineAttribute(CORE_SHADER_ATTRIBUTE_POSITION_NUM, 4u, GL_HALF_FLOAT,         8u, false, 0u,  0u);
-            pBuffer->DefineAttribute(CORE_SHADER_ATTRIBUTE_TEXCOORD_NUM, 2u, GL_UNSIGNED_SHORT,     4u, false, 8u,  0u);
-            pBuffer->DefineAttribute(CORE_SHADER_ATTRIBUTE_NORMAL_NUM,   4u, GL_INT_2_10_10_10_REV, 4u, false, 12u, 0u);
-            pBuffer->DefineAttribute(CORE_SHADER_ATTRIBUTE_TANGENT_NUM,  4u, GL_INT_2_10_10_10_REV, 4u, false, 16u, 0u);
+            pBuffer->DefineAttribute(CORE_SHADER_ATTRIBUTE_POSITION_NUM, CORE_VERTEXBUFFER_FORMAT_FLOAT_4X16, 0u,  0u);
+            pBuffer->DefineAttribute(CORE_SHADER_ATTRIBUTE_TEXCOORD_NUM, CORE_VERTEXBUFFER_FORMAT_UNORM_2X16, 8u,  0u);
+            pBuffer->DefineAttribute(CORE_SHADER_ATTRIBUTE_NORMAL_NUM,   CORE_VERTEXBUFFER_FORMAT_SNORM_210,  12u, 0u);
+            pBuffer->DefineAttribute(CORE_SHADER_ATTRIBUTE_TANGENT_NUM,  CORE_VERTEXBUFFER_FORMAT_SNORM_210,  16u, 0u);
             TEMP_DELETE(pPackedData)
         }
         else
@@ -311,10 +311,10 @@ coreStatus coreModel::Load(coreFile* pFile)
 
             // create vertex buffer
             coreVertexBuffer* pBuffer = this->CreateVertexBuffer(m_iNumVertices, 24u, pPackedData, CORE_DATABUFFER_STORAGE_STATIC);
-            pBuffer->DefineAttribute(CORE_SHADER_ATTRIBUTE_POSITION_NUM, 3u, GL_FLOAT,          12u, false, 0u,  0u);
-            pBuffer->DefineAttribute(CORE_SHADER_ATTRIBUTE_TEXCOORD_NUM, 2u, GL_UNSIGNED_SHORT, 4u,  false, 12u, 0u);
-            pBuffer->DefineAttribute(CORE_SHADER_ATTRIBUTE_NORMAL_NUM,   4u, GL_BYTE,           4u,  false, 16u, 0u);
-            pBuffer->DefineAttribute(CORE_SHADER_ATTRIBUTE_TANGENT_NUM,  4u, GL_BYTE,           4u,  false, 20u, 0u);
+            pBuffer->DefineAttribute(CORE_SHADER_ATTRIBUTE_POSITION_NUM, CORE_VERTEXBUFFER_FORMAT_FLOAT_3X32, 0u,  0u);
+            pBuffer->DefineAttribute(CORE_SHADER_ATTRIBUTE_TEXCOORD_NUM, CORE_VERTEXBUFFER_FORMAT_UNORM_2X16, 12u, 0u);
+            pBuffer->DefineAttribute(CORE_SHADER_ATTRIBUTE_NORMAL_NUM,   CORE_VERTEXBUFFER_FORMAT_SNORM_4X8,  16u, 0u);
+            pBuffer->DefineAttribute(CORE_SHADER_ATTRIBUTE_TANGENT_NUM,  CORE_VERTEXBUFFER_FORMAT_SNORM_4X8,  20u, 0u);
             TEMP_DELETE(pPackedData)
         }
 

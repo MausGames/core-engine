@@ -953,21 +953,21 @@ void coreRichText::__InitPass(corePass* OUTPUT pPass)
             {
                 // create instance data buffer (high quality compression)
                 it->Create(pPass->iNumInstances, CORE_RICHTEXT_INSTANCE_SIZE_HIGH, NULL, CORE_DATABUFFER_STORAGE_DYNAMIC);
-                it->DefineAttribute(CORE_SHADER_ATTRIBUTE_DIV_2D_POSITION_NUM, 3u, GL_FLOAT,          12u, false, 0u, 0u);
-                it->DefineAttribute(CORE_SHADER_ATTRIBUTE_DIV_2D_SIZE_NUM,     2u, GL_HALF_FLOAT,     4u,  false, 0u, 12u);
-                it->DefineAttribute(CORE_SHADER_ATTRIBUTE_DIV_2D_ROTATION_NUM, 2u, GL_SHORT,          4u,  false, 0u, 16u);
-                it->DefineAttribute(CORE_SHADER_ATTRIBUTE_DIV_COLOR_NUM,       4u, GL_UNSIGNED_BYTE,  4u,  false, 0u, 20u);
-                it->DefineAttribute(CORE_SHADER_ATTRIBUTE_DIV_TEXPARAM_NUM,    4u, GL_UNSIGNED_SHORT, 8u,  false, 0u, 24u);
+                it->DefineAttribute(CORE_SHADER_ATTRIBUTE_DIV_2D_POSITION_NUM, CORE_VERTEXBUFFER_FORMAT_FLOAT_3X32, 0u, 0u);
+                it->DefineAttribute(CORE_SHADER_ATTRIBUTE_DIV_2D_SIZE_NUM,     CORE_VERTEXBUFFER_FORMAT_FLOAT_2X16, 0u, 12u);
+                it->DefineAttribute(CORE_SHADER_ATTRIBUTE_DIV_2D_ROTATION_NUM, CORE_VERTEXBUFFER_FORMAT_SNORM_2X16, 0u, 16u);
+                it->DefineAttribute(CORE_SHADER_ATTRIBUTE_DIV_COLOR_NUM,       CORE_VERTEXBUFFER_FORMAT_UNORM_4X8,  0u, 20u);
+                it->DefineAttribute(CORE_SHADER_ATTRIBUTE_DIV_TEXPARAM_NUM,    CORE_VERTEXBUFFER_FORMAT_UNORM_4X16, 0u, 24u);
             }
             else
             {
                 // create instance data buffer (low quality compression)
                 it->Create(pPass->iNumInstances, CORE_RICHTEXT_INSTANCE_SIZE_LOW, NULL, CORE_DATABUFFER_STORAGE_DYNAMIC);
-                it->DefineAttribute(CORE_SHADER_ATTRIBUTE_DIV_2D_POSITION_NUM, 3u, GL_FLOAT,          12u, false, 0u, 0u);
-                it->DefineAttribute(CORE_SHADER_ATTRIBUTE_DIV_2D_SIZE_NUM,     2u, GL_FLOAT,          8u,  false, 0u, 12u);
-                it->DefineAttribute(CORE_SHADER_ATTRIBUTE_DIV_2D_ROTATION_NUM, 2u, GL_SHORT,          4u,  false, 0u, 20u);
-                it->DefineAttribute(CORE_SHADER_ATTRIBUTE_DIV_COLOR_NUM,       4u, GL_UNSIGNED_BYTE,  4u,  false, 0u, 24u);
-                it->DefineAttribute(CORE_SHADER_ATTRIBUTE_DIV_TEXPARAM_NUM,    4u, GL_UNSIGNED_SHORT, 8u,  false, 0u, 28u);
+                it->DefineAttribute(CORE_SHADER_ATTRIBUTE_DIV_2D_POSITION_NUM, CORE_VERTEXBUFFER_FORMAT_FLOAT_3X32, 0u, 0u);
+                it->DefineAttribute(CORE_SHADER_ATTRIBUTE_DIV_2D_SIZE_NUM,     CORE_VERTEXBUFFER_FORMAT_FLOAT_2X32, 0u, 12u);
+                it->DefineAttribute(CORE_SHADER_ATTRIBUTE_DIV_2D_ROTATION_NUM, CORE_VERTEXBUFFER_FORMAT_SNORM_2X16, 0u, 20u);
+                it->DefineAttribute(CORE_SHADER_ATTRIBUTE_DIV_COLOR_NUM,       CORE_VERTEXBUFFER_FORMAT_UNORM_4X8,  0u, 24u);
+                it->DefineAttribute(CORE_SHADER_ATTRIBUTE_DIV_TEXPARAM_NUM,    CORE_VERTEXBUFFER_FORMAT_UNORM_4X16, 0u, 28u);
             }
 
             // set vertex data
