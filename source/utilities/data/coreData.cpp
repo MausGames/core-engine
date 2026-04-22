@@ -1308,10 +1308,7 @@ void coreData::HeapDestroy(void* pHeap)
 
 #if defined(_CORE_WINDOWS_)
 
-    #if defined(_CORE_DEBUG_)
-        ASSERT(::HeapValidate(pHeap, 0u, NULL))
-    #endif
-
+    ASSERT(::HeapValidate(pHeap, 0u, NULL))
     WARN_IF(!::HeapDestroy(pHeap)) {}
 
 #elif defined(_CORE_EMSCRIPTEN_)
@@ -1398,14 +1395,12 @@ void coreData::HeapFree(void* pHeap, void** OUTPUT ppPointer)
 
 #if defined(_CORE_WINDOWS_)
 
-    #if defined(_CORE_DEBUG_)
-        ASSERT(::HeapValidate(pHeap, 0u, *ppPointer))
-    #endif
-
+    ASSERT(::HeapValidate(pHeap, 0u, *ppPointer))
     WARN_IF(!::HeapFree(pHeap, 0u, *ppPointer)) {}
 
 #elif defined(_CORE_EMSCRIPTEN_)
 
+    ASSERT(mi_heap_check_owned(s_cast<mi_heap_t*>(pHeap), *ppPointer))
     mi_free(*ppPointer);
 
 #else
@@ -1537,7 +1532,7 @@ coreFileStats coreData::FileStats(const coreChar* pcPath)
     if(GetFileAttributesExW(coreData::__ToWideChar(pcPath), GetFileExInfoStandard, &oAttributes))
     {
         oStats.bDirectory      = HAS_FLAG(oAttributes.dwFileAttributes, FILE_ATTRIBUTE_DIRECTORY);
-        oStats.iSize           = (coreInt64(oAttributes.nFileSizeHigh) << 32u) | (coreInt64(oFile.nFileSizeLow));
+        oStats.iSize           = (coreInt64(oAttributes.nFileSizeHigh) << 32u) | (coreInt64(oAttributes.nFileSizeLow));
         oStats.iLastAccessTime = r_cast<coreUint64&>(oAttributes.ftLastAccessTime) / 10000000ull - 11644473600ull;
         oStats.iLastWriteTime  = r_cast<coreUint64&>(oAttributes.ftLastWriteTime)  / 10000000ull - 11644473600ull;
         oStats.iCreationTime   = r_cast<coreUint64&>(oAttributes.ftCreationTime)   / 10000000ull - 11644473600ull;
@@ -2353,12 +2348,12 @@ coreStatus coreData::Compress(const coreByte* pInput, const coreUint32 iInputSiz
 
     // compress data
     const coreUintW iWritten = ZSTD_compressCCtx(s_pCompressContext, pBuffer + sizeof(coreUint32), iBound, pInput, iInputSize, iLevel);
-    if(ZSTD_isError(iWritten))
+    WARN_IF(ZSTD_isError(iWritten))
     {
         SAFE_DELETE_ARRAY(pBuffer)
 
         Core::Log->Warning("Error compressing data (ZSTD: %s)", ZSTD_getErrorName(iWritten));
-        return CORE_INVALID_INPUT;
+        return CORE_INVALID_DATA;
     }
 
     // store original size
@@ -2382,17 +2377,17 @@ coreStatus coreData::Compress(const coreByte* pInput, const coreUint32 iInputSiz
     if(((*piOutputSize) < iBound + sizeof(coreUint32)) || !pOutput)
     {
         (*piOutputSize) = iBound + sizeof(coreUint32);
-        return CORE_INVALID_DATA;
+        return CORE_BUSY;
     }
 
     const coreLocker oLocker(&s_CompressLock);
 
     // compress data
     const coreUintW iWritten = ZSTD_compressCCtx(s_pCompressContext, pOutput + sizeof(coreUint32), iBound, pInput, iInputSize, iLevel);
-    if(ZSTD_isError(iWritten))
+    WARN_IF(ZSTD_isError(iWritten))
     {
         Core::Log->Warning("Error compressing data (ZSTD: %s)", ZSTD_getErrorName(iWritten));
-        return CORE_INVALID_INPUT;
+        return CORE_INVALID_DATA;
     }
 
     // store original size
@@ -2413,7 +2408,7 @@ coreStatus coreData::Decompress(const coreByte* pInput, const coreUint32 iInputS
 
     // check data integrity
     const coreUint64 iContentSize = ZSTD_getFrameContentSize(pInput + sizeof(coreUint32), iInputSize - sizeof(coreUint32));
-    if((iContentSize == ZSTD_CONTENTSIZE_ERROR) || ((iContentSize > iLimit) && (iContentSize != ZSTD_CONTENTSIZE_UNKNOWN)))
+    WARN_IF((iContentSize == ZSTD_CONTENTSIZE_ERROR) || ((iContentSize > iLimit) && (iContentSize != ZSTD_CONTENTSIZE_UNKNOWN)))
     {
         Core::Log->Warning("Error checking data integrity (size: %llu)", iContentSize);
         return CORE_INVALID_DATA;
@@ -2427,12 +2422,12 @@ coreStatus coreData::Decompress(const coreByte* pInput, const coreUint32 iInputS
 
     // decompress data
     const coreUintW iWritten = ZSTD_decompressDCtx(s_pDecompressContext, pBuffer, iBound, pInput + sizeof(coreUint32), iInputSize - sizeof(coreUint32));
-    if(ZSTD_isError(iWritten) || (iWritten != iBound))
+    WARN_IF(ZSTD_isError(iWritten) || (iWritten != iBound))
     {
         SAFE_DELETE_ARRAY(pBuffer)
 
         Core::Log->Warning("Error decompressing data (ZSTD: %s)", ZSTD_getErrorName(iWritten));
-        return CORE_INVALID_INPUT;
+        return CORE_INVALID_DATA;
     }
 
     // return decompressed data and size
@@ -2448,7 +2443,7 @@ coreStatus coreData::Decompress(const coreByte* pInput, const coreUint32 iInputS
 
     // check data integrity
     const coreUint64 iContentSize = ZSTD_getFrameContentSize(pInput + sizeof(coreUint32), iInputSize - sizeof(coreUint32));
-    if(iContentSize == ZSTD_CONTENTSIZE_ERROR)
+    WARN_IF(iContentSize == ZSTD_CONTENTSIZE_ERROR)
     {
         Core::Log->Warning("Error checking data integrity (size: %llu)", iContentSize);
         return CORE_INVALID_DATA;
@@ -2461,17 +2456,17 @@ coreStatus coreData::Decompress(const coreByte* pInput, const coreUint32 iInputS
     if(((*piOutputSize) < iBound) || !pOutput)
     {
         (*piOutputSize) = iBound;
-        return CORE_INVALID_DATA;
+        return CORE_BUSY;
     }
 
     const coreLocker oLocker(&s_DecompressLock);
 
     // decompress data
     const coreUintW iWritten = ZSTD_decompressDCtx(s_pDecompressContext, pOutput, iBound, pInput + sizeof(coreUint32), iInputSize - sizeof(coreUint32));
-    if(ZSTD_isError(iWritten) || (iWritten != iBound))
+    WARN_IF(ZSTD_isError(iWritten) || (iWritten != iBound))
     {
         Core::Log->Warning("Error decompressing data (ZSTD: %s)", ZSTD_getErrorName(iWritten));
-        return CORE_INVALID_INPUT;
+        return CORE_INVALID_DATA;
     }
 
     // return decompressed size

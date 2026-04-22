@@ -515,9 +515,12 @@ void CoreSystem::SetWindowProgress(const coreFloat fProgress)
 {
     ASSERT((fProgress >= 0.0f) && (fProgress <= 1.0f))
 
-    // set new progress bar
-    SDL_SetWindowProgressState(m_pWindow, fProgress ? SDL_PROGRESS_STATE_NORMAL : SDL_PROGRESS_STATE_NONE);
-    SDL_SetWindowProgressValue(m_pWindow, fProgress);
+    if(SDL_GetWindowProgressValue(m_pWindow) != fProgress)
+    {
+        // set new progress bar
+        SDL_SetWindowProgressState(m_pWindow, fProgress ? SDL_PROGRESS_STATE_NORMAL : SDL_PROGRESS_STATE_NONE);
+        SDL_SetWindowProgressValue(m_pWindow, fProgress);
+    }
 }
 
 

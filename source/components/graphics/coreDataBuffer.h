@@ -65,7 +65,7 @@ enum coreDataBufferMap : coreUint8
 class coreDataBuffer
 {
 private:
-    GLuint m_iIdentifier;                       // data buffer identifier
+    GLuint                m_iIdentifier;        // data buffer identifier
     coreDataBufferStorage m_eStorageType;       // storage type
 
     GLenum     m_iTarget;                       // buffer target (e.g. GL_ARRAY_BUFFER)

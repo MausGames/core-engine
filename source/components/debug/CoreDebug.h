@@ -96,9 +96,9 @@ private:
 
 private:
     coreMap<coreTexture*, coreDisplay*> m_apDisplay;                 // display objects to render textures directly on screen
-    coreMapStr<coreMeasure*> m_apMeasure;                            // measure objects to display CPU and GPU performance values
-    coreMapStr<coreInspect*> m_apInspect;                            // inspect objects to display current values during run-time
-    coreMeasure* m_pOverall;                                         // pointer to overall performance output object
+    coreMapStr<coreMeasure*>            m_apMeasure;                 // measure objects to display CPU and GPU performance values
+    coreMapStr<coreInspect*>            m_apInspect;                 // inspect objects to display current values during run-time
+    coreMeasure*                        m_pOverall;                  // pointer to overall performance output object
 
     coreObject3D m_DebugCube;                                        // debug cube
     coreObject3D m_DebugSphere;                                      // debug sphere

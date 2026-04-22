@@ -89,17 +89,19 @@ template <typename T> template <typename... A> constexpr T& coreList<T>::emplace
         // disable if not compatible
         return this->emplace_back(std::forward<A>(vArgs)...);
     }
+    else
+    {
+        // access raw container pointers
+        T** pptRaw = r_cast<T**>(this);
+        ASSERT(pptRaw[0] == std::to_address(this->begin()))
+        ASSERT(pptRaw[1] == std::to_address(this->end  ()))
 
-    // access raw container pointers
-    T** pptRaw = r_cast<T**>(this);
-    ASSERT(pptRaw[0] == std::to_address(this->begin()))
-    ASSERT(pptRaw[1] == std::to_address(this->end  ()))
+        // manually construct object in place
+        CALL_CONSTRUCTOR(pptRaw[1], std::forward<A>(vArgs)...);
+        pptRaw[1] += 1u;
 
-    // manually construct object in place
-    CALL_CONSTRUCTOR(pptRaw[1], std::forward<A>(vArgs)...);
-    pptRaw[1] += 1u;
-
-    return this->back();
+        return this->back();
+    }
 }
 
 template <typename T> template <typename... A> constexpr coreList<T>::coreIterator coreList<T>::emplace_unsafe(const coreConstIterator& it, A&&... vArgs)
@@ -111,37 +113,39 @@ template <typename T> template <typename... A> constexpr coreList<T>::coreIterat
         // disable if not compatible
         return this->emplace(it, std::forward<A>(vArgs)...);
     }
-
-    // access raw container pointers
-    T** pptRaw = r_cast<T**>(this);
-    ASSERT(pptRaw[0] == std::to_address(this->begin()))
-    ASSERT(pptRaw[1] == std::to_address(this->end  ()))
-
-    // get target index
-    const coreUintW iIndex = this->index(it);
-    ASSERT(iIndex < this->size() + 1u)
-
-    if(it == this->end())
-    {
-        // manually construct object in place
-        CALL_CONSTRUCTOR(pptRaw[1], std::forward<A>(vArgs)...);
-        pptRaw[1] += 1u;
-    }
     else
     {
-        // handle possible aliasing of arguments with container elements
-        T tTemp(std::forward<A>(vArgs)...);
+        // access raw container pointers
+        T** pptRaw = r_cast<T**>(this);
+        ASSERT(pptRaw[0] == std::to_address(this->begin()))
+        ASSERT(pptRaw[1] == std::to_address(this->end  ()))
 
-        // move old elements back
-        CALL_CONSTRUCTOR(pptRaw[1], std::move(*(pptRaw[1] - 1u)));
-        std::move_backward(pptRaw[0] + iIndex, pptRaw[1] - 1u, pptRaw[1]);
+        // get target index
+        const coreUintW iIndex = this->index(it);
+        ASSERT(iIndex < this->size() + 1u)
 
-        // insert new element
-        (*(pptRaw[0] + iIndex)) = std::move(tTemp);
-        pptRaw[1] += 1u;
+        if(it == this->end())
+        {
+            // manually construct object in place
+            CALL_CONSTRUCTOR(pptRaw[1], std::forward<A>(vArgs)...);
+            pptRaw[1] += 1u;
+        }
+        else
+        {
+            // handle possible aliasing of arguments with container elements
+            T tTemp(std::forward<A>(vArgs)...);
+
+            // move old elements back
+            CALL_CONSTRUCTOR(pptRaw[1], std::move(*(pptRaw[1] - 1u)));
+            std::move_backward(pptRaw[0] + iIndex, pptRaw[1] - 1u, pptRaw[1]);
+
+            // insert new element
+            (*(pptRaw[0] + iIndex)) = std::move(tTemp);
+            pptRaw[1] += 1u;
+        }
+
+        return (this->begin() + iIndex);
     }
-
-    return (this->begin() + iIndex);
 }
 
 
