@@ -43,6 +43,7 @@
 #define CORE_TEXTURE_SPEC_RGB16F           (coreTextureSpec(GL_RGB16F,                        GL_RGB,                           GL_HALF_FLOAT,                   3u, 6u))   // ARB_texture_float
 #define CORE_TEXTURE_SPEC_RGBA16F          (coreTextureSpec(GL_RGBA16F,                       GL_RGBA,                          GL_HALF_FLOAT,                   4u, 8u))   // ARB_texture_float
 #define CORE_TEXTURE_SPEC_RGB10_A2         (coreTextureSpec(GL_RGB10_A2,                      GL_RGBA,                          GL_UNSIGNED_INT_2_10_10_10_REV,  4u, 4u))   // EXT_texture_type_2_10_10_10_rev
+#define CORE_TEXTURE_SPEC_RGB9_E5          (coreTextureSpec(GL_RGB9_E5,                       GL_RGB,                           GL_UNSIGNED_INT_5_9_9_9_REV,     3u, 4u))   // EXT_texture_shared_exponent (as texture)
 #define CORE_TEXTURE_SPEC_R11F_G11F_B10F   (coreTextureSpec(GL_R11F_G11F_B10F,                GL_RGB,                           GL_UNSIGNED_INT_10F_11F_11F_REV, 3u, 4u))   // EXT_packed_float
 #define CORE_TEXTURE_SPEC_DEPTH16          (coreTextureSpec(GL_DEPTH_COMPONENT16,             GL_DEPTH_COMPONENT,               GL_UNSIGNED_SHORT,               1u, 2u))   // -
 #define CORE_TEXTURE_SPEC_DEPTH24          (coreTextureSpec(GL_DEPTH_COMPONENT24,             GL_DEPTH_COMPONENT,               GL_UNSIGNED_INT,                 1u, 4u))   // -

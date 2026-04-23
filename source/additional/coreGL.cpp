@@ -208,6 +208,7 @@ void __coreInitOpenGL()
         __IMPROVE(GLEW_EXT_packed_depth_stencil,             GLEW_VERSION_3_0 || GLEW_ARB_framebuffer_object)              // split up
         __IMPROVE(GLEW_EXT_packed_float,                     GLEW_VERSION_3_0)
         __IMPROVE(GLEW_EXT_texture_compression_s3tc,         false)
+        __IMPROVE(GLEW_EXT_texture_shared_exponent,          GLEW_VERSION_3_0)
         __IMPROVE(GLEW_INTEL_conservative_rasterization,     false)
         __IMPROVE(GLEW_INTEL_framebuffer_CMAA,               false)
         __IMPROVE(GLEW_KHR_debug,                            GLEW_VERSION_4_3)

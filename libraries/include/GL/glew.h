@@ -5404,6 +5404,19 @@ typedef void (GLAPIENTRY * PFNGLMEMORYBARRIEREXTPROC) (GLbitfield barriers);
 
 #endif /* GL_EXT_texture_filter_anisotropic */
 
+/* --------------------- GL_EXT_texture_shared_exponent -------------------- */
+
+#ifndef GL_EXT_texture_shared_exponent
+#define GL_EXT_texture_shared_exponent 1
+
+#define GL_RGB9_E5_EXT 0x8C3D
+#define GL_UNSIGNED_INT_5_9_9_9_REV_EXT 0x8C3E
+#define GL_TEXTURE_SHARED_SIZE_EXT 0x8C3F
+
+#define GLEW_EXT_texture_shared_exponent GLEW_GET_VAR(__GLEW_EXT_texture_shared_exponent)
+
+#endif /* GL_EXT_texture_shared_exponent */
+
 /* ------------------------- GL_EXT_texture_storage ------------------------ */
 
 #ifndef GL_EXT_texture_storage
@@ -6911,6 +6924,7 @@ GLEW_VAR_EXPORT GLboolean __GLEW_EXT_shader_image_load_store;
 GLEW_VAR_EXPORT GLboolean __GLEW_EXT_texture_compression_rgtc;
 GLEW_VAR_EXPORT GLboolean __GLEW_EXT_texture_compression_s3tc;
 GLEW_VAR_EXPORT GLboolean __GLEW_EXT_texture_filter_anisotropic;
+GLEW_VAR_EXPORT GLboolean __GLEW_EXT_texture_shared_exponent;
 GLEW_VAR_EXPORT GLboolean __GLEW_EXT_texture_storage;
 GLEW_VAR_EXPORT GLboolean __GLEW_INTEL_conservative_rasterization;
 GLEW_VAR_EXPORT GLboolean __GLEW_INTEL_framebuffer_CMAA;

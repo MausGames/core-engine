@@ -43,6 +43,7 @@
 #define CORE_GL_EXT_direct_state_access             (false)
 #define CORE_GL_EXT_framebuffer_object              (true)   // always available
 #define CORE_GL_EXT_gpu_shader4                     (__CORE_GLES_VAR(bES30))
+#define CORE_GL_EXT_texture_shared_exponent         (__CORE_GLES_VAR(bES30))
 #define CORE_GL_MESA_pack_invert                    (false)
 #define CORE_GL_NVX_gpu_memory_info                 (false)
 #define CORE_GL_NV_framebuffer_multisample_coverage (false)

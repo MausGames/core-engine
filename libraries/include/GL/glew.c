@@ -1339,6 +1339,7 @@ GLboolean __GLEW_EXT_shader_image_load_store = GL_FALSE;
 GLboolean __GLEW_EXT_texture_compression_rgtc = GL_FALSE;
 GLboolean __GLEW_EXT_texture_compression_s3tc = GL_FALSE;
 GLboolean __GLEW_EXT_texture_filter_anisotropic = GL_FALSE;
+GLboolean __GLEW_EXT_texture_shared_exponent = GL_FALSE;
 GLboolean __GLEW_EXT_texture_storage = GL_FALSE;
 GLboolean __GLEW_INTEL_conservative_rasterization = GL_FALSE;
 GLboolean __GLEW_INTEL_framebuffer_CMAA = GL_FALSE;
@@ -1570,6 +1571,9 @@ static const char * _glewExtensionLookup[] = {
 #endif
 #ifdef GL_EXT_texture_filter_anisotropic
   "GL_EXT_texture_filter_anisotropic",
+#endif
+#ifdef GL_EXT_texture_shared_exponent
+  "GL_EXT_texture_shared_exponent",
 #endif
 #ifdef GL_EXT_texture_storage
   "GL_EXT_texture_storage",
@@ -1896,6 +1900,9 @@ static GLboolean* _glewExtensionEnabled[] = {
 #endif
 #ifdef GL_EXT_texture_filter_anisotropic
   &__GLEW_EXT_texture_filter_anisotropic,
+#endif
+#ifdef GL_EXT_texture_shared_exponent
+  &__GLEW_EXT_texture_shared_exponent,
 #endif
 #ifdef GL_EXT_texture_storage
   &__GLEW_EXT_texture_storage,
@@ -5046,6 +5053,13 @@ GLboolean GLEWAPIENTRY glewIsSupported (const char* name)
         if (_glewStrSame3(&pos, &len, (const GLubyte*)"texture_filter_anisotropic", 26))
         {
           ret = GLEW_EXT_texture_filter_anisotropic;
+          continue;
+        }
+#endif
+#ifdef GL_EXT_texture_shared_exponent
+        if (_glewStrSame3(&pos, &len, (const GLubyte*)"texture_shared_exponent", 23))
+        {
+          ret = GLEW_EXT_texture_shared_exponent;
           continue;
         }
 #endif
