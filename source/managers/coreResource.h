@@ -26,10 +26,11 @@
 
 using coreResourceIndex = coreUint16;   // resource index type
 
-enum coreResourceUpdate : coreBool
+enum coreResourceUpdate : coreUint8
 {
-    CORE_RESOURCE_UPDATE_MANUAL = false,   // updated and managed by the developer
-    CORE_RESOURCE_UPDATE_AUTO   = true     // updated automatically by the resource manager
+    CORE_RESOURCE_UPDATE_MANUAL  = 0u,   // updated and managed by the developer
+    CORE_RESOURCE_UPDATE_AUTO    = 1u,   // updated automatically by the resource manager
+    CORE_RESOURCE_UPDATE_PERSIST = 2u    // loaded on startup and kept in memory
 };
 
 enum coreResourceReset : coreBool
@@ -99,6 +100,7 @@ private:
 
     coreString m_sName;                    // identifier of this resource handle
     coreBool   m_bAutomatic : 1;           // updated automatically by the resource manager
+    coreBool   m_bPersist   : 1;           // loaded on startup and kept in memory
     coreBool   m_bProxy     : 1;           // resource proxy without own resource
     coreBool   m_bUnload    : 1;           // check if resource needs to be unloaded
 
@@ -110,7 +112,7 @@ private:
 
 
 private:
-    coreResourceHandle(coreResource* pResource, coreFile* pFile, const coreChar* pcName, const coreBool bAutomatic)noexcept;
+    coreResourceHandle(coreResource* pResource, coreFile* pFile, const coreChar* pcName, const coreBool bAutomatic, const coreBool bPersist)noexcept;
     ~coreResourceHandle();
 
 
@@ -356,7 +358,7 @@ template <typename T, typename... A> coreResourceHandle* coreResourceManager::Lo
     if(m_apHandle.count_bs(sName)) return m_apHandle.at_bs(sName);
 
     // create new resource handle
-    coreResourceHandle* pNewHandle = MANAGED_NEW(coreResourceHandle, std::is_same_v<T, coreResourceDummy> ? NULL : new T(std::forward<A>(vArgs)...), sPath ? this->RetrieveFile(sPath) : NULL, sName.GetString(), eUpdate ? true : false);
+    coreResourceHandle* pNewHandle = MANAGED_NEW(coreResourceHandle, std::is_same_v<T, coreResourceDummy> ? NULL : new T(std::forward<A>(vArgs)...), sPath ? this->RetrieveFile(sPath) : NULL, sName.GetString(), (eUpdate != CORE_RESOURCE_UPDATE_MANUAL), (eUpdate == CORE_RESOURCE_UPDATE_PERSIST));
 
     m_ResourceLock.Lock();
     {
@@ -371,7 +373,7 @@ template <typename T, typename... A> coreResourceHandle* coreResourceManager::Lo
 template <typename T, typename... A> RETURN_RESTRICT coreResourceHandle* coreResourceManager::LoadNew(A&&... vArgs)const
 {
     // create unique unmanaged resource handle
-    return MANAGED_NEW(coreResourceHandle, std::is_same_v<T, coreResourceDummy> ? NULL : new T(std::forward<A>(vArgs)...), NULL, "", false);
+    return MANAGED_NEW(coreResourceHandle, std::is_same_v<T, coreResourceDummy> ? NULL : new T(std::forward<A>(vArgs)...), NULL, "", false, false);
 }
 
 inline coreResourceHandle* coreResourceManager::LoadProxy(const coreHashString& sName)

@@ -15,11 +15,12 @@ coreResourceIndex                           coreResourceManager::s_iTableStart  
 
 // ****************************************************************
 /* constructor */
-coreResourceHandle::coreResourceHandle(coreResource* pResource, coreFile* pFile, const coreChar* pcName, const coreBool bAutomatic)noexcept
+coreResourceHandle::coreResourceHandle(coreResource* pResource, coreFile* pFile, const coreChar* pcName, const coreBool bAutomatic, const coreBool bPersist)noexcept
 : m_pResource  (pResource)
 , m_pFile      (pFile)
 , m_sName      (pcName)
 , m_bAutomatic (bAutomatic)
+, m_bPersist   (bPersist)
 , m_bProxy     (false)
 , m_bUnload    (false)
 , m_iIndex     (0u)
@@ -34,7 +35,7 @@ coreResourceHandle::coreResourceHandle(coreResource* pResource, coreFile* pFile,
     coreResourceManager::AllocIndex(this);
 
     // always load into memory
-    if(Core::Config->GetBool(CORE_CONFIG_BASE_PERSISTMODE) || DEFINED(_CORE_SWITCH_))
+    if(m_bPersist || Core::Config->GetBool(CORE_CONFIG_BASE_PERSISTMODE) || DEFINED(_CORE_SWITCH_))
     {
         if(m_bAutomatic) this->RefIncrease();
     }
@@ -46,7 +47,7 @@ coreResourceHandle::coreResourceHandle(coreResource* pResource, coreFile* pFile,
 coreResourceHandle::~coreResourceHandle()
 {
     // unload from memory
-    if(Core::Config->GetBool(CORE_CONFIG_BASE_PERSISTMODE) || DEFINED(_CORE_SWITCH_))
+    if(m_bPersist || Core::Config->GetBool(CORE_CONFIG_BASE_PERSISTMODE) || DEFINED(_CORE_SWITCH_))
     {
         if(m_bAutomatic) this->RefDecrease();
     }
