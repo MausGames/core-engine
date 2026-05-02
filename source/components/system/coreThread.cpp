@@ -64,6 +64,8 @@ SDL_Thread* coreThread::StartThread()
             Core::Log->Warning("Thread (%s) could not be started (SDL: %s)", m_sName.c_str(), SDL_GetError());
             m_bActive = false;
         }
+
+        ASSERT(SDL_GetThreadState(m_pThread) == SDL_THREAD_ALIVE)
     }
 
 #endif

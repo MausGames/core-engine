@@ -246,12 +246,14 @@ coreBool CoreDebug::ProcessEvent(const SDL_Event& oEvent)
 
 // ****************************************************************
 /* render texture directly on screen */
-void CoreDebug::DisplayTexture(const coreTexturePtr& pTexture, const coreVector2 vSize)
+void CoreDebug::DisplayTexture(const coreTexturePtr& pTexture, const coreFloat fScale)
 {
     if(!m_bEnabled) return;
 
     if(!m_apDisplay.count(&(*pTexture)))
     {
+        if(!pTexture.IsUsable()) return;
+
         // create new display object
         coreDisplay* pNewDisplay = new coreDisplay();
         m_apDisplay.emplace(&(*pTexture), pNewDisplay);
@@ -259,7 +261,7 @@ void CoreDebug::DisplayTexture(const coreTexturePtr& pTexture, const coreVector2
         // configure output object
         coreObject2D& oOutput = pNewDisplay->oOutput;
         oOutput.DefineProgram("default_2d_program");
-        oOutput.SetSize      (vSize);
+        oOutput.SetSize      (pTexture->GetResolution().LowRatio() * fScale);
         oOutput.SetCenter    (coreVector2(-0.5f,-0.5f));
         oOutput.SetAlignment (coreVector2( 1.0f, 1.0f));
     }

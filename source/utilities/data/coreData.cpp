@@ -59,8 +59,8 @@ extern "C" const coreChar* const* g_ppcArgv      = NULL;
         #define copy_file_range(...) syscall(SYS_copy_file_range, __VA_ARGS__)
     #endif
     #if !__GLIBC_PREREQ(2, 28)
-        #include <linux/fcntl.h>
         #include <linux/stat.h>
+        #define AT_STATX_SYNC_AS_STAT 0x0000
         #define statx(...) syscall(SYS_statx, __VA_ARGS__)
     #endif
 #endif
@@ -894,7 +894,7 @@ coreBool coreData::DetectWayland()
 coreBool coreData::DetectGamescope()
 {
     const coreChar* pcVariable = coreData::GetEnvironment("XDG_CURRENT_DESKTOP");
-    return (pcVariable && std::strstr(pcVariable, "gamescope"));
+    return (pcVariable && std::strstr(pcVariable, "gamescope"));   // strstr
 }
 
 

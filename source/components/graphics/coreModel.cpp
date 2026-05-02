@@ -146,9 +146,9 @@ coreStatus coreModel::Load(coreFile* pFile)
     FOR_EACH(it, oImport.aVertexData)
     {
         // check for valid vertex attributes
-        ASSERT((0.0f <= it->vTexCoord.x)    && (it->vTexCoord.x <= 1.0f) &&
-               (0.0f <= it->vTexCoord.y)    && (it->vTexCoord.y <= 1.0f) &&
-               (it->vNormal.IsNormalized()) && (it->vTangent.xyz().IsNormalized()))
+        ASSERT((it->vTexCoord.x >= 0.0f)    && (it->vTexCoord.x <= 1.0f) &&
+               (it->vTexCoord.y >= 0.0f)    && (it->vTexCoord.y <= 1.0f) &&
+               (it->vNormal.IsNormalized()) && (it->vTangent.xyz().IsNormalized()) && (ABS(it->vTangent.w) == 1.0f))
 
         // find maximum distances from the model center
         vRangeMin.x       = MIN(vRangeMin.x,       it->vPosition.x);

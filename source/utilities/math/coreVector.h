@@ -878,10 +878,10 @@ constexpr coreVector3 coreVector3::Orthonormalized(const coreVector3 vNormal, co
     ASSERT(vNormal.IsNormalized())
 
     const coreVector3 vTan = coreVector3::Cross(vNormal, *this).Normalized();
-    const coreVector3 vDir = coreVector3::Cross(vTan, vNormal);
+    const coreVector3 vBi  = coreVector3::Cross(vTan, vNormal);
 
     if(pvTangent) (*pvTangent) = vTan;
-    return vDir;
+    return vBi;
 }
 
 
