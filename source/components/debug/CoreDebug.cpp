@@ -27,7 +27,7 @@ CoreDebug::coreDisplay::coreDisplay()noexcept
 // ****************************************************************
 /* constructor */
 CoreDebug::coreMeasure::coreMeasure()noexcept
-: iPerfTime   (0u)
+: oPerfTime   ()
 , aaiQuery    {}
 , dCurrentCPU (0.0)
 , dCurrentGPU (0.0)
@@ -305,8 +305,8 @@ void CoreDebug::MeasureStart(const coreHashString& sName)
 
     coreMeasure* pMeasure = m_apMeasure.at(sName);
 
-    // fetch first CPU time value and start GPU performance measurement
-    pMeasure->iPerfTime = SDL_GetPerformanceCounter();
+    // start CPU and GPU performance measurement
+    pMeasure->oPerfTime.Restart();
     if(pMeasure->aaiQuery[0][0]) glQueryCounter(pMeasure->aaiQuery[0].current(), GL_TIMESTAMP);
 
     if(pMeasure == m_pOverall)
@@ -363,8 +363,8 @@ void CoreDebug::MeasureEnd(const coreHashString& sName)
         if(fTime) pcName = PRINT("%s %.2f FPS%s %.2f MB / %.2f MB", pcName, 1.0f / fTime, SDL_GL_GetSwapIntervalInline() ? "*" : "", coreDouble(coreData::ProcessMemory()) / (1024.0 * 1024.0), coreDouble(Core::Graphics->ProcessGpuMemory()) / (1024.0 * 1024.0));
     }
 
-    // fetch second CPU time value and update CPU performance value
-    const coreDouble dDifferenceCPU = coreDouble(SDL_GetPerformanceCounter() - pMeasure->iPerfTime) / Core::System->GetPerfFrequency() * 1.0e03;
+    // update CPU performance value
+    const coreDouble dDifferenceCPU = pMeasure->oPerfTime.GetSeconds() * 1.0e03;
     pMeasure->dCurrentCPU = LERP(pMeasure->dCurrentCPU, dDifferenceCPU, CORE_DEBUG_SMOOTH_FACTOR);
 
     // calculate debug counter differences

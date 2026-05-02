@@ -10,6 +10,10 @@
 #ifndef _CORE_GUARD_TIMER_H_
 #define _CORE_GUARD_TIMER_H_
 
+// TODO 4: do I really need coreTimerPlay and coreTimerGet and should I just add explicit functions?
+// TODO 3: what should happen if m_fValue exceeds multiple m_fEnd
+// TODO 4: use coreElapsed instead of std::time(NULL) in various places
+
 
 // ****************************************************************
 /* timer definitions */
@@ -112,6 +116,28 @@ public:
     inline void UpdateMin(const coreFloat fSpeed, const coreFloat fMin, const coreUint8 iTimeID) {m_fValue = MIN(m_fValue + fSpeed * Core::System->GetTime(iTimeID), fMin);}
     inline void UpdateMax(const coreFloat fSpeed, const coreFloat fMax)                          {m_fValue = MAX(m_fValue + fSpeed * Core::System->GetTime(),        fMax);}
     inline void UpdateMax(const coreFloat fSpeed, const coreFloat fMax, const coreUint8 iTimeID) {m_fValue = MAX(m_fValue + fSpeed * Core::System->GetTime(iTimeID), fMax);}
+};
+
+
+// ****************************************************************
+/* elapsed time class */
+class coreElapsed final
+{
+private:
+    coreUint64 m_iStart;   // high-precision start time value (for calculating time differences)
+
+
+public:
+    coreElapsed()noexcept : m_iStart (0u) {this->Restart();}
+
+    ENABLE_COPY(coreElapsed)
+
+    /* reset start time value */
+    inline void Restart() {m_iStart = SDL_GetPerformanceCounter();}
+
+    /* retrieve current time difference */
+    inline coreDouble GetSeconds()const {return coreDouble(this->GetTicks()) / Core::System->GetPerfFrequency();}
+    inline coreUint64 GetTicks  ()const {return (SDL_GetPerformanceCounter() - m_iStart);}
 };
 
 

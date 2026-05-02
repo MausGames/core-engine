@@ -64,12 +64,12 @@ private:
     /* measure structure */
     struct coreMeasure final
     {
-        coreUint64 iPerfTime;                               // high-precision CPU time value at start
+        coreElapsed oPerfTime;                              // elapsed CPU time value
         coreRing<GLuint, CORE_DEBUG_QUERIES> aaiQuery[2];   // asynchronous GPU timer-query objects
-        coreDouble dCurrentCPU;                             // current CPU performance value
-        coreDouble dCurrentGPU;                             // current GPU performance value
-        coreUint16 aaiCounter[2][CORE_DEBUG_COUNTERS];      // current debug counters (old, diff)
-        coreLabel  oOutput;                                 // label for displaying output
+        coreDouble  dCurrentCPU;                            // current CPU performance value
+        coreDouble  dCurrentGPU;                            // current GPU performance value
+        coreUint16  aaiCounter[2][CORE_DEBUG_COUNTERS];     // current debug counters (old, diff)
+        coreLabel   oOutput;                                // label for displaying output
 
         coreMeasure()noexcept;
     };

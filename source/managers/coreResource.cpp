@@ -159,7 +159,7 @@ void coreResourceManager::UpdateResources(const coreFloat fBudgetSec)
 {
     if(m_bActive)
     {
-        const coreUint64 iStart = SDL_GetPerformanceCounter();
+        const coreElapsed oElapsed;
 
         m_ResourceLock.Lock();
         {
@@ -179,7 +179,7 @@ void coreResourceManager::UpdateResources(const coreFloat fBudgetSec)
                     m_ResourceLock.Lock();
 
                     // test current budget and stop processing
-                    if(coreFloat(coreDouble(SDL_GetPerformanceCounter() - iStart) / Core::System->GetPerfFrequency()) >= fBudgetSec) break;
+                    if(coreFloat(oElapsed.GetSeconds()) >= fBudgetSec) break;
                 }
             }
         }
@@ -192,7 +192,7 @@ void coreResourceManager::UpdateResources(const coreFloat fBudgetSec)
 /* update the resource manager (until loading is finished) */
 void coreResourceManager::UpdateWait(const coreFloat fWaitSec)
 {
-    const coreUint64 iStart = SDL_GetPerformanceCounter();
+    const coreElapsed oElapsed;
 
     do
     {
@@ -203,7 +203,7 @@ void coreResourceManager::UpdateWait(const coreFloat fWaitSec)
         this->UpdateFunctions();
 
         // limit waiting time to prevent deadlocks
-        if(coreFloat(coreDouble(SDL_GetPerformanceCounter() - iStart) / Core::System->GetPerfFrequency()) >= fWaitSec) break;
+        if(coreFloat(oElapsed.GetSeconds()) >= fWaitSec) break;
     }
     while(this->IsLoading() && !DEFINED(_CORE_EMSCRIPTEN_));
 }
