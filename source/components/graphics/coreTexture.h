@@ -22,6 +22,7 @@
 // TODO 3: distribute texture-loading across multiple iterations (maybe only decompression<>processing)
 // TODO 3: allow updating of all cube-map faces at once (native for direct-state, fallback for old function)
 // TODO 3: upload mipmaps with a single PBO (offset?)
+// TODO 5: move specs into indexed table, or encode into uint like SDL_PixelFormat (also for vertex specs)
 
 
 // ****************************************************************

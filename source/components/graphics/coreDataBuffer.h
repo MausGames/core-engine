@@ -10,10 +10,9 @@
 #ifndef _CORE_GUARD_DATABUFFER_H_
 #define _CORE_GUARD_DATABUFFER_H_
 
-// TODO 3: improve vertex attribute array enable/disable for OGL (ES) 2.0 without vertex array objects, cache current enabled arrays, may need reset
+// TODO 5: improve vertex attribute array enable/disable for OGL (ES) 2.0 without vertex array objects, cache current enabled arrays, may need reset
 // TODO 5: <old comment style>
 // TODO 5: check for GL_ARB_map_buffer_alignment and ASSUME_ALIGNED
-// TODO 4: wrap vertexbuffer format into own struct (similar to texture spec)
 // TODO 3: flushing on SyncRead might only be necessary when switching threads (but do I even need sync on the same thread? MapRead will stall and I should use multi-buffering then)
 
 // NOTE: superior objects have to handle resource-resets, to refill the buffers
@@ -21,26 +20,26 @@
 
 // ****************************************************************
 /* data buffer definitions */
-#define CORE_VERTEXBUFFER_FORMAT_FLOAT_2X16 2u, GL_HALF_FLOAT,                  4u,  false   // ARB_half_float_vertex
-#define CORE_VERTEXBUFFER_FORMAT_FLOAT_4X16 4u, GL_HALF_FLOAT,                  8u,  false   // ARB_half_float_vertex
-#define CORE_VERTEXBUFFER_FORMAT_FLOAT_1X32 1u, GL_FLOAT,                       4u,  false   // -
-#define CORE_VERTEXBUFFER_FORMAT_FLOAT_2X32 2u, GL_FLOAT,                       8u,  false   // -
-#define CORE_VERTEXBUFFER_FORMAT_FLOAT_3X32 3u, GL_FLOAT,                       12u, false   // -
-#define CORE_VERTEXBUFFER_FORMAT_FLOAT_4X32 4u, GL_FLOAT,                       16u, false   // -
-#define CORE_VERTEXBUFFER_FORMAT_UNORM_210  4u, GL_UNSIGNED_INT_2_10_10_10_REV, 4u,  false   // ARB_vertex_type_2_10_10_10_rev
-#define CORE_VERTEXBUFFER_FORMAT_UNORM_4X8  4u, GL_UNSIGNED_BYTE,               4u,  false   // -
-#define CORE_VERTEXBUFFER_FORMAT_UNORM_2X16 2u, GL_UNSIGNED_SHORT,              4u,  false   // -
-#define CORE_VERTEXBUFFER_FORMAT_UNORM_4X16 4u, GL_UNSIGNED_SHORT,              8u,  false   // -
-#define CORE_VERTEXBUFFER_FORMAT_SNORM_210  4u, GL_INT_2_10_10_10_REV,          4u,  false   // ARB_vertex_type_2_10_10_10_rev
-#define CORE_VERTEXBUFFER_FORMAT_SNORM_4X8  4u, GL_BYTE,                        4u,  false   // -
-#define CORE_VERTEXBUFFER_FORMAT_SNORM_2X16 2u, GL_SHORT,                       4u,  false   // -
-#define CORE_VERTEXBUFFER_FORMAT_SNORM_4X16 4u, GL_SHORT,                       8u,  false   // -
-#define CORE_VERTEXBUFFER_FORMAT_UINT_4X8   4u, GL_UNSIGNED_BYTE,               4u,  true    // EXT_gpu_shader4
-#define CORE_VERTEXBUFFER_FORMAT_UINT_2X16  2u, GL_UNSIGNED_SHORT,              4u,  true    // EXT_gpu_shader4
-#define CORE_VERTEXBUFFER_FORMAT_UINT_1X32  1u, GL_UNSIGNED_INT,                4u,  true    // EXT_gpu_shader4
-#define CORE_VERTEXBUFFER_FORMAT_INT_4X8    4u, GL_BYTE,                        4u,  true    // EXT_gpu_shader4
-#define CORE_VERTEXBUFFER_FORMAT_INT_2X16   2u, GL_SHORT,                       4u,  true    // EXT_gpu_shader4
-#define CORE_VERTEXBUFFER_FORMAT_INT_1X32   1u, GL_INT,                         4u,  true    // EXT_gpu_shader4
+#define CORE_VERTEX_SPEC_FLOAT_2X16 (coreVertexSpec(GL_HALF_FLOAT,                  2u, 4u,  false))   // ARB_half_float_vertex
+#define CORE_VERTEX_SPEC_FLOAT_4X16 (coreVertexSpec(GL_HALF_FLOAT,                  4u, 8u,  false))   // ARB_half_float_vertex
+#define CORE_VERTEX_SPEC_FLOAT_1X32 (coreVertexSpec(GL_FLOAT,                       1u, 4u,  false))   // -
+#define CORE_VERTEX_SPEC_FLOAT_2X32 (coreVertexSpec(GL_FLOAT,                       2u, 8u,  false))   // -
+#define CORE_VERTEX_SPEC_FLOAT_3X32 (coreVertexSpec(GL_FLOAT,                       3u, 12u, false))   // -
+#define CORE_VERTEX_SPEC_FLOAT_4X32 (coreVertexSpec(GL_FLOAT,                       4u, 16u, false))   // -
+#define CORE_VERTEX_SPEC_UNORM_210  (coreVertexSpec(GL_UNSIGNED_INT_2_10_10_10_REV, 4u, 4u,  false))   // ARB_vertex_type_2_10_10_10_rev
+#define CORE_VERTEX_SPEC_UNORM_4X8  (coreVertexSpec(GL_UNSIGNED_BYTE,               4u, 4u,  false))   // -
+#define CORE_VERTEX_SPEC_UNORM_2X16 (coreVertexSpec(GL_UNSIGNED_SHORT,              2u, 4u,  false))   // -
+#define CORE_VERTEX_SPEC_UNORM_4X16 (coreVertexSpec(GL_UNSIGNED_SHORT,              4u, 8u,  false))   // -
+#define CORE_VERTEX_SPEC_SNORM_210  (coreVertexSpec(GL_INT_2_10_10_10_REV,          4u, 4u,  false))   // ARB_vertex_type_2_10_10_10_rev
+#define CORE_VERTEX_SPEC_SNORM_4X8  (coreVertexSpec(GL_BYTE,                        4u, 4u,  false))   // -
+#define CORE_VERTEX_SPEC_SNORM_2X16 (coreVertexSpec(GL_SHORT,                       2u, 4u,  false))   // -
+#define CORE_VERTEX_SPEC_SNORM_4X16 (coreVertexSpec(GL_SHORT,                       4u, 8u,  false))   // -
+#define CORE_VERTEX_SPEC_UINT_4X8   (coreVertexSpec(GL_UNSIGNED_BYTE,               4u, 4u,  true))    // EXT_gpu_shader4
+#define CORE_VERTEX_SPEC_UINT_2X16  (coreVertexSpec(GL_UNSIGNED_SHORT,              2u, 4u,  true))    // EXT_gpu_shader4
+#define CORE_VERTEX_SPEC_UINT_1X32  (coreVertexSpec(GL_UNSIGNED_INT,                1u, 4u,  true))    // EXT_gpu_shader4
+#define CORE_VERTEX_SPEC_INT_4X8    (coreVertexSpec(GL_BYTE,                        4u, 4u,  true))    // EXT_gpu_shader4
+#define CORE_VERTEX_SPEC_INT_2X16   (coreVertexSpec(GL_SHORT,                       2u, 4u,  true))    // EXT_gpu_shader4
+#define CORE_VERTEX_SPEC_INT_1X32   (coreVertexSpec(GL_INT,                         1u, 4u,  true))    // EXT_gpu_shader4
 
 #define CORE_VERTEXBUFFER_ATTRIBUTES (16u)   // max number of vertex attribute locations (OpenGL minimum, and same as vertex buffer binding point indices)
 
@@ -57,6 +56,20 @@ enum coreDataBufferMap : coreUint8
 {
     CORE_DATABUFFER_MAP_INVALIDATE_ALL = GL_MAP_INVALIDATE_BUFFER_BIT,                             // invalidate complete buffer   (best for complete updates)
     CORE_DATABUFFER_MAP_UNSYNCHRONIZED = GL_MAP_INVALIDATE_RANGE_BIT | GL_MAP_UNSYNCHRONIZED_BIT   // map and unmap unsynchronized (best for partial updates)
+};
+
+
+// ****************************************************************
+/* vertex specification structure */
+struct coreVertexSpec final
+{
+    GLenum    iType;         // vertex data type (e.g. GL_FLOAT)
+    coreUint8 iComponents;   // number of components
+    coreUint8 iBytes;        // size per instance
+    coreBool  bInteger;      // handled as pure integer attribute (instead of UNORM/SNORM)
+
+    coreVertexSpec() = default;
+    constexpr coreVertexSpec(const GLenum iType, const coreUint8 iComponents, const coreUint8 iBytes, const coreBool bInteger)noexcept;
 };
 
 
@@ -140,12 +153,10 @@ private:
     /* vertex attribute array structure */
     struct coreAttribute final
     {
-        GLenum    iType;           // component type (e.g. GL_FLOAT)
-        coreUint8 iLocation;       // attribute location
-        coreUint8 iComponents;     // number of components
-        coreBool  bInteger;        // pure integer attribute
-        coreUint8 iBufferOffset;   // offset within the vertex buffer (multiplied with number of vertices)
-        coreUint8 iVertexOffset;   // offset within the vertex
+        coreVertexSpec oSpec;           // vertex specification (format)
+        coreUint8      iLocation;       // attribute location
+        coreUint8      iBufferOffset;   // offset within the vertex buffer (multiplied with number of vertices)
+        coreUint8      iVertexOffset;   // offset within the vertex
     };
 
     /* vertex stream structure */
@@ -179,7 +190,7 @@ public:
     void Delete();
 
     /* define and activate the vertex structure */
-    void DefineAttribute(const coreUint8 iLocation, const coreUint8 iComponents, const GLenum iType, const coreUint8 iSize, const coreBool bInteger, const coreUint8 iBufferOffset, const coreUint8 iVertexOffset);
+    void DefineAttribute(const coreUint8 iLocation, const coreVertexSpec& oSpec, const coreUint8 iBufferOffset, const coreUint8 iVertexOffset);
     void Activate       (const coreUint8 iDivisor);
 
     /* get object properties */
@@ -222,6 +233,17 @@ public:
     inline const coreUint8&  GetRangeCount()const {return m_iRangeCount;}
     inline const coreUint32& GetRangeSize ()const {return m_iRangeSize;}
 };
+
+
+// ****************************************************************
+/* constructor */
+constexpr coreVertexSpec::coreVertexSpec(const GLenum iType, const coreUint8 iComponents, const coreUint8 iBytes, const coreBool bInteger)noexcept
+: iType       (iType)
+, iComponents (iComponents)
+, iBytes      (iBytes)
+, bInteger    (bInteger)
+{
+}
 
 
 // ****************************************************************

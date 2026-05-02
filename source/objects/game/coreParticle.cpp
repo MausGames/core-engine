@@ -443,17 +443,17 @@ void coreParticleSystem::__Reset(const coreResourceReset eInit)
                 {
                     // create instance data buffers (high quality compression)
                     it->Create(m_iNumParticles, CORE_PARTICLE_INSTANCE_SIZE_HIGH, NULL, CORE_DATABUFFER_STORAGE_DYNAMIC);
-                    it->DefineAttribute(CORE_SHADER_ATTRIBUTE_DIV_POSITION_NUM, CORE_VERTEXBUFFER_FORMAT_FLOAT_3X32, 0u, 0u);
-                    it->DefineAttribute(CORE_SHADER_ATTRIBUTE_DIV_DATA_NUM,     CORE_VERTEXBUFFER_FORMAT_FLOAT_4X16, 0u, 12u);
-                    it->DefineAttribute(CORE_SHADER_ATTRIBUTE_DIV_COLOR_NUM,    CORE_VERTEXBUFFER_FORMAT_UNORM_4X8,  0u, 20u);
+                    it->DefineAttribute(CORE_SHADER_ATTRIBUTE_DIV_POSITION_NUM, CORE_VERTEX_SPEC_FLOAT_3X32, 0u, 0u);
+                    it->DefineAttribute(CORE_SHADER_ATTRIBUTE_DIV_DATA_NUM,     CORE_VERTEX_SPEC_FLOAT_4X16, 0u, 12u);
+                    it->DefineAttribute(CORE_SHADER_ATTRIBUTE_DIV_COLOR_NUM,    CORE_VERTEX_SPEC_UNORM_4X8,  0u, 20u);
                 }
                 else
                 {
                     // create instance data buffers (low quality compression)
                     it->Create(m_iNumParticles, CORE_PARTICLE_INSTANCE_SIZE_LOW, NULL, CORE_DATABUFFER_STORAGE_DYNAMIC);
-                    it->DefineAttribute(CORE_SHADER_ATTRIBUTE_DIV_POSITION_NUM, CORE_VERTEXBUFFER_FORMAT_FLOAT_3X32, 0u, 0u);
-                    it->DefineAttribute(CORE_SHADER_ATTRIBUTE_DIV_DATA_NUM,     CORE_VERTEXBUFFER_FORMAT_FLOAT_3X32, 0u, 12u);
-                    it->DefineAttribute(CORE_SHADER_ATTRIBUTE_DIV_COLOR_NUM,    CORE_VERTEXBUFFER_FORMAT_UNORM_4X8,  0u, 24u);
+                    it->DefineAttribute(CORE_SHADER_ATTRIBUTE_DIV_POSITION_NUM, CORE_VERTEX_SPEC_FLOAT_3X32, 0u, 0u);
+                    it->DefineAttribute(CORE_SHADER_ATTRIBUTE_DIV_DATA_NUM,     CORE_VERTEX_SPEC_FLOAT_3X32, 0u, 12u);
+                    it->DefineAttribute(CORE_SHADER_ATTRIBUTE_DIV_COLOR_NUM,    CORE_VERTEX_SPEC_UNORM_4X8,  0u, 24u);
                 }
 
                 // set vertex data

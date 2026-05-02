@@ -507,21 +507,21 @@ void coreBatchList::__Reset(const coreResourceReset eInit)
                 {
                     // create instance data buffer (high quality compression)
                     it->Create(m_iNumInstances, CORE_BATCHLIST_INSTANCE_SIZE_HIGH, NULL, CORE_DATABUFFER_STORAGE_DYNAMIC);
-                    it->DefineAttribute(CORE_SHADER_ATTRIBUTE_DIV_POSITION_NUM, CORE_VERTEXBUFFER_FORMAT_FLOAT_3X32, 0u, 0u);
-                    it->DefineAttribute(CORE_SHADER_ATTRIBUTE_DIV_SIZE_NUM,     CORE_VERTEXBUFFER_FORMAT_FLOAT_4X16, 0u, 12u);
-                    it->DefineAttribute(CORE_SHADER_ATTRIBUTE_DIV_ROTATION_NUM, CORE_VERTEXBUFFER_FORMAT_SNORM_4X16, 0u, 20u);
-                    it->DefineAttribute(CORE_SHADER_ATTRIBUTE_DIV_COLOR_NUM,    CORE_VERTEXBUFFER_FORMAT_UNORM_4X8,  0u, 28u);
-                    it->DefineAttribute(CORE_SHADER_ATTRIBUTE_DIV_TEXPARAM_NUM, CORE_VERTEXBUFFER_FORMAT_FLOAT_4X16, 0u, 32u);
+                    it->DefineAttribute(CORE_SHADER_ATTRIBUTE_DIV_POSITION_NUM, CORE_VERTEX_SPEC_FLOAT_3X32, 0u, 0u);
+                    it->DefineAttribute(CORE_SHADER_ATTRIBUTE_DIV_SIZE_NUM,     CORE_VERTEX_SPEC_FLOAT_4X16, 0u, 12u);
+                    it->DefineAttribute(CORE_SHADER_ATTRIBUTE_DIV_ROTATION_NUM, CORE_VERTEX_SPEC_SNORM_4X16, 0u, 20u);
+                    it->DefineAttribute(CORE_SHADER_ATTRIBUTE_DIV_COLOR_NUM,    CORE_VERTEX_SPEC_UNORM_4X8,  0u, 28u);
+                    it->DefineAttribute(CORE_SHADER_ATTRIBUTE_DIV_TEXPARAM_NUM, CORE_VERTEX_SPEC_FLOAT_4X16, 0u, 32u);
                 }
                 else
                 {
                     // create instance data buffer (low quality compression)
                     it->Create(m_iNumInstances, CORE_BATCHLIST_INSTANCE_SIZE_LOW, NULL, CORE_DATABUFFER_STORAGE_DYNAMIC);
-                    it->DefineAttribute(CORE_SHADER_ATTRIBUTE_DIV_POSITION_NUM, CORE_VERTEXBUFFER_FORMAT_FLOAT_3X32, 0u, 0u);
-                    it->DefineAttribute(CORE_SHADER_ATTRIBUTE_DIV_SIZE_NUM,     CORE_VERTEXBUFFER_FORMAT_FLOAT_3X32, 0u, 12u);
-                    it->DefineAttribute(CORE_SHADER_ATTRIBUTE_DIV_ROTATION_NUM, CORE_VERTEXBUFFER_FORMAT_SNORM_4X16, 0u, 24u);
-                    it->DefineAttribute(CORE_SHADER_ATTRIBUTE_DIV_COLOR_NUM,    CORE_VERTEXBUFFER_FORMAT_UNORM_4X8,  0u, 32u);
-                    it->DefineAttribute(CORE_SHADER_ATTRIBUTE_DIV_TEXPARAM_NUM, CORE_VERTEXBUFFER_FORMAT_FLOAT_4X32, 0u, 36u);
+                    it->DefineAttribute(CORE_SHADER_ATTRIBUTE_DIV_POSITION_NUM, CORE_VERTEX_SPEC_FLOAT_3X32, 0u, 0u);
+                    it->DefineAttribute(CORE_SHADER_ATTRIBUTE_DIV_SIZE_NUM,     CORE_VERTEX_SPEC_FLOAT_3X32, 0u, 12u);
+                    it->DefineAttribute(CORE_SHADER_ATTRIBUTE_DIV_ROTATION_NUM, CORE_VERTEX_SPEC_SNORM_4X16, 0u, 24u);
+                    it->DefineAttribute(CORE_SHADER_ATTRIBUTE_DIV_COLOR_NUM,    CORE_VERTEX_SPEC_UNORM_4X8,  0u, 32u);
+                    it->DefineAttribute(CORE_SHADER_ATTRIBUTE_DIV_TEXPARAM_NUM, CORE_VERTEX_SPEC_FLOAT_4X32, 0u, 36u);
                 }
 
                 // set vertex data (instancing only)
