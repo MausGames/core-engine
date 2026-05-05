@@ -145,10 +145,11 @@ public:
     inline void SetPitch (const coreFloat fPitch)  {__CORE_MUSIC_LOCKER if(m_iSource && (m_fPitch  != fPitch))  alSourcef(m_iSource, AL_PITCH, fPitch);        m_fPitch  = fPitch;  __CORE_AUDIO_CHECK_PITCH (fPitch)}
 
     /* manage music objects */
-    coreStatus AddMusicFile     (const coreChar* pcPath);
-    coreStatus AddMusicArchive  (const coreChar* pcPath, const coreChar* pcFilter);
-    coreStatus AddMusicDirectory(const coreChar* pcPath, const coreChar* pcFilter);
-    coreStatus DeleteMusic      (const coreUintW iIndex);
+    coreStatus AddMusicFile     (const coreHashString& sPath);
+    coreStatus AddMusicArchive  (const coreHashString& sPath,  const coreChar* pcFilter);
+    coreStatus AddMusicDirectory(const coreChar*       pcPath, const coreChar* pcFilter);
+    coreStatus DeleteMusic      (const coreUintW       iIndex);
+    coreStatus DeleteMusicName  (const coreHashString& sName);
     void ClearMusic();
 
     /* switch current music object */

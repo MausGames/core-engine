@@ -138,12 +138,12 @@ public:
     coreStatus Save(const coreChar* pcPath = NULL);
 
     /* manage file objects */
-    coreFile*  CreateFile(const coreChar* pcPath, coreByte* pData, const coreUint32 iSize, const coreBool bExtern = false);
-    coreStatus AddFile   (const coreChar* pcPath, const coreChar* pcNewPath = NULL);
-    coreStatus AddFile   (coreFile*       pFile,  const coreChar* pcNewPath = NULL);
-    coreStatus DeleteFile(const coreUintW iIndex);
-    coreStatus DeleteFile(const coreChar* pcPath);
-    coreStatus DeleteFile(const coreFile* pFile);
+    coreFile*  CreateFile(const coreHashString& sPath, coreByte* pData, const coreUint32 iSize, const coreBool bExtern = false);
+    coreStatus AddFile   (const coreHashString& sPath, const coreChar* pcNewPath = NULL);
+    coreStatus AddFile   (coreFile*             pFile, const coreChar* pcNewPath = NULL);
+    coreStatus DeleteFile(const coreUintW       iIndex);
+    coreStatus DeleteFile(const coreHashString& sPath);
+    coreStatus DeleteFile(const coreFile*       pFile);
     void ClearFiles();
 
     /* access file objects */

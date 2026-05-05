@@ -281,21 +281,21 @@ void coreMusicPlayer::Pause()
 
 // ****************************************************************
 /* add music object from file */
-coreStatus coreMusicPlayer::AddMusicFile(const coreChar* pcPath)
+coreStatus coreMusicPlayer::AddMusicFile(const coreHashString& sPath)
 {
     // load from path
-    return this->__AddMusic(Core::Manager::Resource->RetrieveFile(pcPath));
+    return this->__AddMusic(Core::Manager::Resource->RetrieveFile(sPath));
 }
 
 
 // ****************************************************************
 /* add music objects from archive */
-coreStatus coreMusicPlayer::AddMusicArchive(const coreChar* pcPath, const coreChar* pcFilter)
+coreStatus coreMusicPlayer::AddMusicArchive(const coreHashString& sPath, const coreChar* pcFilter)
 {
     coreBool bStatus = false;
 
     // retrieve archive with resource files
-    coreArchive* pArchive = Core::Manager::Resource->RetrieveArchive(pcPath);
+    coreArchive* pArchive = Core::Manager::Resource->RetrieveArchive(sPath);
 
     // try to add all files to the music-player
     for(coreUintW i = 0u, ie = pArchive->GetNumFiles(); i < ie; ++i)
@@ -360,6 +360,16 @@ coreStatus coreMusicPlayer::DeleteMusic(const coreUintW iIndex)
     else if(iIndex == m_iCurIndex) this->Select(0u);
 
     return CORE_OK;
+}
+
+coreStatus coreMusicPlayer::DeleteMusicName(const coreHashString& sName)
+{
+    // search for file name
+    const coreUintW iIndex = m_apMusic.index(sName);
+    WARN_IF(iIndex >= m_apMusic.size()) return CORE_INVALID_INPUT;
+
+    // remove selected music object
+    return this->DeleteMusic(iIndex);
 }
 
 

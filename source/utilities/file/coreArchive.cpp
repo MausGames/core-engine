@@ -626,17 +626,17 @@ coreStatus coreArchive::Save(const coreChar* pcPath)
 
 // ****************************************************************
 /* create file object */
-coreFile* coreArchive::CreateFile(const coreChar* pcPath, coreByte* pData, const coreUint32 iSize, const coreBool bExtern)
+coreFile* coreArchive::CreateFile(const coreHashString& sPath, coreByte* pData, const coreUint32 iSize, const coreBool bExtern)
 {
     // check already existing file
-    WARN_IF(m_apFile.count_bs(pcPath))
+    WARN_IF(m_apFile.count_bs(sPath))
     {
-        Core::Log->Warning("File (%s) already exists in Archive (%s)", pcPath, m_sPath.c_str());
+        Core::Log->Warning("File (%s) already exists in Archive (%s)", sPath.GetString(), m_sPath.c_str());
         return NULL;
     }
 
     // create and add new file object
-    coreFile* pFile = new coreFile(pcPath, pData, iSize, bExtern);
+    coreFile* pFile = new coreFile(sPath.GetString(), pData, iSize, bExtern);
     this->AddFile(pFile);
 
     return pFile;
@@ -645,17 +645,17 @@ coreFile* coreArchive::CreateFile(const coreChar* pcPath, coreByte* pData, const
 
 // ****************************************************************
 /* add file object */
-coreStatus coreArchive::AddFile(const coreChar* pcPath, const coreChar* pcNewPath)
+coreStatus coreArchive::AddFile(const coreHashString& sPath, const coreChar* pcNewPath)
 {
     // check already existing file
-    WARN_IF(m_apFile.count_bs(pcPath))
+    WARN_IF(m_apFile.count_bs(sPath))
     {
-        Core::Log->Warning("File (%s) already exists in Archive (%s)", pcPath, m_sPath.c_str());
+        Core::Log->Warning("File (%s) already exists in Archive (%s)", sPath.GetString(), m_sPath.c_str());
         return CORE_INVALID_INPUT;
     }
 
     // open and add new file object
-    return this->AddFile(new coreFile(pcPath), pcNewPath);
+    return this->AddFile(new coreFile(sPath.GetString()), pcNewPath);
 }
 
 coreStatus coreArchive::AddFile(coreFile* pFile, const coreChar* pcNewPath)
@@ -699,13 +699,13 @@ coreStatus coreArchive::DeleteFile(const coreUintW iIndex)
     return CORE_OK;
 }
 
-coreStatus coreArchive::DeleteFile(const coreChar* pcPath)
+coreStatus coreArchive::DeleteFile(const coreHashString& sPath)
 {
-    if(!m_apFile.count_bs(pcPath)) return CORE_INVALID_INPUT;
+    if(!m_apFile.count_bs(sPath)) return CORE_INVALID_INPUT;
 
     // remove and delete file object
-    SAFE_DELETE(m_apFile.at_bs(pcPath))
-    m_apFile.erase_bs(pcPath);
+    SAFE_DELETE(m_apFile.at_bs(sPath))
+    m_apFile.erase_bs(sPath);
 
     return CORE_OK;
 }
