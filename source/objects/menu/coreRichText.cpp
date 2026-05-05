@@ -316,11 +316,11 @@ void coreRichText::AssignStyle(const coreHashString& sName, const coreHashString
     }
 
     // save font style definition
-    oStyle.pFont        = Core::Manager::Resource->Get<coreFont>(sFont);
+    oStyle.pFont        = Core::Manager::Resource->Get(sFont);
     oStyle.iHeight      = iHeight;
     oStyle.iOutline     = iOutline;
-    oStyle.pProgram     = Core::Manager::Resource->Get<coreProgram>(iOutline ? "default_label_sharp_program"      : "default_label_smooth_program");
-    oStyle.pProgramInst = Core::Manager::Resource->Get<coreProgram>(iOutline ? "default_label_sharp_inst_program" : "default_label_smooth_inst_program");
+    oStyle.pProgram     = Core::Manager::Resource->Get(iOutline ? "default_label_sharp_program"      : "default_label_smooth_program");
+    oStyle.pProgramInst = Core::Manager::Resource->Get(iOutline ? "default_label_sharp_inst_program" : "default_label_smooth_inst_program");
 
     // invoke texture generation
     this->RegenerateTexture(sName);

@@ -61,8 +61,8 @@ void coreButton::Construct(const coreHashString& sIdle, const coreHashString& sB
 void coreButton::Construct(const coreHashString& sIdle, const coreHashString& sBusy)
 {
     // load background textures
-    if(sIdle) m_apBackground[0] = Core::Manager::Resource->Get<coreTexture>(sIdle);
-    if(sBusy) m_apBackground[1] = Core::Manager::Resource->Get<coreTexture>(sBusy);
+    if(sIdle) m_apBackground[0] = Core::Manager::Resource->Get(sIdle);
+    if(sBusy) m_apBackground[1] = Core::Manager::Resource->Get(sBusy);
     m_apTexture[0] = m_apBackground[0];
 
     // load shader-program

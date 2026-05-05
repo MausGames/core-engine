@@ -227,7 +227,7 @@ public:
     template <typename T>                                void                Free        (coreResourcePtr<T>* OUTPUT pptResourcePtr);
 
     /* get existing resource handle */
-    template <typename T> inline coreResourceHandle* Get(const coreHashString& sName) {if(!sName) return NULL; ASSERT(m_apHandle.count_bs(sName)) return this->Load<T>(sName, CORE_RESOURCE_UPDATE_MANUAL, NULL);}
+    inline coreResourceHandle* Get(const coreHashString& sName)const {if(!sName) return NULL; WARN_IF(!m_apHandle.count_bs(sName)) return NULL; return m_apHandle.at_bs(sName);}
 
     /* retrieve archives and resource files */
     coreArchive* RetrieveArchive(const coreHashString& sPath);
@@ -236,13 +236,13 @@ public:
 
     /* point resource proxy to foreign handle */
     void        AssignProxy(coreResourceHandle*   pProxy, coreResourceHandle*   pForeign);
-    inline void AssignProxy(coreResourceHandle*   pProxy, const coreHashString& sForeign) {this->AssignProxy(pProxy,                               this->Get<coreResourceDummy>(sForeign));}
-    inline void AssignProxy(const coreHashString& sProxy, coreResourceHandle*   pForeign) {this->AssignProxy(this->Get<coreResourceDummy>(sProxy), pForeign);}
-    inline void AssignProxy(const coreHashString& sProxy, const coreHashString& sForeign) {this->AssignProxy(this->Get<coreResourceDummy>(sProxy), this->Get<coreResourceDummy>(sForeign));}
+    inline void AssignProxy(coreResourceHandle*   pProxy, const coreHashString& sForeign) {this->AssignProxy(pProxy,            this->Get(sForeign));}
+    inline void AssignProxy(const coreHashString& sProxy, coreResourceHandle*   pForeign) {this->AssignProxy(this->Get(sProxy), pForeign);}
+    inline void AssignProxy(const coreHashString& sProxy, const coreHashString& sForeign) {this->AssignProxy(this->Get(sProxy), this->Get(sForeign));}
 
     /* refresh resource proxy */
     void        RefreshProxy(coreResourceHandle*   pProxy);
-    inline void RefreshProxy(const coreHashString& sProxy) {this->RefreshProxy(this->Get<coreResourceDummy>(sProxy));}
+    inline void RefreshProxy(const coreHashString& sProxy) {this->RefreshProxy(this->Get(sProxy));}
 
     /* unload all unreferenced resources */
     void ApplyNullify();

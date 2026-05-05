@@ -103,6 +103,6 @@ void coreCheckBox::__Construct(const coreHashString& sIdleChecked, const coreHas
     // load background textures
     m_apUnchecked[0] = m_apBackground[0];
     m_apUnchecked[1] = m_apBackground[1];
-    if(sIdleChecked) m_apChecked[0] = Core::Manager::Resource->Get<coreTexture>(sIdleChecked);
-    if(sBusyChecked) m_apChecked[1] = Core::Manager::Resource->Get<coreTexture>(sBusyChecked);
+    if(sIdleChecked) m_apChecked[0] = Core::Manager::Resource->Get(sIdleChecked);
+    if(sBusyChecked) m_apChecked[1] = Core::Manager::Resource->Get(sBusyChecked);
 }

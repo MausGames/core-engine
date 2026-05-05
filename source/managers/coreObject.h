@@ -72,10 +72,10 @@ public:
     /* define the visual appearance */
     inline void DefineTexture(const coreUintW iUnit, std::nullptr_t)                 {ASSERT(iUnit < CORE_TEXTURE_UNITS) m_apTexture[iUnit] = NULL;}
     inline void DefineTexture(const coreUintW iUnit, const coreTexturePtr& pTexture) {ASSERT(iUnit < CORE_TEXTURE_UNITS) m_apTexture[iUnit] = pTexture;}
-    inline void DefineTexture(const coreUintW iUnit, const coreHashString& sName)    {ASSERT(iUnit < CORE_TEXTURE_UNITS) m_apTexture[iUnit] = Core::Manager::Resource->Get<coreTexture>(sName);}
+    inline void DefineTexture(const coreUintW iUnit, const coreHashString& sName)    {ASSERT(iUnit < CORE_TEXTURE_UNITS) m_apTexture[iUnit] = Core::Manager::Resource->Get(sName);}
     inline void DefineProgram(std::nullptr_t)                                        {m_pProgram = NULL;}
     inline void DefineProgram(const coreProgramPtr& pProgram)                        {m_pProgram = pProgram;}
-    inline void DefineProgram(const coreHashString& sName)                           {m_pProgram = Core::Manager::Resource->Get<coreProgram>(sName);}
+    inline void DefineProgram(const coreHashString& sName)                           {m_pProgram = Core::Manager::Resource->Get(sName);}
 
     /* check for enabled object routines */
     inline coreBool IsEnabled(const coreObjectEnable eEnabled)const {ASSERT(eEnabled) return HAS_FLAG(m_eEnabled, eEnabled);}

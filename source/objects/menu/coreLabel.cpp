@@ -60,7 +60,7 @@ void coreLabel::Construct(const coreHashString& sFont, const coreUint16 iHeight,
     m_iOutline = iOutline;
 
     // load font
-    m_pFont = Core::Manager::Resource->Get<coreFont>(sFont);
+    m_pFont = Core::Manager::Resource->Get(sFont);
 
     // load shader-program
     this->DefineProgram(iOutline ? "default_label_sharp_program" : "default_label_smooth_program");
