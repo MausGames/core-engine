@@ -1400,7 +1400,7 @@ void coreData::HeapFree(void* pHeap, void** OUTPUT ppPointer)
 
 #elif defined(_CORE_EMSCRIPTEN_)
 
-    ASSERT(mi_heap_check_owned(s_cast<mi_heap_t*>(pHeap), *ppPointer))
+    ASSERT(mi_heap_contains(s_cast<mi_heap_t*>(pHeap), *ppPointer))
     mi_free(*ppPointer);
 
 #else
@@ -1911,7 +1911,7 @@ coreBool coreData::DirectoryWritable(const coreChar* pcPath)
     #if defined(_CORE_LINUX_)
 
         // create temporary file (not supported on every filesystem)
-        const coreInt32 iFile = open(pcPath, O_WRONLY | O_TMPFILE, S_IRWXU);
+        const coreInt32 iFile = open(pcPath, O_WRONLY | O_TMPFILE, S_IRWXU | S_IRWXG | S_IRWXO);
         if(iFile != -1)
         {
             // close and (automatically) delete file again
@@ -2069,7 +2069,7 @@ coreStatus coreData::DirectoryCreate(const coreChar* pcPath)
 #if defined(_CORE_WINDOWS_)
     if(CreateDirectoryW(coreData::__ToWideChar(pcPath), NULL)) return CORE_OK;
 #else
-    if(!mkdir(pcPath, S_IRWXU)) return CORE_OK;
+    if(!mkdir(pcPath, S_IRWXU | S_IRWXG | S_IRWXO)) return CORE_OK;
 #endif
 
     return CORE_ERROR_FILE;

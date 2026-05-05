@@ -149,6 +149,7 @@ public:
     inline void InspectValue(const coreHashString& sName, const coreUint32  iValue) {this->InspectValue(sName, "%u",                     iValue);}
     inline void InspectValue(const coreHashString& sName, const coreUint64  iValue) {this->InspectValue(sName, "%llu",                   iValue);}
     inline void InspectValue(const coreHashString& sName, const coreFloat   fValue) {this->InspectValue(sName, "%.5f",                   fValue);}
+    inline void InspectValue(const coreHashString& sName, const coreDouble  dValue) {this->InspectValue(sName, "%.5f",                   dValue);}
     inline void InspectValue(const coreHashString& sName, const coreVector2 vValue) {this->InspectValue(sName, "%.5f, %.5f",             vValue.x, vValue.y);}
     inline void InspectValue(const coreHashString& sName, const coreVector3 vValue) {this->InspectValue(sName, "%.5f, %.5f, %.5f",       vValue.x, vValue.y, vValue.z);}
     inline void InspectValue(const coreHashString& sName, const coreVector4 vValue) {this->InspectValue(sName, "%.5f, %.5f, %.5f, %.5f", vValue.x, vValue.y, vValue.z, vValue.w);}

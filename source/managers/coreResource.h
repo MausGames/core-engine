@@ -232,7 +232,7 @@ public:
     /* retrieve archives and resource files */
     coreArchive* RetrieveArchive(const coreHashString& sPath);
     coreFile*    RetrieveFile   (const coreHashString& sPath);
-    void         DirectoryScan  (const coreChar* pcPath, const coreChar* pcFilter, coreList<coreString>* OUTPUT pasOutput);
+    void         DirectoryScan  (const coreChar* pcPath, const coreChar* pcFilter, coreList<coreString>* OUTPUT pasOutput)const;
 
     /* point resource proxy to foreign handle */
     void        AssignProxy(coreResourceHandle*   pProxy, coreResourceHandle*   pForeign);

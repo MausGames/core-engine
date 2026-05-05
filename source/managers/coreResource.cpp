@@ -244,7 +244,7 @@ coreFile* coreResourceManager::RetrieveFile(const coreHashString& sPath)
         // check archives
         FOR_EACH(it, m_apArchive)
         {
-            coreFile* pFile = (*it)->GetFile(sPath.GetString());
+            coreFile* pFile = (*it)->GetFile(sPath);
             if(pFile) return pFile;
         }
 
@@ -265,7 +265,7 @@ coreFile* coreResourceManager::RetrieveFile(const coreHashString& sPath)
 
 // ****************************************************************
 /* retrieve relative paths of all available resource files */
-void coreResourceManager::DirectoryScan(const coreChar* pcPath, const coreChar* pcFilter, coreList<coreString>* OUTPUT pasOutput)
+void coreResourceManager::DirectoryScan(const coreChar* pcPath, const coreChar* pcFilter, coreList<coreString>* OUTPUT pasOutput)const
 {
     ASSERT(pcPath && pcFilter && pasOutput)
 
