@@ -27,6 +27,7 @@
     #include <sys/system_properties.h>
 #elif defined(_CORE_EMSCRIPTEN_)
     #include <mimalloc.h>
+    #include <emscripten/heap.h>
 #endif
 #if !defined(_CORE_WINDOWS_)
     #include <unistd.h>
@@ -151,6 +152,11 @@ coreUint64 coreData::ProcessMemory()
         return oInfo.resident_size;
     }
 
+#elif defined(_CORE_EMSCRIPTEN_)
+
+    // retrieve current WebAssembly memory size
+    return emscripten_get_heap_size();   // same as system memory
+
 #endif
 
     return 0u;
@@ -253,6 +259,17 @@ coreBool coreData::SystemMemory(coreUint64* OUTPUT piAvailable, coreUint64* OUTP
         }
     }
 
+#elif defined(_CORE_EMSCRIPTEN_)
+
+    // retrieve current WebAssembly memory size
+    const coreUintW iSize = emscripten_get_heap_size();   // same as process memory
+    const coreUintW iMax  = emscripten_get_heap_max();
+
+    // return memory values
+    if(piAvailable) (*piAvailable) = iMax - iSize;
+    if(piTotal)     (*piTotal)     = iMax;
+    return true;
+
 #endif
 
     // could not get physical system memory
@@ -278,7 +295,7 @@ coreBool coreData::SystemSpace(coreUint64* OUTPUT piAvailable, coreUint64* OUTPU
         return true;
     }
 
-#elif defined(_CORE_LINUX_) || defined(_CORE_MACOS_)
+#elif defined(_CORE_LINUX_) || defined(_CORE_MACOS_) || defined(_CORE_EMSCRIPTEN_)
 
     struct statvfs oBuffer;
 
@@ -1073,7 +1090,7 @@ coreStatus coreData::SetEnvironment(const coreChar* pcName, const coreChar* pcVa
     // create, replace, or remove environment variable
     if(!_wputenv_s(coreData::__ToWideChar(pcName), pcValue ? coreData::__ToWideChar(pcValue) : L"")) return CORE_OK;   // SetEnvironmentVariable is unreliable
 
-#elif defined(_CORE_LINUX_) || defined(_CORE_MACOS_) || defined(_CORE_SWITCH_)
+#elif defined(_CORE_LINUX_) || defined(_CORE_MACOS_) || defined(_CORE_EMSCRIPTEN_) || defined(_CORE_SWITCH_)
 
     if(pcValue && pcValue[0])
     {
@@ -1102,7 +1119,7 @@ const coreChar* coreData::GetEnvironment(const coreChar* pcName)
 
     return coreData::__ToAnsiChar(_wgetenv(coreData::__ToWideChar(pcName)));
 
-#elif defined(_CORE_LINUX_) || defined(_CORE_MACOS_) || defined(_CORE_SWITCH_)
+#elif defined(_CORE_LINUX_) || defined(_CORE_MACOS_) || defined(_CORE_EMSCRIPTEN_) || defined(_CORE_SWITCH_)
 
     return std::getenv(pcName);
 
