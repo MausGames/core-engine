@@ -44,6 +44,16 @@ Module["canvas"] = g_pCanvas;
 
 
 // ****************************************************************
+Module["arguments"] = (Module["arguments"] || []);
+
+const asSearchParam = window.location.search.substring(1).split("&");
+for(let i = 0; i < asSearchParam.length; ++i)
+{
+    Module["arguments"].push("-" + asSearchParam[i]);
+}
+
+
+// ****************************************************************
 function PreRun()
 {
     FS.mkdir("/core");
