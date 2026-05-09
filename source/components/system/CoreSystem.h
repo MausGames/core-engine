@@ -10,15 +10,16 @@
 #ifndef _CORE_GUARD_SYSTEM_H_
 #define _CORE_GUARD_SYSTEM_H_
 
-// TODO 3: some drivers may "merge" displays
+// TODO 5: some drivers may "merge" displays
 // TODO 3: there should be no borderless window mode, only borderless fullscreen mode with adjusted resolution
 // TODO 5: <old comment style>
 // TODO 3: handle saving config on maximized window, also save last window position ?
 // TODO 2: as of now, setting window position does not work on Wayland and returns false + SDL_GetError (in Wayland_SetWindowPosition)
-// TODO 3: handle high DPI better ? NSHighResolutionCapable (macOS), SDL_PROP_WINDOW_CREATE_HIGH_PIXEL_DENSITY_BOOLEAN, SDL_GetWindowDisplayScale(), SDL_GetWindowPixelDensity(), SDL_GetWindowSizeInPixels()
 // TODO 4: SDL_IsMainThread
 // TODO 3: setting SDL_SetWindowFullscreen to true on Gamescope will prevent resolution changes (after max res?) until the window is recreated
 // TODO 2: Wayland returns something else on SDL_GetWindowSize (fix) as would be expected based on vWorkAreaRes, so g_vGameResolution in Eigengrau is not correct on a Reset
+// TODO 2: SDL_GetDisplayUsableBounds on XWayland with non-100% content scale returns complete useless values (on both taskbar and non-taskbar displays) (way too low without any scale relationship, sometimes only one axis, sometimes both)
+// TODO 3: handle SDL_EVENT_DISPLAY_MOVED (iDisplayID ?), SDL_EVENT_DISPLAY_DESKTOP_MODE_CHANGED (vDesktopRes + fDesktopRate), SDL_EVENT_DISPLAY_CONTENT_SCALE_CHANGED (fPixelDensity ?), SDL_EVENT_DISPLAY_USABLE_BOUNDS_CHANGED (vWorkAreaRes)
 
 
 // ****************************************************************
@@ -52,6 +53,7 @@ private:
         coreSet<coreSet<coreFloat>> aafAvailableRate;   // all available refresh rates (in Hz) (highest to lowest)
         coreVector2                 vDesktopRes;        // desktop resolution
         coreFloat                   fDesktopRate;       // desktop refresh rate (in Hz)
+        coreFloat                   fPixelDensity;      // desktop pixel-density
         coreVector2                 vWorkAreaRes;       // work area resolution (e.g. without task bar)
         coreVector2                 vMaximumRes;        // highest available resolution (primary on width)
     };
@@ -83,6 +85,7 @@ private:
     coreFloat   m_fCanonBase;                           // canonical base resolution (major axis)
     coreVector2 m_vCanonSize;                           // canonical transform size
     coreFloat   m_fFontFactor;                          // global font factor (relative to current base resolution)
+    coreVector2 m_vCoordSize;                           // window coordinate size (without pixel-density)
 
     SDL_ThreadID m_iMainThread;                         // thread-ID from the main-thread
 
@@ -138,6 +141,7 @@ public:
     inline const coreFloat&      GetCanonBase      ()const                       {return m_fCanonBase;}
     inline const coreVector2&    GetCanonSize      ()const                       {return m_vCanonSize;}
     inline const coreFloat&      GetFontFactor     ()const                       {return m_fFontFactor;}
+    inline const coreVector2&    GetCoordSize      ()const                       {return m_vCoordSize;}
     inline const SDL_ThreadID&   GetMainThread     ()const                       {return m_iMainThread;}
     inline const coreBool&       GetWinFocusLost   ()const                       {return m_bWinFocusLost;}
     inline const coreBool&       GetWinPosChanged  ()const                       {return m_bWinPosChanged;}

@@ -160,25 +160,25 @@ coreBool CoreInput::ProcessEvent(const SDL_Event& oEvent)
     // press mouse button
     case SDL_EVENT_MOUSE_BUTTON_DOWN:
         this->SetMouseButton  (oEvent.button.button, true);
-        this->SetMousePosition(coreVector2(oEvent.button.x, -oEvent.button.y) / Core::System->GetResolution() + coreVector2(-0.5f,0.5f));
+        this->SetMousePosition(coreVector2(oEvent.button.x, -oEvent.button.y) / Core::System->GetCoordSize() + coreVector2(-0.5f,0.5f));
         break;
 
     // release mouse button
     case SDL_EVENT_MOUSE_BUTTON_UP:
         this->SetMouseButton  (oEvent.button.button, false);
-        this->SetMousePosition(coreVector2(oEvent.button.x, -oEvent.button.y) / Core::System->GetResolution() + coreVector2(-0.5f,0.5f));
+        this->SetMousePosition(coreVector2(oEvent.button.x, -oEvent.button.y) / Core::System->GetCoordSize() + coreVector2(-0.5f,0.5f));
         break;
 
     // move mouse position
     case SDL_EVENT_MOUSE_MOTION:
-        this->SetMousePosition(coreVector2(oEvent.motion.x,    -oEvent.motion.y)    / Core::System->GetResolution() + coreVector2(-0.5f,0.5f));
-        this->SetMouseRelative(coreVector2(oEvent.motion.xrel, -oEvent.motion.yrel) / Core::System->GetResolution() + this->GetMouseRelative().xy());
+        this->SetMousePosition(coreVector2(oEvent.motion.x,    -oEvent.motion.y)    / Core::System->GetCoordSize() + coreVector2(-0.5f,0.5f));
+        this->SetMouseRelative(coreVector2(oEvent.motion.xrel, -oEvent.motion.yrel) / Core::System->GetCoordSize() + this->GetMouseRelative().xy());
         break;
 
     // move mouse wheel
     case SDL_EVENT_MOUSE_WHEEL:
         this->SetMouseWheel   (oEvent.wheel.y);
-        this->SetMousePosition(coreVector2(oEvent.wheel.mouse_x, -oEvent.wheel.mouse_y) / Core::System->GetResolution() + coreVector2(-0.5f,0.5f));
+        this->SetMousePosition(coreVector2(oEvent.wheel.mouse_x, -oEvent.wheel.mouse_y) / Core::System->GetCoordSize() + coreVector2(-0.5f,0.5f));
         break;
 
 #endif
@@ -384,7 +384,7 @@ void CoreInput::UseMouseWithKeyboard(const coreInputKey iLeft, const coreInputKe
     if(!vVelocity.IsNull())
     {
         const coreVector2 vPos = this->GetMousePosition() + coreVector2(0.5f,-0.5f);
-        const coreVector2 vNew = (vPos + vVelocity.Normalized() * Core::System->GetCanonSize().yx() * (Core::System->GetTime() * fSpeed)) * Core::System->GetResolution();
+        const coreVector2 vNew = (vPos + vVelocity.Normalized() * Core::System->GetCanonSize().yx() * (Core::System->GetTime() * fSpeed)) * Core::System->GetCoordSize();
         SDL_WarpMouseInWindow(Core::System->GetWindow(), vNew.x, -vNew.y);
     }
 
@@ -409,7 +409,7 @@ void CoreInput::UseMouseWithJoystick(const coreUintW iIndex, const coreUint8 iBu
     if(!vVelocity.IsNull())
     {
         const coreVector2 vPos = this->GetMousePosition() + coreVector2(0.5f,-0.5f);
-        const coreVector2 vNew = (vPos + vVelocity * Core::System->GetCanonSize().yx() * (Core::System->GetTime() * fSpeed)) * Core::System->GetResolution();
+        const coreVector2 vNew = (vPos + vVelocity * Core::System->GetCanonSize().yx() * (Core::System->GetTime() * fSpeed)) * Core::System->GetCoordSize();
         SDL_WarpMouseInWindow(Core::System->GetWindow(), vNew.x, -vNew.y);
     }
 
