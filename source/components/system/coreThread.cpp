@@ -55,7 +55,7 @@ SDL_Thread* coreThread::StartThread()
         SDL_SetPointerProperty(oProps, SDL_PROP_THREAD_CREATE_ENTRY_FUNCTION_POINTER, r_cast<void*>(coreThreadMain));
         SDL_SetStringProperty (oProps, SDL_PROP_THREAD_CREATE_NAME_STRING,            m_sName.c_str());
         SDL_SetPointerProperty(oProps, SDL_PROP_THREAD_CREATE_USERDATA_POINTER,       this);
-        SDL_SetNumberProperty (oProps, SDL_PROP_THREAD_CREATE_STACKSIZE_NUMBER,       1u * 1024u * 1024u);
+        SDL_SetNumberProperty (oProps, SDL_PROP_THREAD_CREATE_STACKSIZE_NUMBER,       512u * 1024u);
 
         // create thread object
         m_pThread = SDL_CreateThreadWithProperties(oProps);

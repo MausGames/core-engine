@@ -11,6 +11,7 @@
 #define _CORE_GUARD_THREAD_H_
 
 // TODO 5: maintain separate sorted token-table to make dependency-lookup faster (or other way to accelerate dependency-lookup)
+// TODO 3: implement configurable stack-size and adjust/reduce sizes for resource-thread and music-thread (but no idea how much stack third-party libs, OS functions and drivers need (on end-user machines), maybe stay conservative)
 
 
 // ****************************************************************

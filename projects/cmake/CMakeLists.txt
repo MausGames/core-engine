@@ -112,7 +112,7 @@ if(CORE_EMSCRIPTEN)
 
     target_link_options(
         CoreEngine INTERFACE
-        -sENVIRONMENT=web -sMAX_WEBGL_VERSION=2 -sGL_ENABLE_GET_PROC_ADDRESS=1 -sWASM_BIGINT=1 -sMALLOC=mimalloc -sALLOW_MEMORY_GROWTH=1 -sSTACK_SIZE=1MB
+        -sENVIRONMENT=web -sMAX_WEBGL_VERSION=2 -sGL_ENABLE_GET_PROC_ADDRESS=1 -sWASM_BIGINT=1 -sMALLOC=mimalloc -sALLOW_MEMORY_GROWTH=1 -sINITIAL_HEAP=64MB -sSTACK_SIZE=512KB
         --preload-file ../../../executable/data_web@/data --shell-file ${BASE_DIRECTORY}/source/additional/emscripten/shell.html --pre-js ${BASE_DIRECTORY}/source/additional/emscripten/pre.js
         $<IF:$<CONFIG:DEBUG>, -O0 -g3 -gsource-map -sASSERTIONS=2 -sGL_ASSERTIONS=1, -Os -flto -sEVAL_CTORS=1 -sGL_TRACK_ERRORS=0 --closure 1>
     )
