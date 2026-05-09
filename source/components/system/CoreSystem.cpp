@@ -103,6 +103,7 @@ CoreSystem::CoreSystem()noexcept
         }
 
         // execute main-thread with higher priority
+        ASSERT(SDL_IsMainThread())
         SDL_SetCurrentThreadPriority(SDL_THREAD_PRIORITY_HIGH);
 
         // disable screen saver
@@ -499,6 +500,8 @@ void CoreSystem::SetWindowTitle(const coreChar* pcTitle)
 /* change the icon of the window */
 void CoreSystem::SetWindowIcon(const coreChar* pcPath)
 {
+#if !defined(_CORE_EMSCRIPTEN_) && !defined(_CORE_SWITCH_)
+
     if(pcPath)
     {
         // retrieve texture file
@@ -517,6 +520,8 @@ void CoreSystem::SetWindowIcon(const coreChar* pcPath)
     }
 
     Core::Log->Info("Icon (%s) loaded", pcPath);
+
+#endif
 }
 
 
@@ -524,6 +529,8 @@ void CoreSystem::SetWindowIcon(const coreChar* pcPath)
 /* change the progress bar of the window */
 void CoreSystem::SetWindowProgress(const coreFloat fProgress)
 {
+#if !defined(_CORE_EMSCRIPTEN_) && !defined(_CORE_SWITCH_)
+
     ASSERT((fProgress >= 0.0f) && (fProgress <= 1.0f))
 
     if(SDL_GetWindowProgressValue(m_pWindow) != fProgress)
@@ -532,6 +539,8 @@ void CoreSystem::SetWindowProgress(const coreFloat fProgress)
         SDL_SetWindowProgressState(m_pWindow, fProgress ? SDL_PROGRESS_STATE_NORMAL : SDL_PROGRESS_STATE_NONE);
         SDL_SetWindowProgressValue(m_pWindow, fProgress);
     }
+
+#endif
 }
 
 
@@ -764,7 +773,7 @@ void CoreSystem::__UpdateTime()
         m_afTime[i] = m_fLastTime * m_afTimeSpeed[i];
     }
 
-    // copy unmodified default time (for performance)
+    // copy unmodified default time (for performance reasons)
     m_afTime[CORE_SYSTEM_TIME_DEFAULT] = m_fLastTime;
     STATIC_ASSERT(CORE_SYSTEM_TIME_DEFAULT < ARRAY_SIZE(m_afTime))
 

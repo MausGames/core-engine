@@ -20,6 +20,11 @@
 // TODO 2: implement locked/scoped temp-string return
 // TODO 3: getpwuid_r and getlogin_r
 // TODO 3: see if PRINT and wchar-conversion can be used with stack-only buffers (maybe even custom sized (static)), with the same API as now, but avoid alloca
+// TODO 4: integral overloads of from_char and to_chars are constexpr (though to_chars uses a temp-string)
+// TODO 2: find all functions which are not thread-safe and either change them or add a lock (e.g. nftw)
+// TODO 2: improve all the unreliable file and directory checks (sub-paths, separator handling)
+// TODO 4: when to use #else or individual platforms? #else for generic solutions, individual even for posix stuff? (though return-value at the bottom needs adjustment)
+// TODO 3: posix_fadvise(iFileFrom, 0, iLen, POSIX_FADV_SEQUENTIAL);
 
 
 // ****************************************************************

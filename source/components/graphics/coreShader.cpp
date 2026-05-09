@@ -981,24 +981,28 @@ void coreProgram::__WriteInterface()const
 
             // write active vertex attributes (name, location)
             Core::Log->ListDeeper(CORE_LOG_BOLD("Attributes:") " %d", iNumInput);
-            for(coreUintW i = 0u, ie = iNumInput; i < ie; ++i)
             {
-                glGetProgramResourceName(m_iIdentifier, GL_PROGRAM_INPUT, i, ARRAY_SIZE(acName), NULL, acName);
-                glGetProgramResourceiv  (m_iIdentifier, GL_PROGRAM_INPUT, i, 1, aiProperty, 1,   NULL, aiValue);
+                for(coreUintW i = 0u, ie = iNumInput; i < ie; ++i)
+                {
+                    glGetProgramResourceName(m_iIdentifier, GL_PROGRAM_INPUT, i, ARRAY_SIZE(acName), NULL, acName);
+                    glGetProgramResourceiv  (m_iIdentifier, GL_PROGRAM_INPUT, i, 1, aiProperty, 1,   NULL, aiValue);
 
-                Core::Log->ListAdd("%s: %d", acName, aiValue[0]);
+                    Core::Log->ListAdd("%s: %d", acName, aiValue[0]);
+                }
             }
             Core::Log->ListEnd();
 
             // write active uniforms (name, location, block index, block offset)
             Core::Log->ListDeeper(CORE_LOG_BOLD("Uniforms:") " %d", iNumUniform);
-            for(coreUintW i = 0u, ie = iNumUniform; i < ie; ++i)
             {
-                glGetProgramResourceName(m_iIdentifier, GL_UNIFORM, i, ARRAY_SIZE(acName), NULL, acName);
-                glGetProgramResourceiv  (m_iIdentifier, GL_UNIFORM, i, 3, aiProperty, 3,   NULL, aiValue);
+                for(coreUintW i = 0u, ie = iNumUniform; i < ie; ++i)
+                {
+                    glGetProgramResourceName(m_iIdentifier, GL_UNIFORM, i, ARRAY_SIZE(acName), NULL, acName);
+                    glGetProgramResourceiv  (m_iIdentifier, GL_UNIFORM, i, 3, aiProperty, 3,   NULL, aiValue);
 
-                if(aiValue[0] >= 0) Core::Log->ListAdd("%s: %d",    acName, aiValue[0]);
-                               else Core::Log->ListAdd("%s: %d/%d", acName, aiValue[1], aiValue[2]);
+                    if(aiValue[0] >= 0) Core::Log->ListAdd("%s: %d",    acName, aiValue[0]);
+                                   else Core::Log->ListAdd("%s: %d/%d", acName, aiValue[1], aiValue[2]);
+                }
             }
             Core::Log->ListEnd();
         }

@@ -139,7 +139,7 @@ CoreAudio::CoreAudio()noexcept
         alGenEffects             (CORE_AUDIO_EFFECTS, m_aiEffect);
         alGenAuxiliaryEffectSlots(CORE_AUDIO_EFFECTS, m_aiEffectSlot);
 
-        // preset disabled audio effect slot (for performance)
+        // preset disabled audio effect slot (for performance reasons)
         m_aiEffectSlot[CORE_AUDIO_EFFECT_NONE] = AL_EFFECTSLOT_NULL;
         STATIC_ASSERT(CORE_AUDIO_EFFECT_NONE < ARRAY_SIZE(m_aiEffectSlot))
     }

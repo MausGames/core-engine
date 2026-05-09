@@ -51,7 +51,7 @@ CoreInput::CoreInput()noexcept
         }
         Core::Log->ListEnd();
     }
-    else Core::Log->Info("No Keyboards found");
+    else Core::Log->Warning("No Keyboards found");
 
     // log all available mice
     coreInt32      iMouseCount = 0u;
@@ -67,7 +67,7 @@ CoreInput::CoreInput()noexcept
         }
         Core::Log->ListEnd();
     }
-    else Core::Log->Info("No Mice found");
+    else Core::Log->Warning("No Mice found");
 
     // start up joystick input
     this->__OpenJoysticks();
@@ -86,12 +86,12 @@ CoreInput::CoreInput()noexcept
         }
         Core::Log->ListEnd();
     }
-    else Core::Log->Info("No Touch Devices found");
+    else Core::Log->Warning("No Touch Devices found");
 
     // log screen keyboard support
     if(SDL_HasScreenKeyboardSupport())
-         Core::Log->Info("Screen Keyboard supported");
-    else Core::Log->Info("Screen Keyboard not supported");
+         Core::Log->Info   ("Screen Keyboard supported");
+    else Core::Log->Warning("Screen Keyboard not supported");
 
     // clear all last pressed input buttons
     m_Keyboard.iLast = CORE_INPUT_INVALID_KEYBOARD;
@@ -295,7 +295,7 @@ coreBool CoreInput::ProcessEvent(const SDL_Event& oEvent)
     // move finger
     case SDL_EVENT_FINGER_MOTION:
         this->SetTouchPosition(oEvent.tfinger.fingerID, coreVector2(oEvent.tfinger.x,  -oEvent.tfinger.y)  + coreVector2(-0.5f,0.5f));
-        this->SetTouchRelative(oEvent.tfinger.fingerID, coreVector2(oEvent.tfinger.dx, -oEvent.tfinger.dy) + this->GetTouchRelative(coreUintW(oEvent.tfinger.fingerID)));
+        this->SetTouchRelative(oEvent.tfinger.fingerID, coreVector2(oEvent.tfinger.dx, -oEvent.tfinger.dy) + this->GetTouchRelative(oEvent.tfinger.fingerID));
         this->SetTouchPressure(oEvent.tfinger.fingerID, oEvent.tfinger.pressure);
         break;
 
@@ -688,7 +688,7 @@ void CoreInput::__OpenJoysticks()
             return (A.iJoystickID < B.iJoystickID);
         });
     }
-    else Core::Log->Info("No Joysticks or Gamepads found");
+    else Core::Log->Warning("No Joysticks or Gamepads found");
 
     // append empty/merged joystick object
     m_aJoystick.emplace_back();

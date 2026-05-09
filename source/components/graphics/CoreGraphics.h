@@ -19,6 +19,7 @@
 // TODO 2: offset-binding is expensive on ANGLE (according to docs)
 // TODO 3: implement more granular default screenshot naming (currently you can basically create only one screenshot per second)
 // TODO 3: Mozilla Developer Network says alpha should be enabled on the backbuffer for performance reasons, but Emscripten documentation says the opposite
+// TODO 3: emscripten: emscripten_set_main_loop_timing: Cannot set timing mode for main loop since a main loop does not exist! Call emscripten_set_main_loop first to set one up.
 
 
 // ****************************************************************

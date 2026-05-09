@@ -43,7 +43,8 @@ static void SignalHandler(const int iSignal, siginfo_t* pInfo, void* pContext)
         malloc_info(0, pFile);
 
         // write signal information
-        fwrite(pInfo, sizeof(siginfo_t), 1u, pFile);
+        fwrite(pInfo,    sizeof(siginfo_t),  1u, pFile);
+        fwrite(pContext, sizeof(ucontext_t), 1u, pFile);
 
         // close file
         fclose(pFile);

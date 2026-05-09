@@ -992,7 +992,7 @@ void coreData::LogCommandLine()
     if(s_apcCommandLine.empty())
     {
         // log placeholder message
-        Core::Log->Info("No command line arguments");
+        Core::Log->Warning("No command line arguments");
     }
     else
     {
@@ -1046,7 +1046,7 @@ void coreData::SetCommandLine(const coreInt32 iArgc, const coreChar* const* ppcA
 
 
 // ****************************************************************
-/* get command line arguments */
+/* get command line argument */
 const coreChar* coreData::GetCommandLine(const coreHashString& sArgument)
 {
     ASSERT(coreData::StrIsLower(sArgument.GetString()))
