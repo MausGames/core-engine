@@ -114,11 +114,11 @@
 
 // precision qualifiers
 #if defined(GL_ES)
-    #if defined(_CORE_FRAGMENT_SHADER_)
-        precision mediump float;
-    #endif
     #if !defined(GL_FRAGMENT_PRECISION_HIGH)
         #define highp mediump   // in all shaders
+    #endif
+    #if defined(_CORE_FRAGMENT_SHADER_)
+        precision highp float;
     #endif
 #else
     #define highp
