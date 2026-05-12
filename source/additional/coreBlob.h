@@ -47,7 +47,7 @@ using PFNEGLSETBLOBCACHEFUNCSANDROIDPROC = void            (EGLAPIENTRY *) (EGLD
 /* calculate blob-cache verification value */
 static coreUint32 coreGetBlobCacheCheck()
 {
-    return coreHashXXH32(PRINT("%s %s %s", glGetString(GL_RENDERER), glGetString(GL_VERSION), CoreApp::Settings::Version));
+    return coreHashXXH32(PRINT("%s %s %s %d", glGetString(GL_RENDERER), glGetString(GL_VERSION), CoreApp::Settings::Version, DEFINED(_CORE_64BIT_)));
 }
 
 

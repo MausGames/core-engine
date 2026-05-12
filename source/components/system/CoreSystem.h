@@ -19,7 +19,7 @@
 // TODO 3: setting SDL_SetWindowFullscreen to true on Gamescope will prevent resolution changes (after max res?) until the window is recreated
 // TODO 2: Wayland returns something else on SDL_GetWindowSize (fix) as would be expected based on vWorkAreaRes, so g_vGameResolution in Eigengrau is not correct on a Reset
 // TODO 2: SDL_GetDisplayUsableBounds on XWayland with non-100% content scale returns complete useless values (on both taskbar and non-taskbar displays) (way too low without any scale relationship, sometimes only one axis, sometimes both)
-// TODO 3: handle SDL_EVENT_DISPLAY_MOVED (iDisplayID ?), SDL_EVENT_DISPLAY_DESKTOP_MODE_CHANGED (vDesktopRes + fDesktopRate), SDL_EVENT_DISPLAY_CONTENT_SCALE_CHANGED (fPixelDensity ?), SDL_EVENT_DISPLAY_USABLE_BOUNDS_CHANGED (vWorkAreaRes)
+// TODO 3: handle SDL_EVENT_DISPLAY_MOVED (iDisplayID ?), SDL_EVENT_DISPLAY_DESKTOP_MODE_CHANGED (vDesktopRes + fDesktopRate), SDL_EVENT_DISPLAY_CONTENT_SCALE_CHANGED (fPixelDensity ?), SDL_EVENT_DISPLAY_USABLE_BOUNDS_CHANGED (vWorkAreaRes), SDL_EVENT_WINDOW_DISPLAY_SCALE_CHANGED (?)
 
 
 // ****************************************************************

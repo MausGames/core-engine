@@ -31,7 +31,6 @@
 // TODO 3: unique pointers and move semantics for functions taking ownership of a pointer
 // TODO 3: video class
 // TODO 5: path/url class
-// TODO 5: stack-allocator
 // TODO 3: fix constexpr msvc bug (or confirm already fixed) (constexpr-results are not saved after compilation, functions often re-evaluated at run-time)
 // TODO 3: disallow two instances (or create yes/no message box) of the same application (not for commands/headless)
 // TODO 3: improve MSVC debug allocator usage, #define new new(_NORMAL_BLOCK, __FILE__, __LINE__)
@@ -321,6 +320,7 @@
 #include <cctype>
 #include <cfenv>
 #include <cfloat>
+#include <climits>
 #include <cmath>
 #include <cstdint>
 #include <cstdio>

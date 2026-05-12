@@ -214,9 +214,9 @@ CoreGraphics::CoreGraphics()noexcept
     }
 
     // clear initial buffers
-    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | (CoreApp::Settings::Graphics::StencilSize ? GL_STENCIL_BUFFER_BIT : 0u));
+    glClear(GL_COLOR_BUFFER_BIT | (CoreApp::Settings::Graphics::DepthSize ? GL_DEPTH_BUFFER_BIT : 0u) | (CoreApp::Settings::Graphics::StencilSize ? GL_STENCIL_BUFFER_BIT : 0u));
     SDL_GL_SwapWindow(Core::System->GetWindow());
-    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | (CoreApp::Settings::Graphics::StencilSize ? GL_STENCIL_BUFFER_BIT : 0u));
+    glClear(GL_COLOR_BUFFER_BIT | (CoreApp::Settings::Graphics::DepthSize ? GL_DEPTH_BUFFER_BIT : 0u) | (CoreApp::Settings::Graphics::StencilSize ? GL_STENCIL_BUFFER_BIT : 0u));
 
     if(Core::Config->GetBool(CORE_CONFIG_BASE_ASYNCMODE) && !DEFINED(_CORE_EMSCRIPTEN_) && (SDL_GetNumLogicalCPUCores() > 1) && CORE_GL_SUPPORT(CORE_shared_context))
     {

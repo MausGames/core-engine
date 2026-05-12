@@ -127,7 +127,7 @@ coreStatus coreShader::Load(coreFile* pFile)
     // add debug label
     Core::Graphics->LabelOpenGL(GL_SHADER, m_iIdentifier, m_sName.c_str());
 
-    Core::Log->Info("Shader (%s) loaded", m_sName.c_str());
+    Core::Log->Info("Shader (%s, 0x%016llX) loaded", m_sName.c_str(), m_iHash);
     return CORE_OK;
 }
 

@@ -18,7 +18,7 @@
 // ****************************************************************
 /* random number definitions */
 #define CORE_RAND_MAX         (0xFFFFFFFFu)                                                // max raw random number (32 bit)
-#define CORE_RAND_SEED        (DEFINED(_CORE_DEBUG_) ? 0u : SDL_GetPerformanceCounter())   // use current time to seed the generator (but not on debug mode)
+#define CORE_RAND_SEED        (DEFINED(_CORE_DEBUG_) ? 0u : SDL_GetPerformanceCounter())   // use current time to seed the generator (but not in debug mode)
 #define CORE_RAND_SEED_ALWAYS (SDL_GetPerformanceCounter())                                // always use current time to seed the generator
 
 #define CORE_RAND_RUNTIME     (coreUint32(SDL_GetPerformanceCounter() & 0xFFFFFFFFu))

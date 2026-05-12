@@ -18,7 +18,6 @@
 // TODO 3: check for max number of draw buffers (GL_MAX_DRAW_BUFFERS) and color attachments (GL_MAX_COLOR_ATTACHMENTS), max render buffer size (GL_MAX_RENDERBUFFER_SIZE) and view-port dimension (GL_MAX_VIEWPORT_DIMS[0]&[1]), max number of vertex attributes (GL_MAX_VERTEX_ATTRIBS), max texture size (GL_MAX_TEXTURE_SIZE)
 // TODO 2: offset-binding is expensive on ANGLE (according to docs)
 // TODO 3: implement more granular default screenshot naming (currently you can basically create only one screenshot per second)
-// TODO 3: Mozilla Developer Network says alpha should be enabled on the backbuffer for performance reasons, but Emscripten documentation says the opposite
 // TODO 3: emscripten: emscripten_set_main_loop_timing: Cannot set timing mode for main loop since a main loop does not exist! Call emscripten_set_main_loop first to set one up.
 
 

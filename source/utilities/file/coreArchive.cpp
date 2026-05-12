@@ -619,7 +619,7 @@ coreStatus coreArchive::Save(const coreChar* pcPath)
         (*it)->UnloadData();
     }
 
-    Core::Log->Info("Archive (%s, %u) written", m_sPath.c_str(), iNumFiles);
+    Core::Log->Info("Archive (%s, %u files) written", m_sPath.c_str(), iNumFiles);
     return CORE_OK;
 }
 

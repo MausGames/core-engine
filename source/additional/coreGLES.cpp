@@ -86,9 +86,9 @@ void __coreInitOpenGLES()
     #if defined(_CORE_EMSCRIPTEN_)
 
         g_ContextGLES.__GL_ANGLE_provoking_vertex = true;   // handle check in JavaScript
-        g_ContextGLES.__glProvokingVertex = [](const GLenum eProvokeMode)
+        g_ContextGLES.__glProvokingVertex = [](const GLenum iProvokeMode)
         {
-            ASSERT(eProvokeMode == GL_FIRST_VERTEX_CONVENTION)
+            ASSERT(iProvokeMode == GL_FIRST_VERTEX_CONVENTION)
             EM_ASM
             ({
                 const pExtension = Module['ctx'].getExtension('WEBGL_provoking_vertex');
