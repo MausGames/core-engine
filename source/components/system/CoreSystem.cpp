@@ -224,9 +224,10 @@ CoreSystem::CoreSystem()noexcept
 
         if(oDisplayData.avAvailableRes  .empty ()) oDisplayData.avAvailableRes  .insert(m_vResolution);
         if(oDisplayData.aafAvailableRate.empty ()) oDisplayData.aafAvailableRate.emplace_back().insert(0.0f);
-        if(oDisplayData.vDesktopRes     .IsNull()) oDisplayData.vDesktopRes  = oDisplayData.avAvailableRes.front();
-        if(oDisplayData.vWorkAreaRes    .IsNull()) oDisplayData.vWorkAreaRes = oDisplayData.avAvailableRes.front();
-        if(oDisplayData.vMaximumRes     .IsNull()) oDisplayData.vMaximumRes  = oDisplayData.avAvailableRes.front();
+        if(oDisplayData.vDesktopRes     .IsNull()) oDisplayData.vDesktopRes   = oDisplayData.avAvailableRes.front();
+        if(oDisplayData.vWorkAreaRes    .IsNull()) oDisplayData.vWorkAreaRes  = oDisplayData.avAvailableRes.front();
+        if(oDisplayData.vMaximumRes     .IsNull()) oDisplayData.vMaximumRes   = oDisplayData.avAvailableRes.front();
+        if(oDisplayData.fPixelDensity == 0.0f)     oDisplayData.fPixelDensity = 1.0f;
 
         ASSERT(oDisplayData.avAvailableRes.size() == oDisplayData.aafAvailableRate.size())
     }
@@ -649,13 +650,18 @@ void CoreSystem::__UpdateEvents()
             Core::Config->SetInt(CORE_CONFIG_SYSTEM_DISPLAY, m_iDisplayIndex);
             break;
 
-        // window size changed
+        // window pixel size changed
         case SDL_EVENT_WINDOW_PIXEL_SIZE_CHANGED:
             m_bWinSizeChanged = true;
             m_vResolution     = coreVector2(I_TO_F(oEvent.window.data1), I_TO_F(oEvent.window.data2));
             Core::Config->SetInt(CORE_CONFIG_SYSTEM_WIDTH,  F_TO_SI(m_vResolution.x));
             Core::Config->SetInt(CORE_CONFIG_SYSTEM_HEIGHT, F_TO_SI(m_vResolution.y));
             this->__RefreshCanonAspectRatio();
+            break;
+
+        // window coordinate size changed
+        case SDL_EVENT_WINDOW_RESIZED:
+            m_vCoordSize = coreVector2(I_TO_F(oEvent.window.data1), I_TO_F(oEvent.window.data2));
             break;
 
         // window focus lost

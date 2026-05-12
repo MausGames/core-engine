@@ -53,9 +53,9 @@ private:
         coreSet<coreSet<coreFloat>> aafAvailableRate;   // all available refresh rates (in Hz) (highest to lowest)
         coreVector2                 vDesktopRes;        // desktop resolution
         coreFloat                   fDesktopRate;       // desktop refresh rate (in Hz)
-        coreFloat                   fPixelDensity;      // desktop pixel-density
         coreVector2                 vWorkAreaRes;       // work area resolution (e.g. without task bar)
         coreVector2                 vMaximumRes;        // highest available resolution (primary on width)
+        coreFloat                   fPixelDensity;      // desktop pixel-density
     };
 
 
