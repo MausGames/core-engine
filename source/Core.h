@@ -428,7 +428,6 @@
 #define __CHECK_ITERATOR(e,c)       ([&]() {ASSERT((e) == (c).end ())}())
 #define __CHECK_ITERATOR_REV(e,c)   ([&]() {ASSERT((e) == (c).rend())}())
 
-#define BIG_STATIC                  static THREAD_LOCAL
 #define FRIEND_CLASS(c)             friend class c;
 #define STATIC_ASSERT(c)            static_assert(c, "STATIC ASSERT [" #c "]");
 

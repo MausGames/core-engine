@@ -550,7 +550,7 @@ coreBool coreMusicPlayer::__ProcessQueue()
 /* read from music stream and update sound buffer */
 coreBool coreMusicPlayer::__Stream(const ALuint iBuffer)
 {
-    alignas(ALIGNMENT_PAGE) BIG_STATIC coreByte s_aData[F_TO_UI(CORE_AUDIO_MAX_PITCH) * CORE_MUSIC_CHUNK * sizeof(coreFloat)];
+    alignas(ALIGNMENT_PAGE) static THREAD_LOCAL coreByte s_aData[F_TO_UI(CORE_AUDIO_MAX_PITCH) * CORE_MUSIC_CHUNK * sizeof(coreFloat)];
 
     const coreInt32 iChunkSize = MIN(F_TO_UI(m_fPitch * I_TO_F(CORE_MUSIC_CHUNK)), F_TO_UI(CORE_AUDIO_MAX_PITCH) * CORE_MUSIC_CHUNK);
     coreInt32       iReadSize  = 0;

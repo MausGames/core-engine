@@ -1684,13 +1684,13 @@ coreStatus coreData::FileCopy(const coreChar* pcFrom, const coreChar* pcTo)
         std::FILE* pFileTo = coreData::FileOpen(pcTo, CORE_FILE_OPEN_WRITE);
         if(pFileTo)
         {
-            alignas(ALIGNMENT_PAGE) BIG_STATIC coreByte s_aBuffer[0x4000u];
+            alignas(ALIGNMENT_PAGE) coreByte aBuffer[0x4000u];
 
             // copy all data
             while(!std::feof(pFileFrom))
             {
-                const coreUintW iResult = std::fread(s_aBuffer, 1u, ARRAY_SIZE(s_aBuffer), pFileFrom);
-                std::fwrite(s_aBuffer, 1u, iResult, pFileTo);
+                const coreUintW iResult = std::fread(aBuffer, 1u, ARRAY_SIZE(aBuffer), pFileFrom);
+                std::fwrite(aBuffer, 1u, iResult, pFileTo);
             }
 
             // close both files

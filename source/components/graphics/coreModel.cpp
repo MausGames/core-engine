@@ -102,8 +102,8 @@ coreStatus coreModel::Load(coreFile* pFile)
     ASSERT((m_iNumVertices > 0u) && (m_iNumVertices <= 0xFFFFu) && m_iNumIndices)
 
     // prepare index-map (for deferred remapping)
-    alignas(ALIGNMENT_PAGE) BIG_STATIC coreUint16 s_aiMap[0x10000u];
-    for(coreUintW i = 0u, ie = m_iNumVertices; i < ie; ++i) s_aiMap[i] = i & 0xFFFFu;
+    coreUint16* piIndexMap = TEMP_NEW(coreUint16, m_iNumVertices);
+    for(coreUintW i = 0u, ie = m_iNumVertices; i < ie; ++i) piIndexMap[i] = i & 0xFFFFu;
 
     // apply post-transform vertex cache optimization to index data
     coreUint16* piOptimizedData = TEMP_NEW(coreUint16, m_iNumIndices);
@@ -117,18 +117,18 @@ coreStatus coreModel::Load(coreFile* pFile)
         ASSERT(iFirst < m_iNumVertices)
 
         // check first map entry
-        if(s_aiMap[iFirst] >= iCurIndex)
+        if(piIndexMap[iFirst] >= iCurIndex)
         {
             const coreUint16 iNew = iCurIndex++;
-            const coreUint16 iOld = s_aiMap[iFirst];
+            const coreUint16 iOld = piIndexMap[iFirst];
 
             // find second map entry
             coreUint16 iSecond = iNew;
-            while(s_aiMap[iSecond] != iNew) iSecond = s_aiMap[iSecond];
+            while(piIndexMap[iSecond] != iNew) iSecond = piIndexMap[iSecond];
 
             // swap indices (in map)
-            s_aiMap[iFirst]  = iNew;
-            s_aiMap[iSecond] = iOld;
+            piIndexMap[iFirst]  = iNew;
+            piIndexMap[iSecond] = iOld;
 
             // swap vertices
             std::swap(oImport.aVertexData[iNew], oImport.aVertexData[iOld]);
@@ -137,7 +137,9 @@ coreStatus coreModel::Load(coreFile* pFile)
 
     // remap all indices
     for(coreUintW i = 0u, ie = m_iNumIndices; i < ie; ++i)
-        piOptimizedData[i] = s_aiMap[piOptimizedData[i]];
+    {
+        piOptimizedData[i] = piIndexMap[piOptimizedData[i]];
+    }
 
     // analyze all vertices
     coreVector3 vRangeMin = coreVector3( FLT_MAX, FLT_MAX, FLT_MAX);
@@ -327,6 +329,7 @@ coreStatus coreModel::Load(coreFile* pFile)
     }
 
     // free index data
+    TEMP_DELETE(piIndexMap)
     TEMP_DELETE(piOptimizedData)
 
     Core::Log->Info("Model (%s, %u vertices, %u indices, %u clusters, %.5f x %.5f x %.5f range, %.5f radius) loaded", m_sName.c_str(), m_iNumVertices, m_iNumIndices, m_iNumClusters, m_vBoundingRange.x, m_vBoundingRange.y, m_vBoundingRange.z, m_fBoundingRadius);
