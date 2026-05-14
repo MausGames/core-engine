@@ -503,6 +503,14 @@ coreBool coreMusicPlayer::__ProcessQueue()
     if(!m_bStatus) return false;
     ASSERT(m_pCurMusic)
 
+#if defined(_CORE_EMSCRIPTEN_)
+
+    // # Emscripten hotfix: manually update the buffer-queue outside the queue-interval, to prevent music stuttering on low-end systems
+    ALfloat fOffset;
+    alGetSourcef(m_iSource, AL_SEC_OFFSET, &fOffset);
+
+#endif
+
     // get number of processed sound buffers
     ALint iProcessed;
     alGetSourcei(m_iSource, AL_BUFFERS_PROCESSED, &iProcessed);

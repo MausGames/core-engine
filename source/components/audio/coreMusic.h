@@ -17,15 +17,14 @@
 // TODO 3: on play, only stream first buffer, and move streaming other buffers to next iterations (queue them empty ?) (on update still keep loop, to handle possible catch-up, to not decay to single-buffering and stuttering if chunks-per-iteration > 1.0)
 // TODO 2: in the end of a track, if sound-buffers are not re-queued anymore (on norepeat, last track), and then switching to a different track, buffering-chain is broken which can cause stuttering
 // TODO 4: aeSeekType could be a constant array
-
-// NOTE: changing pitch during playback in Emscripten is very expensive and can cause crackling (even on a single change)
+// TODO 2: changing pitch during playback in Emscripten, seems the cancelling and rescheduling of sources causes issues, but could not figure out why (scheduleSourceAudio, updateSourceRate, cancelPendingSourceAudio) (duration recalculation is wrong, but crackling even happens when staying at the same pitch, except when keeping 2 sources in the queue) (fixing the duration removes at least issues on Chrome, but Firefox still sucks)
 
 
 // ****************************************************************
 /* music definitions */
-#define CORE_MUSIC_CHUNK     (0x2000u)                                // size of a music stream chunk in floats/shorts (on speed 1.0x)
-#define CORE_MUSIC_BUFFERS   (DEFINED(_CORE_EMSCRIPTEN_) ? 4u : 3u)   // number of sound buffers (with chunks)
-#define CORE_MUSIC_OPUS_RATE (48000u)                                 // Opus is always coded at 48 kHz sample rate
+#define CORE_MUSIC_CHUNK     (0x2000u)   // size of a music stream chunk in floats/shorts (on speed 1.0x)
+#define CORE_MUSIC_BUFFERS   (3u)        // number of sound buffers (with chunks)
+#define CORE_MUSIC_OPUS_RATE (48000u)    // Opus is always coded at 48 kHz sample rate
 
 #define __CORE_MUSIC_LOCKER const coreLocker oLocker(&m_Lock);
 
