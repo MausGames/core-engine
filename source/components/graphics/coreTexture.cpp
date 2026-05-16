@@ -554,7 +554,7 @@ void coreTexture::Clear(const coreUint8 iLevel)
     }
     else
     {
-        coreByte* pEmpty = TEMP_ZERO_NEW(coreByte, F_TO_UI(m_vResolution.x) * F_TO_UI(m_vResolution.y) * (m_Spec.iBytes ? m_Spec.iBytes : 4u));
+        coreByte* pEmpty = TEMP_ZERO_NEW(coreByte, coreMath::CeilAlign(F_TO_UI(m_vResolution.x), 4u) * F_TO_UI(m_vResolution.y) * (m_Spec.iBytes ? m_Spec.iBytes : 4u));
 
         if(CORE_GL_SUPPORT(ARB_direct_state_access))
         {

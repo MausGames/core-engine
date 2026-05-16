@@ -231,9 +231,9 @@ CoreGraphics::CoreGraphics()noexcept
 
     // enable vertical synchronization (after resource context, because SDL on EGL resets the interval to 1)
     const coreInt32 iVsync = Core::Config->GetInt(CORE_CONFIG_SYSTEM_VSYNC);
-         if(SDL_GL_SetSwapInterval(iVsync)) Core::Log->Info("Vertical synchronization configured (interval %d)", iVsync);
-    else if(SDL_GL_SetSwapInterval(1))      Core::Log->Info("Vertical synchronization configured (default)");
-    else Core::Log->Warning("Vertical synchronization not directly supported (SDL: %s)", SDL_GetError());
+         if(SDL_GL_SetSwapInterval(iVsync)) Core::Log->Info   ("Vertical synchronization configured (interval %d)", iVsync);
+    else if(SDL_GL_SetSwapInterval(1))      Core::Log->Info   ("Vertical synchronization configured (default)");
+    else                                    Core::Log->Warning("Vertical synchronization not directly supported (SDL: %s)", SDL_GetError());
 
     // load shader-cache
     coreProgram::LoadShaderCache();

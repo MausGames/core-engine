@@ -16,6 +16,7 @@
 // TODO 4: should HashCombine be moved to coreData? hashes are all defined in data-category
 // TODO 3: std::byteswap (e.g. for MSVC constexpr)
 // TODO 3: constexpr <cmath> with C++23
+// TODO 3: clang: __builtin_align_up, __builtin_align_down, __builtin_is_aligned (for integers and pointers) (are they constexpr ?)
 
 // NOTE: {(x < y) ? x : y} -> int: cmp,cmovl -> float: _mm_min_ss
 

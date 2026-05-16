@@ -559,9 +559,8 @@ coreBool coreMusicPlayer::__Stream(const ALuint iBuffer)
     const coreInt32 iChunkSize = MIN(F_TO_UI(m_fPitch * I_TO_F(CORE_MUSIC_CHUNK)), F_TO_UI(CORE_AUDIO_MAX_PITCH) * CORE_MUSIC_CHUNK);
     coreInt32       iReadSize  = 0;
 
-    // cache properties
+    // get channel count
     const coreInt32 iChannels = m_pCurMusic->m_pHead->channel_count;
-    const coreInt32 iRate     = CORE_MUSIC_OPUS_RATE;
     ASSERT(iChannels <= 2)
 
     do
@@ -582,8 +581,8 @@ coreBool coreMusicPlayer::__Stream(const ALuint iBuffer)
     if(iReadSize == 0) return false;
 
     // write decoded data to sound buffer
-    if(CORE_AL_SUPPORT(EXT_float32)) alBufferData(iBuffer, (iChannels == 1) ? AL_FORMAT_MONO_FLOAT32 : AL_FORMAT_STEREO_FLOAT32, s_aData, iReadSize * sizeof(coreFloat), iRate);
-                                else alBufferData(iBuffer, (iChannels == 1) ? AL_FORMAT_MONO16       : AL_FORMAT_STEREO16,       s_aData, iReadSize * sizeof(coreInt16), iRate);
+    if(CORE_AL_SUPPORT(EXT_float32)) alBufferData(iBuffer, (iChannels == 1) ? AL_FORMAT_MONO_FLOAT32 : AL_FORMAT_STEREO_FLOAT32, s_aData, iReadSize * sizeof(coreFloat), CORE_MUSIC_OPUS_RATE);
+                                else alBufferData(iBuffer, (iChannels == 1) ? AL_FORMAT_MONO16       : AL_FORMAT_STEREO16,       s_aData, iReadSize * sizeof(coreInt16), CORE_MUSIC_OPUS_RATE);
     return true;
 }
 

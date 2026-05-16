@@ -10,7 +10,7 @@
 #ifndef _CORE_GUARD_DATA_H_
 #define _CORE_GUARD_DATA_H_
 
-// TODO 3: implement constexpr strright
+// TODO 3: implement constexpr strright (other str* functions ?)
 // TODO 3: add ToChars float precision parameter (+ search for 'PRINT("%f' and 'PRINT("%.')
 // TODO 3: add compiled/included Windows SDK version to BuildLibrary string
 // TODO 2: implement checks and proper handling for paths exceeding the max length (currently they are truncated and might throw "not enough buffer-space" errors on some APIs)
@@ -175,8 +175,8 @@ public:
     static coreBool DetectWine     ();
 
     /* control current working directory */
-    static       coreStatus SetCurDir(const coreChar* pcPath);
-    static const coreChar*  GetCurDir();
+    static coreStatus      SetCurDir(const coreChar* pcPath);
+    static const coreChar* GetCurDir();
 
     /* control command line arguments */
     static void            LogCommandLine();
@@ -253,25 +253,26 @@ public:
     /* operate with string data */
     template <typename F> static const coreChar* StrProcess     (const coreChar* pcInput,                              F&& nFunction);   // [](const coreChar cChar)   -> coreChar
     template <typename F> static void            StrForEachToken(const coreChar* pcInput, const coreChar* pcDelimiter, F&& nFunction);   // [](coreChar*      pcToken) -> void
-    static inline       coreBool  StrCmpLike  (const coreChar* s, const coreChar* t) {return ((*t) == '*') ? StrCmpLike(s, t+1u) || ((*s) && StrCmpLike(s+1u, t)) : (*s) ? (((*t) == '?') || (TO_LOWER(*s) == TO_LOWER(*t))) && StrCmpLike(s+1u, t+1u) : !(*t);}
-    static inline const coreChar* StrToUpper  (const coreChar* pcInput)              {return coreData::StrProcess(pcInput, [](const coreChar c) {return TO_UPPER(c);});}
-    static inline const coreChar* StrToLower  (const coreChar* pcInput)              {return coreData::StrProcess(pcInput, [](const coreChar c) {return TO_LOWER(c);});}
-    static inline       coreBool  StrIsUpper  (const coreChar* pcInput)              {while(*pcInput) if(IS_LOWER(*(pcInput++))) return false; return true;}
-    static inline       coreBool  StrIsLower  (const coreChar* pcInput)              {while(*pcInput) if(IS_UPPER(*(pcInput++))) return false; return true;}
+    static inline       coreBool  StrCmpLike  (const coreChar* s, const coreChar* t) {ASSERT(s && t)  return ((*t) == '*') ? StrCmpLike(s, t+1u) || ((*s) && StrCmpLike(s+1u, t)) : (*s) ? (((*t) == '?') || (TO_LOWER(*s) == TO_LOWER(*t))) && StrCmpLike(s+1u, t+1u) : !(*t);}
+    static inline const coreChar* StrToUpper  (const coreChar* pcInput)              {ASSERT(pcInput) return coreData::StrProcess(pcInput, [](const coreChar c) {return TO_UPPER(c);});}
+    static inline const coreChar* StrToLower  (const coreChar* pcInput)              {ASSERT(pcInput) return coreData::StrProcess(pcInput, [](const coreChar c) {return TO_LOWER(c);});}
+    static inline       coreBool  StrIsUpper  (const coreChar* pcInput)              {ASSERT(pcInput) while(*pcInput) if(IS_LOWER(*(pcInput++))) return false; return true;}
+    static inline       coreBool  StrIsLower  (const coreChar* pcInput)              {ASSERT(pcInput) while(*pcInput) if(IS_UPPER(*(pcInput++))) return false; return true;}
     static const coreChar*        StrLeft     (const coreChar* pcInput, const coreUintW iNum);
     static const coreChar*        StrRight    (const coreChar* pcInput, const coreUintW iNum);
     static const coreChar*        StrFilename (const coreChar* pcInput, const coreBool bExtension = true);
     static const coreChar*        StrDirectory(const coreChar* pcInput);
     static const coreChar*        StrExtension(const coreChar* pcInput);
-    static corePoint3U8           StrVersion  (const coreChar* pcInput);
-    static coreUintW              StrCopy     (coreChar* OUTPUT pcOutput, const coreUintW iOutputSize, const coreChar* pcInput, const coreUintW iNum = SIZE_MAX);
+    static       corePoint3U8     StrVersion  (const coreChar* pcInput);
+    static       coreUintW        StrCopy     (coreChar* OUTPUT pcOutput, const coreUintW iOutputSize, const coreChar* pcInput, const coreUintW iNum = SIZE_MAX);
 
     /* operate with containers and arrays */
-    template <typename T>             static inline    void      RangeShuffle (const T tBegin, const T tEnd, coreRand* OUTPUT pRand = Core::Rand) {for(coreUintW i = tEnd - tBegin; i-- > 1u; ) std::swap(tBegin[i], tBegin[pRand->Uint(i)]);}
-    template <typename T, typename S> static constexpr T         RangeClosest (const T tBegin, const T tEnd, const S& tValue)                     {return (std::min_element(tBegin, tEnd, [&](const S& A, const S& B) {return (ABS(A - tValue) < ABS(B - tValue));}));}
-    template <typename T, typename S> static constexpr coreBool  RangeContains(const T tBegin, const T tEnd, const S& tValue)                     {return (std::find   (tBegin, tEnd, tValue) != tEnd);}
-    template <typename T, typename S> static constexpr coreUintW RangeIndex   (const T tBegin, const T tEnd, const S& tValue)                     {return (std::find   (tBegin, tEnd, tValue)                     - tBegin);}
-    template <typename T, typename F> static constexpr coreUintW RangeIndexIf (const T tBegin, const T tEnd, F&&      nFunction)                  {return (std::find_if(tBegin, tEnd, std::forward<F>(nFunction)) - tBegin);}
+    template <typename T>             static inline    void      RangeShuffle   (const T tBegin, const T tEnd, coreRand* OUTPUT pRand = Core::Rand) {for(coreUintW i = tEnd - tBegin; i-- > 1u; ) std::swap(tBegin[i], tBegin[pRand->Uint(i)]);}
+    template <typename T, typename S> static constexpr T         RangeClosest   (const T tBegin, const T tEnd, const S& tValue)                     {return (std::min_element(tBegin, tEnd, [&](const S& A, const S& B) {return (ABS(A - tValue) < ABS(B - tValue));}));}
+    template <typename T, typename S> static constexpr coreBool  RangeContains  (const T tBegin, const T tEnd, const S& tValue)                     {return (std::find   (tBegin, tEnd, tValue)                     != tEnd);}
+    template <typename T, typename F> static constexpr coreBool  RangeContainsIf(const T tBegin, const T tEnd, F&&      nFunction)                  {return (std::find_if(tBegin, tEnd, std::forward<F>(nFunction)) != tEnd);}
+    template <typename T, typename S> static constexpr coreUintW RangeIndex     (const T tBegin, const T tEnd, const S& tValue)                     {return (std::find   (tBegin, tEnd, tValue)                     - tBegin);}
+    template <typename T, typename F> static constexpr coreUintW RangeIndexIf   (const T tBegin, const T tEnd, F&&      nFunction)                  {return (std::find_if(tBegin, tEnd, std::forward<F>(nFunction)) - tBegin);}
 
 
 private:
