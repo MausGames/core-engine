@@ -145,7 +145,7 @@ coreBool coreLabel::SetText(const coreChar* pcText)
     this->_UnbindString(&m_sText);
 
     // check for new text
-    if(std::strcmp(m_sText.c_str(), pcText))
+    if(coreStrCmp(m_sText.c_str(), pcText))
     {
         ADD_FLAG(m_eRefresh, CORE_LABEL_REFRESH_ALL)
 
@@ -158,13 +158,13 @@ coreBool coreLabel::SetText(const coreChar* pcText)
 
 coreBool coreLabel::SetText(const coreChar* pcText, const coreUintW iNum)
 {
-    ASSERT(pcText && (iNum <= std::strlen(pcText)))
+    ASSERT(pcText && (iNum <= coreStrLen(pcText)))
 
     // unbind from language
     this->_UnbindString(&m_sText);
 
     // check for new text
-    if((iNum != m_sText.length()) || std::strcmp(m_sText.c_str(), pcText))
+    if((iNum != m_sText.length()) || coreStrCmp(m_sText.c_str(), pcText))
     {
         ADD_FLAG(m_eRefresh, CORE_LABEL_REFRESH_ALL)
 

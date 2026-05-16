@@ -153,7 +153,7 @@ coreStatus Core::__RunCommand()
         const coreUint32 iSizeAfter = oFile.GetSize();
 
         // write to new location
-        const coreChar* pcOutput = coreData::StrLeft(pcInput, std::strlen(pcInput) - 1u);
+        const coreChar* pcOutput = coreData::StrLeft(pcInput, coreStrLen(pcInput) - 1u);
 
         // save output file
         if(oFile.Save(pcOutput) != CORE_OK)
@@ -190,7 +190,7 @@ coreStatus Core::__RunCommand()
         }
 
         // cut off common path
-        const coreUintW iLen = std::strlen(pcInput) + 1u;
+        const coreUintW iLen = coreStrLen(pcInput) + 1u;
 
         // add all files to the archive
         coreArchive oArchive;

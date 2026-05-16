@@ -701,8 +701,8 @@ inline coreBool coreBackendSteam::SetRichPresence(const corePlatformPresence& oP
             const coreChar* pcKey   = oPresence.asValue.get_string(it);
             const coreChar* pcValue = it->c_str();
 
-            ASSERT(std::strlen(pcKey)   < k_cchMaxRichPresenceKeyLength)
-            ASSERT(std::strlen(pcValue) < k_cchMaxRichPresenceValueLength)
+            ASSERT(coreStrLen(pcKey)   < k_cchMaxRichPresenceKeyLength)
+            ASSERT(coreStrLen(pcValue) < k_cchMaxRichPresenceValueLength)
 
             // set rich presence values
             m_pFriends->SetRichPresence(pcKey, pcValue);
@@ -797,21 +797,21 @@ inline const coreChar* coreBackendSteam::GetLanguage()const
         if(pcLanguage)
         {
             // map Steam language to common language
-            if(!std::strcmp(pcLanguage, "brazilian"))  return CORE_LANGUAGE_BRAZILIAN;
-            if(!std::strcmp(pcLanguage, "english"))    return CORE_LANGUAGE_ENGLISH;
-            if(!std::strcmp(pcLanguage, "french"))     return CORE_LANGUAGE_FRENCH;
-            if(!std::strcmp(pcLanguage, "german"))     return CORE_LANGUAGE_GERMAN;
-            if(!std::strcmp(pcLanguage, "italian"))    return CORE_LANGUAGE_ITALIAN;
-            if(!std::strcmp(pcLanguage, "japanese"))   return CORE_LANGUAGE_JAPANESE;
-            if(!std::strcmp(pcLanguage, "koreana"))    return CORE_LANGUAGE_KOREAN;   // with a
-            if(!std::strcmp(pcLanguage, "latam"))      return CORE_LANGUAGE_LATAM;
-            if(!std::strcmp(pcLanguage, "polish"))     return CORE_LANGUAGE_POLISH;
-            if(!std::strcmp(pcLanguage, "portuguese")) return CORE_LANGUAGE_PORTUGUESE;
-            if(!std::strcmp(pcLanguage, "russian"))    return CORE_LANGUAGE_RUSSIAN;
-            if(!std::strcmp(pcLanguage, "schinese"))   return CORE_LANGUAGE_SCHINESE;
-            if(!std::strcmp(pcLanguage, "spanish"))    return CORE_LANGUAGE_SPANISH;
-            if(!std::strcmp(pcLanguage, "tchinese"))   return CORE_LANGUAGE_TCHINESE;
-            if(!std::strcmp(pcLanguage, "ukrainian"))  return CORE_LANGUAGE_UKRAINIAN;
+            if(!coreStrCmp(pcLanguage, "brazilian"))  return CORE_LANGUAGE_BRAZILIAN;
+            if(!coreStrCmp(pcLanguage, "english"))    return CORE_LANGUAGE_ENGLISH;
+            if(!coreStrCmp(pcLanguage, "french"))     return CORE_LANGUAGE_FRENCH;
+            if(!coreStrCmp(pcLanguage, "german"))     return CORE_LANGUAGE_GERMAN;
+            if(!coreStrCmp(pcLanguage, "italian"))    return CORE_LANGUAGE_ITALIAN;
+            if(!coreStrCmp(pcLanguage, "japanese"))   return CORE_LANGUAGE_JAPANESE;
+            if(!coreStrCmp(pcLanguage, "koreana"))    return CORE_LANGUAGE_KOREAN;   // with a
+            if(!coreStrCmp(pcLanguage, "latam"))      return CORE_LANGUAGE_LATAM;
+            if(!coreStrCmp(pcLanguage, "polish"))     return CORE_LANGUAGE_POLISH;
+            if(!coreStrCmp(pcLanguage, "portuguese")) return CORE_LANGUAGE_PORTUGUESE;
+            if(!coreStrCmp(pcLanguage, "russian"))    return CORE_LANGUAGE_RUSSIAN;
+            if(!coreStrCmp(pcLanguage, "schinese"))   return CORE_LANGUAGE_SCHINESE;
+            if(!coreStrCmp(pcLanguage, "spanish"))    return CORE_LANGUAGE_SPANISH;
+            if(!coreStrCmp(pcLanguage, "tchinese"))   return CORE_LANGUAGE_TCHINESE;
+            if(!coreStrCmp(pcLanguage, "ukrainian"))  return CORE_LANGUAGE_UKRAINIAN;
         }
     }
 

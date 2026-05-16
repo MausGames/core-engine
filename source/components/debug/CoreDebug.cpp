@@ -842,8 +842,8 @@ void CoreDebug::__UpdateOutput()
                     switch(pSpec->ColumnIndex)
                     {
                     default: UNREACHABLE
-                    case 0u: std::sort(apCopy.begin(), apCopy.end(), [](const coreResourceHandle* A, const coreResourceHandle* B) {return (std::strcmp(A->GetName(), B->GetName()) < 0);}); break;
-                    case 1u: std::sort(apCopy.begin(), apCopy.end(), [](const coreResourceHandle* A, const coreResourceHandle* B) {return (A->GetRefCount() < B->GetRefCount());});         break;
+                    case 0u: std::sort(apCopy.begin(), apCopy.end(), [](const coreResourceHandle* A, const coreResourceHandle* B) {return (coreStrCmp(A->GetName(), B->GetName()) < 0);}); break;
+                    case 1u: std::sort(apCopy.begin(), apCopy.end(), [](const coreResourceHandle* A, const coreResourceHandle* B) {return (A->GetRefCount() < B->GetRefCount());});        break;
                     }
 
                     if(pSpec->SortDirection == ImGuiSortDirection_Descending)

@@ -288,7 +288,7 @@ coreBool coreLanguage::FindString(const coreChar* pcPath, const coreChar* pcKey,
     if(!pcData) return false;
 
     // save key length (file data not null-terminated)
-    const coreUintW iKeyLen = std::strlen(pcKey);
+    const coreUintW iKeyLen = coreStrLen(pcKey);
 
     // prepare range pointers (from, to) and end pointer (out of bound)
     const coreChar* pcFrom = pcData + 1u;   // # handle first key prefix

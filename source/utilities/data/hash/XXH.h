@@ -102,7 +102,7 @@ template <typename T> constexpr coreUint32 coreHashXXH32(const T* ptData, const 
 
 constexpr coreUint32 coreHashXXH32(const coreChar* pcString, const coreUint32 iSeed = 0u)
 {
-    return coreHashXXH32(pcString, coreStrLenConst(pcString) + 1u, iSeed);
+    return coreHashXXH32(pcString, coreStrLen(pcString) + 1u, iSeed);
 }
 
 

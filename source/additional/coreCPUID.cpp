@@ -74,8 +74,8 @@ coreCPUID::__coreCPUID::__coreCPUID()noexcept
     else coreData::StrCopy(acBrand, ARRAY_SIZE(acBrand), "Unknown");
 
     // check for specific vendors
-         if(!std::strcmp(acVendor, "GenuineIntel")) bIsIntel = true;
-    else if(!std::strcmp(acVendor, "AuthenticAMD")) bIsAMD   = true;
+         if(!coreStrCmp(acVendor, "GenuineIntel")) bIsIntel = true;
+    else if(!coreStrCmp(acVendor, "AuthenticAMD")) bIsAMD   = true;
 
     // save all relevant feature bits
     if(iNum >= (CORE_CPUID_BASIC + 1u))

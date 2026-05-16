@@ -86,7 +86,7 @@ CoreAudio::CoreAudio()noexcept
                 while(*pcDeviceList)
                 {
                     Core::Log->ListAdd(pcDeviceList);
-                    pcDeviceList += std::strlen(pcDeviceList) + 1u;
+                    pcDeviceList += coreStrLen(pcDeviceList) + 1u;
                 }
             }
             Core::Log->ListEnd();

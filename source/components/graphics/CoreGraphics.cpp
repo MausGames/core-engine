@@ -957,7 +957,7 @@ void CoreGraphics::__HandleScreenshot()
             if(pSurface)
             {
                 const coreChar* pcPath     = pScreenshot->sPath.c_str();
-                const coreChar* pcFullPath = std::strcmp(coreData::StrExtension(pcPath), "png") ? PRINT("%s.png", pcPath) : pcPath;
+                const coreChar* pcFullPath = coreStrCmp(coreData::StrExtension(pcPath), "png") ? PRINT("%s.png", pcPath) : pcPath;
 
                 // create directory hierarchy
                 coreData::DirectoryCreate(coreData::StrDirectory(pcFullPath));

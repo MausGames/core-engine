@@ -198,7 +198,7 @@ coreBool coreTextBox::__Write()
             coreChar* pcPaste = SDL_GetClipboardText();
             if(pcPaste)
             {
-                const coreUintW iLen = std::strlen(pcPaste);
+                const coreUintW iLen = coreStrLen(pcPaste);
 
                 // append text
                 if(iLen <= m_iLength - m_sText.length()) m_sText.append(pcPaste, iLen);
@@ -208,7 +208,7 @@ coreBool coreTextBox::__Write()
         else
         {
             const coreChar* pcText = Core::Input->GetKeyboardCharText();
-            const coreUintW iLen   = std::strlen(pcText);
+            const coreUintW iLen   = coreStrLen(pcText);
 
             // append new characters
             if(iLen <= m_iLength - m_sText.length()) m_sText.append(pcText, iLen);

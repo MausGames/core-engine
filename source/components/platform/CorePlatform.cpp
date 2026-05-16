@@ -236,7 +236,7 @@ void CorePlatform::SetRichValue(const coreHashString& sKey, const coreChar* pcVa
 {
     if(m_Presence.asValue.count(sKey))
     {
-        if(!std::strcmp(m_Presence.asValue.at(sKey).c_str(), pcValue)) return;
+        if(!coreStrCmp(m_Presence.asValue.at(sKey).c_str(), pcValue)) return;
     }
     else
     {
@@ -253,8 +253,8 @@ void CorePlatform::SetRichValue(const coreHashString& sKey, const coreChar* pcVa
 /* set rich presence text */
 void CorePlatform::SetRichText(const coreChar* pcDefaultText, const coreChar* pcSteamText)
 {
-    if(!std::strcmp(m_Presence.sDefaultText.c_str(), pcDefaultText) &&
-       !std::strcmp(m_Presence.sSteamText  .c_str(), pcSteamText)) return;
+    if(!coreStrCmp(m_Presence.sDefaultText.c_str(), pcDefaultText) &&
+       !coreStrCmp(m_Presence.sSteamText  .c_str(), pcSteamText)) return;
 
     // update rich presence
     m_Presence.sDefaultText = pcDefaultText;

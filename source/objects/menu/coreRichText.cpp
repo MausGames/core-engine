@@ -407,7 +407,7 @@ coreBool coreRichText::SetText(const coreChar* pcText)
     this->_UnbindString(&m_sText);
 
     // check for new text
-    if(std::strcmp(m_sText.c_str(), pcText))
+    if(coreStrCmp(m_sText.c_str(), pcText))
     {
         ADD_FLAG(m_eRefresh, CORE_RICHTEXT_REFRESH_LAYOUT)
 
@@ -523,7 +523,7 @@ void coreRichText::__ParseText()
                 coreData::StrCopy(acKey,   ARRAY_SIZE(acKey),   pcFrom,        pcAssign - pcFrom);
                 coreData::StrCopy(acValue, ARRAY_SIZE(acValue), pcAssign + 1u, pcClose  - pcAssign - 1u);
 
-                if(!std::strcmp(acKey, "style"))
+                if(!coreStrCmp(acKey, "style"))
                 {
                     // select font style definition
                     WARN_IF(!m_aStyle.count(acValue)) {}
@@ -537,7 +537,7 @@ void coreRichText::__ParseText()
                         iDescent    = pFont->RetrieveDescent(iRelHeight, iRelOutline);
                     }
                 }
-                else if(!std::strcmp(acKey, "color"))
+                else if(!coreStrCmp(acKey, "color"))
                 {
                     // select color definition
                     WARN_IF(!m_avColor.count(acValue)) {}

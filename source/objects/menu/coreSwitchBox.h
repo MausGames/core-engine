@@ -401,7 +401,7 @@ template <typename T> coreBool coreSwitchBox<T>::SelectText(const coreChar* pcTe
     for(coreUintW i = 0u, ie = m_aEntry.size(); i < ie; ++i)
     {
         // search and select specific text
-        if(!std::strcmp(m_aEntry[i].psText->c_str(), pcText))
+        if(!coreStrCmp(m_aEntry[i].psText->c_str(), pcText))
         {
             this->SelectIndex(i);
             return true;
@@ -484,7 +484,7 @@ template <typename T> coreUintW coreSwitchBox<T>::FindText(const coreChar* pcTex
     for(coreUintW i = 0u, ie = m_aEntry.size(); i < ie; ++i)
     {
         // search specific text
-        if(!std::strcmp(m_aEntry[i].psText->c_str(), pcText))
+        if(!coreStrCmp(m_aEntry[i].psText->c_str(), pcText))
         {
             return i;
         }

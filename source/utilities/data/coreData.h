@@ -410,7 +410,7 @@ template <typename F> const coreChar* coreData::StrProcess(const coreChar* pcInp
 
     // define max string position
     const coreChar* pcEnd = pcInput + CORE_DATA_STRING_LEN - 1u;
-    ASSERT(std::strlen(pcInput) < CORE_DATA_STRING_LEN)
+    ASSERT(coreStrLen(pcInput) < CORE_DATA_STRING_LEN)
 
     // process all characters individually
     for(; ((*pcInput) != '\0') && (pcInput != pcEnd); ++pcCursor, ++pcInput)

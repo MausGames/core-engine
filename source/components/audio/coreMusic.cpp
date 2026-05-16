@@ -125,18 +125,14 @@ coreMusic::~coreMusic()
 /* get specific meta-information */
 const coreChar* coreMusic::GetComment(const coreChar* pcName)const
 {
-    const coreUintW iLen = std::strlen(pcName);
-
-    // cache properties
-    const coreUintW  iCount     = m_pTags->comments;
-    coreChar** const ppcComment = m_pTags->user_comments;
+    const coreUintW iLen = coreStrLen(pcName);
 
     // loop through all comments
-    for(coreUintW i = 0u; i < iCount; ++i)
+    for(coreUintW i = 0u, ie = m_pTags->comments; i < ie; ++i)
     {
         // check comment and extract meta-information
-        if(!std::memcmp(pcName, ppcComment[i], iLen))
-            return ppcComment[i] + iLen + 1u;
+        if(!std::memcmp(pcName, m_pTags->user_comments[i], iLen))
+            return m_pTags->user_comments[i] + iLen + 1u;
     }
 
     // specific meta-information not found

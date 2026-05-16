@@ -67,7 +67,7 @@ inline coreUint32 coreHashMurmur32(const coreByte* pData, const coreUint32 iLeng
 
 inline coreUint32 coreHashMurmur32(const coreChar* pcString, const coreUint32 iSeed = 0u)
 {
-    return coreHashMurmur32(r_cast<const coreByte*>(pcString), std::strlen(pcString) + 1u, iSeed);
+    return coreHashMurmur32(r_cast<const coreByte*>(pcString), coreStrLen(pcString) + 1u, iSeed);
 }
 
 
@@ -118,7 +118,7 @@ inline coreUint64 coreHashMurmur64(const coreByte* pData, coreUint64 iLength, co
 
 inline coreUint64 coreHashMurmur64(const coreChar* pcString, const coreUint64 iSeed = 0u)
 {
-    return coreHashMurmur64(r_cast<const coreByte*>(pcString), std::strlen(pcString) + 1u, iSeed);
+    return coreHashMurmur64(r_cast<const coreByte*>(pcString), coreStrLen(pcString) + 1u, iSeed);
 }
 
 
@@ -222,7 +222,7 @@ inline coreUint128 coreHashMurmur128(const coreByte* pData, const coreUint64 iLe
 
 inline coreUint128 coreHashMurmur128(const coreChar* pcString, const coreUint32 iSeed = 0u)
 {
-    return coreHashMurmur128(r_cast<const coreByte*>(pcString), std::strlen(pcString) + 1u, iSeed);
+    return coreHashMurmur128(r_cast<const coreByte*>(pcString), coreStrLen(pcString) + 1u, iSeed);
 }
 
 

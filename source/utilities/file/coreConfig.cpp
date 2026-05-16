@@ -260,7 +260,7 @@ void coreConfig::__ChangeEntry(const coreHashString& sSection, const coreHashStr
 
     // retrieve configuration entry
     coreString* psEntry;
-    if(!this->__RetrieveEntry(sSection, sKey, &psEntry) || std::strcmp(psEntry->c_str(), pcValue))
+    if(!this->__RetrieveEntry(sSection, sKey, &psEntry) || coreStrCmp(psEntry->c_str(), pcValue))
     {
         Core::Log->Info("Configuration value changed (%s.%s, %s -> %s)", sSection.GetString(), sKey.GetString(), psEntry->c_str(), pcValue);
 

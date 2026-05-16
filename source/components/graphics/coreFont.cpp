@@ -97,7 +97,7 @@ SDL_Surface* coreFont::CreateGlyph(const coreChar32 cGlyph, const coreUint16 iHe
 /* create outlined text with the font */
 SDL_Surface* coreFont::CreateTextOutline(const coreChar* pcText, const coreUintW iNum, const coreUint16 iHeight, const coreUint8 iOutline)
 {
-    ASSERT(pcText && ((iNum <= std::strlen(pcText)) || (iNum == SIZE_MAX)))
+    ASSERT(pcText && ((iNum <= coreStrLen(pcText)) || (iNum == SIZE_MAX)))
 
     // check for requested height and outline
     this->__EnsureHeight(iHeight, iOutline);
@@ -106,7 +106,7 @@ SDL_Surface* coreFont::CreateTextOutline(const coreChar* pcText, const coreUintW
     if(!iNum) pcText = " ";
 
     // render and return the text surface
-    return TTF_RenderText_Shaded(m_aapFont.at(iHeight).at(iOutline), pcText, (iNum == SIZE_MAX) ? std::strlen(pcText) : iNum, CORE_FONT_COLOR_FRONT, CORE_FONT_COLOR_BACK);
+    return TTF_RenderText_Shaded(m_aapFont.at(iHeight).at(iOutline), pcText, (iNum == SIZE_MAX) ? coreStrLen(pcText) : iNum, CORE_FONT_COLOR_FRONT, CORE_FONT_COLOR_BACK);
 }
 
 SDL_Surface* coreFont::CreateGlyphOutline(const coreChar32 cGlyph, const coreUint16 iHeight, const coreUint8 iOutline)
@@ -150,14 +150,14 @@ coreBool coreFont::AreGlyphsProvided(const coreChar* pcText)
 /* retrieve the dimensions of a rendered string of text */
 coreVector2 coreFont::RetrieveTextDimensions(const coreChar* pcText, const coreUintW iNum, const coreUint16 iHeight, const coreUint8 iOutline)
 {
-    ASSERT(pcText && ((iNum <= std::strlen(pcText)) || (iNum == SIZE_MAX)))
+    ASSERT(pcText && ((iNum <= coreStrLen(pcText)) || (iNum == SIZE_MAX)))
 
     // check for requested height and outline
     this->__EnsureHeight(iHeight, iOutline);
 
     // retrieve dimensions
     coreInt32 iX, iY;
-    if(iNum && TTF_GetStringSize(m_aapFont.at(iHeight).at(iOutline), pcText, (iNum == SIZE_MAX) ? std::strlen(pcText) : iNum, &iX, &iY))
+    if(iNum && TTF_GetStringSize(m_aapFont.at(iHeight).at(iOutline), pcText, (iNum == SIZE_MAX) ? coreStrLen(pcText) : iNum, &iX, &iY))
     {
         return coreVector2(I_TO_F(iX), I_TO_F(iY));
     }

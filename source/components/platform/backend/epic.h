@@ -301,7 +301,7 @@ inline coreBool coreBackendEpic::Init()
         // search requested IDs
         for(coreUintW i = 0u; i < ARRAY_SIZE(CoreApp::Settings::Platform::EpicSandboxID); ++i)
         {
-            if(!std::strcmp(pcSandboxID, CoreApp::Settings::Platform::EpicSandboxID[i]))
+            if(!coreStrCmp(pcSandboxID, CoreApp::Settings::Platform::EpicSandboxID[i]))
             {
                 pcDeploymentID = CoreApp::Settings::Platform::EpicDeploymentID[i];
                 break;
@@ -650,16 +650,16 @@ inline const coreChar* coreBackendEpic::GetLanguage()const
             // map Epic language to common language
             if(!std::memcmp(acLanguage, "de", 2u)) return CORE_LANGUAGE_GERMAN;
             if(!std::memcmp(acLanguage, "en", 2u)) return CORE_LANGUAGE_ENGLISH;
-            if(!std::memcmp(acLanguage, "es", 2u)) return (!std::strcmp(acLanguage, "es-MX")) ? CORE_LANGUAGE_LATAM : CORE_LANGUAGE_SPANISH;
+            if(!std::memcmp(acLanguage, "es", 2u)) return (!coreStrCmp(acLanguage, "es-MX")) ? CORE_LANGUAGE_LATAM : CORE_LANGUAGE_SPANISH;
             if(!std::memcmp(acLanguage, "fr", 2u)) return CORE_LANGUAGE_FRENCH;
             if(!std::memcmp(acLanguage, "it", 2u)) return CORE_LANGUAGE_ITALIAN;
             if(!std::memcmp(acLanguage, "ja", 2u)) return CORE_LANGUAGE_JAPANESE;
             if(!std::memcmp(acLanguage, "ko", 2u)) return CORE_LANGUAGE_KOREAN;
             if(!std::memcmp(acLanguage, "pl", 2u)) return CORE_LANGUAGE_POLISH;
-            if(!std::memcmp(acLanguage, "pt", 2u)) return (!std::strcmp(acLanguage, "pt-BR")) ? CORE_LANGUAGE_BRAZILIAN : CORE_LANGUAGE_PORTUGUESE;
+            if(!std::memcmp(acLanguage, "pt", 2u)) return (!coreStrCmp(acLanguage, "pt-BR")) ? CORE_LANGUAGE_BRAZILIAN : CORE_LANGUAGE_PORTUGUESE;
             if(!std::memcmp(acLanguage, "ru", 2u)) return CORE_LANGUAGE_RUSSIAN;
             if(!std::memcmp(acLanguage, "uk", 2u)) return CORE_LANGUAGE_UKRAINIAN;
-            if(!std::memcmp(acLanguage, "zh", 2u)) return (!std::strcmp(acLanguage, "zh-Hant")) ? CORE_LANGUAGE_TCHINESE : CORE_LANGUAGE_SCHINESE;
+            if(!std::memcmp(acLanguage, "zh", 2u)) return (!coreStrCmp(acLanguage, "zh-Hant")) ? CORE_LANGUAGE_TCHINESE : CORE_LANGUAGE_SCHINESE;
         }
     }
 

@@ -221,7 +221,7 @@ coreArchive* coreResourceManager::RetrieveArchive(const coreHashString& sPath)
     // insert in ascending order (earlier archives have higher precedence)
     const auto it = std::lower_bound(m_apArchive.begin(), m_apArchive.end(), sPath, [](const coreArchive* A, const coreHashString& B)
     {
-        return (std::strcmp(A->GetPath(), B.GetString()) < 0);
+        return (coreStrCmp(A->GetPath(), B.GetString()) < 0);
     });
 
     // load new archive

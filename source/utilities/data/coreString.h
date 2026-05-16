@@ -128,8 +128,8 @@ constexpr coreString& coreString::replace(const coreChar* pcOld, const coreChar*
     coreUintW iPos = 0u;
 
     // get length of both sub-strings
-    const coreUintW iOldLen = coreStrLenConst(pcOld);
-    const coreUintW iNewLen = coreStrLenConst(pcNew);
+    const coreUintW iOldLen = coreStrLen(pcOld);
+    const coreUintW iNewLen = coreStrLen(pcNew);
 
     // loop only once and replace all findings
     while((iPos = this->find(pcOld, iPos, iOldLen)) != coreString::npos)

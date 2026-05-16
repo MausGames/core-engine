@@ -829,7 +829,7 @@ coreBool coreData::DetectDebugger()
         if(pcCursor)
         {
             // check for valid process identifier
-            pcCursor += coreStrLenConst("TracerPid:");
+            pcCursor += coreStrLen("TracerPid:");
             for(; (*pcCursor) != '\0'; ++pcCursor)
             {
                 if(!std::isspace(*pcCursor))
@@ -884,7 +884,7 @@ coreBool coreData::DetectRenderDoc()
 coreBool coreData::DetectSteamDeck()
 {
     const coreChar* pcVariable = coreData::GetEnvironment("SteamDeck");
-    return (pcVariable && !std::strcmp(pcVariable, "1"));
+    return (pcVariable && !coreStrCmp(pcVariable, "1"));
 }
 
 
@@ -893,7 +893,7 @@ coreBool coreData::DetectSteamDeck()
 coreBool coreData::DetectX11()
 {
     const coreChar* pcVariable = coreData::GetEnvironment("XDG_SESSION_TYPE");
-    return (pcVariable && !std::strcmp(pcVariable, "x11"));
+    return (pcVariable && !coreStrCmp(pcVariable, "x11"));
 }
 
 
@@ -902,7 +902,7 @@ coreBool coreData::DetectX11()
 coreBool coreData::DetectWayland()
 {
     const coreChar* pcVariable = coreData::GetEnvironment("XDG_SESSION_TYPE");
-    return (pcVariable && !std::strcmp(pcVariable, "wayland"));
+    return (pcVariable && !coreStrCmp(pcVariable, "wayland"));
 }
 
 
@@ -1150,7 +1150,7 @@ void coreData::InitDefaultFolders()
     // use specific user folder
     if(pcPath && pcPath[0])
     {
-        pcPath = std::strcmp(pcPath, "!appdata") ? PRINT("%s/", pcPath) : coreData::SystemDirAppData();
+        pcPath = coreStrCmp(pcPath, "!appdata") ? PRINT("%s/", pcPath) : coreData::SystemDirAppData();
     }
 
     // use default user folder (and create directory hierarchy)
@@ -1610,7 +1610,7 @@ coreStatus coreData::FileCopy(const coreChar* pcFrom, const coreChar* pcTo)
     ASSERT(pcFrom && pcTo)
 
     // do not copy to same file (unreliable check)
-    WARN_IF(!std::strcmp(pcFrom, pcTo)) return CORE_INVALID_INPUT;
+    WARN_IF(!coreStrCmp(pcFrom, pcTo)) return CORE_INVALID_INPUT;
 
 #if defined(_CORE_WINDOWS_)
 
@@ -1717,7 +1717,7 @@ coreStatus coreData::FileMove(const coreChar* pcFrom, const coreChar* pcTo)
     ASSERT(pcFrom && pcTo)
 
     // do not move to same file (unreliable check)
-    WARN_IF(!std::strcmp(pcFrom, pcTo)) return CORE_INVALID_INPUT;
+    WARN_IF(!coreStrCmp(pcFrom, pcTo)) return CORE_INVALID_INPUT;
 
 #if defined(_CORE_WINDOWS_)
 
@@ -1966,7 +1966,7 @@ coreStatus coreData::DirectoryCopy(const coreChar* pcFrom, const coreChar* pcTo)
     ASSERT(pcFrom && pcTo)
 
     // do not copy to same directory (unreliable check)
-    WARN_IF(!std::strcmp(pcFrom, pcTo)) return CORE_INVALID_INPUT;
+    WARN_IF(!coreStrCmp(pcFrom, pcTo)) return CORE_INVALID_INPUT;
 
     // check if source directory even exists
     if(!coreData::DirectoryExists(pcFrom)) return CORE_ERROR_FILE;
@@ -1992,7 +1992,7 @@ coreStatus coreData::DirectoryMove(const coreChar* pcFrom, const coreChar* pcTo)
     ASSERT(pcFrom && pcTo)
 
     // do not move to same directory (unreliable check)
-    WARN_IF(!std::strcmp(pcFrom, pcTo)) return CORE_INVALID_INPUT;
+    WARN_IF(!coreStrCmp(pcFrom, pcTo)) return CORE_INVALID_INPUT;
 
     // check if source directory even exists
     if(!coreData::DirectoryExists(pcFrom)) return CORE_ERROR_FILE;
@@ -2527,7 +2527,7 @@ const coreChar* coreData::StrLeft(const coreChar* pcInput, const coreUintW iNum)
     coreChar* pcString = coreData::__NextTempString();
 
     // calculate string length
-    const coreUintW iLen = MIN(iNum, std::strlen(pcInput), CORE_DATA_STRING_LEN - 1u);
+    const coreUintW iLen = MIN(iNum, coreStrLen(pcInput), CORE_DATA_STRING_LEN - 1u);
 
     // copy characters into new string
     std::memcpy(pcString, pcInput, iLen);
@@ -2543,7 +2543,7 @@ const coreChar* coreData::StrRight(const coreChar* pcInput, const coreUintW iNum
 {
     WARN_IF(!pcInput) return "";
 
-    const coreUintW iLen = std::strlen(pcInput);
+    const coreUintW iLen = coreStrLen(pcInput);
     return pcInput + (iLen - MIN(iLen, iNum));
 }
 
@@ -2557,7 +2557,7 @@ const coreChar* coreData::StrFilename(const coreChar* pcInput, const coreBool bE
     if(bExtension)
     {
         // return after last path-delimiter
-        for(const coreChar* pcCursor = pcInput + std::strlen(pcInput) - 2u; pcCursor >= pcInput; --pcCursor)
+        for(const coreChar* pcCursor = pcInput + coreStrLen(pcInput) - 2u; pcCursor >= pcInput; --pcCursor)
         {
             if(((*pcCursor) == '/') || ((*pcCursor) == '\\'))
                 return pcCursor + 1u;
@@ -2632,10 +2632,10 @@ corePoint3U8 coreData::StrVersion(const coreChar* pcInput)
 /* copy string into another buffer */
 coreUintW coreData::StrCopy(coreChar* OUTPUT pcOutput, const coreUintW iOutputSize, const coreChar* pcInput, const coreUintW iNum)
 {
-    ASSERT(pcOutput && iOutputSize && pcInput && ((iNum <= std::strlen(pcInput)) || (iNum == SIZE_MAX)))
+    ASSERT(pcOutput && iOutputSize && pcInput && ((iNum <= coreStrLen(pcInput)) || (iNum == SIZE_MAX)))
 
     // calculate string length
-    const coreUintW iInputLen  = (iNum == SIZE_MAX) ? std::strlen(pcInput) : iNum;
+    const coreUintW iInputLen  = (iNum == SIZE_MAX) ? coreStrLen(pcInput) : iNum;
     const coreUintW iOutputLen = MIN(iInputLen, iOutputSize - 1u);
 
     // copy string with guaranteed null-termination

@@ -407,7 +407,7 @@ void corePlatformExtensions(coreString* OUTPUT psOutput)
 
     #define __LOAD_FUNCTION(x,y) decltype(x)* __ ## x = r_cast<decltype(x)*>(coreData::GetAddress(y, #x));
     {
-        if(!std::strcmp(SDL_GetCurrentVideoDriver(), "wayland"))
+        if(!coreStrCmp(SDL_GetCurrentVideoDriver(), "wayland"))
         {
             // open EGL library
             void* pLibrary = coreData::OpenLibrary("libEGL.so");

@@ -108,8 +108,8 @@ coreStatus coreShader::Load(coreFile* pFile)
     coreShader::__ResolveIncludes(&sMainCode, pFile);
 
     // assemble the shader
-    const coreChar* apcData[] = {s_asGlobalCode[0].c_str(),             pcTypeDef,                         pcQualityDef,                         m_sCustomCode.c_str(),             s_asGlobalCode[1].c_str(),             s_asGlobalCode[iTypeIndex].c_str(),             sMainCode.c_str(),             acEntryPoint};
-    const coreInt32 aiSize [] = {coreInt32(s_asGlobalCode[0].length()), coreInt32(std::strlen(pcTypeDef)), coreInt32(std::strlen(pcQualityDef)), coreInt32(m_sCustomCode.length()), coreInt32(s_asGlobalCode[1].length()), coreInt32(s_asGlobalCode[iTypeIndex].length()), coreInt32(sMainCode.length()), coreInt32(ARRAY_SIZE(acEntryPoint) - 1u)};
+    const coreChar* apcData[] = {s_asGlobalCode[0].c_str(),             pcTypeDef,                        pcQualityDef,                        m_sCustomCode.c_str(),             s_asGlobalCode[1].c_str(),             s_asGlobalCode[iTypeIndex].c_str(),             sMainCode.c_str(),             acEntryPoint};
+    const coreInt32 aiSize [] = {coreInt32(s_asGlobalCode[0].length()), coreInt32(coreStrLen(pcTypeDef)), coreInt32(coreStrLen(pcQualityDef)), coreInt32(m_sCustomCode.length()), coreInt32(s_asGlobalCode[1].length()), coreInt32(s_asGlobalCode[iTypeIndex].length()), coreInt32(sMainCode.length()), coreInt32(ARRAY_SIZE(acEntryPoint) - 1u)};
     STATIC_ASSERT(ARRAY_SIZE(apcData) == ARRAY_SIZE(aiSize))
 
     // create and compile the shader

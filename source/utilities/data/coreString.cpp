@@ -79,8 +79,8 @@ void coreWorkString::assign(const coreChar* pcText, const coreUintW iNum)
     if(!pcText) pcText = "";
 
     // calculate string length
-    ASSERT((iNum <= std::strlen(pcText)) || (iNum == SIZE_MAX))
-    const coreUintW iLen = (iNum == SIZE_MAX) ? std::strlen(pcText) : iNum;
+    ASSERT((iNum <= coreStrLen(pcText)) || (iNum == SIZE_MAX))
+    const coreUintW iLen = (iNum == SIZE_MAX) ? coreStrLen(pcText) : iNum;
 
     // adjust size and capacity
     m_iSize = iLen + 1u;
@@ -99,8 +99,8 @@ void coreWorkString::append(const coreChar* pcText, const coreUintW iNum)
     if(!pcText) pcText = "";
 
     // calculate string length
-    ASSERT((iNum <= std::strlen(pcText)) || (iNum == SIZE_MAX))
-    const coreUintW iLen = (iNum == SIZE_MAX) ? std::strlen(pcText) : iNum;
+    ASSERT((iNum <= coreStrLen(pcText)) || (iNum == SIZE_MAX))
+    const coreUintW iLen = (iNum == SIZE_MAX) ? coreStrLen(pcText) : iNum;
 
     // adjust size and capacity
     m_iSize += iLen;
@@ -121,8 +121,8 @@ void coreWorkString::replace(const coreChar* pcOld, const coreChar* pcNew)
     coreChar* pCursor = m_pcBuffer;
 
     // get length of both sub-strings
-    const coreUintW iOldLen = std::strlen(pcOld);
-    const coreUintW iNewLen = std::strlen(pcNew);
+    const coreUintW iOldLen = coreStrLen(pcOld);
+    const coreUintW iNewLen = coreStrLen(pcNew);
 
     // loop only once and replace all findings
     while((pCursor = std::strstr(pCursor, pcOld)) != NULL)

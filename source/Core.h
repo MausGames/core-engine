@@ -381,7 +381,7 @@
 #define STRING(a)                   __STRING(a)
 #define __CONCAT(a,b)               a ## b
 #define CONCAT(a,b)                 __CONCAT(a, b)
-#define __DEFINED(a,b)              !!FORCE_COMPILE_TIME(coreStrCmpConst(#a, b))
+#define __DEFINED(a,b)              !!FORCE_COMPILE_TIME(coreStrCmp(#a, b))
 #define DEFINED(a)                  __DEFINED(a, #a)
 
 #define SAFE_DELETE(p)              {delete   (p); (p) = NULL;}
@@ -579,9 +579,9 @@ STATIC_ASSERT(sizeof(coreUint32) == 4u)
 STATIC_ASSERT(sizeof(coreUint64) == 8u)
 STATIC_ASSERT(sizeof(coreByte)   == 1u)
 
-// retrieve compile-time string properties
-RETURN_NODISCARD constexpr coreUintW coreStrLenConst(const coreChar* s)                    {ASSERT(s)      if(std::is_constant_evaluated()) {coreUintW i = 0u; while(s[i]) ++i; return i;}                return std::strlen(s);}
-RETURN_NODISCARD constexpr coreInt32 coreStrCmpConst(const coreChar* s, const coreChar* t) {ASSERT(s && t) if(std::is_constant_evaluated()) {while((*s) == (*t) && (*s)) {++s; ++t;} return (*s) - (*t);} return std::strcmp(s, t);}
+// retrieve compile-time string properties (# here due to include ordering)
+RETURN_NODISCARD constexpr coreUintW coreStrLen(const coreChar* s)                    {ASSERT(s)      if(std::is_constant_evaluated()) {coreUintW i = 0u; while(s[i]) ++i; return i;}                return std::strlen(s);}
+RETURN_NODISCARD constexpr coreInt32 coreStrCmp(const coreChar* s, const coreChar* t) {ASSERT(s && t) if(std::is_constant_evaluated()) {while((*s) == (*t) && (*s)) {++s; ++t;} return (*s) - (*t);} return std::strcmp(s, t);}
 
 // retrieve compile-time pointer-safe array size
 template <typename T, coreUintW iSize> coreByte (&__ARRAY_SIZE(T (&)[iSize]))[iSize];

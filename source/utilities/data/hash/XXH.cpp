@@ -45,12 +45,12 @@ coreUint64 coreHashXXH64(const coreByte* pData, const coreUintW iLength, const c
 
 coreUint64 coreHashXXH64(const coreChar* pcString)
 {
-    return coreHashXXH64(r_cast<const coreByte*>(pcString), std::strlen(pcString) + 1u);
+    return coreHashXXH64(r_cast<const coreByte*>(pcString), coreStrLen(pcString) + 1u);
 }
 
 coreUint64 coreHashXXH64(const coreChar* pcString, const coreUint64 iSeed)
 {
-    return coreHashXXH64(r_cast<const coreByte*>(pcString), std::strlen(pcString) + 1u, iSeed);
+    return coreHashXXH64(r_cast<const coreByte*>(pcString), coreStrLen(pcString) + 1u, iSeed);
 }
 
 
@@ -68,12 +68,12 @@ coreUint128 coreHashXXH128(const coreByte* pData, const coreUintW iLength, const
 
 coreUint128 coreHashXXH128(const coreChar* pcString)
 {
-    return coreHashXXH128(r_cast<const coreByte*>(pcString), std::strlen(pcString) + 1u);
+    return coreHashXXH128(r_cast<const coreByte*>(pcString), coreStrLen(pcString) + 1u);
 }
 
 coreUint128 coreHashXXH128(const coreChar* pcString, const coreUint64 iSeed)
 {
-    return coreHashXXH128(r_cast<const coreByte*>(pcString), std::strlen(pcString) + 1u, iSeed);
+    return coreHashXXH128(r_cast<const coreByte*>(pcString), coreStrLen(pcString) + 1u, iSeed);
 }
 
 

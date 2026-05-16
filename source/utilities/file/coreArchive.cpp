@@ -584,7 +584,7 @@ coreStatus coreArchive::Save(const coreChar* pcPath)
     FOR_EACH(it, m_apFile)
     {
         // get path length
-        const coreUint8 iPathLen = MIN(std::strlen((*it)->GetPath()), 255u);
+        const coreUint8 iPathLen = MIN(coreStrLen((*it)->GetPath()), 255u);
 
         // write header
         coreFile::__Write(pArchive, &iPathLen,             sizeof(coreUint8),  &bSuccess);
@@ -739,7 +739,7 @@ void coreArchive::__CalculatePositions()
     coreUint32 iCurPosition = 2u*sizeof(coreUint32) + sizeof(coreUint16);
     FOR_EACH(it, m_apFile)
     {
-        iCurPosition += sizeof(coreUint8) + MIN(std::strlen((*it)->GetPath()), 255u) + 2u*sizeof(coreUint32);
+        iCurPosition += sizeof(coreUint8) + MIN(coreStrLen((*it)->GetPath()), 255u) + 2u*sizeof(coreUint32);
     }
 
     // set absolute data position
