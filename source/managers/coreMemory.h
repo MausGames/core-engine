@@ -27,8 +27,8 @@
 
 // ****************************************************************
 /* memory definitions */
-#define CORE_MEMORY_TEMP_NUM  (DEFINED(_CORE_EMSCRIPTEN_) ? 1u : 2u)   // number of temp-buffers
-#define CORE_MEMORY_TEMP_SIZE (1u * 1024u * 1024u)                     // size of each temp-buffer
+#define CORE_MEMORY_TEMP_NUM  (DEFINED(_CORE_SINGLE_) ? 1u : 2u)   // number of temp-buffers
+#define CORE_MEMORY_TEMP_SIZE (1u * 1024u * 1024u)                 // size of each temp-buffer
 
 #define CORE_MEMORY_SHARED    (STRING(__FILE__) ":" STRING(__LINE__))
 #define CORE_MEMORY_UNIQUE    (PRINT(CORE_MEMORY_SHARED ":%p", this))

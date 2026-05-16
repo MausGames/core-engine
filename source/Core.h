@@ -144,6 +144,11 @@
     #define _CORE_MOBILE_
 #endif
 
+// single-threaded mode
+#if defined(_CORE_EMSCRIPTEN_)
+    #define _CORE_SINGLE_
+#endif
+
 // ANGLE mode
 #if defined(__ANGLE__)
     #define _CORE_ANGLE_
@@ -281,7 +286,7 @@
     #endif
 #endif
 
-#if defined(_CORE_EMSCRIPTEN_)
+#if defined(_CORE_SINGLE_)
     #undef  THREAD_LOCAL
     #define THREAD_LOCAL   // multi-threading is not supported or required
 #endif

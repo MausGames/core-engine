@@ -43,7 +43,7 @@ coreThread::~coreThread()
 /* start the thread */
 SDL_Thread* coreThread::StartThread()
 {
-#if !defined(_CORE_EMSCRIPTEN_)
+#if !defined(_CORE_SINGLE_)
 
     if(!m_pThread)
     {
@@ -78,7 +78,7 @@ SDL_Thread* coreThread::StartThread()
 /* kill the thread */
 void coreThread::KillThread()
 {
-#if !defined(_CORE_EMSCRIPTEN_)
+#if !defined(_CORE_SINGLE_)
 
     if(m_pThread)
     {

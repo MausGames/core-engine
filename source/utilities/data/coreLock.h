@@ -35,7 +35,7 @@
     #endif
 #endif
 
-#if defined(_CORE_EMSCRIPTEN_)
+#if defined(_CORE_SINGLE_)
     #define CORE_LOCK_DISABLED   // disable locking (if multi-threading is not supported or required)
 #elif defined(_CORE_SWITCH_)
     #define CORE_LOCK_MUTEX      // use regular mutexes (to prevent starvation)
