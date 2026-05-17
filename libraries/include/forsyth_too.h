@@ -86,7 +86,8 @@ namespace Forsyth
                 {
                     ASSERT(cachePosition < vertexCacheSize)
                     // Points for being high in the cache.
-                    score = 1.0f - static_cast<float>(cachePosition - 3) / static_cast<float>(vertexCacheSize - 3);
+                    const float scaler = 1.0f / static_cast<float>(vertexCacheSize - 3);
+                    score = 1.0f - static_cast<float>(cachePosition - 3) * scaler;
                     score = powf(score, FindVertexScore_CacheDecayPower);
                 }
             }

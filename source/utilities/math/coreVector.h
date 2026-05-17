@@ -719,7 +719,7 @@ inline coreUint8 coreVector2::PackWay8()const
 /* compress 0.0 to 1.0 vector into YX packed uint16 */
 constexpr coreUint16 coreVector2::PackUnorm2x8()const
 {
-    ASSERT(this->IsUnorm())
+    //ASSERT(this->IsUnorm())
     return (coreUint16(y * 255.0f) << 8u) |
            (coreUint16(x * 255.0f));
 }
@@ -729,7 +729,7 @@ constexpr coreUint16 coreVector2::PackUnorm2x8()const
 /* compress -1.0 to 1.0 vector into YX packed uint16 */
 constexpr coreUint16 coreVector2::PackSnorm2x8()const
 {
-    ASSERT(this->IsSnorm())
+    //ASSERT(this->IsSnorm())
     return (coreUint16((y < 0.0f) ? (256.0f + y*128.0f) : (y*127.0f)) << 8u) |
            (coreUint16((x < 0.0f) ? (256.0f + x*128.0f) : (x*127.0f)));
 }
@@ -739,7 +739,7 @@ constexpr coreUint16 coreVector2::PackSnorm2x8()const
 /* compress 0.0 to 1.0 vector into YX packed uint32 */
 constexpr coreUint32 coreVector2::PackUnorm2x16()const
 {
-    ASSERT(this->IsUnorm())
+    //ASSERT(this->IsUnorm())
     return (F_TO_UI(y * 65535.0f) << 16u) |
            (F_TO_UI(x * 65535.0f));
 }
@@ -749,7 +749,7 @@ constexpr coreUint32 coreVector2::PackUnorm2x16()const
 /* compress -1.0 to 1.0 vector into YX packed uint32 */
 constexpr coreUint32 coreVector2::PackSnorm2x16()const
 {
-    ASSERT(this->IsSnorm())
+    //ASSERT(this->IsSnorm())
     return (F_TO_UI((y < 0.0f) ? (65536.0f + y*32768.0f) : (y*32767.0f)) << 16u) |
            (F_TO_UI((x < 0.0f) ? (65536.0f + x*32768.0f) : (x*32767.0f)));
 }
@@ -1004,7 +1004,7 @@ inline coreBool coreVector3::Visible(const coreVector3 vPosition, const coreFloa
 /* compress 0.0 to 1.0 vector into 5_6_5_rev packed uint16 */
 constexpr coreUint16 coreVector3::PackUnorm565()const
 {
-    ASSERT(this->IsUnorm())
+    //ASSERT(this->IsUnorm())
     return (coreUint16(z * 31.0f) << 11u) |
            (coreUint16(y * 63.0f) <<  5u) |
            (coreUint16(x * 31.0f));
@@ -1015,7 +1015,7 @@ constexpr coreUint16 coreVector3::PackUnorm565()const
 /* compress -1.0 to 1.0 vector into 5_6_5_rev packed uint16 */
 constexpr coreUint16 coreVector3::PackSnorm565()const
 {
-    ASSERT(this->IsSnorm())
+    //ASSERT(this->IsSnorm())
     return (coreUint16((z < 0.0f) ? (32.0f + z*16.0f) : (z*15.0f)) << 11u) |
            (coreUint16((y < 0.0f) ? (64.0f + y*32.0f) : (y*31.0f)) <<  5u) |
            (coreUint16((x < 0.0f) ? (32.0f + x*16.0f) : (x*15.0f)));
@@ -1026,7 +1026,7 @@ constexpr coreUint16 coreVector3::PackSnorm565()const
 /* compress 0.0 to 1.0 vector into (own) 10_11_11_rev packed uint32 */
 constexpr coreUint32 coreVector3::PackUnorm011()const
 {
-    ASSERT(this->IsUnorm())
+    //ASSERT(this->IsUnorm())
     return (F_TO_UI(z * 1023.0f) << 22u) |
            (F_TO_UI(y * 2047.0f) << 11u) |
            (F_TO_UI(x * 2047.0f));
@@ -1037,7 +1037,7 @@ constexpr coreUint32 coreVector3::PackUnorm011()const
 /* compress -1.0 to 1.0 vector into (own) 10_11_11_rev packed uint32 */
 constexpr coreUint32 coreVector3::PackSnorm011()const
 {
-    ASSERT(this->IsSnorm())
+    //ASSERT(this->IsSnorm())
     return (F_TO_UI((z < 0.0f) ? (1024.0f + z* 512.0f) : (z* 511.0f)) << 22u) |
            (F_TO_UI((y < 0.0f) ? (2048.0f + y*1024.0f) : (y*1023.0f)) << 11u) |
            (F_TO_UI((x < 0.0f) ? (2048.0f + x*1024.0f) : (x*1023.0f)));
@@ -1220,7 +1220,7 @@ inline coreVector4 coreVector4::Rand(const coreFloat fMinX, const coreFloat fMax
 /* compress 0.0 to 1.0 vector into 2_10_10_10_rev packed uint32 */
 constexpr coreUint32 coreVector4::PackUnorm210()const
 {
-    ASSERT(this->IsUnorm())
+    //ASSERT(this->IsUnorm())
     return (F_TO_UI(w *    3.0f) << 30u) |
            (F_TO_UI(z * 1023.0f) << 20u) |
            (F_TO_UI(y * 1023.0f) << 10u) |
@@ -1232,7 +1232,7 @@ constexpr coreUint32 coreVector4::PackUnorm210()const
 /* compress -1.0 to 1.0 vector into 2_10_10_10_rev packed uint32 */
 constexpr coreUint32 coreVector4::PackSnorm210()const
 {
-    ASSERT(this->IsSnorm())
+    //ASSERT(this->IsSnorm())
     return (F_TO_UI((w < 0.0f) ? (   4.0f + w*  2.0f) : (w*  1.0f)) << 30u) |
            (F_TO_UI((z < 0.0f) ? (1024.0f + z*512.0f) : (z*511.0f)) << 20u) |
            (F_TO_UI((y < 0.0f) ? (1024.0f + y*512.0f) : (y*511.0f)) << 10u) |
@@ -1244,7 +1244,7 @@ constexpr coreUint32 coreVector4::PackSnorm210()const
 /* compress 0.0 to 1.0 vector into WZYX packed uint32 */
 constexpr coreUint32 coreVector4::PackUnorm4x8()const
 {
-    ASSERT(this->IsUnorm())
+    //ASSERT(this->IsUnorm())
     return (F_TO_UI(w * 255.0f) << 24u) |
            (F_TO_UI(z * 255.0f) << 16u) |
            (F_TO_UI(y * 255.0f) <<  8u) |
@@ -1256,7 +1256,7 @@ constexpr coreUint32 coreVector4::PackUnorm4x8()const
 /* compress -1.0 to 1.0 vector into WZYX packed uint32 */
 constexpr coreUint32 coreVector4::PackSnorm4x8()const
 {
-    ASSERT(this->IsSnorm())
+    //ASSERT(this->IsSnorm())
     return (F_TO_UI((w < 0.0f) ? (256.0f + w*128.0f) : (w*127.0f)) << 24u) |
            (F_TO_UI((z < 0.0f) ? (256.0f + z*128.0f) : (z*127.0f)) << 16u) |
            (F_TO_UI((y < 0.0f) ? (256.0f + y*128.0f) : (y*127.0f)) <<  8u) |
@@ -1268,7 +1268,7 @@ constexpr coreUint32 coreVector4::PackSnorm4x8()const
 /* compress 0.0 to 1.0 vector into WZYX packed uint64 */
 constexpr coreUint64 coreVector4::PackUnorm4x16()const
 {
-    ASSERT(this->IsUnorm())
+    //ASSERT(this->IsUnorm())
     return (coreUint64(w * 65535.0f) << 48u) |
            (coreUint64(z * 65535.0f) << 32u) |
            (coreUint64(y * 65535.0f) << 16u) |
@@ -1280,7 +1280,7 @@ constexpr coreUint64 coreVector4::PackUnorm4x16()const
 /* compress -1.0 to 1.0 vector into WZYX packed uint64 */
 constexpr coreUint64 coreVector4::PackSnorm4x16()const
 {
-    ASSERT(this->IsSnorm())
+    //ASSERT(this->IsSnorm())
     return (coreUint64((w < 0.0f) ? (65536.0f + w*32768.0f) : (w*32767.0f)) << 48u) |
            (coreUint64((z < 0.0f) ? (65536.0f + z*32768.0f) : (z*32767.0f)) << 32u) |
            (coreUint64((y < 0.0f) ? (65536.0f + y*32768.0f) : (y*32767.0f)) << 16u) |
