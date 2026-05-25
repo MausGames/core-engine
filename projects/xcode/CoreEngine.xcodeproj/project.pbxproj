@@ -15,6 +15,16 @@
 		5B660CE827E0B7AB009BB1CB /* XXH.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5B660CE627E0B7AB009BB1CB /* XXH.cpp */; };
 		5B77109B27CD488B00EB424C /* cocoa.h in Headers */ = {isa = PBXBuildFile; fileRef = 5B77109927CD488B00EB424C /* cocoa.h */; };
 		5B77109C27CD488B00EB424C /* cocoa.mm in Sources */ = {isa = PBXBuildFile; fileRef = 5B77109A27CD488B00EB424C /* cocoa.mm */; };
+		5B8BA10C2FBFB4270026E082 /* coreObject.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5B8BA1082FBFB4270026E082 /* coreObject.cpp */; };
+		5B8BA10D2FBFB4270026E082 /* coreMemory.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5B8BA1062FBFB4270026E082 /* coreMemory.cpp */; };
+		5B8BA10E2FBFB4270026E082 /* coreResource.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5B8BA10A2FBFB4270026E082 /* coreResource.cpp */; };
+		5B8BA10F2FBFB4270026E082 /* coreObject.h in Headers */ = {isa = PBXBuildFile; fileRef = 5B8BA1072FBFB4270026E082 /* coreObject.h */; };
+		5B8BA1102FBFB4270026E082 /* coreResource.h in Headers */ = {isa = PBXBuildFile; fileRef = 5B8BA1092FBFB4270026E082 /* coreResource.h */; };
+		5B8BA1112FBFB4270026E082 /* coreMemory.h in Headers */ = {isa = PBXBuildFile; fileRef = 5B8BA1052FBFB4270026E082 /* coreMemory.h */; };
+		5B8BA1152FBFB48B0026E082 /* coreCommand.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5B8BA1122FBFB48B0026E082 /* coreCommand.cpp */; };
+		5B8BA1162FBFB48B0026E082 /* coreTest.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5B8BA1132FBFB48B0026E082 /* coreTest.cpp */; };
+		5B8BA1192FBFB4B40026E082 /* coreLock.h in Headers */ = {isa = PBXBuildFile; fileRef = 5B8BA1182FBFB4B40026E082 /* coreLock.h */; };
+		5B8BA11A2FBFB4B40026E082 /* coreAtomic.h in Headers */ = {isa = PBXBuildFile; fileRef = 5B8BA1172FBFB4B40026E082 /* coreAtomic.h */; };
 		5B979FCC2A3C73A200C5292D /* epic.h in Headers */ = {isa = PBXBuildFile; fileRef = 5B979FCB2A3C73A200C5292D /* epic.h */; };
 		5BA975552D8DF01C00D916E6 /* coreBlob.h in Headers */ = {isa = PBXBuildFile; fileRef = 5BA975542D8DF01C00D916E6 /* coreBlob.h */; };
 		5BA975572D8DF06100D916E6 /* discord.h in Headers */ = {isa = PBXBuildFile; fileRef = 5BA975562D8DF06100D916E6 /* discord.h */; };
@@ -94,7 +104,6 @@
 		5BB8C38B27C94E4200BBB338 /* coreRand.h in Headers */ = {isa = PBXBuildFile; fileRef = 5BB8C31A27C94E4100BBB338 /* coreRand.h */; };
 		5BB8C38C27C94E4200BBB338 /* coreData.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5BB8C31B27C94E4100BBB338 /* coreData.cpp */; };
 		5BB8C38D27C94E4200BBB338 /* coreData.h in Headers */ = {isa = PBXBuildFile; fileRef = 5BB8C31C27C94E4100BBB338 /* coreData.h */; };
-		5BB8C38E27C94E4200BBB338 /* coreLock.h in Headers */ = {isa = PBXBuildFile; fileRef = 5BB8C31D27C94E4100BBB338 /* coreLock.h */; };
 		5BB8C38F27C94E4200BBB338 /* coreSet.h in Headers */ = {isa = PBXBuildFile; fileRef = 5BB8C31E27C94E4100BBB338 /* coreSet.h */; };
 		5BB8C39027C94E4200BBB338 /* coreHashString.h in Headers */ = {isa = PBXBuildFile; fileRef = 5BB8C31F27C94E4100BBB338 /* coreHashString.h */; };
 		5BB8C39127C94E4200BBB338 /* coreRing.h in Headers */ = {isa = PBXBuildFile; fileRef = 5BB8C32027C94E4100BBB338 /* coreRing.h */; };
@@ -118,12 +127,6 @@
 		5BB8C3A327C94E4200BBB338 /* coreLabel.h in Headers */ = {isa = PBXBuildFile; fileRef = 5BB8C33527C94E4100BBB338 /* coreLabel.h */; };
 		5BB8C3A427C94E4200BBB338 /* coreViewBox.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5BB8C33627C94E4100BBB338 /* coreViewBox.cpp */; };
 		5BB8C3A527C94E4200BBB338 /* coreCheckBox.h in Headers */ = {isa = PBXBuildFile; fileRef = 5BB8C33727C94E4100BBB338 /* coreCheckBox.h */; };
-		5BB8C3A727C94E4200BBB338 /* coreResource.h in Headers */ = {isa = PBXBuildFile; fileRef = 5BB8C33A27C94E4200BBB338 /* coreResource.h */; };
-		5BB8C3A827C94E4200BBB338 /* coreResource.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5BB8C33B27C94E4200BBB338 /* coreResource.cpp */; };
-		5BB8C3A927C94E4200BBB338 /* coreMemory.h in Headers */ = {isa = PBXBuildFile; fileRef = 5BB8C33C27C94E4200BBB338 /* coreMemory.h */; };
-		5BB8C3AA27C94E4200BBB338 /* coreObject.h in Headers */ = {isa = PBXBuildFile; fileRef = 5BB8C33D27C94E4200BBB338 /* coreObject.h */; };
-		5BB8C3AB27C94E4200BBB338 /* coreMemory.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5BB8C33E27C94E4200BBB338 /* coreMemory.cpp */; };
-		5BB8C3AC27C94E4200BBB338 /* coreObject.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5BB8C33F27C94E4200BBB338 /* coreObject.cpp */; };
 		5BB8C3AD27C94E4200BBB338 /* Core.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5BB8C34027C94E4200BBB338 /* Core.cpp */; };
 		5BB8C3AF27C94E7100BBB338 /* Core.h in Headers */ = {isa = PBXBuildFile; fileRef = 5BB8C3AE27C94E7100BBB338 /* Core.h */; };
 /* End PBXBuildFile section */
@@ -137,6 +140,16 @@
 		5B660CE627E0B7AB009BB1CB /* XXH.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = XXH.cpp; sourceTree = "<group>"; };
 		5B77109927CD488B00EB424C /* cocoa.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = cocoa.h; sourceTree = "<group>"; };
 		5B77109A27CD488B00EB424C /* cocoa.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = cocoa.mm; sourceTree = "<group>"; };
+		5B8BA1052FBFB4270026E082 /* coreMemory.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = coreMemory.h; sourceTree = "<group>"; };
+		5B8BA1062FBFB4270026E082 /* coreMemory.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = coreMemory.cpp; sourceTree = "<group>"; };
+		5B8BA1072FBFB4270026E082 /* coreObject.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = coreObject.h; sourceTree = "<group>"; };
+		5B8BA1082FBFB4270026E082 /* coreObject.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = coreObject.cpp; sourceTree = "<group>"; };
+		5B8BA1092FBFB4270026E082 /* coreResource.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = coreResource.h; sourceTree = "<group>"; };
+		5B8BA10A2FBFB4270026E082 /* coreResource.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = coreResource.cpp; sourceTree = "<group>"; };
+		5B8BA1122FBFB48B0026E082 /* coreCommand.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = coreCommand.cpp; sourceTree = "<group>"; };
+		5B8BA1132FBFB48B0026E082 /* coreTest.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = coreTest.cpp; sourceTree = "<group>"; };
+		5B8BA1172FBFB4B40026E082 /* coreAtomic.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = coreAtomic.h; sourceTree = "<group>"; };
+		5B8BA1182FBFB4B40026E082 /* coreLock.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = coreLock.h; sourceTree = "<group>"; };
 		5B979FCB2A3C73A200C5292D /* epic.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = epic.h; sourceTree = "<group>"; };
 		5BA975542D8DF01C00D916E6 /* coreBlob.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = coreBlob.h; sourceTree = "<group>"; };
 		5BA975562D8DF06100D916E6 /* discord.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = discord.h; sourceTree = "<group>"; };
@@ -224,7 +237,6 @@
 		5BB8C31A27C94E4100BBB338 /* coreRand.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = coreRand.h; sourceTree = "<group>"; };
 		5BB8C31B27C94E4100BBB338 /* coreData.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = coreData.cpp; sourceTree = "<group>"; };
 		5BB8C31C27C94E4100BBB338 /* coreData.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = coreData.h; sourceTree = "<group>"; };
-		5BB8C31D27C94E4100BBB338 /* coreLock.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = coreLock.h; sourceTree = "<group>"; };
 		5BB8C31E27C94E4100BBB338 /* coreSet.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = coreSet.h; sourceTree = "<group>"; };
 		5BB8C31F27C94E4100BBB338 /* coreHashString.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = coreHashString.h; sourceTree = "<group>"; };
 		5BB8C32027C94E4100BBB338 /* coreRing.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = coreRing.h; sourceTree = "<group>"; };
@@ -248,12 +260,6 @@
 		5BB8C33527C94E4100BBB338 /* coreLabel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = coreLabel.h; sourceTree = "<group>"; };
 		5BB8C33627C94E4100BBB338 /* coreViewBox.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = coreViewBox.cpp; sourceTree = "<group>"; };
 		5BB8C33727C94E4100BBB338 /* coreCheckBox.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = coreCheckBox.h; sourceTree = "<group>"; };
-		5BB8C33A27C94E4200BBB338 /* coreResource.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = coreResource.h; sourceTree = "<group>"; };
-		5BB8C33B27C94E4200BBB338 /* coreResource.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = coreResource.cpp; sourceTree = "<group>"; };
-		5BB8C33C27C94E4200BBB338 /* coreMemory.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = coreMemory.h; sourceTree = "<group>"; };
-		5BB8C33D27C94E4200BBB338 /* coreObject.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = coreObject.h; sourceTree = "<group>"; };
-		5BB8C33E27C94E4200BBB338 /* coreMemory.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = coreMemory.cpp; sourceTree = "<group>"; };
-		5BB8C33F27C94E4200BBB338 /* coreObject.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = coreObject.cpp; sourceTree = "<group>"; };
 		5BB8C34027C94E4200BBB338 /* Core.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Core.cpp; path = ../../source/Core.cpp; sourceTree = "<group>"; };
 		5BB8C3AE27C94E7100BBB338 /* Core.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Core.h; path = ../../source/Core.h; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -278,13 +284,36 @@
 			path = build;
 			sourceTree = "<group>";
 		};
+		5B8BA10B2FBFB4270026E082 /* managers */ = {
+			isa = PBXGroup;
+			children = (
+				5B8BA1062FBFB4270026E082 /* coreMemory.cpp */,
+				5B8BA1052FBFB4270026E082 /* coreMemory.h */,
+				5B8BA1082FBFB4270026E082 /* coreObject.cpp */,
+				5B8BA1072FBFB4270026E082 /* coreObject.h */,
+				5B8BA10A2FBFB4270026E082 /* coreResource.cpp */,
+				5B8BA1092FBFB4270026E082 /* coreResource.h */,
+			);
+			name = managers;
+			path = ../../source/managers;
+			sourceTree = "<group>";
+		};
+		5B8BA1142FBFB48B0026E082 /* engine */ = {
+			isa = PBXGroup;
+			children = (
+				5B8BA1122FBFB48B0026E082 /* coreCommand.cpp */,
+				5B8BA1132FBFB48B0026E082 /* coreTest.cpp */,
+			);
+			path = engine;
+			sourceTree = "<group>";
+		};
 		5BB8C28F27C9489900BBB338 = {
 			isa = PBXGroup;
 			children = (
 				5BB8C29927C9489900BBB338 /* Products */,
 				5BB8C2B827C94E4100BBB338 /* additional */,
 				5BB8C2CE27C94E4100BBB338 /* components */,
-				5BB8C33927C94E4100BBB338 /* managers */,
+				5B8BA10B2FBFB4270026E082 /* managers */,
 				5BB8C32227C94E4100BBB338 /* objects */,
 				5BB8C30027C94E4100BBB338 /* utilities */,
 				5BB8C34027C94E4200BBB338 /* Core.cpp */,
@@ -305,6 +334,7 @@
 			children = (
 				5B0916E62ED3BA83002FC68A /* build */,
 				5BB8C2C027C94E4100BBB338 /* emscripten */,
+				5B8BA1142FBFB48B0026E082 /* engine */,
 				5BB8C2C627C94E4100BBB338 /* linux */,
 				5BB8C2BB27C94E4100BBB338 /* macos */,
 				5BB8C2CA27C94E4100BBB338 /* windows */,
@@ -526,17 +556,18 @@
 			isa = PBXGroup;
 			children = (
 				5BB8C31327C94E4100BBB338 /* hash */,
+				5B8BA1172FBFB4B40026E082 /* coreAtomic.h */,
 				5BB8C31B27C94E4100BBB338 /* coreData.cpp */,
 				5BB8C31C27C94E4100BBB338 /* coreData.h */,
 				5BB8C31F27C94E4100BBB338 /* coreHashString.h */,
 				5BB8C31827C94E4100BBB338 /* coreList.h */,
+				5B8BA1182FBFB4B40026E082 /* coreLock.h */,
 				5BB8C31727C94E4100BBB338 /* coreMap.h */,
 				5BB8C31127C94E4100BBB338 /* coreProtect.h */,
 				5BB8C31A27C94E4100BBB338 /* coreRand.h */,
 				5BB8C32027C94E4100BBB338 /* coreRing.h */,
 				5BB8C31227C94E4100BBB338 /* coreScope.h */,
 				5BB8C31E27C94E4100BBB338 /* coreSet.h */,
-				5BB8C31D27C94E4100BBB338 /* coreLock.h */,
 				5BB8C32127C94E4100BBB338 /* coreString.cpp */,
 				5BB8C31027C94E4100BBB338 /* coreString.h */,
 				5BB8C31927C94E4100BBB338 /* coreVariant.h */,
@@ -601,20 +632,6 @@
 			path = menu;
 			sourceTree = "<group>";
 		};
-		5BB8C33927C94E4100BBB338 /* managers */ = {
-			isa = PBXGroup;
-			children = (
-				5BB8C33E27C94E4200BBB338 /* coreMemory.cpp */,
-				5BB8C33C27C94E4200BBB338 /* coreMemory.h */,
-				5BB8C33F27C94E4200BBB338 /* coreObject.cpp */,
-				5BB8C33D27C94E4200BBB338 /* coreObject.h */,
-				5BB8C33B27C94E4200BBB338 /* coreResource.cpp */,
-				5BB8C33A27C94E4200BBB338 /* coreResource.h */,
-			);
-			name = managers;
-			path = ../../source/managers;
-			sourceTree = "<group>";
-		};
 /* End PBXGroup section */
 
 /* Begin PBXHeadersBuildPhase section */
@@ -655,16 +672,16 @@
 				5BB8C37C27C94E4200BBB338 /* coreConfig.h in Headers */,
 				5BB8C38427C94E4200BBB338 /* coreScope.h in Headers */,
 				5BB8C35C27C94E4200BBB338 /* ALAW.h in Headers */,
-				5BB8C3A927C94E4200BBB338 /* coreMemory.h in Headers */,
 				5BB8C36927C94E4200BBB338 /* coreModel.h in Headers */,
 				5BA975552D8DF01C00D916E6 /* coreBlob.h in Headers */,
 				5BB8C39327C94E4200BBB338 /* coreParticle.h in Headers */,
 				5B660CE727E0B7AB009BB1CB /* XXH.h in Headers */,
+				5B8BA10F2FBFB4270026E082 /* coreObject.h in Headers */,
+				5B8BA1102FBFB4270026E082 /* coreResource.h in Headers */,
+				5B8BA1112FBFB4270026E082 /* coreMemory.h in Headers */,
 				5BB8C38D27C94E4200BBB338 /* coreData.h in Headers */,
-				5BB8C3AA27C94E4200BBB338 /* coreObject.h in Headers */,
 				5BB8C38127C94E4200BBB338 /* coreSpline.h in Headers */,
 				5BB8C35127C94E4200BBB338 /* steam.h in Headers */,
-				5BB8C3A727C94E4200BBB338 /* coreResource.h in Headers */,
 				5BB8C3AF27C94E7100BBB338 /* Core.h in Headers */,
 				5BB8C38227C94E4200BBB338 /* coreString.h in Headers */,
 				5BB8C37F27C94E4200BBB338 /* coreMath.h in Headers */,
@@ -693,8 +710,9 @@
 				5BA975572D8DF06100D916E6 /* discord.h in Headers */,
 				5BB8C37E27C94E4200BBB338 /* coreVector.h in Headers */,
 				5BB8C39F27C94E4200BBB338 /* coreSwitchBox.h in Headers */,
+				5B8BA1192FBFB4B40026E082 /* coreLock.h in Headers */,
+				5B8BA11A2FBFB4B40026E082 /* coreAtomic.h in Headers */,
 				5BB8C36327C94E4200BBB338 /* coreFont.h in Headers */,
-				5BB8C38E27C94E4200BBB338 /* coreLock.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -725,7 +743,7 @@
 			isa = PBXProject;
 			attributes = {
 				BuildIndependentTargetsInParallel = 1;
-				LastUpgradeCheck = 2610;
+				LastUpgradeCheck = 2650;
 				TargetAttributes = {
 					5BB8C29727C9489900BBB338 = {
 						CreatedOnToolsVersion = 13.2.1;
@@ -773,7 +791,6 @@
 				5BB8C3A227C94E4200BBB338 /* coreButton.cpp in Sources */,
 				5BB8C3A127C94E4200BBB338 /* coreTextBox.cpp in Sources */,
 				5BB8C3A427C94E4200BBB338 /* coreViewBox.cpp in Sources */,
-				5BB8C3AC27C94E4200BBB338 /* coreObject.cpp in Sources */,
 				5BB8C34E27C94E4200BBB338 /* CoreInput.cpp in Sources */,
 				5B660CE827E0B7AB009BB1CB /* XXH.cpp in Sources */,
 				5BB8C35327C94E4200BBB338 /* CorePlatform.cpp in Sources */,
@@ -783,7 +800,9 @@
 				5BB8C35A27C94E4200BBB338 /* coreMusic.cpp in Sources */,
 				5BB8C36127C94E4200BBB338 /* CoreAudio.cpp in Sources */,
 				5BB8C35527C94E4200BBB338 /* CoreSystem.cpp in Sources */,
-				5BB8C3A827C94E4200BBB338 /* coreResource.cpp in Sources */,
+				5B8BA10C2FBFB4270026E082 /* coreObject.cpp in Sources */,
+				5B8BA10D2FBFB4270026E082 /* coreMemory.cpp in Sources */,
+				5B8BA10E2FBFB4270026E082 /* coreResource.cpp in Sources */,
 				5BA9755A2D8DF08A00D916E6 /* coreRichText.cpp in Sources */,
 				5BB8C39C27C94E4200BBB338 /* coreCheckBox.cpp in Sources */,
 				5BB8C37327C94E4200BBB338 /* CoreGraphics.cpp in Sources */,
@@ -793,12 +812,13 @@
 				5BB8C39427C94E4200BBB338 /* coreParticle.cpp in Sources */,
 				5BB8C39927C94E4200BBB338 /* coreLabel.cpp in Sources */,
 				5BB8C34627C94E4200BBB338 /* coreGL.cpp in Sources */,
+				5B8BA1152FBFB48B0026E082 /* coreCommand.cpp in Sources */,
+				5B8BA1162FBFB48B0026E082 /* coreTest.cpp in Sources */,
 				5BB8C37B27C94E4200BBB338 /* coreLog.cpp in Sources */,
 				5BB8C36E27C94E4200BBB338 /* coreFont.cpp in Sources */,
 				5BB8C36827C94E4200BBB338 /* coreFrameBuffer.cpp in Sources */,
 				5BB8C39827C94E4200BBB338 /* coreObject3D.cpp in Sources */,
 				5BB8C37727C94E4200BBB338 /* coreConfig.cpp in Sources */,
-				5BB8C3AB27C94E4200BBB338 /* coreMemory.cpp in Sources */,
 				5BA9755E2D8DF0A400D916E6 /* coreAnimation.cpp in Sources */,
 				5BB8C39227C94E4200BBB338 /* coreString.cpp in Sources */,
 			);
@@ -901,6 +921,7 @@
 				MACOSX_DEPLOYMENT_TARGET = 10.13;
 				MARKETING_VERSION = 1.0.0;
 				OTHER_CFLAGS = (
+					"-ftrivial-auto-var-init=uninitialized",
 					"-fno-strict-overflow",
 					"-ffinite-math-only",
 					"-fno-signed-zeros",

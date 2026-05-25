@@ -122,6 +122,7 @@
 			children = (
 				5B42D8E827D3A01F0075F2A6 /* Assets.xcassets */,
 				5B42D8E927D3A01F0075F2A6 /* Entitlements.entitlements */,
+				5B5FAF482FBE6E5400DEDFF0 /* Info.plist */,
 			);
 			path = configuration;
 			sourceTree = "<group>";
@@ -154,7 +155,7 @@
 			isa = PBXProject;
 			attributes = {
 				BuildIndependentTargetsInParallel = 1;
-				LastUpgradeCheck = 2610;
+				LastUpgradeCheck = 2650;
 				TargetAttributes = {
 					5B06DE7527CAA48E0036BB19 = {
 						CreatedOnToolsVersion = 13.2.1;
@@ -253,6 +254,7 @@
 					../../../core-engine/libraries/include,
 					../../../core-engine/source,
 				);
+				INFOPLIST_FILE = configuration/Info.plist;
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.games";
 				INFOPLIST_KEY_NSHumanReadableCopyright = "Copyright (c) XXXX Martin Mauersics";
 				LD_RUNPATH_SEARCH_PATHS = "@executable_path/../Frameworks";
@@ -339,6 +341,7 @@
 				MACOSX_DEPLOYMENT_TARGET = 10.13;
 				MARKETING_VERSION = 0.0.1;
 				OTHER_CFLAGS = (
+					"-ftrivial-auto-var-init=uninitialized",
 					"-fno-strict-overflow",
 					"-ffinite-math-only",
 					"-fno-signed-zeros",
