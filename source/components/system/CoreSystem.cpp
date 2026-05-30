@@ -375,16 +375,29 @@ CoreSystem::CoreSystem()noexcept
     m_pWindow = SDL_CreateWindowWithProperties(oProps);
     WARN_IF(!m_pWindow)
     {
-        Core::Log->Warning("Problems creating main window, trying different settings (SDL: %s)", SDL_GetError());
+        Core::Log->Warning("Problems creating main window, trying different attributes (SDL: %s)", SDL_GetError());
 
-        // try compatible configuration
-        SDL_GL_SetAttribute(SDL_GL_DEPTH_SIZE,         16);
-        SDL_GL_SetAttribute(SDL_GL_MULTISAMPLEBUFFERS, 0);
-        SDL_GL_SetAttribute(SDL_GL_MULTISAMPLESAMPLES, 0);
-        SDL_GL_SetAttribute(SDL_GL_CONTEXT_FLAGS,      0);
+        // incrementally test with fallback configuration
+        constexpr coreInt32 aaiFallback[][2] =
+        {
+            {SDL_GL_MULTISAMPLEBUFFERS, 0},
+            {SDL_GL_MULTISAMPLESAMPLES, 0},
+            {SDL_GL_ALPHA_SIZE,         8},
+            {SDL_GL_DEPTH_SIZE,         16},
+            {SDL_GL_STENCIL_SIZE,       0}
+        };
 
-        // create another main window object
-        m_pWindow = SDL_CreateWindowWithProperties(oProps);
+        for(coreUintW i = 0u; i < ARRAY_SIZE(aaiFallback); ++i)
+        {
+            // set specific attribute
+            SDL_GL_SetAttribute(SDL_GLAttr(aaiFallback[i][0]), aaiFallback[i][1]);
+            Core::Log->Warning("Trying attribute %zu:%d:%d", i, aaiFallback[i][0], aaiFallback[i][1]);
+
+            // create another main window object
+            m_pWindow = SDL_CreateWindowWithProperties(oProps);
+            if(m_pWindow) break;
+        }
+
         if(!m_pWindow) Core::Log->Error("Main window could not be created (SDL: %s)", SDL_GetError());
     }
 

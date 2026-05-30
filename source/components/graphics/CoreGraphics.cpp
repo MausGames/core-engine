@@ -47,8 +47,34 @@ CoreGraphics::CoreGraphics()noexcept
 
     // create render context
     m_pRenderContext = SDL_GL_CreateContext(Core::System->GetWindow());
-    if(!m_pRenderContext) Core::Log->Error("Render context could not be created (SDL: %s)", SDL_GetError());
-                     else Core::Log->Info ("Render context created");
+    WARN_IF(!m_pRenderContext)
+    {
+        Core::Log->Warning("Problems creating render context, trying different attributes (SDL: %s)", SDL_GetError());
+
+        // incrementally test with fallback configuration
+        constexpr coreInt32 aaiFallback[][2] =
+        {
+            {SDL_GL_CONTEXT_RESET_NOTIFICATION, SDL_GL_CONTEXT_RESET_NO_NOTIFICATION},
+            {SDL_GL_CONTEXT_RELEASE_BEHAVIOR,   SDL_GL_CONTEXT_RELEASE_BEHAVIOR_FLUSH},
+            {SDL_GL_CONTEXT_FLAGS,              0},
+            {SDL_GL_CONTEXT_NO_ERROR,           0}
+        };
+
+        for(coreUintW i = 0u; i < ARRAY_SIZE(aaiFallback); ++i)
+        {
+            // set specific attribute
+            SDL_GL_SetAttribute(SDL_GLAttr(aaiFallback[i][0]), aaiFallback[i][1]);
+            Core::Log->Warning("Trying attribute %zu:%d:%d", i, aaiFallback[i][0], aaiFallback[i][1]);
+
+            // create another render context
+            m_pRenderContext = SDL_GL_CreateContext(Core::System->GetWindow());
+            if(m_pRenderContext) break;
+        }
+
+        if(!m_pRenderContext) Core::Log->Error("Render context could not be created (SDL: %s)", SDL_GetError());
+    }
+
+    Core::Log->Info("Render context created");
 
     // init OpenGL
     coreInitOpenGL();
