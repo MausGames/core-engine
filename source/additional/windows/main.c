@@ -20,6 +20,7 @@
 #include "additional/windows/header.h"
 #include <DbgHelp.h>
 #include <crtdbg.h>
+#include <shellapi.h>
 #include <stdlib.h>
 #include <malloc.h>
 #include <locale.h>
@@ -135,21 +136,36 @@ static long WINAPI CreateCrashDump(EXCEPTION_POINTERS* pPointers)
         FreeLibrary(pLibrary);
     }
 
-    // define user-friendly error messages
-    const wchar_t* const pcMessageSuccess =
-        L"I'm really sorry, but the game just crashed. :(\n"
-        L"A crash-dump was created in the user-folder, containing:\n"
-        L"- the current process-state\n"
-        L"- the exact location of the crash\n"
-        L"- the log-file with your hardware-configuration";
+    // test for successful crash dump
+    if(GetFileAttributesW(L"crash.dmp") != INVALID_FILE_ATTRIBUTES)
+    {
+        // define user-friendly error message
+        const wchar_t* const pcMessage =
+            L"I'm really sorry, but the game just crashed. :(\n"
+            L"\n"
+            L"A crash-dump was created in the user-folder, containing:\n"
+            L"- the current process-state\n"
+            L"- the exact location of the crash\n"
+            L"- the log-file with your hardware-configuration\n"
+            L"\n"
+            L"Open the user-folder now?";
 
-    const wchar_t* const pcMessageFail =
-        L"I'm really sorry, but the game just crashed. :(\n"
-        L"Unfortunately it was not possible to create a crash-dump.";
+        // show message box and exit application
+        if(MessageBoxW(NULL, pcMessage, NULL, MB_YESNO | MB_ICONERROR) == IDYES)
+        {
+            ShellExecuteW(NULL, L"open", pcWideFolder, NULL, NULL, SW_SHOWNORMAL);
+        }
+    }
+    else
+    {
+        // define user-friendly error message
+        const wchar_t* const pcMessage =
+            L"I'm really sorry, but the game just crashed. :(\n"
+            L"Unfortunately it was not possible to create a crash-dump.";
 
-    // show message box and exit application
-    const BOOL bDumpExists = (GetFileAttributesW(L"crash.dmp") != INVALID_FILE_ATTRIBUTES);
-    MessageBoxW(NULL, bDumpExists ? pcMessageSuccess : pcMessageFail, NULL, MB_OK | MB_ICONERROR);
+        // show message box and exit application
+        MessageBoxW(NULL, pcMessage, NULL, MB_OK | MB_ICONERROR);
+    }
 
     return EXCEPTION_EXECUTE_HANDLER;
 }
