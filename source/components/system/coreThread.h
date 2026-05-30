@@ -12,6 +12,15 @@
 
 // TODO 5: maintain separate sorted token-table to make dependency-lookup faster (or other way to accelerate dependency-lookup)
 // TODO 3: implement configurable stack-size and adjust/reduce sizes for resource-thread and music-thread (but no idea how much stack third-party libs, OS functions and drivers need (on end-user machines), maybe stay conservative)
+// TODO 2: thread_local/__thread variables increase the minimum required thread stack-size (at least on Linux debug)
+// TODO 4: rename Function to Task ?
+
+
+// ****************************************************************
+/* thread definitions */
+#define CORE_THREAD_TOKEN_INVALID (0u)   // invalid/unused function token value
+
+using coreThreadToken = coreUint32;      // function token type
 
 
 // ****************************************************************
@@ -23,8 +32,8 @@ private:
     struct coreCustomFunc final
     {
         std::function<coreStatus()> nFunction;     // actual function to execute
-        coreUint32                  iToken;        // unique token as identifier
-        coreUint32                  iDependency;   // dependency token
+        coreThreadToken             iToken;        // unique function token as identifier
+        coreThreadToken             iDependency;   // dependency function token
     };
 
 
@@ -56,8 +65,8 @@ public:
     void        KillThread ();
 
     /* run custom functions within the thread */
-    template <typename F> coreUint32 AttachFunction(F&& nFunction, const coreUint32 iDependency = 0u);   // [](void) -> coreStatus (CORE_OK, CORE_BUSY)
-    coreBool DetachFunction(const coreUint32 iToken);
+    template <typename F> coreThreadToken AttachFunction(F&& nFunction, const coreThreadToken iDependency = CORE_THREAD_TOKEN_INVALID);   // [](void) -> coreStatus (CORE_OK, CORE_BUSY)
+    coreBool DetachFunction(const coreThreadToken iToken);
     void     UpdateFunctions();
 
     /* set object properties */
@@ -88,13 +97,13 @@ private:
 
 // ****************************************************************
 /* attach custom function */
-template <typename F> coreUint32 coreThread::AttachFunction(F&& nFunction, const coreUint32 iDependency)
+template <typename F> coreThreadToken coreThread::AttachFunction(F&& nFunction, const coreThreadToken iDependency)
 {
     const coreLocker oLocker(&m_LockNew);
 
-    // get unique token
-    const coreUint32 iToken = (++m_iTokenCount);
-    ASSERT(iToken > iDependency)
+    // get unique function token
+    const coreThreadToken iToken = (++m_iTokenCount);
+    ASSERT((iDependency < iToken) || (iDependency == CORE_THREAD_TOKEN_INVALID))
 
     // create new custom function
     coreCustomFunc oFunc;

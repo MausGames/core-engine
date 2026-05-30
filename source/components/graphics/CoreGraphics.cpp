@@ -755,7 +755,7 @@ void CoreGraphics::TakeScreenshot(const coreChar* pcPath)
     // create new screenshot request
     coreScreenshot* pScreenshot = new coreScreenshot();
     pScreenshot->sPath  = pcPath;
-    pScreenshot->iToken = 0u;
+    pScreenshot->iToken = CORE_THREAD_TOKEN_INVALID;
 
     m_ScreenshotLock.Lock();
     {
@@ -897,7 +897,7 @@ void CoreGraphics::__HandleScreenshot()
             // get next open screenshot request
             FOR_EACH(it, m_apScreenshotQueue)
             {
-                if(!(*it)->iToken)
+                if((*it)->iToken == CORE_THREAD_TOKEN_INVALID)
                 {
                     pScreenshot = (*it);
                     break;

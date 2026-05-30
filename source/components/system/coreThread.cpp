@@ -96,8 +96,10 @@ void coreThread::KillThread()
 
 // ****************************************************************
 /* detach custom function */
-coreBool coreThread::DetachFunction(const coreUint32 iToken)
+coreBool coreThread::DetachFunction(const coreThreadToken iToken)
 {
+    if(iToken == CORE_THREAD_TOKEN_INVALID) return false;
+
     if(!m_anFuncNew.empty())
     {
         const coreLocker oLocker(&m_LockNew);
@@ -157,7 +159,7 @@ void coreThread::UpdateFunctions()
     FOR_EACH_DYN(it, m_anFuncActive)
     {
         // execute only after dependency finished
-        if(it->iDependency && std::any_of(m_anFuncActive.begin(), it, [&](const coreCustomFunc& A) {return (A.iToken == it->iDependency);})) continue;
+        if((it->iDependency != CORE_THREAD_TOKEN_INVALID) && std::any_of(m_anFuncActive.begin(), it, [&](const coreCustomFunc& A) {return (A.iToken == it->iDependency);})) continue;
 
         // call function and remove when finished
         if(it->nFunction() == CORE_BUSY) {DYN_KEEP  (it, m_anFuncActive)}

@@ -47,7 +47,7 @@ private:
     struct coreScreenshot final
     {
         coreString              sPath;     // target file path
-        coreUint32              iToken;    // function token (for cancelling on shutdown)
+        coreThreadToken         iToken;    // function token (for cancelling on shutdown)
         coreDataBuffer          oBuffer;   // pixel buffer object for asynchronous download
         coreDataScope<coreByte> pData;     // memory for direct download
     };
