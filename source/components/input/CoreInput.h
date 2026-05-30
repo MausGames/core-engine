@@ -189,10 +189,10 @@ public:
     inline const coreChar* GetJoystickSerial      (const coreUintW iIndex)const {return __CORE_INPUT_JOYSTICK(iIndex).pJoystick ? SDL_GetJoystickSerial(__CORE_INPUT_JOYSTICK(iIndex).pJoystick) : "";}
     inline const coreChar* GetJoystickPath        (const coreUintW iIndex)const {return __CORE_INPUT_JOYSTICK(iIndex).pJoystick ? SDL_GetJoystickPath  (__CORE_INPUT_JOYSTICK(iIndex).pJoystick) : "";}
     inline const coreChar* GetJoystickGUID        (const coreUintW iIndex)const {if(__CORE_INPUT_JOYSTICK(iIndex).pJoystick) {static coreChar s_acGUID[64]; SDL_GUIDToString(SDL_GetJoystickGUID(__CORE_INPUT_JOYSTICK(iIndex).pJoystick), s_acGUID, ARRAY_SIZE(s_acGUID)); return s_acGUID;} return "";}
-    inline coreBool        GetJoystickHasRumble   (const coreUintW iIndex)const {return SDL_GetBooleanProperty(SDL_GetJoystickProperties(__CORE_INPUT_JOYSTICK(iIndex).pJoystick), SDL_PROP_JOYSTICK_CAP_RUMBLE_BOOLEAN,  false);}
-    inline coreBool        GetJoystickHasLED      (const coreUintW iIndex)const {return SDL_GetBooleanProperty(SDL_GetJoystickProperties(__CORE_INPUT_JOYSTICK(iIndex).pJoystick), SDL_PROP_JOYSTICK_CAP_RGB_LED_BOOLEAN, false);}
-    inline coreBool        GetJoystickHasAccel    (const coreUintW iIndex)const {return SDL_GamepadHasSensor(__CORE_INPUT_JOYSTICK(iIndex).pGamepad, SDL_SENSOR_ACCEL);}
-    inline coreBool        GetJoystickHasGyro     (const coreUintW iIndex)const {return SDL_GamepadHasSensor(__CORE_INPUT_JOYSTICK(iIndex).pGamepad, SDL_SENSOR_GYRO);}
+    inline coreBool        GetJoystickHasRumble   (const coreUintW iIndex)const {return __CORE_INPUT_JOYSTICK(iIndex).pJoystick && SDL_GetBooleanProperty(SDL_GetJoystickProperties(__CORE_INPUT_JOYSTICK(iIndex).pJoystick), SDL_PROP_JOYSTICK_CAP_RUMBLE_BOOLEAN,  false);}
+    inline coreBool        GetJoystickHasLED      (const coreUintW iIndex)const {return __CORE_INPUT_JOYSTICK(iIndex).pJoystick && SDL_GetBooleanProperty(SDL_GetJoystickProperties(__CORE_INPUT_JOYSTICK(iIndex).pJoystick), SDL_PROP_JOYSTICK_CAP_RGB_LED_BOOLEAN, false);}
+    inline coreBool        GetJoystickHasAccel    (const coreUintW iIndex)const {return __CORE_INPUT_JOYSTICK(iIndex).pGamepad  && SDL_GamepadHasSensor(__CORE_INPUT_JOYSTICK(iIndex).pGamepad, SDL_SENSOR_ACCEL);}
+    inline coreBool        GetJoystickHasGyro     (const coreUintW iIndex)const {return __CORE_INPUT_JOYSTICK(iIndex).pGamepad  && SDL_GamepadHasSensor(__CORE_INPUT_JOYSTICK(iIndex).pGamepad, SDL_SENSOR_GYRO);}
     inline coreUint8       GetJoystickGamepadType (const coreUintW iIndex)const {return __CORE_INPUT_JOYSTICK(iIndex).eGamepadType;}
     inline coreUint8       GetJoystickJoystickType(const coreUintW iIndex)const {return __CORE_INPUT_JOYSTICK(iIndex).eJoystickType;}
     inline coreUintW       GetJoystickNum         ()const                       {return m_aJoystick.size() - 1u;}

@@ -456,10 +456,12 @@ void CoreInput::JoystickRumble(const coreUintW iIndex, const coreFloat fStrength
 {
     ASSERT((fStrengthLow >= 0.0f) && (fStrengthLow <= 1.0f) && (fStrengthHigh >= 0.0f) && (fStrengthHigh <= 1.0f))
 
-    if(Core::Config->GetBool(CORE_CONFIG_INPUT_RUMBLE))
+    coreJoystick& oJoystick = __CORE_INPUT_JOYSTICK(iIndex);
+
+    if(oJoystick.pJoystick && Core::Config->GetBool(CORE_CONFIG_INPUT_RUMBLE))
     {
         // start simple rumble effect
-        SDL_RumbleJoystick(__CORE_INPUT_JOYSTICK(iIndex).pJoystick, F_TO_UI(fStrengthLow * 65535.0f), F_TO_UI(fStrengthHigh * 65535.0f), iLengthMs);
+        SDL_RumbleJoystick(oJoystick.pJoystick, F_TO_UI(fStrengthLow * 65535.0f), F_TO_UI(fStrengthHigh * 65535.0f), iLengthMs);
     }
 }
 
@@ -472,7 +474,7 @@ void CoreInput::JoystickChangeLED(const coreUintW iIndex, const coreVector3 vCol
 
     // check for current color
     const coreUint32 iNewColor = coreVector4(vColor, 1.0f).PackUnorm4x8();
-    if(oJoystick.iColor != iNewColor)
+    if(oJoystick.pJoystick && (oJoystick.iColor != iNewColor))
     {
         // set new color
         oJoystick.iColor = iNewColor;
@@ -633,9 +635,14 @@ void CoreInput::__OpenJoysticks()
                 // open gamepad and joystick device
                 oJoystick.pGamepad  = SDL_OpenGamepad(iJoystickID);
                 oJoystick.pJoystick = oJoystick.pGamepad ? SDL_GetGamepadJoystick(oJoystick.pGamepad) : SDL_OpenJoystick(iJoystickID);
+                WARN_IF(!oJoystick.pJoystick)
+                {
+                    Core::Log->ListAdd("Joystick (%s) could not be opened (SDL: %s)", SDL_GetJoystickNameForID(iJoystickID), SDL_GetError());
+                    continue;
+                }
 
                 // get device type
-                oJoystick.eGamepadType  = SDL_GetGamepadType (oJoystick.pGamepad);
+                oJoystick.eGamepadType  = oJoystick.pGamepad ? SDL_GetGamepadType(oJoystick.pGamepad) : SDL_GAMEPAD_TYPE_UNKNOWN;
                 oJoystick.eJoystickType = SDL_GetJoystickType(oJoystick.pJoystick);
 
                 if(oJoystick.eGamepadType <= SDL_GAMEPAD_TYPE_STANDARD)
@@ -660,11 +667,11 @@ void CoreInput::__OpenJoysticks()
                 }
 
                 // get device features
-                const coreInt32 iNumButtons   = SDL_GetNumJoystickButtons (oJoystick.pJoystick);
-                const coreInt32 iNumAxes      = SDL_GetNumJoystickAxes    (oJoystick.pJoystick);
-                const coreInt32 iNumHats      = SDL_GetNumJoystickHats    (oJoystick.pJoystick);
-                const coreInt32 iNumBalls     = SDL_GetNumJoystickBalls   (oJoystick.pJoystick);
-                const coreInt32 iNumTouchpads = SDL_GetNumGamepadTouchpads(oJoystick.pGamepad);
+                const coreInt32 iNumButtons   = SDL_GetNumJoystickButtons(oJoystick.pJoystick);
+                const coreInt32 iNumAxes      = SDL_GetNumJoystickAxes   (oJoystick.pJoystick);
+                const coreInt32 iNumHats      = SDL_GetNumJoystickHats   (oJoystick.pJoystick);
+                const coreInt32 iNumBalls     = SDL_GetNumJoystickBalls  (oJoystick.pJoystick);
+                const coreInt32 iNumTouchpads = oJoystick.pGamepad ? SDL_GetNumGamepadTouchpads(oJoystick.pGamepad) : 0;
 
                 // get current connection status
                 const SDL_JoystickConnectionState eConnectionState = SDL_GetJoystickConnectionState(oJoystick.pJoystick);

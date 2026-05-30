@@ -297,8 +297,8 @@ CoreGraphics::~CoreGraphics()
     SDL_GL_MakeCurrent(Core::System->GetWindow(), NULL);
 
     // delete OpenGL contexts
-    SDL_GL_DestroyContext(m_pResourceContext);
-    SDL_GL_DestroyContext(m_pRenderContext);
+    if(m_pResourceContext) SDL_GL_DestroyContext(m_pResourceContext);
+    if(m_pRenderContext)   SDL_GL_DestroyContext(m_pRenderContext);
 
     Core::Log->Info(CORE_LOG_BOLD("Graphics Interface shut down"));
 }
