@@ -571,10 +571,13 @@ void CoreSystem::SetWindowResolution(const coreVector2 vResolution)
     if(m_vResolution.x <= 0.0f) m_vResolution.x = oCurrent.vDesktopRes.x;
     if(m_vResolution.y <= 0.0f) m_vResolution.y = oCurrent.vDesktopRes.y;
 
-    // clamp to bounds
-    const coreVector2 vMaximum = (m_eMode == CORE_SYSTEM_MODE_FULLSCREEN) ? oCurrent.vMaximumRes : ((m_eMode == CORE_SYSTEM_MODE_BORDERLESS) ? oCurrent.vDesktopRes : (oCurrent.vWorkAreaRes - I_TO_F(CORE_SYSTEM_WINDOW_BORDER)).Processed(coreMath::RoundFactor, 2.0f));
-    m_vResolution.x = CLAMP(m_vResolution.x, I_TO_F(CORE_SYSTEM_WINDOW_MINIMUM), vMaximum.x);
-    m_vResolution.y = CLAMP(m_vResolution.y, I_TO_F(CORE_SYSTEM_WINDOW_MINIMUM), vMaximum.y);
+    if(!coreData::DetectGamescope())
+    {
+        // clamp to bounds
+        const coreVector2 vMaximum = (m_eMode == CORE_SYSTEM_MODE_FULLSCREEN) ? oCurrent.vMaximumRes : ((m_eMode == CORE_SYSTEM_MODE_BORDERLESS) ? oCurrent.vDesktopRes : (oCurrent.vWorkAreaRes - I_TO_F(CORE_SYSTEM_WINDOW_BORDER)).Processed(coreMath::RoundFactor, 2.0f));
+        m_vResolution.x = CLAMP(m_vResolution.x, I_TO_F(CORE_SYSTEM_WINDOW_MINIMUM), vMaximum.x);
+        m_vResolution.y = CLAMP(m_vResolution.y, I_TO_F(CORE_SYSTEM_WINDOW_MINIMUM), vMaximum.y);
+    }
 
     if(m_pWindow)
     {

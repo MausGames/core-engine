@@ -107,7 +107,7 @@ private:
     coreResourceIndex m_iIndex;            // unique resource index
 
     coreLock               m_UpdateLock;   // lock to prevent concurrent resource loading
-    coreStatus             m_eStatus;      // current resource status
+    coreAtomic<coreStatus> m_eStatus;      // current resource status
     coreAtomic<coreUint16> m_iRefCount;    // simple reference-counter
 
 
@@ -146,7 +146,7 @@ public:
     /* get object properties */
     inline const coreChar*          GetName    ()const {return m_sName.c_str();}
     inline const coreResourceIndex& GetIndex   ()const {return m_iIndex;}
-    inline const coreStatus&        GetStatus  ()const {return m_eStatus;}
+    inline       coreStatus         GetStatus  ()const {return m_eStatus;}
     inline       coreUint16         GetRefCount()const {return m_iRefCount;}
 
 

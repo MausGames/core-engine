@@ -219,7 +219,7 @@ coreStatus coreThread::__Main()
 
     // call exit-routine
     this->__ExitThread();
-    Core::Log->Info("Thread (%s, %04lX) finished", m_sName.c_str(), SDL_GetCurrentThreadID());
+    Core::Log->Info("Thread (%s, %04lX, exit code %d) finished", m_sName.c_str(), SDL_GetCurrentThreadID(), eReturn);
 
     m_bActive = false;
     return eReturn;

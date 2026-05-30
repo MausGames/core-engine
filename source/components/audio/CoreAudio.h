@@ -13,6 +13,7 @@
 // TODO 5: <old comment style>
 // TODO 3: also implement filter-support (low-pass (behind a wall), high-pass, band-pass (telephone)) (can be attached to source directly or to effect slot)
 // TODO 3: emscripten: Error initializing Audio Interface (ALC Error Code: 0x0000A003, AL Error Code: 0x00000000) (invalid enum)
+// TODO 3: change logarithmic volume/gain into linear, but handle CORE_AUDIO_MAX_GAIN
 
 
 // ****************************************************************

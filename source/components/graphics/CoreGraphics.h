@@ -19,6 +19,7 @@
 // TODO 2: offset-binding is expensive on ANGLE (according to docs)
 // TODO 3: implement more granular default screenshot naming (currently you can basically create only one screenshot per second)
 // TODO 3: emscripten: emscripten_set_main_loop_timing: Cannot set timing mode for main loop since a main loop does not exist! Call emscripten_set_main_loop first to set one up.
+// TODO 3: not supported on WebGL (2): GL_MIN_MAP_BUFFER_ALIGNMENT, GL_CONTEXT_FLAGS, GL_CONTEXT_PROFILE_MASK, GL_TEXTURE_LOD_BIAS, GL_TEXTURE_COMPRESSION_HINT
 
 
 // ****************************************************************

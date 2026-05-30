@@ -472,7 +472,7 @@ coreStatus coreProgram::Load(coreFile* pFile)
 
         // set current shader-program
         glUseProgram(m_iIdentifier);
-        s_pCurrent = NULL;
+        if(!DEFINED(_CORE_DEBUG_)) s_pCurrent = NULL;   // # to handle accidental assertions
 
         // bind texture units
         for(coreUintW i = 0u; i < CORE_TEXTURE_UNITS_2D; ++i)

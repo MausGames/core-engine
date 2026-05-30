@@ -255,8 +255,8 @@ public:
     void        SendUniform(const coreHashString& sName, const coreMatrix4&  mMatrix, const coreBool bTranspose);
 
     /* retrieve uniform and attribute locations */
-    inline const coreInt8& RetrieveUniform  (const coreHashString& sName) {if(!m_aiUniform  .count(sName)) {ASSERT(m_eStatus >= CORE_PROGRAM_SUCCESSFUL && s_pCurrent == this) m_aiUniform  .emplace(sName, glGetUniformLocation(m_iIdentifier, sName.GetString()));} ASSERT(m_aiUniform  .at(sName) >= -1) return m_aiUniform  .at(sName);}
-    inline const coreInt8& RetrieveAttribute(const coreHashString& sName) {if(!m_aiAttribute.count(sName)) {ASSERT(m_eStatus >= CORE_PROGRAM_SUCCESSFUL && s_pCurrent == this) m_aiAttribute.emplace(sName, glGetAttribLocation (m_iIdentifier, sName.GetString()));} ASSERT(m_aiAttribute.at(sName) >= -1) return m_aiAttribute.at(sName);}
+    inline const coreInt8& RetrieveUniform  (const coreHashString& sName) {if(!m_aiUniform  .count(sName)) {ASSERT((m_eStatus >= CORE_PROGRAM_SUCCESSFUL) && (s_pCurrent == this)) m_aiUniform  .emplace(sName, glGetUniformLocation(m_iIdentifier, sName.GetString()));} ASSERT(m_aiUniform  .at(sName) >= -1) return m_aiUniform  .at(sName);}
+    inline const coreInt8& RetrieveAttribute(const coreHashString& sName) {if(!m_aiAttribute.count(sName)) {ASSERT((m_eStatus >= CORE_PROGRAM_SUCCESSFUL) && (s_pCurrent == this)) m_aiAttribute.emplace(sName, glGetAttribLocation (m_iIdentifier, sName.GetString()));} ASSERT(m_aiAttribute.at(sName) >= -1) return m_aiAttribute.at(sName);}
 
     /* check for cached uniform values */
     inline coreBool CheckCache(const coreInt8 iLocation, const coreVector4 vVector) {if(m_avCache.count(iLocation)) {if(m_avCache.at(iLocation) == vVector) return false;} m_avCache[iLocation] = vVector; return true;}

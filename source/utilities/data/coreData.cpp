@@ -1571,10 +1571,10 @@ coreFileStats coreData::FileStats(const coreChar* pcPath)
 
 #elif defined(_CORE_MACOS_)
 
-    struct stat64 oBuffer;
+    struct stat oBuffer;
 
     // get custom POSIX file info
-    if(!stat64(pcPath, &oBuffer))
+    if(!stat(pcPath, &oBuffer))
     {
         oStats.bDirectory      = S_ISDIR(oBuffer.st_mode);
         oStats.iSize           = oBuffer.st_size;

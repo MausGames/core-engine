@@ -106,17 +106,19 @@ void coreButton::Move()
         m_apTexture[0] = m_apBackground[m_bBusy ? 1u : 0u];
     }
 
-    // update the label
     if(m_pCaption)
     {
         if(HAS_FLAG(m_eUpdate, CORE_OBJECT_UPDATE_TRANSFORM))
         {
+            // update the label
             m_pCaption->SetPosition (this->GetPosition() + 0.5f*this->GetSize()*this->GetAlignment());
             m_pCaption->SetDirection(this->GetDirection());
             m_pCaption->SetCenter   (this->GetCenter());
             m_pCaption->SetStyle    (this->GetStyle());
-            m_pCaption->Move();
         }
+
+        // move the label
+        m_pCaption->Move();
     }
 
     // move the 2d-object

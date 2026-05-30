@@ -318,7 +318,7 @@ void coreResourceManager::AssignProxy(coreResourceHandle* pProxy, coreResourceHa
         pForeign->RefIncrease();
 
         // forward status of the foreign handle
-        pForeign->OnLoadedOnce([=]() {pProxy->m_eStatus = pForeign->m_eStatus;});
+        pForeign->OnLoadedOnce([=]() {pProxy->m_eStatus = pForeign->m_eStatus.Get();});
     }
 
     // update resource index table
@@ -339,7 +339,7 @@ void coreResourceManager::RefreshProxy(coreResourceHandle* pProxy)
     {
         // reset and forward status again
         pProxy->m_eStatus = CORE_BUSY;
-        pForeign->OnLoadedOnce([=]() {pProxy->m_eStatus = pForeign->m_eStatus;});
+        pForeign->OnLoadedOnce([=]() {pProxy->m_eStatus = pForeign->m_eStatus.Get();});
     }
 }
 

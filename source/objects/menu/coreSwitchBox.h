@@ -305,12 +305,14 @@ template <typename T> void coreSwitchBox<T>::Move()
         m_Caption.SetPosition(vPosition);
         m_Caption.SetCenter  (this->GetCenter());
         m_Caption.SetStyle   (this->GetStyle());
-        m_Caption.Move();
     }
 
     // move selection arrows
     m_aArrow[0].Move();
     m_aArrow[1].Move();
+
+    // move the label
+    m_Caption.Move();
 
     // move the 2d-object
     this->coreObject2D::Move();

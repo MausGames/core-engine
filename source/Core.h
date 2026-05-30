@@ -46,6 +46,9 @@
 // TODO 3: consteval if (no ternary though)
 // TODO 5: windows_arm_64 (those AI devices), linux_arm_64 (higher prio, on raspberry)
 // TODO 4: use std::to_address for &(* iterator accesses (also in games)
+// TODO 4: do I still need all the "& 0xFF*" operations ?
+// TODO 3: "if constexpr" can be used for variable callback parameters
+// TODO 4: replace std::function with std::copyable_function in C++26, what about std::move_only_function and std::function_ref ?
 
 
 // ****************************************************************
@@ -244,6 +247,7 @@
     #pragma warning(disable : 4514)   // unreferenced inline function removed
     #pragma warning(disable : 4557)   // __assume contains side-effect (# only false-positives)
     #pragma warning(disable : 4571)   // semantic change of catch(...)
+    #pragma warning(disable : 4574)   // preprocessor macro defined to be '0'
     #pragma warning(disable : 4577)   // noexcept used without exception handling (# also disabled with compiler-flag)
     #pragma warning(disable : 4623)   // default constructor implicitly deleted
     #pragma warning(disable : 4625)   // copy constructor implicitly deleted
