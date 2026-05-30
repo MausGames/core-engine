@@ -171,15 +171,7 @@ coreBool coreTextBox::__Write()
         else if(iChar == CORE_INPUT_CHAR(BACKSPACE))
         {
             // remove last character
-            if(!m_sText.empty())
-            {
-                if(HAS_FLAG(m_sText.back(), 0x80u))
-                {
-                    // handle UTF-8 encoding
-                    while(!HAS_FLAG(m_sText.back(), 0xC0u)) m_sText.pop_back();
-                }
-                m_sText.pop_back();
-            }
+            if(!m_sText.empty()) m_sText.pop_back_utf8();
         }
         else if(iChar == CORE_INPUT_CHAR(CUT))
         {

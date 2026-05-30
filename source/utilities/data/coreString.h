@@ -59,6 +59,9 @@ public:
 
     /* trim string on both sides */
     constexpr coreString& trim(const coreChar* pcRemove = " \n\r\t");
+
+    /* remove last multibyte UTF-8 character */
+    constexpr coreString& pop_back_utf8();
 };
 
 
@@ -174,6 +177,25 @@ constexpr coreString& coreString::trim(const coreChar* pcRemove)
     // trim left
     const coreUintW iFirst = this->find_first_not_of(pcRemove);
     if(iFirst != coreString::npos) this->erase(0u, iFirst);
+
+    return *this;
+}
+
+
+// ****************************************************************
+/* remove last multibyte UTF-8 character */
+constexpr coreString& coreString::pop_back_utf8()
+{
+    ASSERT(!this->empty())
+
+    // handle UTF-8 encoding
+    if(HAS_FLAG(this->back(), 0x80u))
+    {
+        while(!HAS_FLAG(this->back(), 0xC0u)) this->pop_back();
+    }
+
+    // remove remaining byte
+    this->pop_back();
 
     return *this;
 }
