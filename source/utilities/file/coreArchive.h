@@ -22,8 +22,9 @@
 
 // ****************************************************************
 /* file definitions */
-#define CORE_FILE_MAGIC   (UINT_LITERAL("CFA0"))   // magic number of core-archives
-#define CORE_FILE_VERSION (0x00000001u)            // current file version of core-archives
+#define CORE_ARCHIVE_EXTENSION "cfa"                    // 
+#define CORE_ARCHIVE_MAGIC     (UINT_LITERAL("CFA0"))   // magic number of core-archives
+#define CORE_ARCHIVE_VERSION   (0x00000001u)            // current file version of core-archives
 
 #define __CORE_FILE_TYPE_DIRECT (0u)
 #define __CORE_FILE_TYPE_MEMORY (1u)

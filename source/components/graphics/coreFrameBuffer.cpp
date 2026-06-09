@@ -175,7 +175,7 @@ coreStatus coreFrameBuffer::Create(const coreVector2 vResolution, const coreFram
         return CORE_ERROR_SYSTEM;
     }
 
-    if(!m_sName.empty())
+    if(Core::Debug->IsEnabled() && !m_sName.empty())
     {
         // add debug label (to frame buffer)
         Core::Graphics->LabelOpenGL(GL_FRAMEBUFFER, m_iIdentifier, m_sName.c_str());

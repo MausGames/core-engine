@@ -323,9 +323,12 @@ coreStatus coreModel::Load(coreFile* pFile)
         // create index buffer
         this->CreateIndexBuffer(m_iNumIndices, sizeof(coreUint16), piOptimizedData, CORE_DATABUFFER_STORAGE_STATIC);
 
-        // add debug label
-        Core::Graphics->LabelOpenGL(GL_BUFFER, m_aVertexBuffer.front().GetIdentifier(), PRINT("%s.vertex", m_sName.c_str()));
-        Core::Graphics->LabelOpenGL(GL_BUFFER, m_IndexBuffer          .GetIdentifier(), PRINT("%s.index",  m_sName.c_str()));
+        if(Core::Debug->IsEnabled() && !m_sName.empty())
+        {
+            // add debug label
+            Core::Graphics->LabelOpenGL(GL_BUFFER, m_aVertexBuffer.front().GetIdentifier(), PRINT("%s.vertex", m_sName.c_str()));
+            Core::Graphics->LabelOpenGL(GL_BUFFER, m_IndexBuffer          .GetIdentifier(), PRINT("%s.index",  m_sName.c_str()));
+        }
     }
 
     // free index data

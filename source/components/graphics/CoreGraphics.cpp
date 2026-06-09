@@ -248,8 +248,8 @@ CoreGraphics::CoreGraphics()noexcept
     {
         // create resource context (after clear, because of flickering on Windows with fullscreen)
         m_pResourceContext = SDL_GL_CreateContext(Core::System->GetWindow());
-        if(!m_pResourceContext) Core::Log->Warning("Resource context could not be created (SDL: %s)", SDL_GetError());
-                           else Core::Log->Info   ("Resource context created");
+        WARN_IF(!m_pResourceContext) Core::Log->Warning("Resource context could not be created (SDL: %s)", SDL_GetError());
+                                else Core::Log->Info   ("Resource context created");
 
         // re-assign render context to main window
         SDL_GL_MakeCurrent(Core::System->GetWindow(), m_pRenderContext);

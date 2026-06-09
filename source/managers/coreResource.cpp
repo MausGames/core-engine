@@ -487,7 +487,7 @@ coreStatus coreResourceManager::__InitThread()
     const SDL_GLContext& pContext = Core::Graphics->GetResourceContext();
 
     // assign resource context to resource thread
-    if((!SDL_GL_MakeCurrent(Core::System->GetWindow(), pContext) && !SDL_GL_MakeCurrent(NULL, pContext)) || (SDL_GL_GetCurrentContext() != pContext))
+    WARN_IF((!SDL_GL_MakeCurrent(Core::System->GetWindow(), pContext) && !SDL_GL_MakeCurrent(NULL, pContext)) || (SDL_GL_GetCurrentContext() != pContext))
     {
         Core::Log->Warning("Resource context could not be assigned to resource thread (SDL: %s)", SDL_GetError());
         return CORE_ERROR_SYSTEM;
@@ -549,7 +549,7 @@ void coreResourceManager::__ExitThread()
 /* load all relevant default resources */
 void coreResourceManager::__LoadDefault()
 {
-    coreData::DirectoryEnum("data/archives", "*.cfa", CORE_ENUM_TYPE_DEFAULT, this, [](const coreChar* pcPath, const coreFileStats& oStats, void* pData)
+    coreData::DirectoryEnum("data/archives", "*." CORE_ARCHIVE_EXTENSION, CORE_ENUM_TYPE_DEFAULT, this, [](const coreChar* pcPath, const coreFileStats& oStats, void* pData)
     {
         s_cast<coreResourceManager*>(pData)->RetrieveArchive(pcPath);
     });

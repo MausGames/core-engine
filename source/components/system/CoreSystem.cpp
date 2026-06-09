@@ -59,6 +59,7 @@ CoreSystem::CoreSystem()noexcept
         SDL_SetHint(SDL_HINT_MOUSE_RELATIVE_MODE_CENTER,         "0");
         SDL_SetHint(SDL_HINT_OPENGL_ES_DRIVER,                   "1");
         SDL_SetHint(SDL_HINT_VIDEO_DOUBLE_BUFFER,                "1");
+        SDL_SetHint(SDL_HINT_VIDEO_X11_ENABLE_XSYNC_EXT,         "1");
         SDL_SetHint(SDL_HINT_VIDEO_X11_NET_WM_BYPASS_COMPOSITOR, DEFINED(_CORE_DEBUG_) ? "0" : "1");
 
         // enable SDL debug messages

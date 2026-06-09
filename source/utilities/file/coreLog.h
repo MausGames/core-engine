@@ -42,7 +42,7 @@ ENABLE_BITWISE(coreLogLevel)
 class coreLog final
 {
 private:
-    std::FILE* m_pFile;                               // log file stream handle
+    std::FILE* m_pFile;                               // log file stream handle (# SDL not yet initialized)
 
     coreString   m_sPath;                             // relative path of the file
     coreLogLevel m_eLevel;                            // logging level

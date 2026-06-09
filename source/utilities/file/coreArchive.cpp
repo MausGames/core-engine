@@ -481,7 +481,7 @@ coreArchive::coreArchive(const coreChar* pcPath)noexcept
     coreFile::__Read(pArchive, &aiHead, sizeof(coreUint32) * 2u, &bSuccess);
 
     // check magic number and file version
-    if((aiHead[0] != CORE_FILE_MAGIC) || (aiHead[1] != CORE_FILE_VERSION))
+    if((aiHead[0] != CORE_ARCHIVE_MAGIC) || (aiHead[1] != CORE_ARCHIVE_VERSION))
     {
         SDL_CloseIO(pArchive);
         Core::Log->Warning("Archive (%s) is not a valid CFA-file", m_sPath.c_str());
@@ -572,7 +572,7 @@ coreStatus coreArchive::Save(const coreChar* pcPath)
     coreBool bSuccess = true;
 
     // save magic number and file version
-    const coreUint32 aiHead[2] = {CORE_FILE_MAGIC, CORE_FILE_VERSION};
+    const coreUint32 aiHead[2] = {CORE_ARCHIVE_MAGIC, CORE_ARCHIVE_VERSION};
     coreFile::__Write(pArchive, aiHead, sizeof(coreUint32) * 2u, &bSuccess);
 
     // save number of files
