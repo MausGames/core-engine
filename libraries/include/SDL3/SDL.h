@@ -20,7 +20,7 @@
 */
 
 /**
- * Main include header for the SDL library, version 3.4.8
+ * Main include header for the SDL library, version 3.4.10
  *
  * It is almost always best to include just this one header instead of
  * picking out individual headers included here. There are exceptions to
@@ -35,7 +35,6 @@
 #include <SDL3/SDL_assert.h>
 #include <SDL3/SDL_asyncio.h>
 #include <SDL3/SDL_atomic.h>
-#include <SDL3/SDL_audio.h>
 #include <SDL3/SDL_bits.h>
 #include <SDL3/SDL_blendmode.h>
 #include <SDL3/SDL_camera.h>
@@ -47,7 +46,6 @@
 #include <SDL3/SDL_events.h>
 #include <SDL3/SDL_filesystem.h>
 #include <SDL3/SDL_gamepad.h>
-#include <SDL3/SDL_gpu.h>
 #include <SDL3/SDL_guid.h>
 #include <SDL3/SDL_haptic.h>
 #include <SDL3/SDL_hidapi.h>
@@ -71,7 +69,6 @@
 #include <SDL3/SDL_process.h>
 #include <SDL3/SDL_properties.h>
 #include <SDL3/SDL_rect.h>
-#include <SDL3/SDL_render.h>
 #include <SDL3/SDL_scancode.h>
 #include <SDL3/SDL_sensor.h>
 #include <SDL3/SDL_storage.h>

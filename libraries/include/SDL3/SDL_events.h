@@ -1,3 +1,6 @@
+// Modified version for Core Engine
+// Please use the original library from https://www.libsdl.org/
+
 /*
   Simple DirectMedia Layer
   Copyright (C) 1997-2026 Sam Lantinga <slouken@libsdl.org>
@@ -53,7 +56,6 @@
 #define SDL_events_h_
 
 #include <SDL3/SDL_stdinc.h>
-#include <SDL3/SDL_audio.h>
 #include <SDL3/SDL_camera.h>
 #include <SDL3/SDL_error.h>
 #include <SDL3/SDL_gamepad.h>
@@ -456,7 +458,7 @@ typedef struct SDL_MouseMotionEvent
     Uint32 reserved;
     Uint64 timestamp;   /**< In nanoseconds, populated using SDL_GetTicksNS() */
     SDL_WindowID windowID; /**< The window with mouse focus, if any */
-    SDL_MouseID which;  /**< The mouse instance id in relative mode, SDL_TOUCH_MOUSEID for touch events, or 0 */
+    SDL_MouseID which;  /**< The mouse instance id in relative mode, SDL_TOUCH_MOUSEID for touch events, SDL_PEN_MOUSEID for pen events, or 0 */
     SDL_MouseButtonFlags state;       /**< The current button state */
     float x;            /**< X coordinate, relative to window */
     float y;            /**< Y coordinate, relative to window */
@@ -724,7 +726,7 @@ typedef struct SDL_AudioDeviceEvent
     SDL_EventType type; /**< SDL_EVENT_AUDIO_DEVICE_ADDED, or SDL_EVENT_AUDIO_DEVICE_REMOVED, or SDL_EVENT_AUDIO_DEVICE_FORMAT_CHANGED */
     Uint32 reserved;
     Uint64 timestamp;   /**< In nanoseconds, populated using SDL_GetTicksNS() */
-    SDL_AudioDeviceID which;       /**< SDL_AudioDeviceID for the device being added or removed or changing */
+    Uint32 which;       /**< SDL_AudioDeviceID for the device being added or removed or changing */
     bool recording; /**< false if a playback device, true if a recording device. */
     Uint8 padding1;
     Uint8 padding2;

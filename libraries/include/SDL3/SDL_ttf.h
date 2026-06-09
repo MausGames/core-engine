@@ -1,3 +1,6 @@
+// Modified version for Core Engine
+// Please use the original library from https://www.libsdl.org/
+
 /*
   SDL_ttf:  A companion library to SDL for working with TrueType (tm) fonts
   Copyright (C) 2001-2025 Sam Lantinga <slouken@libsdl.org>
@@ -1805,7 +1808,7 @@ extern SDL_DECLSPEC void SDLCALL TTF_DestroySurfaceTextEngine(TTF_TextEngine *en
  * \sa TTF_DrawRendererText
  * \sa TTF_CreateRendererTextEngineWithProperties
  */
-extern SDL_DECLSPEC TTF_TextEngine * SDLCALL TTF_CreateRendererTextEngine(SDL_Renderer *renderer);
+//extern SDL_DECLSPEC TTF_TextEngine * SDLCALL TTF_CreateRendererTextEngine(SDL_Renderer *renderer);
 
 /**
  * Create a text engine for drawing text on an SDL renderer, with the
@@ -1896,7 +1899,7 @@ extern SDL_DECLSPEC void SDLCALL TTF_DestroyRendererTextEngine(TTF_TextEngine *e
  * \sa TTF_DestroyGPUTextEngine
  * \sa TTF_GetGPUTextDrawData
  */
-extern SDL_DECLSPEC TTF_TextEngine * SDLCALL TTF_CreateGPUTextEngine(SDL_GPUDevice *device);
+//extern SDL_DECLSPEC TTF_TextEngine * SDLCALL TTF_CreateGPUTextEngine(SDL_GPUDevice *device);
 
 /**
  * Create a text engine for drawing text with the SDL GPU API, with the
@@ -1936,7 +1939,7 @@ extern SDL_DECLSPEC TTF_TextEngine * SDLCALL TTF_CreateGPUTextEngineWithProperti
  */
 typedef struct TTF_GPUAtlasDrawSequence
 {
-    SDL_GPUTexture *atlas_texture;          /**< Texture atlas that stores the glyphs */
+    void *atlas_texture;                    /**< Texture atlas that stores the glyphs */
     SDL_FPoint *xy;                         /**< An array of vertex positions */
     SDL_FPoint *uv;                         /**< An array of normalized texture coordinates for each vertex */
     int num_vertices;                       /**< Number of vertices */

@@ -264,7 +264,7 @@ extern SDL_DECLSPEC SDL_Surface * SDLCALL IMG_LoadTyped_IO(SDL_IOStream *src, bo
  * \sa IMG_LoadTextureTyped_IO
  * \sa IMG_LoadTexture_IO
  */
-extern SDL_DECLSPEC SDL_Texture * SDLCALL IMG_LoadTexture(SDL_Renderer *renderer, const char *file);
+//extern SDL_DECLSPEC SDL_Texture * SDLCALL IMG_LoadTexture(SDL_Renderer *renderer, const char *file);
 
 /**
  * Load an image from an SDL data source into a texture.
@@ -310,7 +310,7 @@ extern SDL_DECLSPEC SDL_Texture * SDLCALL IMG_LoadTexture(SDL_Renderer *renderer
  * \sa IMG_LoadTexture
  * \sa IMG_LoadTextureTyped_IO
  */
-extern SDL_DECLSPEC SDL_Texture * SDLCALL IMG_LoadTexture_IO(SDL_Renderer *renderer, SDL_IOStream *src, bool closeio);
+//extern SDL_DECLSPEC SDL_Texture * SDLCALL IMG_LoadTexture_IO(SDL_Renderer *renderer, SDL_IOStream *src, bool closeio);
 
 /**
  * Load an image from an SDL data source into a texture.
@@ -364,7 +364,7 @@ extern SDL_DECLSPEC SDL_Texture * SDLCALL IMG_LoadTexture_IO(SDL_Renderer *rende
  * \sa IMG_LoadTexture
  * \sa IMG_LoadTexture_IO
  */
-extern SDL_DECLSPEC SDL_Texture * SDLCALL IMG_LoadTextureTyped_IO(SDL_Renderer *renderer, SDL_IOStream *src, bool closeio, const char *type);
+//extern SDL_DECLSPEC SDL_Texture * SDLCALL IMG_LoadTextureTyped_IO(SDL_Renderer *renderer, SDL_IOStream *src, bool closeio, const char *type);
 
 /**
  * Load an image from a filesystem path into a GPU texture.
@@ -397,7 +397,7 @@ extern SDL_DECLSPEC SDL_Texture * SDLCALL IMG_LoadTextureTyped_IO(SDL_Renderer *
  * \sa IMG_LoadGPUTextureTyped_IO
  * \sa IMG_LoadGPUTexture_IO
  */
-extern SDL_DECLSPEC SDL_GPUTexture * SDLCALL IMG_LoadGPUTexture(SDL_GPUDevice *device, SDL_GPUCopyPass *copy_pass, const char *file, int *width, int *height);
+//extern SDL_DECLSPEC SDL_GPUTexture * SDLCALL IMG_LoadGPUTexture(SDL_GPUDevice *device, SDL_GPUCopyPass *copy_pass, const char *file, int *width, int *height);
 
 /**
  * Load an image from an SDL data source into a GPU texture.
@@ -441,7 +441,7 @@ extern SDL_DECLSPEC SDL_GPUTexture * SDLCALL IMG_LoadGPUTexture(SDL_GPUDevice *d
  * \sa IMG_LoadGPUTexture
  * \sa IMG_LoadGPUTextureTyped_IO
  */
-extern SDL_DECLSPEC SDL_GPUTexture * SDLCALL IMG_LoadGPUTexture_IO(SDL_GPUDevice *device, SDL_GPUCopyPass *copy_pass, SDL_IOStream *src, bool closeio, int *width, int *height);
+//extern SDL_DECLSPEC SDL_GPUTexture * SDLCALL IMG_LoadGPUTexture_IO(SDL_GPUDevice *device, SDL_GPUCopyPass *copy_pass, SDL_IOStream *src, bool closeio, int *width, int *height);
 
 /**
  * Load an image from an SDL data source into a GPU texture.
@@ -493,7 +493,7 @@ extern SDL_DECLSPEC SDL_GPUTexture * SDLCALL IMG_LoadGPUTexture_IO(SDL_GPUDevice
  * \sa IMG_LoadGPUTexture
  * \sa IMG_LoadGPUTexture_IO
  */
-extern SDL_DECLSPEC SDL_GPUTexture * SDLCALL IMG_LoadGPUTextureTyped_IO(SDL_GPUDevice *device, SDL_GPUCopyPass *copy_pass, SDL_IOStream *src, bool closeio, const char *type, int *width, int *height);
+//extern SDL_DECLSPEC SDL_GPUTexture * SDLCALL IMG_LoadGPUTextureTyped_IO(SDL_GPUDevice *device, SDL_GPUCopyPass *copy_pass, SDL_IOStream *src, bool closeio, const char *type, int *width, int *height);
 
 /**
  * Get the image currently in the clipboard.
