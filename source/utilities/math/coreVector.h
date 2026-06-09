@@ -160,6 +160,8 @@ public:
     static constexpr coreBool    SameDir   (const coreVector2 v1, const coreVector2 v2);
     static constexpr coreBool    SameDir90 (const coreVector2 v1, const coreVector2 v2);
     static constexpr coreBool    SameDir180(const coreVector2 v1, const coreVector2 v2);
+    static constexpr coreBool    SameLine  (const coreVector2 v1, const coreVector2 v2);
+    static constexpr coreBool    SameLine90(const coreVector2 v1, const coreVector2 v2);
     static inline    coreFloat   Angle     (const coreVector2 v1, const coreVector2 v2);
     static inline    coreVector2 Direction (const coreFloat fAngle);
     static inline    coreVector2 Rand      (coreRand* OUTPUT pRand = Core::Rand);
@@ -318,6 +320,8 @@ public:
     static constexpr coreBool    SameDir   (const coreVector3 v1, const coreVector3 v2);
     static constexpr coreBool    SameDir90 (const coreVector3 v1, const coreVector3 v2);
     static constexpr coreBool    SameDir180(const coreVector3 v1, const coreVector3 v2);
+    static constexpr coreBool    SameLine  (const coreVector3 v1, const coreVector3 v2);
+    static constexpr coreBool    SameLine90(const coreVector3 v1, const coreVector3 v2);
     static inline    coreFloat   Angle     (const coreVector3 v1, const coreVector3 v2);
     static inline    coreVector3 Rand      (coreRand* OUTPUT pRand = Core::Rand);
     static inline    coreVector3 Rand      (const coreFloat fMax, coreRand* OUTPUT pRand = Core::Rand);
@@ -603,6 +607,18 @@ constexpr coreBool coreVector2::SameDir90(const coreVector2 v1, const coreVector
 constexpr coreBool coreVector2::SameDir180(const coreVector2 v1, const coreVector2 v2)
 {
     return (coreVector2::Dot(v1, v2) >= (0.0f));
+}
+
+constexpr coreBool coreVector2::SameLine(const coreVector2 v1, const coreVector2 v2)
+{
+    ASSERT(v1.IsNormalized() && v2.IsNormalized())
+    return (ABS(coreVector2::Dot(v1, v2)) >= (1.0f) - CORE_MATH_PRECISION);
+}
+
+constexpr coreBool coreVector2::SameLine90(const coreVector2 v1, const coreVector2 v2)
+{
+    ASSERT(v1.IsNormalized() && v2.IsNormalized())
+    return (ABS(coreVector2::Dot(v1, v2)) >= (1.0f / SQRT2) - CORE_MATH_PRECISION);
 }
 
 
@@ -920,6 +936,18 @@ constexpr coreBool coreVector3::SameDir90(const coreVector3 v1, const coreVector
 constexpr coreBool coreVector3::SameDir180(const coreVector3 v1, const coreVector3 v2)
 {
     return (coreVector3::Dot(v1, v2) >= (0.0f));
+}
+
+constexpr coreBool coreVector3::SameLine(const coreVector3 v1, const coreVector3 v2)
+{
+    ASSERT(v1.IsNormalized() && v2.IsNormalized())
+    return (ABS(coreVector3::Dot(v1, v2)) >= (1.0f) - CORE_MATH_PRECISION);
+}
+
+constexpr coreBool coreVector3::SameLine90(const coreVector3 v1, const coreVector3 v2)
+{
+    ASSERT(v1.IsNormalized() && v2.IsNormalized())
+    return (ABS(coreVector3::Dot(v1, v2)) >= (1.0f / SQRT2) - CORE_MATH_PRECISION);
 }
 
 
