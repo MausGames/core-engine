@@ -48,6 +48,7 @@ It is **designed to be supportive, versatile and powerful**, and to dynamically 
 - **Keyboard:** [IME](https://en.wikipedia.org/wiki/Input_method) support, screen keyboard support
 - **Joysticks/Gamepads:** aggregation, hot plugging, rumble, led colors, both location and label-specific button testing
 - **Touch:** for mobile and desktop (including Steam Deck)
+- **Replay Files**: deterministically record and play back input events
 
 ### 🔬 Debug
 

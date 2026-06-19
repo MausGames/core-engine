@@ -126,6 +126,9 @@
     <ClCompile Include="..\..\..\source\utilities\file\coreLog.cpp">
       <Filter>utilities\file</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\..\source\utilities\file\coreReplay.cpp">
+      <Filter>components\input</Filter>
+    </ClCompile>
     <ClCompile Include="..\..\..\source\managers\coreObject.cpp">
       <Filter>managers</Filter>
     </ClCompile>
@@ -278,6 +281,9 @@
     </ClInclude>
     <ClInclude Include="..\..\..\source\utilities\file\coreLog.h">
       <Filter>utilities\file</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\source\utilities\file\coreReplay.h">
+      <Filter>components\input</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\source\utilities\math\coreMath.h">
       <Filter>utilities\math</Filter>

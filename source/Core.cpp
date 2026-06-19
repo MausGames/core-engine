@@ -11,6 +11,7 @@
 STATIC_MEMORY(coreLog,             Core::Log)
 STATIC_MEMORY(coreConfig,          Core::Config)
 STATIC_MEMORY(coreLanguage,        Core::Language)
+STATIC_MEMORY(coreReplay,          Core::Replay)
 STATIC_MEMORY(coreRand,            Core::Rand)
 STATIC_MEMORY(CoreSystem,          Core::System)
 STATIC_MEMORY(CoreGraphics,        Core::Graphics)
@@ -40,6 +41,7 @@ Core::Core()noexcept
     Log->Header("Configuration");
     STATIC_NEW(Config, coreData::UserFolderPrivate("config.ini"))
     STATIC_NEW(Language)
+    STATIC_NEW(Replay)
     STATIC_NEW(Rand)
     Config->ApplyCommandline();
     Config->ApplyGlobalFile();
@@ -63,6 +65,9 @@ Core::Core()noexcept
 
     // load language file (deferred)
     Language->Load(Config->GetString(CORE_CONFIG_BASE_LANGUAGE));
+
+    // setup replay file (deferred)
+    Replay->ApplyCommandLine();
 
     // apply project settings
     System->SetWindowTitle(CoreApp::Settings::Name);
@@ -108,6 +113,7 @@ Core::~Core()
 
     // delete utilities
     STATIC_DELETE(Rand)
+    STATIC_DELETE(Replay)
     STATIC_DELETE(Language)
     STATIC_DELETE(Config)
     STATIC_DELETE(Log)

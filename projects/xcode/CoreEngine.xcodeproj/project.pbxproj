@@ -25,6 +25,8 @@
 		5B8BA1162FBFB48B0026E082 /* coreTest.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5B8BA1132FBFB48B0026E082 /* coreTest.cpp */; };
 		5B8BA1192FBFB4B40026E082 /* coreLock.h in Headers */ = {isa = PBXBuildFile; fileRef = 5B8BA1182FBFB4B40026E082 /* coreLock.h */; };
 		5B8BA11A2FBFB4B40026E082 /* coreAtomic.h in Headers */ = {isa = PBXBuildFile; fileRef = 5B8BA1172FBFB4B40026E082 /* coreAtomic.h */; };
+		5B8BA1252FBFB68B0026E082 /* coreReplay.h in Headers */ = {isa = PBXBuildFile; fileRef = 5B8BA1232FBFB68B0026E082 /* coreReplay.h */; };
+		5B8BA1262FBFB68B0026E082 /* coreReplay.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5B8BA1242FBFB68B0026E082 /* coreReplay.cpp */; };
 		5B979FCC2A3C73A200C5292D /* epic.h in Headers */ = {isa = PBXBuildFile; fileRef = 5B979FCB2A3C73A200C5292D /* epic.h */; };
 		5BA975552D8DF01C00D916E6 /* coreBlob.h in Headers */ = {isa = PBXBuildFile; fileRef = 5BA975542D8DF01C00D916E6 /* coreBlob.h */; };
 		5BA975572D8DF06100D916E6 /* discord.h in Headers */ = {isa = PBXBuildFile; fileRef = 5BA975562D8DF06100D916E6 /* discord.h */; };
@@ -150,6 +152,8 @@
 		5B8BA1132FBFB48B0026E082 /* coreTest.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = coreTest.cpp; sourceTree = "<group>"; };
 		5B8BA1172FBFB4B40026E082 /* coreAtomic.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = coreAtomic.h; sourceTree = "<group>"; };
 		5B8BA1182FBFB4B40026E082 /* coreLock.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = coreLock.h; sourceTree = "<group>"; };
+		5B8BA1232FBFB68B0026E082 /* coreReplay.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = coreReplay.h; sourceTree = "<group>"; };
+		5B8BA1242FBFB68B0026E082 /* coreReplay.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = coreReplay.cpp; sourceTree = "<group>"; };
 		5B979FCB2A3C73A200C5292D /* epic.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = epic.h; sourceTree = "<group>"; };
 		5BA975542D8DF01C00D916E6 /* coreBlob.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = coreBlob.h; sourceTree = "<group>"; };
 		5BA975562D8DF06100D916E6 /* discord.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = discord.h; sourceTree = "<group>"; };
@@ -536,6 +540,8 @@
 				5BB8C30627C94E4100BBB338 /* coreLanguage.h */,
 				5BB8C30727C94E4100BBB338 /* coreLog.cpp */,
 				5BB8C30927C94E4100BBB338 /* coreLog.h */,
+				5B8BA1242FBFB68B0026E082 /* coreReplay.cpp */,
+				5B8BA1232FBFB68B0026E082 /* coreReplay.h */,
 			);
 			path = file;
 			sourceTree = "<group>";
@@ -692,6 +698,7 @@
 				5BB8C3A527C94E4200BBB338 /* coreCheckBox.h in Headers */,
 				5BB8C38527C94E4200BBB338 /* Murmur.h in Headers */,
 				5BB8C35F27C94E4200BBB338 /* coreMusic.h in Headers */,
+				5B8BA1252FBFB68B0026E082 /* coreReplay.h in Headers */,
 				5BB8C3A327C94E4200BBB338 /* coreLabel.h in Headers */,
 				5BB8C39727C94E4200BBB338 /* coreObject2D.h in Headers */,
 				5BB8C38927C94E4200BBB338 /* coreList.h in Headers */,
@@ -806,6 +813,7 @@
 				5BA9755A2D8DF08A00D916E6 /* coreRichText.cpp in Sources */,
 				5BB8C39C27C94E4200BBB338 /* coreCheckBox.cpp in Sources */,
 				5BB8C37327C94E4200BBB338 /* CoreGraphics.cpp in Sources */,
+				5B8BA1262FBFB68B0026E082 /* coreReplay.cpp in Sources */,
 				5BB8C37427C94E4200BBB338 /* CoreDebug.cpp in Sources */,
 				5BB8C36527C94E4200BBB338 /* coreModel.cpp in Sources */,
 				5BB8C39527C94E4200BBB338 /* coreObject2D.cpp in Sources */,

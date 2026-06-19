@@ -65,6 +65,7 @@ target_sources(
     ${BASE_DIRECTORY}/source/utilities/file/coreConfig.cpp
     ${BASE_DIRECTORY}/source/utilities/file/coreLanguage.cpp
     ${BASE_DIRECTORY}/source/utilities/file/coreLog.cpp
+    ${BASE_DIRECTORY}/source/utilities/file/coreReplay.cpp
     ${BASE_DIRECTORY}/source/Core.cpp
 )
 

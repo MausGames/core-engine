@@ -699,6 +699,7 @@ template <typename T> class coreResourcePtr;
 class  coreLog;
 class  coreConfig;
 class  coreLanguage;
+class  coreReplay;
 class  coreRand;
 class  CoreSystem;
 class  CoreGraphics;
@@ -790,6 +791,7 @@ public:
     static coreLog*      const Log;        // log file
     static coreConfig*   const Config;     // configuration file
     static coreLanguage* const Language;   // language file
+    static coreReplay*   const Replay;     // replay file
     static coreRand*     const Rand;       // random number generator
 
     static CoreSystem*   const System;     // main system component
@@ -872,6 +874,7 @@ private:
 #include "utilities/file/coreConfig.h"
 #include "utilities/file/coreLanguage.h"
 #include "utilities/file/coreArchive.h"
+#include "utilities/file/coreReplay.h"
 #include "utilities/math/coreVector.h"
 #include "utilities/math/coreMatrix.h"
 #include "utilities/math/coreSpline.h"

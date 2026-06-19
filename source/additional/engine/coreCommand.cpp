@@ -40,6 +40,8 @@ coreStatus Core::__RunCommand()
         std::puts("  --compress                   compress <input> file");
         std::puts("  --decompress                 decompress <input> file");
         std::puts("  --pack                       pack <input> directory into <output> file archive");
+        std::puts("  --record                     record <output> replay");
+        std::puts("  --playback                   play back <input> replay");
         std::puts("  --help                       display available arguments");
         std::puts("  --version                    display simple version string");
         return CORE_OK;

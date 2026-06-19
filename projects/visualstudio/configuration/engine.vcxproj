@@ -491,6 +491,7 @@
     <ClCompile Include="..\..\..\source\utilities\file\coreConfig.cpp" />
     <ClCompile Include="..\..\..\source\utilities\file\coreLanguage.cpp" />
     <ClCompile Include="..\..\..\source\utilities\file\coreLog.cpp" />
+    <ClCompile Include="..\..\..\source\utilities\file\coreReplay.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\..\source\additional\coreAL.h" />
@@ -560,6 +561,7 @@
     <ClInclude Include="..\..\..\source\utilities\file\coreConfig.h" />
     <ClInclude Include="..\..\..\source\utilities\file\coreLanguage.h" />
     <ClInclude Include="..\..\..\source\utilities\file\coreLog.h" />
+    <ClInclude Include="..\..\..\source\utilities\file\coreReplay.h" />
     <ClInclude Include="..\..\..\source\utilities\math\coreMath.h" />
     <ClInclude Include="..\..\..\source\utilities\math\coreMatrix.h" />
     <ClInclude Include="..\..\..\source\utilities\math\coreSpline.h" />

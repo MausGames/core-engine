@@ -654,10 +654,20 @@ void CoreSystem::__UpdateEvents()
     m_bWinPosChanged  = false;
     m_bWinSizeChanged = false;
 
+    // inject events from replay
+    SDL_Event oInject;
+    while(Core::Replay->ReadEvent(&oInject))
+    {
+        SDL_PushEvent(&oInject);
+    }
+
     // process events
     SDL_Event oEvent;
     while(SDL_PollEvent(&oEvent))
     {
+        // capture events into replay
+        Core::Replay->WriteEvent(oEvent);
+
         switch(oEvent.type)
         {
         // window position changed
@@ -784,8 +794,15 @@ void CoreSystem::__UpdateTime()
 
         // round last frame time
         m_fLastTime = coreFloat(1.0 / coreMath::RoundFactor(1.0 / m_adSmoothTime[CORE_SYSTEM_SMOOTHS - 1u], 0.01));
+    }
 
-        // increase total time
+    // update last frame time through replay
+    Core::Replay->WriteTime(m_fLastTime);
+    Core::Replay->ReadTime(&m_fLastTime);
+
+    // increase total time
+    if(m_fLastTime)
+    {
         m_dTotalTimeBefore = m_dTotalTime;
         m_dTotalTime      += coreDouble(m_fLastTime);
     }
