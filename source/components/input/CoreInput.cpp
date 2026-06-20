@@ -138,7 +138,7 @@ coreBool CoreInput::ProcessEvent(const SDL_Event& oEvent)
     // press keyboard button
     case SDL_EVENT_KEY_DOWN:
         this->SetKeyboardChar(SDL_GetKeyFromScancode(oEvent.key.scancode, oEvent.key.mod, false));   // # to handle uppercasing
-        if(oEvent.key.mod & SDL_KMOD_CTRL)
+        if(HAS_FLAG_ANY(oEvent.key.mod, SDL_KMOD_CTRL))
         {
                  if(oEvent.key.scancode == CORE_INPUT_KEY(X)) this->SetKeyboardChar(CORE_INPUT_CHAR(CUT));
             else if(oEvent.key.scancode == CORE_INPUT_KEY(C)) this->SetKeyboardChar(CORE_INPUT_CHAR(COPY));
@@ -258,10 +258,10 @@ coreBool CoreInput::ProcessEvent(const SDL_Event& oEvent)
         {
             const coreUintW iIndex = this->__GetJoystickIndex(oEvent.jhat.which);
 
-            this->SetJoystickHat(iIndex, CORE_INPUT_DIR_LEFT,  oEvent.jhat.value & SDL_HAT_LEFT);
-            this->SetJoystickHat(iIndex, CORE_INPUT_DIR_RIGHT, oEvent.jhat.value & SDL_HAT_RIGHT);
-            this->SetJoystickHat(iIndex, CORE_INPUT_DIR_DOWN,  oEvent.jhat.value & SDL_HAT_DOWN);
-            this->SetJoystickHat(iIndex, CORE_INPUT_DIR_UP,    oEvent.jhat.value & SDL_HAT_UP);
+            this->SetJoystickHat(iIndex, CORE_INPUT_DIR_LEFT,  HAS_FLAG(oEvent.jhat.value, SDL_HAT_LEFT));
+            this->SetJoystickHat(iIndex, CORE_INPUT_DIR_RIGHT, HAS_FLAG(oEvent.jhat.value, SDL_HAT_RIGHT));
+            this->SetJoystickHat(iIndex, CORE_INPUT_DIR_DOWN,  HAS_FLAG(oEvent.jhat.value, SDL_HAT_DOWN));
+            this->SetJoystickHat(iIndex, CORE_INPUT_DIR_UP,    HAS_FLAG(oEvent.jhat.value, SDL_HAT_UP));
         }
         break;
 

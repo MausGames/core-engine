@@ -750,7 +750,7 @@ void CoreSystem::__UpdateWindow()
 #if !defined(_CORE_EMSCRIPTEN_) && !defined(_CORE_SWITCH_)
 
     // reduce overhead if window is not visible
-    if(SDL_GetWindowFlags(m_pWindow) & (SDL_WINDOW_OCCLUDED | SDL_WINDOW_HIDDEN | SDL_WINDOW_MINIMIZED))
+    if(HAS_FLAG_ANY(SDL_GetWindowFlags(m_pWindow), SDL_WINDOW_OCCLUDED | SDL_WINDOW_HIDDEN | SDL_WINDOW_MINIMIZED))
         SDL_Delay(30u);
 
     // toggle between borderless and windowed mode

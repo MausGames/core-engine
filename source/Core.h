@@ -413,6 +413,7 @@
 #define SET_FLAG(o,n,t)             {__CHECK_FLAG(o, n);  (o) ^=     (n) & ((o) ^ ((t) ? ~0ull : 0ull));}
 #define HAS_BIT(o,n)                (__CHECK_BIT (o, n), ((o) &   BIT(n)) != 0ull)
 #define HAS_FLAG(o,n)               (__CHECK_FLAG(o, n), ((o) &      (n)) == (n))
+#define HAS_FLAG_ANY(o,n)           (__CHECK_FLAG(o, n), ((o) &      (n)) != 0ull)
 
 #define ADD_BIT_EX(o,n)             {__CHECK_BIT_EX(o, n); ADD_BIT   ((o)[(n) / BITSOF((o)[0])], (n) % BITSOF((o)[0]))}
 #define REMOVE_BIT_EX(o,n)          {__CHECK_BIT_EX(o, n); REMOVE_BIT((o)[(n) / BITSOF((o)[0])], (n) % BITSOF((o)[0]))}
