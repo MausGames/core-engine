@@ -328,11 +328,6 @@ CoreSystem::CoreSystem()noexcept
         }
     }
 
-    // check for debug context
-    if(Core::Debug->IsEnabled())
-    {
-        SDL_GL_SetAttribute(SDL_GL_CONTEXT_FLAGS, SDL_GL_GetAttributeInline(SDL_GL_CONTEXT_FLAGS) | SDL_GL_CONTEXT_DEBUG_FLAG);
-    }
 
 #endif
 
@@ -346,6 +341,12 @@ CoreSystem::CoreSystem()noexcept
     if(Core::Config->GetBool(CORE_CONFIG_BASE_ASYNCMODE) && !DEFINED(_CORE_SINGLE_) && (SDL_GetNumLogicalCPUCores() > 1))
     {
         SDL_GL_SetAttribute(SDL_GL_SHARE_WITH_CURRENT_CONTEXT, 1);
+    }
+
+    // check for debug context
+    if(Core::Debug->IsEnabled())
+    {
+        SDL_GL_SetAttribute(SDL_GL_CONTEXT_FLAGS, SDL_GL_GetAttributeInline(SDL_GL_CONTEXT_FLAGS) | SDL_GL_CONTEXT_DEBUG_FLAG);
     }
 
     // check for robust-access context
@@ -777,7 +778,7 @@ void CoreSystem::__UpdateTime()
     const coreDouble dNewLastTime = coreDouble(iNewPerfTime - m_iPerfTime) / m_dPerfFrequency;
     m_iPerfTime                   = iNewPerfTime;
 
-    if(m_iSkipFrame || (dNewLastTime > 0.1))
+    if(m_iSkipFrame || (dNewLastTime > CORE_SYSTEM_TIME_MAXIMUM))
     {
         // skip frame
         m_fLastTime = 0.0f;

@@ -49,6 +49,7 @@
 // TODO 4: do I still need all the "& 0xFF*" operations ?
 // TODO 3: "if constexpr" can be used for variable callback parameters
 // TODO 4: replace std::function with std::copyable_function in C++26, what about std::move_only_function and std::function_ref ?
+// TODO 3: std::erase_if is a bit faster than FOR_EACH_DYN, but not for dequeues
 
 
 // ****************************************************************

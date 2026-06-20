@@ -31,11 +31,15 @@ coreStatus Core::__RunCommand()
     if(coreData::GetCommandLine("help"))
     {
         std::puts(PRINT("%s %s", CoreApp::Settings::Name, CoreApp::Settings::Version));
+        std::puts(PRINT("Copyright (c) %s %s", CoreApp::Settings::Year, CoreApp::Settings::Creator));
+        std::puts(CoreApp::Settings::Website);
+        std::puts("");
         std::puts("Options:");
         std::puts("  --user-folder-path <value>   set path for storing user-specific files (needs write permission)");
         std::puts("  --config-override <value>    override config values (e.g. \"Base.AsyncMode:false;System.Width:1024\")");
         std::puts("  --input <value>              input file or directory for some commands");
         std::puts("  --output <value>             output file or directory for some commands");
+        std::puts("");
         std::puts("Commands:");
         std::puts("  --compress                   compress <input> file");
         std::puts("  --decompress                 decompress <input> file");

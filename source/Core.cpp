@@ -43,7 +43,7 @@ Core::Core()noexcept
     STATIC_NEW(Language)
     STATIC_NEW(Replay)
     STATIC_NEW(Rand)
-    Config->ApplyCommandline();
+    Config->ApplyCommandLine();
     Config->ApplyGlobalFile();
     coreData::LogCommandLine();
     coreData::LogEnvironment();

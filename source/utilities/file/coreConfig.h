@@ -82,7 +82,7 @@ public:
     coreStatus Save();
 
     /* apply configuration overrides */
-    void ApplyCommandline();
+    void ApplyCommandLine();
     void ApplyGlobalFile();
 
     /* set configuration values */

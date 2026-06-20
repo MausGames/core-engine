@@ -28,10 +28,10 @@ It is **designed to be supportive, versatile and powerful**, and to dynamically 
 
 - **OpenGL, OpenGL ES, WebGL:** extension-based feature selection, forward-compatibility with tons of fallbacks, state caching, explicit synchronization, ANGLE support (DirectX, Vulkan, Metal)
 - **Render State Handling:** camera and view frustum, lighting (simple), stencil testing, scissor testing, conservative rasterization, canonical aspect ratio (for sizing viewport and UI)
-- **Frame Buffers:** multi output-color support, invalidation, MSAA, [EQAA](https://www.pcgamingwiki.com/wiki/Glossary:Anti-aliasing_(AA)) (AMD), [CSAA](https://www.pcgamingwiki.com/wiki/Glossary:Anti-aliasing_(AA)) (Nvidia), [CMAA](https://www.pcgamingwiki.com/wiki/Glossary:Anti-aliasing_(AA)) (Intel)
+- **Frame Buffers:** multi output-color support, invalidation, MSAA, [EQAA](https://www.pcgamingwiki.com/wiki/Glossary:Anti-aliasing_(AA)#Enhanced_Quality_Anti-Aliasing_.28EQAA.29) (AMD), [CSAA](https://www.pcgamingwiki.com/wiki/Glossary:Anti-aliasing_(AA)#Coverage_Sampling_Anti-Aliasing_.28CSAA.29) (Nvidia), [CMAA](https://www.pcgamingwiki.com/wiki/Glossary:Anti-aliasing_(AA)#Conservative_Morphological_Anti-Aliasing_.28CMAA.29) (Intel)
 - **Data Buffers:** persistent mapping, multi-buffering, explicit orphaning, vertex format spec configuration (interleaved or separate)
 - **Models:** custom model format (for now), pre and post-transform vertex cache optimization, attribute packing, acceleration structure generation
-- **Textures:** PNG (flexible), WebP (fast), animated WebP, pixel-format conversion, block compression (DXT, BC7), mipmap generation, async upload, volume textures (simple), cube textures (simple)
+- **Textures:** PNG (flexible), WebP (fast), animated WebP, pixel-format conversion, block compression ([DXT](https://en.wikipedia.org/wiki/S3_Texture_Compression), [BC7](https://en.wikipedia.org/wiki/S3_Texture_Compression#BC6H_and_BC7)), mipmap generation, async upload, volume textures (simple), cube textures (simple)
 - **Shaders:** support for various GLSL shader types (vertex, tessellation, geometry, fragment, compute), parallel compilation, shader caching, [driver blob caching](https://registry.khronos.org/EGL/extensions/ANDROID/EGL_ANDROID_blob_cache.txt) (EGL), include system, compatibility layer, utility library, dynamic code injection, error and stats logging
 - **Fonts:** hinting, kerning, text and glyph layouting
 - **Async Screenshots**
@@ -61,6 +61,7 @@ It is **designed to be supportive, versatile and powerful**, and to dynamically 
 - **Debug Input:** show debug overlay (ImGui, native), show debug drawing, frame stepping, explicit hot reloading
 - **Debug Visualizers:** [Natvis](https://learn.microsoft.com/en-us/visualstudio/debugger/create-custom-views-of-native-objects), [LLDB](https://lldb.llvm.org/use/variable.html)
 - **Crash Dumps:** Windows (full), Linux (custom)
+- **Unit Tests**: [Doctest](https://github.com/doctest/doctest/)
 - **Pedantic Checking:** assertions everywhere, code sanitizer support (undefined behaviour, address, leak), floating-point exceptions
 
 ### 🏆 Platform
@@ -150,6 +151,7 @@ It is **designed to be supportive, versatile and powerful**, and to dynamically 
 ### 🛠️ Tools
 
 - **Launcher:** Windows (application, script), Linux (script), Browser (page), for custom pre-launch processing
+- **Console Commands:** file compression and decompression, packaging, replaying
 - **Project Template:** default resources, update scripts
 - **Blender Export**
 - **Texture Optimization and Conversion**

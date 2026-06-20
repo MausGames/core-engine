@@ -179,7 +179,7 @@ coreStatus coreConfig::Save()
 
 // ****************************************************************
 /* apply command line overrides */
-void coreConfig::ApplyCommandline()
+void coreConfig::ApplyCommandLine()
 {
     // get command line argument
     const coreChar* pcOverride = coreData::GetCommandLine("config-override");

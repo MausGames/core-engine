@@ -133,7 +133,9 @@ public:
     inline coreValueConstIterator get_value    (const coreKeyConstIterator&   it)const {return m_atValueList.begin() + m_atKeyList  .index(it);}
     inline coreKeyIterator        get_key      (const coreValueIterator&      it)      {return m_atKeyList  .begin() + m_atValueList.index(it);}
     inline coreKeyConstIterator   get_key      (const coreValueConstIterator& it)const {return m_atKeyList  .begin() + m_atValueList.index(it);}
+    inline coreValueList&         get_valuelist()                                      {return m_atValueList;}
     inline const coreValueList&   get_valuelist()const                                 {return m_atValueList;}
+    inline coreKeyList&           get_keylist  ()                                      {return m_atKeyList;}
     inline const coreKeyList&     get_keylist  ()const                                 {return m_atKeyList;}
 
 

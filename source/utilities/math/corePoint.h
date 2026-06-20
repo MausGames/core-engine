@@ -12,6 +12,7 @@
 
 // TODO 3: resolutions (monitor, textures, framebuffers, etc.) (default res should stay vector, for calculations ?)
 // TODO 3: colors (? + conversion functions)
+// TODO 3: coreInteger<> big-int with correct mathematics
 
 // NOTE: greater-than and less-than use three-way subobject-wise comparison
 

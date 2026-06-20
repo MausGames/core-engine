@@ -29,6 +29,7 @@
 #define CORE_SYSTEM_WINDOW_BORDER  (36u)                 // border width used for restricting window size
 #define CORE_SYSTEM_WINDOW_MINIMUM (128u)                // minimum size of the main window (per axis)
 #define CORE_SYSTEM_TIME_DEFAULT   (CORE_SYSTEM_TIMES)   // dynamic frame time index for the unmodified default time
+#define CORE_SYSTEM_TIME_MAXIMUM   (0.17)                // maximum last frame time (a higher value is considered a hang and the frame is skipped)
 
 #define TIME (Core::System->GetTime())
 

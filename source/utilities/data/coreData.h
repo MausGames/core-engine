@@ -190,8 +190,8 @@ public:
 
     /* control default folders */
     static void            InitDefaultFolders();
-    static const coreChar* UserFolderShared (const coreChar* pcPath);
-    static const coreChar* UserFolderPrivate(const coreChar* pcPath);
+    static const coreChar* UserFolderShared  (const coreChar* pcPath);
+    static const coreChar* UserFolderPrivate (const coreChar* pcPath);
 
     /* handle dynamic libraries */
     static coreBool   TestLibrary (const coreChar* pcName);

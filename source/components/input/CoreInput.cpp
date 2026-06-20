@@ -137,7 +137,7 @@ coreBool CoreInput::ProcessEvent(const SDL_Event& oEvent)
 
     // press keyboard button
     case SDL_EVENT_KEY_DOWN:
-        this->SetKeyboardChar(oEvent.key.key);
+        this->SetKeyboardChar(SDL_GetKeyFromScancode(oEvent.key.scancode, oEvent.key.mod, false));   // # to handle uppercasing
         if(oEvent.key.mod & SDL_KMOD_CTRL)
         {
                  if(oEvent.key.scancode == CORE_INPUT_KEY(X)) this->SetKeyboardChar(CORE_INPUT_CHAR(CUT));
