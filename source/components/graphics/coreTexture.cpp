@@ -58,6 +58,12 @@ coreStatus coreTexture::Load(coreFile* pFile)
         return CORE_INVALID_DATA;
     }
 
+    // convert from indexed format (only in debug)
+    if(DEFINED(_CORE_DEBUG_) && SDL_ISPIXELFORMAT_INDEXED(pData->format))
+    {
+        pData = SDL_ConvertSurface(pData, SDL_PIXELFORMAT_RGB24);
+    }
+
     // convert from low-channel data (if not supported)
     if((SDL_BYTESPERPIXEL(pData->format) < 3u) && !CORE_GL_SUPPORT(ARB_texture_rg))
     {
