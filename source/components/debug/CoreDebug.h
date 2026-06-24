@@ -167,7 +167,7 @@ public:
     inline void CounterReset()                                                         {std::memset(m_aiCounter, 0, sizeof(m_aiCounter));}
 
     /* check for debug status */
-    static const coreBool& IsEnabled();
+    static coreBool IsEnabled();
 
 
 private:

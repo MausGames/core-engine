@@ -148,17 +148,17 @@ public:
     static inline const coreChar*  ProcessDir   () {return coreData::StrDirectory(coreData::ProcessPath());}
 
     /* get operating system properties */
-    static       coreBool     SystemMemory    (coreUint64* OUTPUT piAvailable, coreUint64* OUTPUT piTotal);
-    static       coreBool     SystemSpace     (coreUint64* OUTPUT piAvailable, coreUint64* OUTPUT piTotal);
-    static const coreChar*    SystemOsName    ();
-    static       coreUint32   SystemUserID    ();
-    static const coreChar*    SystemUserName  ();
-    static const coreChar*    SystemHostName  ();
-    static const coreChar*    SystemCpuVendor ();
-    static const coreChar*    SystemCpuBrand  ();
-    static const coreCpuType& SystemCpuType   ();
-    static const coreChar*    SystemDirAppData();
-    static const coreChar*    SystemDirTemp   ();
+    static       coreBool    SystemMemory    (coreUint64* OUTPUT piAvailable, coreUint64* OUTPUT piTotal);
+    static       coreBool    SystemSpace     (coreUint64* OUTPUT piAvailable, coreUint64* OUTPUT piTotal);
+    static const coreChar*   SystemOsName    ();
+    static       coreUint32  SystemUserID    ();
+    static const coreChar*   SystemUserName  ();
+    static const coreChar*   SystemHostName  ();
+    static const coreChar*   SystemCpuVendor ();
+    static const coreChar*   SystemCpuBrand  ();
+    static       coreCpuType SystemCpuType   ();
+    static const coreChar*   SystemDirAppData();
+    static const coreChar*   SystemDirTemp   ();
 
     /* get build properties */
     static const coreChar* BuildCompiler  ();

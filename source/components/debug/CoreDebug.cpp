@@ -474,13 +474,14 @@ void CoreDebug::RenderCollision(const coreObject3D* pObject)
 
 // ****************************************************************
 /* check for debug status */
-const coreBool& CoreDebug::IsEnabled()
+coreBool CoreDebug::IsEnabled()
 {
-    ASSERT(STATIC_ISVALID(Core::Config))
+ONCE_START
 
-    // only check once
-    static const coreBool s_bEnabled = (Core::Config->GetBool(CORE_CONFIG_BASE_DEBUGMODE) && !DEFINED(_CORE_EMSCRIPTEN_) && !DEFINED(_CORE_SWITCH_)) || DEFINED(_CORE_DEBUG_);
-    return s_bEnabled;
+    ASSERT(STATIC_ISVALID(Core::Config))
+    return (Core::Config->GetBool(CORE_CONFIG_BASE_DEBUGMODE) && !DEFINED(_CORE_EMSCRIPTEN_) && !DEFINED(_CORE_SWITCH_)) || DEFINED(_CORE_DEBUG_);
+
+ONCE_END
 }
 
 

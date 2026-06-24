@@ -97,6 +97,8 @@ coreInt32 coreData::PrintBaseV(coreChar* OUTPUT pcOutput, const coreInt32 iOutpu
 /* get process identifier for the current process */
 coreUint32 coreData::ProcessID()
 {
+ONCE_START
+
 #if defined(_CORE_WINDOWS_)
 
     return GetCurrentProcessId();
@@ -106,6 +108,8 @@ coreUint32 coreData::ProcessID()
     return getpid();
 
 #endif
+
+ONCE_END
 }
 
 
@@ -167,6 +171,7 @@ coreUint64 coreData::ProcessMemory()
 /* get full application path */
 const coreChar* coreData::ProcessPath()
 {
+ONCE_START_STR
 
 #if defined(_CORE_WINDOWS_)
 
@@ -207,6 +212,8 @@ const coreChar* coreData::ProcessPath()
 #endif
 
     return "";
+
+ONCE_END_STR
 }
 
 
@@ -320,6 +327,8 @@ coreBool coreData::SystemSpace(coreUint64* OUTPUT piAvailable, coreUint64* OUTPU
 /* get operating system name */
 const coreChar* coreData::SystemOsName()
 {
+ONCE_START_STR
+
 #if defined(_CORE_WINDOWS_)
 
     coreUint16 iMajor    = 0u;
@@ -436,6 +445,8 @@ const coreChar* coreData::SystemOsName()
     return "Emscripten " STRING(__EMSCRIPTEN_major__) "." STRING(__EMSCRIPTEN_minor__) "." STRING(__EMSCRIPTEN_tiny__);
 
 #endif
+
+ONCE_END_STR
 }
 
 
@@ -443,6 +454,8 @@ const coreChar* coreData::SystemOsName()
 /* get user identifier */
 coreUint32 coreData::SystemUserID()
 {
+ONCE_START
+
 #if defined(_CORE_WINDOWS_)
 
     // get user name hash (as substitute)
@@ -458,6 +471,8 @@ coreUint32 coreData::SystemUserID()
     return 0u;
 
 #endif
+
+ONCE_END
 }
 
 
@@ -465,6 +480,8 @@ coreUint32 coreData::SystemUserID()
 /* get user name */
 const coreChar* coreData::SystemUserName()
 {
+ONCE_START_STR
+
 #if defined(_CORE_WINDOWS_)
 
     coreWchar acName[UNLEN + 1u];
@@ -486,6 +503,8 @@ const coreChar* coreData::SystemUserName()
 #endif
 
     return "";
+
+ONCE_END_STR
 }
 
 
@@ -493,6 +512,8 @@ const coreChar* coreData::SystemUserName()
 /* get host name */
 const coreChar* coreData::SystemHostName()
 {
+ONCE_START_STR
+
 #if defined(_CORE_WINDOWS_)
 
     coreWchar acName[MAX_COMPUTERNAME_LENGTH + 1u];
@@ -516,6 +537,8 @@ const coreChar* coreData::SystemHostName()
 #endif
 
     return "";
+
+ONCE_END_STR
 }
 
 
@@ -565,23 +588,22 @@ const coreChar* coreData::SystemCpuBrand()
 
 // ****************************************************************
 /* get CPU vendor identifier */
-const coreCpuType& coreData::SystemCpuType()
+coreCpuType coreData::SystemCpuType()
 {
-    static const coreCpuType s_eCpuType = []()
-    {
-        // retrieve brand string (vendor string is unreliable)
-        const coreChar* pcBrand = coreData::StrToLower(coreData::SystemCpuBrand());
+ONCE_START
 
-        // determine CPU vendor
-        if(std::strstr(pcBrand, "amd"))   return CORE_CPU_TYPE_AMD;
-        if(std::strstr(pcBrand, "intel")) return CORE_CPU_TYPE_INTEL;
-        if(std::strstr(pcBrand, "apple")) return CORE_CPU_TYPE_APPLE;
+    // retrieve brand string (vendor string is unreliable)
+    const coreChar* pcBrand = coreData::StrToLower(coreData::SystemCpuBrand());
 
-        WARN_IF(true) {}
-        return CORE_CPU_TYPE_UNKNOWN;
-    }();
+    // determine CPU vendor
+    if(std::strstr(pcBrand, "amd"))   return CORE_CPU_TYPE_AMD;
+    if(std::strstr(pcBrand, "intel")) return CORE_CPU_TYPE_INTEL;
+    if(std::strstr(pcBrand, "apple")) return CORE_CPU_TYPE_APPLE;
 
-    return s_eCpuType;
+    WARN_IF(true) {}
+    return CORE_CPU_TYPE_UNKNOWN;
+
+ONCE_END
 }
 
 
@@ -589,6 +611,8 @@ const coreCpuType& coreData::SystemCpuType()
 /* get path to store application data */
 const coreChar* coreData::SystemDirAppData()
 {
+ONCE_START_STR
+
 #if defined(_CORE_WINDOWS_)
 
     // get default roaming directory
@@ -659,6 +683,8 @@ const coreChar* coreData::SystemDirAppData()
 #endif
 
     return "";
+
+ONCE_END_STR
 }
 
 
@@ -666,6 +692,8 @@ const coreChar* coreData::SystemDirAppData()
 /* get path to store temporary data */
 const coreChar* coreData::SystemDirTemp()
 {
+ONCE_START_STR
+
 #if defined(_CORE_WINDOWS_)
 
     // get default temporary directory
@@ -726,6 +754,8 @@ const coreChar* coreData::SystemDirTemp()
 #endif
 
     return "";
+
+ONCE_END_STR
 }
 
 
@@ -2730,35 +2760,31 @@ const coreChar* coreData::__ToAnsiChar(const coreWchar* pcText)
 /* get memory mapping alignment */
 coreUintW coreData::__GetMapAlign()
 {
+ONCE_START
+
 #if defined(_CORE_WINDOWS_)
 
-    static const coreUintW s_iAlign = []()
-    {
-        // retrieve system information
-        SYSTEM_INFO oInfo = {};
-        GetSystemInfo(&oInfo);
+    // retrieve system information
+    SYSTEM_INFO oInfo = {};
+    GetSystemInfo(&oInfo);
 
-        // use allocation granularity
-        return oInfo.dwAllocationGranularity ? oInfo.dwAllocationGranularity : ALIGNMENT_ALLOC;
-    }();
+    // use allocation granularity
+    return oInfo.dwAllocationGranularity ? oInfo.dwAllocationGranularity : ALIGNMENT_ALLOC;
 
 #elif defined(_CORE_LINUX_) || defined(_CORE_MACOS_) || defined(_CORE_EMSCRIPTEN_) || defined(_CORE_SWITCH_)
 
-    static const coreUintW s_iAlign = []()
-    {
-        // retrieve runtime system parameter
-        const coreInt64 iPageSize = sysconf(_SC_PAGESIZE);
+    // retrieve runtime system parameter
+    const coreInt64 iPageSize = sysconf(_SC_PAGESIZE);
 
-        // use page size
-        return iPageSize ? iPageSize : ALIGNMENT_PAGE;
-    }();
+    // use page size
+    return iPageSize ? iPageSize : ALIGNMENT_PAGE;
 
 #else
 
     // ignore alignment
-    static const coreUintW s_iAlign = 1u;
+    return 1u;
 
 #endif
 
-    return s_iAlign;
+ONCE_END
 }

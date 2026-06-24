@@ -439,6 +439,11 @@
 #define __CHECK_ITERATOR(e,c)       ([&]() {ASSERT((e) == (c).end ())}())
 #define __CHECK_ITERATOR_REV(e,c)   ([&]() {ASSERT((e) == (c).rend())}())
 
+#define ONCE_START                  static const auto       __s = [&]() {
+#define ONCE_START_STR              static const coreString __s = [&]() -> const coreChar* {
+#define ONCE_END                    }(); return __s;
+#define ONCE_END_STR                }(); return __s.c_str();
+
 #define FRIEND_CLASS(c)             friend class c;
 #define STATIC_ASSERT(c)            static_assert(c, "STATIC ASSERT [" #c "]");
 
