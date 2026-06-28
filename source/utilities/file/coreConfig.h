@@ -28,6 +28,7 @@
 #define CORE_CONFIG_SYSTEM_DISPLAY              "System",   "Display",            (0)
 #define CORE_CONFIG_SYSTEM_WIDTH                "System",   "Width",              (0)
 #define CORE_CONFIG_SYSTEM_HEIGHT               "System",   "Height",             (0)
+#define CORE_CONFIG_SYSTEM_MAXIMIZED            "System",   "Maximized",          (false)
 #define CORE_CONFIG_SYSTEM_FULLSCREEN           "System",   "Fullscreen",         (1)
 #define CORE_CONFIG_SYSTEM_REFRESHRATE          "System",   "RefreshRate",        (0.0f)
 #define CORE_CONFIG_SYSTEM_VSYNC                "System",   "Vsync",              (1)

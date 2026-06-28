@@ -366,6 +366,7 @@ CoreSystem::CoreSystem()noexcept
     SDL_SetNumberProperty (oProps, SDL_PROP_WINDOW_CREATE_Y_NUMBER,                   iPos);
     SDL_SetNumberProperty (oProps, SDL_PROP_WINDOW_CREATE_WIDTH_NUMBER,               iSizeX);
     SDL_SetNumberProperty (oProps, SDL_PROP_WINDOW_CREATE_HEIGHT_NUMBER,              iSizeY);
+    SDL_SetBooleanProperty(oProps, SDL_PROP_WINDOW_CREATE_MAXIMIZED_BOOLEAN,          Core::Config->GetBool(CORE_CONFIG_SYSTEM_MAXIMIZED));
     SDL_SetBooleanProperty(oProps, SDL_PROP_WINDOW_CREATE_FULLSCREEN_BOOLEAN,         false);
     SDL_SetBooleanProperty(oProps, SDL_PROP_WINDOW_CREATE_HIGH_PIXEL_DENSITY_BOOLEAN, true);
     SDL_SetBooleanProperty(oProps, SDL_PROP_WINDOW_CREATE_OPENGL_BOOLEAN,             true);
@@ -700,6 +701,7 @@ void CoreSystem::__UpdateEvents()
         case SDL_EVENT_WINDOW_RESTORED:
         case SDL_EVENT_WINDOW_FOCUS_LOST:
             m_bWinFocusLost = true;
+            Core::Config->SetBool(CORE_CONFIG_SYSTEM_MAXIMIZED, HAS_FLAG(SDL_GetWindowFlags(m_pWindow), SDL_WINDOW_MAXIMIZED));
             break;
 
         // window closed
