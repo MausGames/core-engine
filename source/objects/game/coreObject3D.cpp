@@ -276,7 +276,7 @@ coreBatchList::coreBatchList(const coreUint32 iStartCapacity)noexcept
 , m_pProgram           (NULL)
 , m_iLastModel         (UINT32_MAX)
 , m_aiVertexArray      {}
-, m_aInstanceBuffer    {}
+, m_paInstanceBuffer   (NULL)
 , m_paCustomBuffer     (NULL)
 , m_nDefineBufferFunc  (NULL)
 , m_nUpdateDataFunc    (NULL)
@@ -300,7 +300,8 @@ coreBatchList::~coreBatchList()
     // delete vertex array objects and instance data buffers
     this->__Reset(CORE_RESOURCE_RESET_EXIT);
 
-    // free custom attribute buffer memory
+    // free buffer memory
+    SAFE_DELETE(m_paInstanceBuffer)
     SAFE_DELETE(m_paCustomBuffer)
 }
 
@@ -489,7 +490,7 @@ void coreBatchList::__Reset(const coreResourceReset eInit)
 
     if(eInit)
     {
-        WARN_IF(m_aInstanceBuffer[0].IsValid()) return;
+        WARN_IF(m_paInstanceBuffer && (*m_paInstanceBuffer)[0].IsValid()) return;
 
         // only allocate with enough capacity
         if(m_iNumInstances >= CORE_BATCHLIST_INSTANCE_THRESHOLD)
@@ -497,7 +498,13 @@ void coreBatchList::__Reset(const coreResourceReset eInit)
             // create vertex array objects
             coreGenVertexArrays(CORE_BATCHLIST_INSTANCE_BUFFERS, m_aiVertexArray.data());
 
-            FOR_EACH(it, m_aInstanceBuffer)
+            // allocate instance data buffer memory
+            if(!m_paInstanceBuffer) m_paInstanceBuffer = new coreRing<coreVertexBuffer, CORE_BATCHLIST_INSTANCE_BUFFERS>();
+
+            // allocate custom attribute buffer memory
+            if(!m_paCustomBuffer && this->IsCustom()) m_paCustomBuffer = new coreRing<coreVertexBuffer, CORE_BATCHLIST_INSTANCE_BUFFERS>();
+
+            FOR_EACH(it, *m_paInstanceBuffer)
             {
                 // bind vertex array object
                 glBindVertexArray(m_aiVertexArray.current());
@@ -551,16 +558,18 @@ void coreBatchList::__Reset(const coreResourceReset eInit)
     }
     else
     {
+        if(!m_paInstanceBuffer) return;
+
         // delete vertex array objects
         if(m_aiVertexArray[0]) coreDelVertexArrays(CORE_BATCHLIST_INSTANCE_BUFFERS, m_aiVertexArray.data());
         m_aiVertexArray.fill(0u);
 
         // delete instance data buffers
-        FOR_EACH(it, m_aInstanceBuffer) it->Delete();
+        FOR_EACH(it, *m_paInstanceBuffer) it->Delete();
 
         // reset selected array and buffer (to synchronize)
-        m_aiVertexArray  .select(0u);
-        m_aInstanceBuffer.select(0u);
+        m_aiVertexArray    .select(0u);
+        m_paInstanceBuffer->select(0u);
 
         if(this->IsCustom())
         {
@@ -605,18 +614,20 @@ void coreBatchList::__RenderDefault(const coreProgramPtr& pProgramInstanced, con
 
         if(HAS_FLAG(m_eUpdate, CORE_BATCHLIST_UPDATE_INSTANCE))
         {
+            ASSERT(m_paInstanceBuffer)
+
             // invalidate and synchronize previous buffer
-            m_aInstanceBuffer.current().Invalidate();
-            m_aInstanceBuffer.current().SyncWrite(CORE_DATABUFFER_MAP_INVALIDATE_ALL);
+            m_paInstanceBuffer->current().Invalidate();
+            m_paInstanceBuffer->current().SyncWrite(CORE_DATABUFFER_MAP_INVALIDATE_ALL);
 
             // switch to next available array and buffer
-            m_aiVertexArray  .next();
-            m_aInstanceBuffer.next();
+            m_aiVertexArray    .next();
+            m_paInstanceBuffer->next();
 
             if(CORE_GL_SUPPORT(ARB_half_float_vertex))
             {
                 // map required area of the instance data buffer
-                coreByte* pRange  = m_aInstanceBuffer.current().MapWrite(0u, iRenderCount * CORE_BATCHLIST_INSTANCE_SIZE_HIGH, CORE_DATABUFFER_MAP_INVALIDATE_ALL);
+                coreByte* pRange  = m_paInstanceBuffer->current().MapWrite(0u, iRenderCount * CORE_BATCHLIST_INSTANCE_SIZE_HIGH, CORE_DATABUFFER_MAP_INVALIDATE_ALL);
                 coreByte* pCursor = pRange;
 
                 FOR_EACH(it, m_apObjectList)
@@ -650,7 +661,7 @@ void coreBatchList::__RenderDefault(const coreProgramPtr& pProgramInstanced, con
             else
             {
                 // map required area of the instance data buffer
-                coreByte* pRange  = m_aInstanceBuffer.current().MapWrite(0u, iRenderCount * CORE_BATCHLIST_INSTANCE_SIZE_LOW, CORE_DATABUFFER_MAP_INVALIDATE_ALL);
+                coreByte* pRange  = m_paInstanceBuffer->current().MapWrite(0u, iRenderCount * CORE_BATCHLIST_INSTANCE_SIZE_LOW, CORE_DATABUFFER_MAP_INVALIDATE_ALL);
                 coreByte* pCursor = pRange;
 
                 FOR_EACH(it, m_apObjectList)
@@ -683,7 +694,7 @@ void coreBatchList::__RenderDefault(const coreProgramPtr& pProgramInstanced, con
             }
 
             // unmap buffer
-            m_aInstanceBuffer.current().Unmap();
+            m_paInstanceBuffer->current().Unmap();
 
             // reset the update status
             REMOVE_FLAG(m_eUpdate, CORE_BATCHLIST_UPDATE_INSTANCE)
@@ -748,12 +759,14 @@ void coreBatchList::__RenderCustom(const coreProgramPtr& pProgramInstanced, cons
     {
         if(HAS_FLAG(m_eUpdate, CORE_BATCHLIST_UPDATE_CUSTOM))
         {
+            ASSERT(m_paInstanceBuffer && m_paCustomBuffer)
+
             // invalidate and synchronize previous buffer
             m_paCustomBuffer->current().Invalidate();
             m_paCustomBuffer->current().SyncWrite(CORE_DATABUFFER_MAP_INVALIDATE_ALL);
 
             // switch to next available buffer
-            m_paCustomBuffer->select(m_aInstanceBuffer.index());
+            m_paCustomBuffer->select(m_paInstanceBuffer->index());
             if(HAS_FLAG(m_eUpdate, CORE_BATCHLIST_UPDATE_INSTANCE)) m_paCustomBuffer->next();
 
             // map required area of the custom attribute buffer

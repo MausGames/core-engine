@@ -129,25 +129,25 @@ private:
 
 
 private:
-    coreSet<coreObject3D*> m_apObjectList;                                            // list with pointers to similar 3d-objects
-    coreUint32 m_iNumInstances;                                                       // current instance-capacity of all buffers
-    coreUint32 m_iNumEnabled;                                                         // current number of render-enabled 3d-objects (render-count)
+    coreSet<coreObject3D*> m_apObjectList;                                             // list with pointers to similar 3d-objects
+    coreUint32             m_iNumInstances;                                            // current instance-capacity of all buffers
+    coreUint32             m_iNumEnabled;                                              // current number of render-enabled 3d-objects (render-count)
 
-    coreProgramPtr m_pProgram;                                                        // shader-program object
+    coreProgramPtr m_pProgram;                                                         // shader-program object
 
-    GLuint m_iLastModel;                                                              // vertex buffer identifier of the last used model (to detect changes and update the vertex array)
+    GLuint m_iLastModel;                                                               // vertex buffer identifier of the last used model (to detect changes and update the vertex array)
 
-    coreRing<GLuint,           CORE_BATCHLIST_INSTANCE_BUFFERS>  m_aiVertexArray;     // vertex array objects
-    coreRing<coreVertexBuffer, CORE_BATCHLIST_INSTANCE_BUFFERS>  m_aInstanceBuffer;   // instance data buffers
-    coreRing<coreVertexBuffer, CORE_BATCHLIST_INSTANCE_BUFFERS>* m_paCustomBuffer;    // optional custom attribute buffers
+    coreRing<GLuint,           CORE_BATCHLIST_INSTANCE_BUFFERS>  m_aiVertexArray;      // vertex array objects
+    coreRing<coreVertexBuffer, CORE_BATCHLIST_INSTANCE_BUFFERS>* m_paInstanceBuffer;   // instance data buffers
+    coreRing<coreVertexBuffer, CORE_BATCHLIST_INSTANCE_BUFFERS>* m_paCustomBuffer;     // optional custom attribute buffers
 
-    coreDefineBuffer m_nDefineBufferFunc;                                             // function for defining the vertex structure of the custom attribute buffers
-    coreUpdateData   m_nUpdateDataFunc;                                               // function for updating custom attributes with instancing
-    coreUpdateShader m_nUpdateShaderFunc;                                             // function for updating custom attributes through shader uniforms
-    coreUint8        m_iCustomSize;                                                   // vertex size for the custom attribute buffers
+    coreDefineBuffer m_nDefineBufferFunc;                                              // function for defining the vertex structure of the custom attribute buffers
+    coreUpdateData   m_nUpdateDataFunc;                                                // function for updating custom attributes with instancing
+    coreUpdateShader m_nUpdateShaderFunc;                                              // function for updating custom attributes through shader uniforms
+    coreUint8        m_iCustomSize;                                                    // vertex size for the custom attribute buffers
 
-    coreUint8           m_iFilled;                                                    // vertex array fill status
-    coreBatchListUpdate m_eUpdate;                                                    // buffer update status (dirty flag)
+    coreUint8           m_iFilled;                                                     // vertex array fill status
+    coreBatchListUpdate m_eUpdate;                                                     // buffer update status (dirty flag)
 
 
 public:
@@ -184,7 +184,7 @@ public:
 
     /* check for instancing status */
     inline coreBool IsInstanced()const {return (CORE_GL_SUPPORT(ARB_instanced_arrays) && CORE_GL_SUPPORT(ARB_vertex_array_object) && (m_iNumEnabled >= CORE_BATCHLIST_INSTANCE_THRESHOLD));}
-    inline coreBool IsCustom   ()const {return (m_paCustomBuffer != NULL);}
+    inline coreBool IsCustom   ()const {return (m_iCustomSize != 0u);}
 
     /* access 3d-object list directly */
     inline       coreSet<coreObject3D*>* List()      {return &m_apObjectList;}
@@ -214,10 +214,9 @@ private:
 /* create buffer for custom vertex attributes */
 template <typename F, typename G, typename H> void coreBatchList::CreateCustom(const coreUint8 iVertexSize, F&& nDefineBufferFunc, G&& nUpdateDataFunc, H&& nUpdateShaderFunc)
 {
-    WARN_IF(this->IsCustom()) return;
+    ASSERT(iVertexSize && nDefineBufferFunc && nUpdateDataFunc && nUpdateShaderFunc)
 
-    // allocate custom attribute buffer memory
-    m_paCustomBuffer = new coreRing<coreVertexBuffer, CORE_BATCHLIST_INSTANCE_BUFFERS>();
+    WARN_IF(this->IsCustom()) return;
 
     // save functions and vertex size
     m_nDefineBufferFunc = std::forward<F>(nDefineBufferFunc);
@@ -226,8 +225,13 @@ template <typename F, typename G, typename H> void coreBatchList::CreateCustom(c
     m_iCustomSize       = iVertexSize;
 
     // immediately initialize if instance data buffers are already valid
-    if(m_aInstanceBuffer[0].IsValid())
+    if(m_paInstanceBuffer && (*m_paInstanceBuffer)[0].IsValid())
     {
+        ASSERT(!m_paCustomBuffer)
+
+        // allocate custom attribute buffer memory
+        m_paCustomBuffer = new coreRing<coreVertexBuffer, CORE_BATCHLIST_INSTANCE_BUFFERS>();
+
         for(coreUintW i = 0u; i < CORE_BATCHLIST_INSTANCE_BUFFERS; ++i)
         {
             coreVertexBuffer& oBuffer = (*m_paCustomBuffer)[i];
