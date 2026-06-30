@@ -235,7 +235,7 @@ coreStatus coreLanguage::Load(const coreChar* pcPath)
 
     // update all foreign strings and objects
     FOR_EACH(it, m_asForeign)  (*m_asForeign.get_key(it))->assign(m_asStringList.at_bs(it->c_str()));
-    FOR_EACH(it, m_anAssemble) (*it)(*m_anAssemble.get_key(it));
+    FOR_EACH(it, m_anAssemble) (*it)(*m_anAssemble.get_key(it), *this);
     FOR_EACH(it, m_apObject)   (*it)->__UpdateTranslate();
 
     Core::Log->Info("Language (%s, %u strings) loaded", pFile->GetPath(), m_asStringList.size());
@@ -376,6 +376,6 @@ void coreLanguage::__Assemble(coreString* psForeign, const coreString& sText)
     // apply possible assemble function
     if(m_anAssemble.count_bs(psForeign))
     {
-        m_anAssemble.at_bs(psForeign)(psForeign);
+        m_anAssemble.at_bs(psForeign)(psForeign, *this);
     }
 }
