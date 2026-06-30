@@ -76,6 +76,11 @@ coreBool coreObjectManager::TestCollision(const coreObject3D* pObject1, const co
     // get collision radius
     const coreFloat fTotalRadius = pObject1->GetCollisionRadius() + pObject2->GetCollisionRadius();
 
+    // check for axis-aligned intersection
+    if(ABS(vDiff.x) > fTotalRadius) return false;
+    if(ABS(vDiff.y) > fTotalRadius) return false;
+    if(ABS(vDiff.z) > fTotalRadius) return false;
+
     // check for sphere intersection
     if((vDiff.LengthSq() > POW2(fTotalRadius)) || coreMath::IsNear(fTotalRadius, 0.0f))
         return false;

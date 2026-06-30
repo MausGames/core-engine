@@ -16,6 +16,7 @@
 // TODO 3: handle saving config on maximized window, also save last window position ?
 // TODO 2: as of now, setting window position does not work on Wayland and returns false + SDL_GetError (in Wayland_SetWindowPosition)
 // TODO 4: SDL_IsMainThread
+// TODO 3: allow marking labels and rich-texts as not being affected by global scale (certain texts should stay as they are, like the title)
 // TODO 3: setting SDL_SetWindowFullscreen to true on Gamescope will prevent resolution changes (after max res?) until the window is recreated
 // TODO 2: Wayland returns something else on SDL_GetWindowSize (fix) as would be expected based on vWorkAreaRes, so g_vGameResolution in Eigengrau is not correct on a Reset
 // TODO 2: SDL_GetDisplayUsableBounds on XWayland with non-100% content scale returns complete useless values (on both taskbar and non-taskbar displays) (way too low without any scale relationship, sometimes only one axis, sometimes both)

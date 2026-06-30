@@ -273,7 +273,7 @@ const SDL_Event& coreReplay::__NormalizeEvent(const SDL_Event& oEvent)
 {
     // copy event into work buffer
     static SDL_Event s_WorkEvent = {};
-    std::memcpy(&s_WorkEvent, &oEvent, coreReplay::__GetEventSize(oEvent.type));
+    std::memcpy(&s_WorkEvent, &oEvent, sizeof(SDL_Event));
 
     // remove window coordinate size
     switch(oEvent.type)
@@ -305,6 +305,8 @@ const SDL_Event& coreReplay::__NormalizeEvent(const SDL_Event& oEvent)
 /* denormalize event from portable format */
 void coreReplay::__DenormalizeEvent(SDL_Event* OUTPUT pEvent)
 {
+    ASSERT(pEvent)
+
     // add window coordinate size
     switch(pEvent->type)
     {

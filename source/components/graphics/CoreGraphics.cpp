@@ -625,7 +625,7 @@ void GL_APIENTRY WriteOpenGL(const GLenum iSource, const GLenum iType, const GLu
     }
     Core::Log->ListEnd();
 
-    // also display shader compiler message
+    // also display shader compiler errors
     if(iSource == GL_DEBUG_SOURCE_SHADER_COMPILER)
     {
         SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_ERROR, "Shader Compiler", pcMessage, NULL);
@@ -657,7 +657,7 @@ void CoreGraphics::DebugOpenGL()
         glDebugMessageControl(GL_DEBUG_SOURCE_API, GL_DEBUG_TYPE_PERFORMANCE,        GL_DONT_CARE, ARRAY_SIZE(aiID), aiID, false);
         glDebugMessageControl(GL_DEBUG_SOURCE_API, GL_DEBUG_TYPE_OTHER,              GL_DONT_CARE, ARRAY_SIZE(aiID), aiID, false);
 
-        // disable all shader compiler diagnostics and warnings
+        // disable all shader compiler diagnostics and warnings (not errors)
         glDebugMessageControl(GL_DEBUG_SOURCE_SHADER_COMPILER, GL_DEBUG_TYPE_OTHER, GL_DONT_CARE, 0, NULL, false);
     }
 
