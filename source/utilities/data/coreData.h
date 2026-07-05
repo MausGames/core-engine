@@ -157,6 +157,7 @@ public:
     static const coreChar*   SystemCpuVendor ();
     static const coreChar*   SystemCpuBrand  ();
     static       coreCpuType SystemCpuType   ();
+    static       coreUint32  SystemCpuCores  ();
     static const coreChar*   SystemDirAppData();
     static const coreChar*   SystemDirTemp   ();
 

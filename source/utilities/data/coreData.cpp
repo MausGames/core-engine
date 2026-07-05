@@ -608,6 +608,91 @@ ONCE_END
 
 
 // ****************************************************************
+/* get number of physical CPU cores */
+coreUint32 coreData::SystemCpuCores()
+{
+ONCE_START
+
+    coreUint32 iCount = 0u;
+
+#if defined(_CORE_WINDOWS_)
+
+    using coreGetLogicalProcessorInformation = BOOL (WINAPI *) (PSYSTEM_LOGICAL_PROCESSOR_INFORMATION, PDWORD);
+
+    // load processor info function
+    const coreGetLogicalProcessorInformation nGetLogicalProcessorInformation = r_cast<coreGetLogicalProcessorInformation>(GetProcAddress(GetModuleHandleW(L"kernel32"), "GetLogicalProcessorInformation"));
+    if(nGetLogicalProcessorInformation)
+    {
+        // get processor info size
+        coreUlong iInfoSize = 0u;
+        if(!nGetLogicalProcessorInformation(NULL, &iInfoSize))
+        {
+            // calculate processor info number
+            const coreUintW iInfoNum = iInfoSize / sizeof(SYSTEM_LOGICAL_PROCESSOR_INFORMATION);
+            if(iInfoNum)
+            {
+                // get processor info
+                SYSTEM_LOGICAL_PROCESSOR_INFORMATION* pInfo = TEMP_NEW(SYSTEM_LOGICAL_PROCESSOR_INFORMATION, iInfoNum);
+                if(nGetLogicalProcessorInformation(pInfo, &iInfoSize))
+                {
+                    // count number of single CPU cores
+                    for(coreUintW i = 0u; i < iInfoNum; ++i)
+                    {
+                        if(pInfo[i].Relationship == RelationProcessorCore) ++iCount;
+                    }
+                }
+                TEMP_DELETE(pInfo)
+            }
+        }
+    }
+
+#elif defined(_CORE_LINUX_)
+
+    // open CPU info pseudo-file
+    std::FILE* pFile = coreData::FileOpen("/proc/cpuinfo", CORE_FILE_OPEN_READ);
+    if(pFile)
+    {
+        coreChar acBuffer[0x1000];
+
+        // read all data
+        const coreUintW iResult = std::fread(acBuffer, 1u, ARRAY_SIZE(acBuffer) - 1u, pFile);
+        acBuffer[iResult] = '\0';
+
+        // close file
+        std::fclose(pFile);
+
+        // search CPU core entry
+        const coreChar* pcCursor = std::strstr(acBuffer, "cpu cores");
+        if(pcCursor)
+        {
+            // search for delimiter (has variable margin)
+            pcCursor = std::strchr(pcCursor + coreStrLen("cpu cores"), ':');
+            if(pcCursor)
+            {
+                // check for number of single CPU cores
+                pcCursor += 1u;
+                for(; (*pcCursor) != '\0'; ++pcCursor)
+                {
+                    if(!std::isspace(*pcCursor))
+                    {
+                        iCount = coreData::FromChars<coreUint32>(pcCursor, acBuffer + iResult - pcCursor);
+                        break;
+                    }
+                }
+            }
+        }
+    }
+
+#endif
+
+    // just return number of logical CPU cores
+    return iCount ? iCount : SDL_GetNumLogicalCPUCores();
+
+ONCE_END
+}
+
+
+// ****************************************************************
 /* get path to store application data */
 const coreChar* coreData::SystemDirAppData()
 {

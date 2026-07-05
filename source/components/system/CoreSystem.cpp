@@ -452,12 +452,12 @@ CoreSystem::CoreSystem()noexcept
         coreInt32 iSeconds, iPercent;
         const SDL_PowerState ePowerState = SDL_GetPowerInfo(&iSeconds, &iPercent);
 
-        Core::Log->ListAdd(CORE_LOG_BOLD("Operating System:")  " %s",                                                                 coreData::SystemOsName());
-        Core::Log->ListAdd(CORE_LOG_BOLD("Processor:")         " %s (%s, %d logical cores, %d bytes cache line, %d bytes page size)", coreData::SystemCpuBrand(), coreData::SystemCpuVendor(), SDL_GetNumLogicalCPUCores(), SDL_GetCPUCacheLineSize(), SDL_GetSystemPageSize());
-        Core::Log->ListAdd(CORE_LOG_BOLD("System Memory:")     " %llu/%llu MB (%.1f%%)",                                              iMemoryUsed / (1024u * 1024u), iMemoryTotal / (1024u * 1024u), dMemoryPct);
-        Core::Log->ListAdd(CORE_LOG_BOLD("Disk Space:")        " %llu MB available",                                                  iSpaceAvailable / (1024u * 1024u));
-        Core::Log->ListAdd(CORE_LOG_BOLD("Preferred Locales:") " %s",                                                                 sLocaleStr.c_str());
-        Core::Log->ListAdd(CORE_LOG_BOLD("Battery Status:")    " %d (%d%%, %d minutes)",                                              ePowerState, MAX0(iPercent), MAX0(iSeconds) / 60);
+        Core::Log->ListAdd(CORE_LOG_BOLD("Operating System:")  " %s",                                                            coreData::SystemOsName());
+        Core::Log->ListAdd(CORE_LOG_BOLD("Processor:")         " %s (%s, %u/%d cores, %d bytes cache line, %d bytes page size)", coreData::SystemCpuBrand(), coreData::SystemCpuVendor(), coreData::SystemCpuCores(), SDL_GetNumLogicalCPUCores(), SDL_GetCPUCacheLineSize(), SDL_GetSystemPageSize());
+        Core::Log->ListAdd(CORE_LOG_BOLD("System Memory:")     " %llu/%llu MB (%.1f%%)",                                         iMemoryUsed / (1024u * 1024u), iMemoryTotal / (1024u * 1024u), dMemoryPct);
+        Core::Log->ListAdd(CORE_LOG_BOLD("Disk Space:")        " %llu MB available",                                             iSpaceAvailable / (1024u * 1024u));
+        Core::Log->ListAdd(CORE_LOG_BOLD("Preferred Locales:") " %s",                                                            sLocaleStr.c_str());
+        Core::Log->ListAdd(CORE_LOG_BOLD("Battery Status:")    " %d (%d%%, %d minutes)",                                         ePowerState, MAX0(iPercent), MAX0(iSeconds) / 60);
     }
     Core::Log->ListEnd();
 
