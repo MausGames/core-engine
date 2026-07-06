@@ -278,7 +278,8 @@ public:
 
 private:
     /* access next temp-string */
-    static inline RETURN_RESTRICT coreChar* __NextTempString() {coreTempString& A = s_TempString; if(++A.iCurrent >= CORE_DATA_STRING_NUM) A.iCurrent = 0u; return A.aacData[A.iCurrent];}
+    static RETURN_RESTRICT coreChar*  __NextTempString();
+    static RETURN_RESTRICT coreWchar* __NextTempStringWide();
 
     /* prepare path for system directory */
     static const coreChar* __PrepareSystemDir(const coreChar* pcPath);
@@ -286,6 +287,9 @@ private:
     /* transform between 8-bit ANSI and 16-bit Unicode (for Windows API) */
     static const coreWchar* __ToWideChar(const coreChar*  pcText);
     static const coreChar*  __ToAnsiChar(const coreWchar* pcText);
+
+    /* transform to fully normalized path (for Windows API) */
+    static const coreWchar* __ToNormalizedPath(const coreChar* pcPath);
 
     /* get memory mapping alignment */
     static coreUintW __GetMapAlign();

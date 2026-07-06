@@ -295,7 +295,7 @@ coreBool coreData::SystemSpace(coreUint64* OUTPUT piAvailable, coreUint64* OUTPU
     ULARGE_INTEGER iAvailable, iTotal;
 
     // retrieve disk volume information
-    if(GetDiskFreeSpaceExW(coreData::__ToWideChar(s_sUserFolder.c_str()), &iAvailable, &iTotal, NULL))
+    if(GetDiskFreeSpaceExW(coreData::__ToNormalizedPath(s_sUserFolder.c_str()), &iAvailable, &iTotal, NULL))
     {
         if(piAvailable) (*piAvailable) = iAvailable.QuadPart;
         if(piTotal)     (*piTotal)     = iTotal    .QuadPart;
@@ -1054,7 +1054,7 @@ coreStatus coreData::SetCurDir(const coreChar* pcPath)
 
 #if defined(_CORE_WINDOWS_)
 
-    if(SetCurrentDirectoryW(coreData::__ToWideChar(pcPath))) return CORE_OK;
+    if(SetCurrentDirectoryW(coreData::__ToNormalizedPath(pcPath))) return CORE_OK;
 
 #elif defined(_CORE_LINUX_) || defined(_CORE_MACOS_) || defined(_CORE_SWITCH_)
 
@@ -1553,7 +1553,7 @@ std::FILE* coreData::FileOpen(const coreChar* pcPath, const coreChar* pcMode)
 
 #if defined(_CORE_WINDOWS_)
 
-    return _wfopen(coreData::__ToWideChar(pcPath), coreData::__ToWideChar(pcMode));
+    return _wfopen(coreData::__ToNormalizedPath(pcPath), coreData::__ToWideChar(pcMode));
 
 #else
 
@@ -1571,7 +1571,7 @@ coreBool coreData::FileExists(const coreChar* pcPath)
 
 #if defined(_CORE_WINDOWS_)
 
-    const coreUint32 iAttributes = GetFileAttributesW(coreData::__ToWideChar(pcPath));
+    const coreUint32 iAttributes = GetFileAttributesW(coreData::__ToNormalizedPath(pcPath));
 
     // quick Windows check
     if((iAttributes != INVALID_FILE_ATTRIBUTES) && !HAS_FLAG(iAttributes, FILE_ATTRIBUTE_DIRECTORY)) return true;
@@ -1611,7 +1611,7 @@ coreInt64 coreData::FileSize(const coreChar* pcPath)
     WIN32_FILE_ATTRIBUTE_DATA oAttributes;
 
     // get extended file attributes
-    if(GetFileAttributesExW(coreData::__ToWideChar(pcPath), GetFileExInfoStandard, &oAttributes))
+    if(GetFileAttributesExW(coreData::__ToNormalizedPath(pcPath), GetFileExInfoStandard, &oAttributes))
     {
         // return combined file size
         return (coreInt64(oAttributes.nFileSizeHigh) << 32u) |
@@ -1661,7 +1661,7 @@ coreFileStats coreData::FileStats(const coreChar* pcPath)
     WIN32_FILE_ATTRIBUTE_DATA oAttributes;
 
     // get extended file attributes
-    if(GetFileAttributesExW(coreData::__ToWideChar(pcPath), GetFileExInfoStandard, &oAttributes))
+    if(GetFileAttributesExW(coreData::__ToNormalizedPath(pcPath), GetFileExInfoStandard, &oAttributes))
     {
         oStats.bDirectory      = HAS_FLAG(oAttributes.dwFileAttributes, FILE_ATTRIBUTE_DIRECTORY);
         oStats.iSize           = (coreInt64(oAttributes.nFileSizeHigh) << 32u) | (coreInt64(oAttributes.nFileSizeLow));
@@ -1730,7 +1730,7 @@ coreStatus coreData::FileCopy(const coreChar* pcFrom, const coreChar* pcTo)
 #if defined(_CORE_WINDOWS_)
 
     // copy directly (with attributes)
-    if(CopyFileW(coreData::__ToWideChar(pcFrom), coreData::__ToWideChar(pcTo), false)) return CORE_OK;
+    if(CopyFileW(coreData::__ToNormalizedPath(pcFrom), coreData::__ToNormalizedPath(pcTo), false)) return CORE_OK;
 
 #elif defined(_CORE_LINUX_)
 
@@ -1836,7 +1836,7 @@ coreStatus coreData::FileMove(const coreChar* pcFrom, const coreChar* pcTo)
 
 #if defined(_CORE_WINDOWS_)
 
-    if(MoveFileExW(coreData::__ToWideChar(pcFrom), coreData::__ToWideChar(pcTo), MOVEFILE_REPLACE_EXISTING | MOVEFILE_COPY_ALLOWED)) return CORE_OK;
+    if(MoveFileExW(coreData::__ToNormalizedPath(pcFrom), coreData::__ToNormalizedPath(pcTo), MOVEFILE_REPLACE_EXISTING | MOVEFILE_COPY_ALLOWED)) return CORE_OK;
 
 #elif defined(_CORE_LINUX_) || defined(_CORE_MACOS_) || defined(_CORE_EMSCRIPTEN_)
 
@@ -1861,7 +1861,7 @@ coreStatus coreData::FileDelete(const coreChar* pcPath)
 
 #if defined(_CORE_WINDOWS_)
 
-    if(DeleteFileW(coreData::__ToWideChar(pcPath))) return CORE_OK;
+    if(DeleteFileW(coreData::__ToNormalizedPath(pcPath))) return CORE_OK;
 
 #elif defined(_CORE_LINUX_) || defined(_CORE_MACOS_) || defined(_CORE_EMSCRIPTEN_) || defined(_CORE_SWITCH_)
 
@@ -1889,7 +1889,7 @@ coreStatus coreData::FileMap(const coreChar* pcPath, const coreInt64 iOffset, co
 #if defined(_CORE_WINDOWS_)
 
     // open file
-    const HANDLE pFile = CreateFileW(coreData::__ToWideChar(pcPath), GENERIC_READ, FILE_SHARE_READ, NULL, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, NULL);
+    const HANDLE pFile = CreateFileW(coreData::__ToNormalizedPath(pcPath), GENERIC_READ, FILE_SHARE_READ, NULL, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, NULL);
     if(pFile != INVALID_HANDLE_VALUE)
     {
         // retrieve file size
@@ -1994,7 +1994,7 @@ coreBool coreData::DirectoryExists(const coreChar* pcPath)
 
 #if defined(_CORE_WINDOWS_)
 
-    const coreUint32 iAttributes = GetFileAttributesW(coreData::__ToWideChar(pcPath));
+    const coreUint32 iAttributes = GetFileAttributesW(coreData::__ToNormalizedPath(pcPath));
 
     // quick Windows check
     if((iAttributes != INVALID_FILE_ATTRIBUTES) && HAS_FLAG(iAttributes, FILE_ATTRIBUTE_DIRECTORY)) return true;
@@ -2029,7 +2029,7 @@ coreBool coreData::DirectoryWritable(const coreChar* pcPath)
     const coreChar* pcCheck = PRINT("%s/check_%u", pcPath, coreData::ProcessID());
 
     // create temporary file
-    const HANDLE pFile = CreateFileW(coreData::__ToWideChar(pcCheck), GENERIC_WRITE, 0u, NULL, CREATE_ALWAYS, FILE_ATTRIBUTE_TEMPORARY | FILE_FLAG_DELETE_ON_CLOSE, NULL);
+    const HANDLE pFile = CreateFileW(coreData::__ToNormalizedPath(pcCheck), GENERIC_WRITE, 0u, NULL, CREATE_ALWAYS, FILE_ATTRIBUTE_TEMPORARY | FILE_FLAG_DELETE_ON_CLOSE, NULL);
     if(pFile != INVALID_HANDLE_VALUE)
     {
         // close and (automatically) delete file again
@@ -2114,7 +2114,7 @@ coreStatus coreData::DirectoryMove(const coreChar* pcFrom, const coreChar* pcTo)
 
     // move directory fast (but only works if destination directory does not exist and is on the same volume)
 #if defined(_CORE_WINDOWS_)
-    if(MoveFileExW(coreData::__ToWideChar(pcFrom), coreData::__ToWideChar(pcTo), 0u)) return CORE_OK;
+    if(MoveFileExW(coreData::__ToNormalizedPath(pcFrom), coreData::__ToNormalizedPath(pcTo), 0u)) return CORE_OK;
 #else
     if(!std::rename(pcFrom, pcTo)) return CORE_OK;
 #endif
@@ -2151,13 +2151,13 @@ coreStatus coreData::DirectoryDelete(const coreChar* pcPath, const coreBool bWit
         // delete all children first (recursively)
         coreData::DirectoryEnum(pcPath, "*", CORE_ENUM_TYPE_TREE, NULL, [](const coreChar* pcPath, const coreFileStats& oStats, void* pData)
         {
-            if(oStats.bDirectory) RemoveDirectoryW(coreData::__ToWideChar(pcPath));
-                             else DeleteFileW     (coreData::__ToWideChar(pcPath));
+            if(oStats.bDirectory) RemoveDirectoryW(coreData::__ToNormalizedPath(pcPath));
+                             else DeleteFileW     (coreData::__ToNormalizedPath(pcPath));
         });
     }
 
     // delete base directory (if empty)
-    if(RemoveDirectoryW(coreData::__ToWideChar(pcPath))) return CORE_OK;
+    if(RemoveDirectoryW(coreData::__ToNormalizedPath(pcPath))) return CORE_OK;
 
 #elif defined(_CORE_LINUX_) || defined(_CORE_MACOS_) || defined(_CORE_EMSCRIPTEN_) || defined(_CORE_SWITCH_)
 
@@ -2199,7 +2199,7 @@ coreStatus coreData::DirectoryCreate(const coreChar* pcPath)
 
     // create base directory
 #if defined(_CORE_WINDOWS_)
-    if(CreateDirectoryW(coreData::__ToWideChar(pcPath), NULL)) return CORE_OK;
+    if(CreateDirectoryW(coreData::__ToNormalizedPath(pcPath), NULL)) return CORE_OK;
 #else
     if(!mkdir(pcPath, S_IRWXU | S_IRWXG | S_IRWXO)) return CORE_OK;
 #endif
@@ -2250,7 +2250,7 @@ coreStatus coreData::DirectoryEnum(const coreChar* pcPath, const coreChar* pcFil
     WIN32_FIND_DATAW oFile;
 
     // open folder
-    const HANDLE pFolder = FindFirstFileExW(coreData::__ToWideChar(PRINT(HAS_FLAG(eEnumType, CORE_ENUM_TYPE_TREE) ? "%s/*" : "%s/%s", acString, pcFilter)), FindExInfoBasic, &oFile, FindExSearchNameMatch, NULL, FIND_FIRST_EX_LARGE_FETCH);
+    const HANDLE pFolder = FindFirstFileExW(coreData::__ToNormalizedPath(PRINT(HAS_FLAG(eEnumType, CORE_ENUM_TYPE_TREE) ? "%s/*" : "%s/%s", acString, pcFilter)), FindExInfoBasic, &oFile, FindExSearchNameMatch, NULL, FIND_FIRST_EX_LARGE_FETCH);
     if(pFolder == INVALID_HANDLE_VALUE)
     {
         Core::Log->Warning("Folder (%s/%s) could not be opened", acString, pcFilter);
@@ -2361,14 +2361,14 @@ coreStatus coreData::SymlinkCreate(const coreChar* pcPath, const coreChar* pcTar
 {
 #if defined(_CORE_WINDOWS_)
 
-    const coreWchar* pcWidePath   = coreData::__ToWideChar(pcPath);
-    const coreWchar* pcWideTarget = coreData::__ToWideChar(pcTarget);
+    const coreWchar* pcNormalizedPath   = coreData::__ToNormalizedPath(pcPath);
+    const coreWchar* pcNormalizedTarget = coreData::__ToNormalizedPath(pcTarget);
 
     // check for directory attribute
-    const coreUint32 iFlags = HAS_FLAG(GetFileAttributesW(pcWideTarget), FILE_ATTRIBUTE_DIRECTORY) ? SYMBOLIC_LINK_FLAG_DIRECTORY : 0u;
+    const coreUint32 iFlags = HAS_FLAG(GetFileAttributesW(pcNormalizedTarget), FILE_ATTRIBUTE_DIRECTORY) ? SYMBOLIC_LINK_FLAG_DIRECTORY : 0u;
 
     // create symbolic link
-    if(CreateSymbolicLinkW(pcWidePath, pcWideTarget, iFlags)) return CORE_OK;
+    if(CreateSymbolicLinkW(pcNormalizedPath, pcNormalizedTarget, iFlags)) return CORE_OK;
 
 #elif defined(_CORE_LINUX_) || defined(_CORE_MACOS_)
 
@@ -2785,6 +2785,45 @@ const coreChar* coreData::__PrepareSystemDir(const coreChar* pcPath)
 
 
 // ****************************************************************
+/* access next temp-string */
+RETURN_RESTRICT coreChar* coreData::__NextTempString()
+{
+    coreTempString& A = s_TempString;
+
+    // rotate to next entry
+    if(++A.iCurrent >= CORE_DATA_STRING_NUM) A.iCurrent = 0u;
+    return A.aacData[A.iCurrent];
+}
+
+
+// ****************************************************************
+/* access next wide temp-string */
+RETURN_RESTRICT coreWchar* coreData::__NextTempStringWide()
+{
+#if defined(_CORE_WINDOWS_)
+
+    // wide temp-string structure (defined here for easier handling)
+    struct alignas(ALIGNMENT_CACHE) coreTempStringWide final
+    {
+        coreWchar aacData[4][CORE_DATA_STRING_LEN];
+        coreUintW iCurrent;
+    };
+
+    // thread-local wide temp-string container (also defined here for easier handling)
+    static THREAD_LOCAL coreTempStringWide s_TempStringWide = {};
+    coreTempStringWide& A = s_TempStringWide;
+
+    // rotate to next entry
+    if(++A.iCurrent >= ARRAY_SIZE(A.aacData)) A.iCurrent = 0u;
+    return A.aacData[A.iCurrent];
+
+#endif
+
+    UNREACHABLE
+}
+
+
+// ****************************************************************
 /* transform 8-bit ANSI to 16-bit Unicode (for Windows API) */
 const coreWchar* coreData::__ToWideChar(const coreChar* pcText)
 {
@@ -2792,18 +2831,7 @@ const coreWchar* coreData::__ToWideChar(const coreChar* pcText)
 
     if(pcText)
     {
-        // wide temp-string structure (defined here for easier handling)
-        struct alignas(ALIGNMENT_CACHE) coreTempStringW final
-        {
-            coreWchar aacData[4][CORE_DATA_STRING_LEN];
-            coreUintW iCurrent;
-        };
-        static THREAD_LOCAL coreTempStringW s_TempStringW;
-        coreTempStringW& A = s_TempStringW;
-
-        // access next wide temp-string
-        if(++A.iCurrent >= ARRAY_SIZE(A.aacData)) A.iCurrent = 0u;
-        coreWchar* pcString = A.aacData[A.iCurrent];
+        coreWchar* pcString = coreData::__NextTempStringWide();
 
         // convert from UTF-8 string to UTF-16 string
         const coreInt32 iReturn = MultiByteToWideChar(CP_UTF8, 0u, pcText, -1, pcString, CORE_DATA_STRING_LEN);
@@ -2831,6 +2859,43 @@ const coreChar* coreData::__ToAnsiChar(const coreWchar* pcText)
         // convert from UTF-16 string to UTF-8 string
         const coreInt32 iReturn = WideCharToMultiByte(CP_UTF8, 0u, pcText, -1, pcString, CORE_DATA_STRING_LEN, NULL, NULL);
         ASSERT(iReturn)
+
+        return pcString;
+    }
+
+#endif
+
+    return NULL;
+}
+
+
+// ****************************************************************
+/* transform to fully normalized path (for Windows API) */
+const coreWchar* coreData::__ToNormalizedPath(const coreChar* pcPath)
+{
+#if defined(_CORE_WINDOWS_)
+
+    if(pcPath)
+    {
+        if(!pcPath[0]) return L"";
+
+        coreWchar* pcString = coreData::__NextTempStringWide();
+
+        // check for absolute path
+        coreChar acAbsolute[CORE_DATA_MAX_PATH];
+        if(pcPath[1] == ':')
+        {
+            // already add extension prefix (for correct conversion)
+            std::memcpy(acAbsolute, "\\\\?\\", sizeof(coreChar) * 4u);
+            coreData::StrCopy(acAbsolute + 4u, CORE_DATA_MAX_PATH - 4u, pcPath);
+
+            // use extended path
+            pcPath = acAbsolute;
+        }
+
+        // convert to fully normalized path (which disables additional string parsing and length limitations)
+        const coreUint32 iReturn = GetFullPathNameW(coreData::__ToWideChar(pcPath), CORE_DATA_MAX_PATH, pcString, NULL);
+        ASSERT(iReturn && (iReturn < CORE_DATA_MAX_PATH))
 
         return pcString;
     }
