@@ -11,6 +11,9 @@
 #define _CORE_GUARD_GL_H_
 
 // TODO 3: CORE_CONFIG_GRAPHICS_DISABLEEXTENSIONS does not work for shader extensions (also on GLES)
+// TODO 5: GL_EXT_polygon_offset_clamp+GL_ARB_polygon_offset_clamp, GL_EXT_shader_integer_mix+GL_ARB_ES3_1_compatibility, GL_EXT_texture_filter_minmax+GL_ARB_texture_filter_minmax, NV_packed_depth_stencil
+// TODO 5: split GL_KHR_debug into GL_EXT_debug_label + GL_ARB_debug_output/GL_AMD_debug_output
+// TODO 3: GL_ARB_cull_distance for better culling in P2 ?
 
 
 // ****************************************************************

@@ -567,6 +567,8 @@ PFNGLSPECIALIZESHADERPROC __glewSpecializeShader = NULL;
 PFNGLNAMEDRENDERBUFFERSTORAGEMULTISAMPLEADVANCEDAMDPROC __glewNamedRenderbufferStorageMultisampleAdvancedAMD = NULL;
 PFNGLRENDERBUFFERSTORAGEMULTISAMPLEADVANCEDAMDPROC __glewRenderbufferStorageMultisampleAdvancedAMD = NULL;
 
+PFNGLMEMORYBARRIERBYREGIONPROC __glewMemoryBarrierByRegion = NULL;
+
 PFNGLBUFFERSTORAGEPROC __glewBufferStorage = NULL;
 
 PFNGLCLEARBUFFERDATAPROC __glewClearBufferData = NULL;
@@ -1181,6 +1183,13 @@ PFNGLVERTEXATTRIBIPOINTEREXTPROC __glewVertexAttribIPointerEXT = NULL;
 PFNGLBINDIMAGETEXTUREEXTPROC __glewBindImageTextureEXT = NULL;
 PFNGLMEMORYBARRIEREXTPROC __glewMemoryBarrierEXT = NULL;
 
+PFNGLCLEARCOLORIIEXTPROC __glewClearColorIiEXT = NULL;
+PFNGLCLEARCOLORIUIEXTPROC __glewClearColorIuiEXT = NULL;
+PFNGLGETTEXPARAMETERIIVEXTPROC __glewGetTexParameterIivEXT = NULL;
+PFNGLGETTEXPARAMETERIUIVEXTPROC __glewGetTexParameterIuivEXT = NULL;
+PFNGLTEXPARAMETERIIVEXTPROC __glewTexParameterIivEXT = NULL;
+PFNGLTEXPARAMETERIUIVEXTPROC __glewTexParameterIuivEXT = NULL;
+
 PFNGLTEXSTORAGE1DEXTPROC __glewTexStorage1DEXT = NULL;
 PFNGLTEXSTORAGE2DEXTPROC __glewTexStorage2DEXT = NULL;
 PFNGLTEXSTORAGE3DEXTPROC __glewTexStorage3DEXT = NULL;
@@ -1272,6 +1281,7 @@ GLboolean __GLEW_AMD_conservative_depth = GL_FALSE;
 GLboolean __GLEW_AMD_framebuffer_multisample_advanced = GL_FALSE;
 GLboolean __GLEW_AMD_gpu_shader_half_float = GL_FALSE;
 GLboolean __GLEW_AMD_shader_trinary_minmax = GL_FALSE;
+GLboolean __GLEW_ARB_ES3_1_compatibility = GL_FALSE;
 GLboolean __GLEW_ARB_buffer_storage = GL_FALSE;
 GLboolean __GLEW_ARB_clear_buffer_object = GL_FALSE;
 GLboolean __GLEW_ARB_clear_texture = GL_FALSE;
@@ -1323,6 +1333,7 @@ GLboolean __GLEW_ARB_timer_query = GL_FALSE;
 GLboolean __GLEW_ARB_uniform_buffer_object = GL_FALSE;
 GLboolean __GLEW_ARB_vertex_array_object = GL_FALSE;
 GLboolean __GLEW_ARB_vertex_attrib_binding = GL_FALSE;
+GLboolean __GLEW_ARB_vertex_type_10f_11f_11f_rev = GL_FALSE;
 GLboolean __GLEW_ARB_vertex_type_2_10_10_10_rev = GL_FALSE;
 GLboolean __GLEW_EXT_demote_to_helper_invocation = GL_FALSE;
 GLboolean __GLEW_EXT_direct_state_access = GL_FALSE;
@@ -1339,6 +1350,7 @@ GLboolean __GLEW_EXT_shader_image_load_store = GL_FALSE;
 GLboolean __GLEW_EXT_texture_compression_rgtc = GL_FALSE;
 GLboolean __GLEW_EXT_texture_compression_s3tc = GL_FALSE;
 GLboolean __GLEW_EXT_texture_filter_anisotropic = GL_FALSE;
+GLboolean __GLEW_EXT_texture_integer = GL_FALSE;
 GLboolean __GLEW_EXT_texture_shared_exponent = GL_FALSE;
 GLboolean __GLEW_EXT_texture_storage = GL_FALSE;
 GLboolean __GLEW_INTEL_conservative_rasterization = GL_FALSE;
@@ -1370,6 +1382,9 @@ static const char * _glewExtensionLookup[] = {
 #endif
 #ifdef GL_AMD_shader_trinary_minmax
   "GL_AMD_shader_trinary_minmax",
+#endif
+#ifdef GL_ARB_ES3_1_compatibility
+  "GL_ARB_ES3_1_compatibility",
 #endif
 #ifdef GL_ARB_buffer_storage
   "GL_ARB_buffer_storage",
@@ -1524,6 +1539,9 @@ static const char * _glewExtensionLookup[] = {
 #ifdef GL_ARB_vertex_attrib_binding
   "GL_ARB_vertex_attrib_binding",
 #endif
+#ifdef GL_ARB_vertex_type_10f_11f_11f_rev
+  "GL_ARB_vertex_type_10f_11f_11f_rev",
+#endif
 #ifdef GL_ARB_vertex_type_2_10_10_10_rev
   "GL_ARB_vertex_type_2_10_10_10_rev",
 #endif
@@ -1571,6 +1589,9 @@ static const char * _glewExtensionLookup[] = {
 #endif
 #ifdef GL_EXT_texture_filter_anisotropic
   "GL_EXT_texture_filter_anisotropic",
+#endif
+#ifdef GL_EXT_texture_integer
+  "GL_EXT_texture_integer",
 #endif
 #ifdef GL_EXT_texture_shared_exponent
   "GL_EXT_texture_shared_exponent",
@@ -1699,6 +1720,9 @@ static GLboolean* _glewExtensionEnabled[] = {
 #endif
 #ifdef GL_AMD_shader_trinary_minmax
   &__GLEW_AMD_shader_trinary_minmax,
+#endif
+#ifdef GL_ARB_ES3_1_compatibility
+  &__GLEW_ARB_ES3_1_compatibility,
 #endif
 #ifdef GL_ARB_buffer_storage
   &__GLEW_ARB_buffer_storage,
@@ -1853,6 +1877,9 @@ static GLboolean* _glewExtensionEnabled[] = {
 #ifdef GL_ARB_vertex_attrib_binding
   &__GLEW_ARB_vertex_attrib_binding,
 #endif
+#ifdef GL_ARB_vertex_type_10f_11f_11f_rev
+  &__GLEW_ARB_vertex_type_10f_11f_11f_rev,
+#endif
 #ifdef GL_ARB_vertex_type_2_10_10_10_rev
   &__GLEW_ARB_vertex_type_2_10_10_10_rev,
 #endif
@@ -1900,6 +1927,9 @@ static GLboolean* _glewExtensionEnabled[] = {
 #endif
 #ifdef GL_EXT_texture_filter_anisotropic
   &__GLEW_EXT_texture_filter_anisotropic,
+#endif
+#ifdef GL_EXT_texture_integer
+  &__GLEW_EXT_texture_integer,
 #endif
 #ifdef GL_EXT_texture_shared_exponent
   &__GLEW_EXT_texture_shared_exponent,
@@ -2030,6 +2060,7 @@ static GLboolean _glewInit_GL_VERSION_4_4 (void);
 static GLboolean _glewInit_GL_VERSION_4_5 (void);
 static GLboolean _glewInit_GL_VERSION_4_6 (void);
 static GLboolean _glewInit_GL_AMD_framebuffer_multisample_advanced (void);
+static GLboolean _glewInit_GL_ARB_ES3_1_compatibility (void);
 static GLboolean _glewInit_GL_ARB_buffer_storage (void);
 static GLboolean _glewInit_GL_ARB_clear_buffer_object (void);
 static GLboolean _glewInit_GL_ARB_clear_texture (void);
@@ -2068,6 +2099,7 @@ static GLboolean _glewInit_GL_EXT_framebuffer_object (void);
 static GLboolean _glewInit_GL_EXT_geometry_shader4 (void);
 static GLboolean _glewInit_GL_EXT_gpu_shader4 (void);
 static GLboolean _glewInit_GL_EXT_shader_image_load_store (void);
+static GLboolean _glewInit_GL_EXT_texture_integer (void);
 static GLboolean _glewInit_GL_EXT_texture_storage (void);
 static GLboolean _glewInit_GL_INTEL_framebuffer_CMAA (void);
 static GLboolean _glewInit_GL_KHR_debug (void);
@@ -2456,6 +2488,7 @@ static GLboolean _glewInit_GL_VERSION_3_0 (void)
   _glewInit_GL_EXT_framebuffer_multisample();
   _glewInit_GL_EXT_framebuffer_object();
   _glewInit_GL_EXT_gpu_shader4();
+  _glewInit_GL_EXT_texture_integer();
 
   return r;
 }
@@ -2624,6 +2657,7 @@ static GLboolean _glewInit_GL_VERSION_4_5 (void)
   r = ((glGetnUniformdv = (PFNGLGETNUNIFORMDVPROC)glewGetProcAddress((const GLubyte*)"glGetnUniformdv")) == NULL) || r;
 
   // additional
+  _glewInit_GL_ARB_ES3_1_compatibility();
   _glewInit_GL_ARB_direct_state_access();
   _glewInit_GL_ARB_robustness();
   _glewInit_GL_KHR_robustness();
@@ -2661,6 +2695,19 @@ static GLboolean _glewInit_GL_AMD_framebuffer_multisample_advanced (void)
 }
 
 #endif /* GL_AMD_framebuffer_multisample_advanced */
+
+#ifdef GL_ARB_ES3_1_compatibility
+
+static GLboolean _glewInit_GL_ARB_ES3_1_compatibility (void)
+{
+  GLboolean r = GL_FALSE;
+
+  r = ((glMemoryBarrierByRegion = (PFNGLMEMORYBARRIERBYREGIONPROC)glewGetProcAddress((const GLubyte*)"glMemoryBarrierByRegion")) == NULL) || r;
+
+  return r;
+}
+
+#endif /* GL_ARB_ES3_1_compatibility */
 
 #ifdef GL_ARB_buffer_storage
 
@@ -3694,6 +3741,24 @@ static GLboolean _glewInit_GL_EXT_shader_image_load_store (void)
 
 #endif /* GL_EXT_shader_image_load_store */
 
+#ifdef GL_EXT_texture_integer
+
+static GLboolean _glewInit_GL_EXT_texture_integer (void)
+{
+  GLboolean r = GL_FALSE;
+
+  r = ((glClearColorIiEXT = (PFNGLCLEARCOLORIIEXTPROC)glewGetProcAddress((const GLubyte*)"glClearColorIiEXT")) == NULL) || r;
+  r = ((glClearColorIuiEXT = (PFNGLCLEARCOLORIUIEXTPROC)glewGetProcAddress((const GLubyte*)"glClearColorIuiEXT")) == NULL) || r;
+  r = ((glGetTexParameterIivEXT = (PFNGLGETTEXPARAMETERIIVEXTPROC)glewGetProcAddress((const GLubyte*)"glGetTexParameterIivEXT")) == NULL) || r;
+  r = ((glGetTexParameterIuivEXT = (PFNGLGETTEXPARAMETERIUIVEXTPROC)glewGetProcAddress((const GLubyte*)"glGetTexParameterIuivEXT")) == NULL) || r;
+  r = ((glTexParameterIivEXT = (PFNGLTEXPARAMETERIIVEXTPROC)glewGetProcAddress((const GLubyte*)"glTexParameterIivEXT")) == NULL) || r;
+  r = ((glTexParameterIuivEXT = (PFNGLTEXPARAMETERIUIVEXTPROC)glewGetProcAddress((const GLubyte*)"glTexParameterIuivEXT")) == NULL) || r;
+
+  return r;
+}
+
+#endif /* GL_EXT_texture_integer */
+
 #ifdef GL_EXT_texture_storage
 
 static GLboolean _glewInit_GL_EXT_texture_storage (void)
@@ -4136,6 +4201,9 @@ static GLenum GLEWAPIENTRY glewContextInit (void)
 #ifdef GL_AMD_framebuffer_multisample_advanced
   if (glewExperimental || GLEW_AMD_framebuffer_multisample_advanced) GLEW_AMD_framebuffer_multisample_advanced = !_glewInit_GL_AMD_framebuffer_multisample_advanced();
 #endif /* GL_AMD_framebuffer_multisample_advanced */
+#ifdef GL_ARB_ES3_1_compatibility
+  if (glewExperimental || GLEW_ARB_ES3_1_compatibility) GLEW_ARB_ES3_1_compatibility = !_glewInit_GL_ARB_ES3_1_compatibility();
+#endif /* GL_ARB_ES3_1_compatibility */
 #ifdef GL_ARB_buffer_storage
   if (glewExperimental || GLEW_ARB_buffer_storage) GLEW_ARB_buffer_storage = !_glewInit_GL_ARB_buffer_storage();
 #endif /* GL_ARB_buffer_storage */
@@ -4250,6 +4318,9 @@ static GLenum GLEWAPIENTRY glewContextInit (void)
 #ifdef GL_EXT_shader_image_load_store
   if (glewExperimental || GLEW_EXT_shader_image_load_store) GLEW_EXT_shader_image_load_store = !_glewInit_GL_EXT_shader_image_load_store();
 #endif /* GL_EXT_shader_image_load_store */
+#ifdef GL_EXT_texture_integer
+  if (glewExperimental || GLEW_EXT_texture_integer) GLEW_EXT_texture_integer = !_glewInit_GL_EXT_texture_integer();
+#endif /* GL_EXT_texture_integer */
 #ifdef GL_EXT_texture_storage
   if (glewExperimental || GLEW_EXT_texture_storage) GLEW_EXT_texture_storage = !_glewInit_GL_EXT_texture_storage();
 #endif /* GL_EXT_texture_storage */
@@ -4584,6 +4655,13 @@ GLboolean GLEWAPIENTRY glewIsSupported (const char* name)
       }
       if (_glewStrSame2(&pos, &len, (const GLubyte*)"ARB_", 4))
       {
+#ifdef GL_ARB_ES3_1_compatibility
+        if (_glewStrSame3(&pos, &len, (const GLubyte*)"ES3_1_compatibility", 19))
+        {
+          ret = GLEW_ARB_ES3_1_compatibility;
+          continue;
+        }
+#endif
 #ifdef GL_ARB_buffer_storage
         if (_glewStrSame3(&pos, &len, (const GLubyte*)"buffer_storage", 14))
         {
@@ -4941,6 +5019,13 @@ GLboolean GLEWAPIENTRY glewIsSupported (const char* name)
           continue;
         }
 #endif
+#ifdef GL_ARB_vertex_type_10f_11f_11f_rev
+        if (_glewStrSame3(&pos, &len, (const GLubyte*)"vertex_type_10f_11f_11f_rev", 27))
+        {
+          ret = GLEW_ARB_vertex_type_10f_11f_11f_rev;
+          continue;
+        }
+#endif
 #ifdef GL_ARB_vertex_type_2_10_10_10_rev
         if (_glewStrSame3(&pos, &len, (const GLubyte*)"vertex_type_2_10_10_10_rev", 26))
         {
@@ -5053,6 +5138,13 @@ GLboolean GLEWAPIENTRY glewIsSupported (const char* name)
         if (_glewStrSame3(&pos, &len, (const GLubyte*)"texture_filter_anisotropic", 26))
         {
           ret = GLEW_EXT_texture_filter_anisotropic;
+          continue;
+        }
+#endif
+#ifdef GL_EXT_texture_integer
+        if (_glewStrSame3(&pos, &len, (const GLubyte*)"texture_integer", 15))
+        {
+          ret = GLEW_EXT_texture_integer;
           continue;
         }
 #endif

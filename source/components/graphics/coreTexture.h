@@ -35,6 +35,10 @@
 #define CORE_TEXTURE_SPEC_RG8              (coreTextureSpec(GL_RG8,                           GL_RG,                            GL_UNSIGNED_BYTE,                2u, 2u))   // ARB_texture_rg
 #define CORE_TEXTURE_SPEC_RGB8             (coreTextureSpec(GL_RGB8,                          GL_RGB,                           GL_UNSIGNED_BYTE,                3u, 3u))   // -
 #define CORE_TEXTURE_SPEC_RGBA8            (coreTextureSpec(GL_RGBA8,                         GL_RGBA,                          GL_UNSIGNED_BYTE,                4u, 4u))   // -
+#define CORE_TEXTURE_SPEC_R8UI             (coreTextureSpec(GL_R8UI,                          GL_RED_INTEGER,                   GL_UNSIGNED_BYTE,                1u, 1u))   // EXT_texture_integer ARB_texture_rg
+#define CORE_TEXTURE_SPEC_RG8UI            (coreTextureSpec(GL_RG8UI,                         GL_RG_INTEGER,                    GL_UNSIGNED_BYTE,                2u, 2u))   // EXT_texture_integer ARB_texture_rg
+#define CORE_TEXTURE_SPEC_RGB8UI           (coreTextureSpec(GL_RGB8UI,                        GL_RGB_INTEGER,                   GL_UNSIGNED_BYTE,                3u, 3u))   // EXT_texture_integer
+#define CORE_TEXTURE_SPEC_RGBA8UI          (coreTextureSpec(GL_RGBA8UI,                       GL_RGBA_INTEGER,                  GL_UNSIGNED_BYTE,                4u, 4u))   // EXT_texture_integer
 #define CORE_TEXTURE_SPEC_R16              (coreTextureSpec(GL_R16_LUMINANCE16,               GL_RED_LUMINANCE,                 GL_UNSIGNED_SHORT,               1u, 2u))   // EXT_texture_norm16 ARB_texture_rg (wrapped)
 #define CORE_TEXTURE_SPEC_RG16             (coreTextureSpec(GL_RG16,                          GL_RG,                            GL_UNSIGNED_SHORT,               2u, 4u))   // EXT_texture_norm16 ARB_texture_rg
 #define CORE_TEXTURE_SPEC_RGB16            (coreTextureSpec(GL_RGB16,                         GL_RGB,                           GL_UNSIGNED_SHORT,               3u, 6u))   // EXT_texture_norm16

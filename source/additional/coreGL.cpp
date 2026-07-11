@@ -152,6 +152,7 @@ void __coreInitOpenGL()
         __IMPROVE(GLEW_AMD_framebuffer_multisample_advanced, false)
         __IMPROVE(GLEW_AMD_gpu_shader_half_float,            false)                                                        // shader extension
         __IMPROVE(GLEW_AMD_shader_trinary_minmax,            false)                                                        // shader extension
+        __IMPROVE(GLEW_ARB_ES3_1_compatibility,              GLEW_VERSION_4_5)                                             // shader extension (also)
         __IMPROVE(GLEW_ARB_buffer_storage,                   GLEW_VERSION_4_4)
         __IMPROVE(GLEW_ARB_clear_buffer_object,              GLEW_VERSION_4_3)
         __IMPROVE(GLEW_ARB_clear_texture,                    GLEW_VERSION_4_4)
@@ -198,6 +199,7 @@ void __coreInitOpenGL()
         __IMPROVE(GLEW_ARB_uniform_buffer_object,            GLEW_VERSION_3_1)                                             // shader extension (also)
         __IMPROVE(GLEW_ARB_vertex_array_object,              GLEW_VERSION_3_0)
         __IMPROVE(GLEW_ARB_vertex_attrib_binding,            GLEW_VERSION_4_3)
+        __IMPROVE(GLEW_ARB_vertex_type_10f_11f_11f_rev,      GLEW_VERSION_4_4)
         __IMPROVE(GLEW_ARB_vertex_type_2_10_10_10_rev,       GLEW_VERSION_3_3)
         __IMPROVE(GLEW_EXT_demote_to_helper_invocation,      false)                                                        // shader extension
         __IMPROVE(GLEW_EXT_direct_state_access,              false)
@@ -208,6 +210,7 @@ void __coreInitOpenGL()
         __IMPROVE(GLEW_EXT_packed_depth_stencil,             GLEW_VERSION_3_0 || GLEW_ARB_framebuffer_object)              // split up
         __IMPROVE(GLEW_EXT_packed_float,                     GLEW_VERSION_3_0)
         __IMPROVE(GLEW_EXT_texture_compression_s3tc,         false)
+        __IMPROVE(GLEW_EXT_texture_integer,                  GLEW_VERSION_3_0)
         __IMPROVE(GLEW_EXT_texture_shared_exponent,          GLEW_VERSION_3_0)
         __IMPROVE(GLEW_INTEL_conservative_rasterization,     false)
         __IMPROVE(GLEW_INTEL_framebuffer_CMAA,               false)

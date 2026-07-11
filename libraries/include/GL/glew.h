@@ -2790,6 +2790,19 @@ typedef void (GLAPIENTRY * PFNGLRENDERBUFFERSTORAGEMULTISAMPLEADVANCEDAMDPROC) (
 
 #endif /* GL_AMD_shader_trinary_minmax */
 
+/* ----------------------- GL_ARB_ES3_1_compatibility ---------------------- */
+
+#ifndef GL_ARB_ES3_1_compatibility
+#define GL_ARB_ES3_1_compatibility 1
+
+typedef void (GLAPIENTRY * PFNGLMEMORYBARRIERBYREGIONPROC) (GLbitfield barriers);
+
+#define glMemoryBarrierByRegion GLEW_GET_FUN(__glewMemoryBarrierByRegion)
+
+#define GLEW_ARB_ES3_1_compatibility GLEW_GET_VAR(__GLEW_ARB_ES3_1_compatibility)
+
+#endif /* GL_ARB_ES3_1_compatibility */
+
 /* ------------------------- GL_ARB_buffer_storage ------------------------- */
 
 #ifndef GL_ARB_buffer_storage
@@ -4418,6 +4431,17 @@ typedef void (GLAPIENTRY * PFNGLVERTEXBINDINGDIVISORPROC) (GLuint bindingindex, 
 
 #endif /* GL_ARB_vertex_attrib_binding */
 
+/* ------------------- GL_ARB_vertex_type_10f_11f_11f_rev ------------------ */
+
+#ifndef GL_ARB_vertex_type_10f_11f_11f_rev
+#define GL_ARB_vertex_type_10f_11f_11f_rev 1
+
+#define GL_UNSIGNED_INT_10F_11F_11F_REV 0x8C3B
+
+#define GLEW_ARB_vertex_type_10f_11f_11f_rev GLEW_GET_VAR(__GLEW_ARB_vertex_type_10f_11f_11f_rev)
+
+#endif /* GL_ARB_vertex_type_10f_11f_11f_rev */
+
 /* ------------------- GL_ARB_vertex_type_2_10_10_10_rev ------------------- */
 
 #ifndef GL_ARB_vertex_type_2_10_10_10_rev
@@ -5404,6 +5428,77 @@ typedef void (GLAPIENTRY * PFNGLMEMORYBARRIEREXTPROC) (GLbitfield barriers);
 
 #endif /* GL_EXT_texture_filter_anisotropic */
 
+/* ------------------------- GL_EXT_texture_integer ------------------------ */
+
+#ifndef GL_EXT_texture_integer
+#define GL_EXT_texture_integer 1
+
+#define GL_RGBA32UI_EXT 0x8D70
+#define GL_RGB32UI_EXT 0x8D71
+#define GL_ALPHA32UI_EXT 0x8D72
+#define GL_INTENSITY32UI_EXT 0x8D73
+#define GL_LUMINANCE32UI_EXT 0x8D74
+#define GL_LUMINANCE_ALPHA32UI_EXT 0x8D75
+#define GL_RGBA16UI_EXT 0x8D76
+#define GL_RGB16UI_EXT 0x8D77
+#define GL_ALPHA16UI_EXT 0x8D78
+#define GL_INTENSITY16UI_EXT 0x8D79
+#define GL_LUMINANCE16UI_EXT 0x8D7A
+#define GL_LUMINANCE_ALPHA16UI_EXT 0x8D7B
+#define GL_RGBA8UI_EXT 0x8D7C
+#define GL_RGB8UI_EXT 0x8D7D
+#define GL_ALPHA8UI_EXT 0x8D7E
+#define GL_INTENSITY8UI_EXT 0x8D7F
+#define GL_LUMINANCE8UI_EXT 0x8D80
+#define GL_LUMINANCE_ALPHA8UI_EXT 0x8D81
+#define GL_RGBA32I_EXT 0x8D82
+#define GL_RGB32I_EXT 0x8D83
+#define GL_ALPHA32I_EXT 0x8D84
+#define GL_INTENSITY32I_EXT 0x8D85
+#define GL_LUMINANCE32I_EXT 0x8D86
+#define GL_LUMINANCE_ALPHA32I_EXT 0x8D87
+#define GL_RGBA16I_EXT 0x8D88
+#define GL_RGB16I_EXT 0x8D89
+#define GL_ALPHA16I_EXT 0x8D8A
+#define GL_INTENSITY16I_EXT 0x8D8B
+#define GL_LUMINANCE16I_EXT 0x8D8C
+#define GL_LUMINANCE_ALPHA16I_EXT 0x8D8D
+#define GL_RGBA8I_EXT 0x8D8E
+#define GL_RGB8I_EXT 0x8D8F
+#define GL_ALPHA8I_EXT 0x8D90
+#define GL_INTENSITY8I_EXT 0x8D91
+#define GL_LUMINANCE8I_EXT 0x8D92
+#define GL_LUMINANCE_ALPHA8I_EXT 0x8D93
+#define GL_RED_INTEGER_EXT 0x8D94
+#define GL_GREEN_INTEGER_EXT 0x8D95
+#define GL_BLUE_INTEGER_EXT 0x8D96
+#define GL_ALPHA_INTEGER_EXT 0x8D97
+#define GL_RGB_INTEGER_EXT 0x8D98
+#define GL_RGBA_INTEGER_EXT 0x8D99
+#define GL_BGR_INTEGER_EXT 0x8D9A
+#define GL_BGRA_INTEGER_EXT 0x8D9B
+#define GL_LUMINANCE_INTEGER_EXT 0x8D9C
+#define GL_LUMINANCE_ALPHA_INTEGER_EXT 0x8D9D
+#define GL_RGBA_INTEGER_MODE_EXT 0x8D9E
+
+typedef void (GLAPIENTRY * PFNGLCLEARCOLORIIEXTPROC) (GLint red, GLint green, GLint blue, GLint alpha);
+typedef void (GLAPIENTRY * PFNGLCLEARCOLORIUIEXTPROC) (GLuint red, GLuint green, GLuint blue, GLuint alpha);
+typedef void (GLAPIENTRY * PFNGLGETTEXPARAMETERIIVEXTPROC) (GLenum target, GLenum pname, GLint *params);
+typedef void (GLAPIENTRY * PFNGLGETTEXPARAMETERIUIVEXTPROC) (GLenum target, GLenum pname, GLuint *params);
+typedef void (GLAPIENTRY * PFNGLTEXPARAMETERIIVEXTPROC) (GLenum target, GLenum pname, const GLint *params);
+typedef void (GLAPIENTRY * PFNGLTEXPARAMETERIUIVEXTPROC) (GLenum target, GLenum pname, const GLuint *params);
+
+#define glClearColorIiEXT GLEW_GET_FUN(__glewClearColorIiEXT)
+#define glClearColorIuiEXT GLEW_GET_FUN(__glewClearColorIuiEXT)
+#define glGetTexParameterIivEXT GLEW_GET_FUN(__glewGetTexParameterIivEXT)
+#define glGetTexParameterIuivEXT GLEW_GET_FUN(__glewGetTexParameterIuivEXT)
+#define glTexParameterIivEXT GLEW_GET_FUN(__glewTexParameterIivEXT)
+#define glTexParameterIuivEXT GLEW_GET_FUN(__glewTexParameterIuivEXT)
+
+#define GLEW_EXT_texture_integer GLEW_GET_VAR(__GLEW_EXT_texture_integer)
+
+#endif /* GL_EXT_texture_integer */
+
 /* --------------------- GL_EXT_texture_shared_exponent -------------------- */
 
 #ifndef GL_EXT_texture_shared_exponent
@@ -6152,6 +6247,8 @@ GLEW_FUN_EXPORT PFNGLSPECIALIZESHADERPROC __glewSpecializeShader;
 GLEW_FUN_EXPORT PFNGLNAMEDRENDERBUFFERSTORAGEMULTISAMPLEADVANCEDAMDPROC __glewNamedRenderbufferStorageMultisampleAdvancedAMD;
 GLEW_FUN_EXPORT PFNGLRENDERBUFFERSTORAGEMULTISAMPLEADVANCEDAMDPROC __glewRenderbufferStorageMultisampleAdvancedAMD;
 
+GLEW_FUN_EXPORT PFNGLMEMORYBARRIERBYREGIONPROC __glewMemoryBarrierByRegion;
+
 GLEW_FUN_EXPORT PFNGLBUFFERSTORAGEPROC __glewBufferStorage;
 
 GLEW_FUN_EXPORT PFNGLCLEARBUFFERDATAPROC __glewClearBufferData;
@@ -6766,6 +6863,13 @@ GLEW_FUN_EXPORT PFNGLVERTEXATTRIBIPOINTEREXTPROC __glewVertexAttribIPointerEXT;
 GLEW_FUN_EXPORT PFNGLBINDIMAGETEXTUREEXTPROC __glewBindImageTextureEXT;
 GLEW_FUN_EXPORT PFNGLMEMORYBARRIEREXTPROC __glewMemoryBarrierEXT;
 
+GLEW_FUN_EXPORT PFNGLCLEARCOLORIIEXTPROC __glewClearColorIiEXT;
+GLEW_FUN_EXPORT PFNGLCLEARCOLORIUIEXTPROC __glewClearColorIuiEXT;
+GLEW_FUN_EXPORT PFNGLGETTEXPARAMETERIIVEXTPROC __glewGetTexParameterIivEXT;
+GLEW_FUN_EXPORT PFNGLGETTEXPARAMETERIUIVEXTPROC __glewGetTexParameterIuivEXT;
+GLEW_FUN_EXPORT PFNGLTEXPARAMETERIIVEXTPROC __glewTexParameterIivEXT;
+GLEW_FUN_EXPORT PFNGLTEXPARAMETERIUIVEXTPROC __glewTexParameterIuivEXT;
+
 GLEW_FUN_EXPORT PFNGLTEXSTORAGE1DEXTPROC __glewTexStorage1DEXT;
 GLEW_FUN_EXPORT PFNGLTEXSTORAGE2DEXTPROC __glewTexStorage2DEXT;
 GLEW_FUN_EXPORT PFNGLTEXSTORAGE3DEXTPROC __glewTexStorage3DEXT;
@@ -6857,6 +6961,7 @@ GLEW_VAR_EXPORT GLboolean __GLEW_AMD_conservative_depth;
 GLEW_VAR_EXPORT GLboolean __GLEW_AMD_framebuffer_multisample_advanced;
 GLEW_VAR_EXPORT GLboolean __GLEW_AMD_gpu_shader_half_float;
 GLEW_VAR_EXPORT GLboolean __GLEW_AMD_shader_trinary_minmax;
+GLEW_VAR_EXPORT GLboolean __GLEW_ARB_ES3_1_compatibility;
 GLEW_VAR_EXPORT GLboolean __GLEW_ARB_buffer_storage;
 GLEW_VAR_EXPORT GLboolean __GLEW_ARB_clear_buffer_object;
 GLEW_VAR_EXPORT GLboolean __GLEW_ARB_clear_texture;
@@ -6908,6 +7013,7 @@ GLEW_VAR_EXPORT GLboolean __GLEW_ARB_timer_query;
 GLEW_VAR_EXPORT GLboolean __GLEW_ARB_uniform_buffer_object;
 GLEW_VAR_EXPORT GLboolean __GLEW_ARB_vertex_array_object;
 GLEW_VAR_EXPORT GLboolean __GLEW_ARB_vertex_attrib_binding;
+GLEW_VAR_EXPORT GLboolean __GLEW_ARB_vertex_type_10f_11f_11f_rev;
 GLEW_VAR_EXPORT GLboolean __GLEW_ARB_vertex_type_2_10_10_10_rev;
 GLEW_VAR_EXPORT GLboolean __GLEW_EXT_demote_to_helper_invocation;
 GLEW_VAR_EXPORT GLboolean __GLEW_EXT_direct_state_access;
@@ -6924,6 +7030,7 @@ GLEW_VAR_EXPORT GLboolean __GLEW_EXT_shader_image_load_store;
 GLEW_VAR_EXPORT GLboolean __GLEW_EXT_texture_compression_rgtc;
 GLEW_VAR_EXPORT GLboolean __GLEW_EXT_texture_compression_s3tc;
 GLEW_VAR_EXPORT GLboolean __GLEW_EXT_texture_filter_anisotropic;
+GLEW_VAR_EXPORT GLboolean __GLEW_EXT_texture_integer;
 GLEW_VAR_EXPORT GLboolean __GLEW_EXT_texture_shared_exponent;
 GLEW_VAR_EXPORT GLboolean __GLEW_EXT_texture_storage;
 GLEW_VAR_EXPORT GLboolean __GLEW_INTEL_conservative_rasterization;

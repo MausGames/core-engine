@@ -105,6 +105,9 @@ Definitions
     // evaluate shader per sample (just add into FragmentMain)
     #define CORE_SAMPLE_SHADING
 
+    // check if the fragment shader invocation is a helper invocation
+    #define CORE_HELPER_INVOCATION
+
 Functions
 
     float coreGGX   (in float v1Dot, in float v1Rough)   // GGX specular function
@@ -152,6 +155,7 @@ Definitions
     // extension wrappers
     #define CORE_GL_conservative_depth
     #define CORE_GL_draw_buffers
+    #define CORE_GL_ES3_1_compatibility
     #define CORE_GL_gpu_shader4
     #define CORE_GL_gpu_shader5
     #define CORE_GL_noperspective_interpolation

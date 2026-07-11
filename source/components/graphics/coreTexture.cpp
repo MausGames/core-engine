@@ -141,7 +141,7 @@ void coreTexture::Create(const coreUint32 iWidth, const coreUint32 iHeight, cons
     ASSERT(iWidth && iHeight)
 
     // check for OpenGL extensions
-    const coreBool bFilterable  = !DEFINED(_CORE_GLES_) || ((oSpec.iFormat != GL_DEPTH_COMPONENT) && (oSpec.iFormat != GL_DEPTH_STENCIL));
+    const coreBool bFilterable  = !DEFINED(_CORE_GLES_) || ((oSpec.iFormat != GL_RED_INTEGER) && (oSpec.iFormat != GL_RG_INTEGER) && (oSpec.iFormat != GL_RGB_INTEGER) && (oSpec.iFormat != GL_RGBA_INTEGER) && (oSpec.iFormat != GL_DEPTH_COMPONENT) && (oSpec.iFormat != GL_DEPTH_STENCIL));
     const coreBool bAnisotropic = CORE_GL_SUPPORT(ARB_texture_filter_anisotropic)                && HAS_FLAG(eMode, CORE_TEXTURE_MODE_FILTER);
     const coreBool bMipMap      = CORE_GL_SUPPORT(EXT_framebuffer_object)                        && HAS_FLAG(eMode, CORE_TEXTURE_MODE_FILTER);
     const coreBool bMipMapOld   = CORE_GL_SUPPORT(CORE_gl2_compatibility) && !bMipMap            && HAS_FLAG(eMode, CORE_TEXTURE_MODE_FILTER);

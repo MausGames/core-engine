@@ -45,6 +45,7 @@
     #extension GL_AMD_shader_trinary_minmax             : enable
     #extension GL_ARB_conservative_depth                : enable
     #extension GL_ARB_enhanced_layouts                  : enable
+    #extension GL_ARB_ES3_1_compatibility               : enable
     #extension GL_ARB_gpu_shader5                       : enable
     #extension GL_ARB_sample_shading                    : enable
     #extension GL_ARB_shader_group_vote                 : enable
@@ -80,6 +81,9 @@
 #endif
 #if (defined(GL_EXT_draw_buffers) || defined(GL_NV_draw_buffers) || (CORE_GL_VERSION >= 110) || (CORE_GL_ES_VERSION >= 300))
     #define CORE_GL_draw_buffers
+#endif
+#if (defined(GL_ARB_ES3_1_compatibility) || (CORE_GL_VERSION >= 450) || (CORE_GL_ES_VERSION >= 310))
+    #define CORE_GL_ES3_1_compatibility
 #endif
 #if (defined(GL_EXT_gpu_shader4) || (CORE_GL_VERSION >= 130) || (CORE_GL_ES_VERSION >= 300))
     #define CORE_GL_gpu_shader4

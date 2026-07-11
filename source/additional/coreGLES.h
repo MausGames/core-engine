@@ -25,6 +25,7 @@
 
 // ****************************************************************
 /* default extensions */
+#define CORE_GL_ARB_ES3_1_compatibility             (__CORE_GLES_VAR(bES31) && !DEFINED(_CORE_EMSCRIPTEN_))
 #define CORE_GL_ARB_clear_buffer_object             (false)
 #define CORE_GL_ARB_compute_shader                  (__CORE_GLES_VAR(bES31) && !DEFINED(_CORE_EMSCRIPTEN_))
 #define CORE_GL_ARB_depth_buffer_float              (__CORE_GLES_VAR(bES30))
@@ -40,9 +41,11 @@
 #define CORE_GL_ARB_sync                            (__CORE_GLES_VAR(bES30))
 #define CORE_GL_ARB_uniform_buffer_object           (__CORE_GLES_VAR(bES30))
 #define CORE_GL_ARB_vertex_attrib_binding           (__CORE_GLES_VAR(bES31) && !DEFINED(_CORE_EMSCRIPTEN_))
+#define CORE_GL_ARB_vertex_type_10f_11f_11f_rev     (false)
 #define CORE_GL_EXT_direct_state_access             (false)
 #define CORE_GL_EXT_framebuffer_object              (true)   // always available
 #define CORE_GL_EXT_gpu_shader4                     (__CORE_GLES_VAR(bES30))
+#define CORE_GL_EXT_texture_integer                 (__CORE_GLES_VAR(bES30))
 #define CORE_GL_EXT_texture_shared_exponent         (__CORE_GLES_VAR(bES30))
 #define CORE_GL_MESA_pack_invert                    (false)
 #define CORE_GL_NVX_gpu_memory_info                 (false)

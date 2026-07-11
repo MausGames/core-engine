@@ -20,26 +20,27 @@
 
 // ****************************************************************
 /* data buffer definitions */
-#define CORE_VERTEX_SPEC_FLOAT_2X16 (coreVertexSpec(GL_HALF_FLOAT,                  2u, 4u,  false))   // ARB_half_float_vertex
-#define CORE_VERTEX_SPEC_FLOAT_4X16 (coreVertexSpec(GL_HALF_FLOAT,                  4u, 8u,  false))   // ARB_half_float_vertex
-#define CORE_VERTEX_SPEC_FLOAT_1X32 (coreVertexSpec(GL_FLOAT,                       1u, 4u,  false))   // -
-#define CORE_VERTEX_SPEC_FLOAT_2X32 (coreVertexSpec(GL_FLOAT,                       2u, 8u,  false))   // -
-#define CORE_VERTEX_SPEC_FLOAT_3X32 (coreVertexSpec(GL_FLOAT,                       3u, 12u, false))   // -
-#define CORE_VERTEX_SPEC_FLOAT_4X32 (coreVertexSpec(GL_FLOAT,                       4u, 16u, false))   // -
-#define CORE_VERTEX_SPEC_UNORM_210  (coreVertexSpec(GL_UNSIGNED_INT_2_10_10_10_REV, 4u, 4u,  false))   // ARB_vertex_type_2_10_10_10_rev
-#define CORE_VERTEX_SPEC_UNORM_4X8  (coreVertexSpec(GL_UNSIGNED_BYTE,               4u, 4u,  false))   // -
-#define CORE_VERTEX_SPEC_UNORM_2X16 (coreVertexSpec(GL_UNSIGNED_SHORT,              2u, 4u,  false))   // -
-#define CORE_VERTEX_SPEC_UNORM_4X16 (coreVertexSpec(GL_UNSIGNED_SHORT,              4u, 8u,  false))   // -
-#define CORE_VERTEX_SPEC_SNORM_210  (coreVertexSpec(GL_INT_2_10_10_10_REV,          4u, 4u,  false))   // ARB_vertex_type_2_10_10_10_rev
-#define CORE_VERTEX_SPEC_SNORM_4X8  (coreVertexSpec(GL_BYTE,                        4u, 4u,  false))   // -
-#define CORE_VERTEX_SPEC_SNORM_2X16 (coreVertexSpec(GL_SHORT,                       2u, 4u,  false))   // -
-#define CORE_VERTEX_SPEC_SNORM_4X16 (coreVertexSpec(GL_SHORT,                       4u, 8u,  false))   // -
-#define CORE_VERTEX_SPEC_UINT_4X8   (coreVertexSpec(GL_UNSIGNED_BYTE,               4u, 4u,  true))    // EXT_gpu_shader4
-#define CORE_VERTEX_SPEC_UINT_2X16  (coreVertexSpec(GL_UNSIGNED_SHORT,              2u, 4u,  true))    // EXT_gpu_shader4
-#define CORE_VERTEX_SPEC_UINT_1X32  (coreVertexSpec(GL_UNSIGNED_INT,                1u, 4u,  true))    // EXT_gpu_shader4
-#define CORE_VERTEX_SPEC_INT_4X8    (coreVertexSpec(GL_BYTE,                        4u, 4u,  true))    // EXT_gpu_shader4
-#define CORE_VERTEX_SPEC_INT_2X16   (coreVertexSpec(GL_SHORT,                       2u, 4u,  true))    // EXT_gpu_shader4
-#define CORE_VERTEX_SPEC_INT_1X32   (coreVertexSpec(GL_INT,                         1u, 4u,  true))    // EXT_gpu_shader4
+#define CORE_VERTEX_SPEC_FLOAT_011  (coreVertexSpec(GL_UNSIGNED_INT_10F_11F_11F_REV, 3u, 4u,  false))   // ARB_vertex_type_10f_11f_11f_rev
+#define CORE_VERTEX_SPEC_FLOAT_2X16 (coreVertexSpec(GL_HALF_FLOAT,                   2u, 4u,  false))   // ARB_half_float_vertex
+#define CORE_VERTEX_SPEC_FLOAT_4X16 (coreVertexSpec(GL_HALF_FLOAT,                   4u, 8u,  false))   // ARB_half_float_vertex
+#define CORE_VERTEX_SPEC_FLOAT_1X32 (coreVertexSpec(GL_FLOAT,                        1u, 4u,  false))   // -
+#define CORE_VERTEX_SPEC_FLOAT_2X32 (coreVertexSpec(GL_FLOAT,                        2u, 8u,  false))   // -
+#define CORE_VERTEX_SPEC_FLOAT_3X32 (coreVertexSpec(GL_FLOAT,                        3u, 12u, false))   // -
+#define CORE_VERTEX_SPEC_FLOAT_4X32 (coreVertexSpec(GL_FLOAT,                        4u, 16u, false))   // -
+#define CORE_VERTEX_SPEC_UNORM_210  (coreVertexSpec(GL_UNSIGNED_INT_2_10_10_10_REV,  4u, 4u,  false))   // ARB_vertex_type_2_10_10_10_rev
+#define CORE_VERTEX_SPEC_UNORM_4X8  (coreVertexSpec(GL_UNSIGNED_BYTE,                4u, 4u,  false))   // -
+#define CORE_VERTEX_SPEC_UNORM_2X16 (coreVertexSpec(GL_UNSIGNED_SHORT,               2u, 4u,  false))   // -
+#define CORE_VERTEX_SPEC_UNORM_4X16 (coreVertexSpec(GL_UNSIGNED_SHORT,               4u, 8u,  false))   // -
+#define CORE_VERTEX_SPEC_SNORM_210  (coreVertexSpec(GL_INT_2_10_10_10_REV,           4u, 4u,  false))   // ARB_vertex_type_2_10_10_10_rev
+#define CORE_VERTEX_SPEC_SNORM_4X8  (coreVertexSpec(GL_BYTE,                         4u, 4u,  false))   // -
+#define CORE_VERTEX_SPEC_SNORM_2X16 (coreVertexSpec(GL_SHORT,                        2u, 4u,  false))   // -
+#define CORE_VERTEX_SPEC_SNORM_4X16 (coreVertexSpec(GL_SHORT,                        4u, 8u,  false))   // -
+#define CORE_VERTEX_SPEC_UINT_4X8   (coreVertexSpec(GL_UNSIGNED_BYTE,                4u, 4u,  true))    // EXT_gpu_shader4
+#define CORE_VERTEX_SPEC_UINT_2X16  (coreVertexSpec(GL_UNSIGNED_SHORT,               2u, 4u,  true))    // EXT_gpu_shader4
+#define CORE_VERTEX_SPEC_UINT_1X32  (coreVertexSpec(GL_UNSIGNED_INT,                 1u, 4u,  true))    // EXT_gpu_shader4
+#define CORE_VERTEX_SPEC_INT_4X8    (coreVertexSpec(GL_BYTE,                         4u, 4u,  true))    // EXT_gpu_shader4
+#define CORE_VERTEX_SPEC_INT_2X16   (coreVertexSpec(GL_SHORT,                        2u, 4u,  true))    // EXT_gpu_shader4
+#define CORE_VERTEX_SPEC_INT_1X32   (coreVertexSpec(GL_INT,                          1u, 4u,  true))    // EXT_gpu_shader4
 
 #define CORE_VERTEXBUFFER_ATTRIBUTES (16u)   // max number of vertex attribute locations (OpenGL minimum, and same as vertex buffer binding point indices)
 

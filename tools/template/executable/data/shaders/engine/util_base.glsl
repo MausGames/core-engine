@@ -28,6 +28,17 @@
 
 
 // ****************************************************************
+// check if the fragment shader invocation is a helper invocation
+#if defined(GL_EXT_demote_to_helper_invocation)
+    #define CORE_HELPER_INVOCATION (helperInvocationEXT())
+#elif defined(CORE_GL_ES3_1_compatibility)
+    #define CORE_HELPER_INVOCATION (gl_HelperInvocation)
+#else
+    #define CORE_HELPER_INVOCATION (false)
+#endif
+
+
+// ****************************************************************
 // trinary min and max
 #if defined(GL_AMD_shader_trinary_minmax)
     #define coreMin3(a,b,c) (min3(a, b, c))
