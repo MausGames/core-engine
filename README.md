@@ -169,26 +169,26 @@ It is **designed to be supportive, versatile and powerful**, and to dynamically 
 - **Native Wayland Support (Linux)**
 - **Native Apple Silicon Support (macOS)**
 - **Private Nintendo Switch™ Support (not open source)**
-- **Own Dependencies with Custom Modifications:** [GitHub](https://github.com/MausGames/core-library), [GitLab](https://gitlab.com/MausGames/core-library), no container or old distribution required for Linux builds
+- **Own Dependencies with Custom Modifications:** [Codeberg](https://codeberg.org/MausGames/core-library), [GitHub](https://github.com/MausGames/core-library), no container or old distribution required for Linux builds
 
 ## Notes
 
 - Please understand that pull requests are currently not accepted, as this engine is mainly a public personal project and learning experience.
 - Some code changes are not yet available as they are still work-in-progress or confidential. There is no guarantee that everything will always work out-of-the-box on other peoples machines.
-- Pre-built dependencies can be downloaded with the **complete_repository.bat/.sh** script or manually built from the **Core Library** repository ([GitHub](https://github.com/MausGames/core-library), [GitLab](https://gitlab.com/MausGames/core-library)).
+- Pre-built dependencies can be downloaded with the **complete_repository.bat/.sh** script or manually built from the **Core Library** repository ([Codeberg](https://codeberg.org/MausGames/core-library), [GitHub](https://github.com/MausGames/core-library)).
 - If you have any questions, please feel free to open an issue or [contact me](https://www.maus-games.at/) directly.
 
 ## Projects
 
 | Name | Description | Links |
 | --- | --- | --- |
-| [Eigengrau](https://store.steampowered.com/app/1624320/Eigengrau/) | Colorful shoot'em up with varied and diverse gameplay | [GitHub](https://github.com/MausGames/project-one), [GitLab](https://gitlab.com/MausGames/project-one) |
-| [Last Fall](https://mausgames.itch.io/last-fall) | Tricky arcade puzzler made for [Ludum Dare 49](https://ldjam.com/events/ludum-dare/49/last-fall) | [GitHub](https://github.com/MausGames/last-fall), [GitLab](https://gitlab.com/MausGames/last-fall) |
-| [Ink Jump](https://mausgames.itch.io/ink-jump) | Reflective precision platformer made on [Mi'pu'mi][1] day  | [GitHub](https://github.com/MausGames/ink-jump), [GitLab](https://gitlab.com/MausGames/ink-jump) |
-| [Endless Journey](https://mausgames.itch.io/endless-journey) | Spiritual arcade climber made on [Mi'pu'mi][1] day | [GitHub](https://github.com/MausGames/endless-journey), [GitLab](https://gitlab.com/MausGames/endless-journey) |
-| [Disco Rock](https://gamejolt.com/games/disco-rock/18996/) | Very simple endless-runner inspired by the 70s disco era | [GitHub](https://github.com/MausGames/disco-rock), [GitLab](https://gitlab.com/MausGames/disco-rock) |
-| Flip It | Competitive territory game made on [Mi'pu'mi][1] day | [GitHub](https://github.com/MausGames/flip-it), [GitLab](https://gitlab.com/MausGames/flip-it) |
-| Party Raider | Multiplayer platform shooter made on [Mi'pu'mi][1] day | [GitHub](https://github.com/MausGames/party-raider), [GitLab](https://gitlab.com/MausGames/party-raider) |
+| 🚀 [Eigengrau](https://store.steampowered.com/app/1624320/Eigengrau/) | Colorful shoot 'em up with varied and diverse gameplay | [Codeberg](https://codeberg.org/MausGames/project-one), [GitHub](https://github.com/MausGames/project-one) |
+| 🍂 [Last Fall](https://mausgames.itch.io/last-fall) | Tricky arcade puzzler made for [Ludum Dare 49](https://ldjam.com/events/ludum-dare/49/last-fall) | [Codeberg](https://codeberg.org/MausGames/last-fall), [GitHub](https://github.com/MausGames/last-fall) |
+| 🦑 [Ink Jump](https://mausgames.itch.io/ink-jump) | Reflective precision platformer made on [Mi'pu'mi][1] day  | [Codeberg](https://codeberg.org/MausGames/ink-jump), [GitHub](https://github.com/MausGames/ink-jump) |
+| ⛰️ [Endless Journey](https://mausgames.itch.io/endless-journey) | Spiritual arcade climber made on [Mi'pu'mi][1] day | [Codeberg](https://codeberg.org/MausGames/endless-journey), [GitHub](https://github.com/MausGames/endless-journey) |
+| 🪩 [Disco Rock](https://gamejolt.com/games/disco-rock/18996/) | Very simple endless-runner inspired by the 70s disco era | [Codeberg](https://codeberg.org/MausGames/disco-rock), [GitHub](https://github.com/MausGames/disco-rock) |
+| 🛹 Flip It | Competitive territory game made on [Mi'pu'mi][1] day | [Codeberg](https://codeberg.org/MausGames/flip-it), [GitHub](https://github.com/MausGames/flip-it) |
+| 🥂 Party Raider | Multiplayer platform shooter made on [Mi'pu'mi][1] day | [Codeberg](https://codeberg.org/MausGames/party-raider), [GitHub](https://github.com/MausGames/party-raider) |
 
 <br>
 
