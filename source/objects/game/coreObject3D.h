@@ -75,8 +75,8 @@ public:
     coreObject3D& operator = (coreObject3D&&      m)noexcept;
 
     /* define the visual appearance */
-    inline void DefineModel (std::nullptr_t)                {m_pModel  = NULL;                               ADD_FLAG(m_eUpdate, CORE_OBJECT_UPDATE_COLLISION | CORE_OBJECT_UPDATE_VISUAL)}
-    inline void DefineModel (const coreModelPtr&   pModel)  {m_pModel  = pModel;                             ADD_FLAG(m_eUpdate, CORE_OBJECT_UPDATE_COLLISION | CORE_OBJECT_UPDATE_VISUAL)}
+    inline void DefineModel (std::nullptr_t)                {m_pModel  = NULL;                                ADD_FLAG(m_eUpdate, CORE_OBJECT_UPDATE_COLLISION | CORE_OBJECT_UPDATE_VISUAL)}
+    inline void DefineModel (const coreModelPtr&   pModel)  {m_pModel  = pModel;                              ADD_FLAG(m_eUpdate, CORE_OBJECT_UPDATE_COLLISION | CORE_OBJECT_UPDATE_VISUAL)}
     inline void DefineModel (const coreHashString& sName)   {m_pModel  = Core::Manager::Resource->Get(sName); ADD_FLAG(m_eUpdate, CORE_OBJECT_UPDATE_COLLISION | CORE_OBJECT_UPDATE_VISUAL)}
     inline void DefineVolume(std::nullptr_t)                {m_pVolume = NULL;                                ADD_FLAG(m_eUpdate, CORE_OBJECT_UPDATE_COLLISION)}
     inline void DefineVolume(const coreModelPtr&   pVolume) {m_pVolume = pVolume;                             ADD_FLAG(m_eUpdate, CORE_OBJECT_UPDATE_COLLISION)}

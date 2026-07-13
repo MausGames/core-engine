@@ -428,8 +428,8 @@ CoreSystem::CoreSystem()noexcept
     // save thread-ID from the main-thread
     m_iMainThread = SDL_GetCurrentThreadID();
 
-    // log platform information
-    Core::Log->ListStartInfo("Platform Information");
+    // log system information
+    Core::Log->ListStartInfo("System Information");
     {
         coreUint64 iMemoryAvailable, iMemoryTotal, iSpaceAvailable;
         coreData::SystemMemory(&iMemoryAvailable, &iMemoryTotal);   // after window and context creation

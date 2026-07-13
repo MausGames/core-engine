@@ -144,7 +144,8 @@ CoreDebug::CoreDebug()noexcept
 
 #if defined(IMGUI_API)
 
-    static const coreString s_sIniPath = coreData::UserFolderShared("imgui.ini");
+    static const coreString s_sIniPath = coreData::UserFolderShared("config_imgui.ini");
+    static const coreString s_sLogPath = coreData::UserFolderShared("log_imgui.txt");
 
     // test for build issues
     IMGUI_CHECKVERSION();
@@ -160,6 +161,7 @@ CoreDebug::CoreDebug()noexcept
     ImGui::StyleColorsDark();
     ImGui::GetIO   ().ConfigFlags    = ImGuiConfigFlags_NoMouseCursorChange;
     ImGui::GetIO   ().IniFilename    = s_sIniPath.c_str();
+    ImGui::GetIO   ().LogFilename    = s_sLogPath.c_str();
     ImGui::GetStyle().WindowRounding = 5.0f;
     ImGui::GetStyle().FrameRounding  = 5.0f;
 

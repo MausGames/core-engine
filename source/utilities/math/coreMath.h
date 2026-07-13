@@ -122,8 +122,8 @@ public:
     template <typename T>                      static constexpr T Min         (const T x, const t_ident<T> y)                                   {return (x < y) ? x : y;}
     template <typename T>                      static constexpr T Max         (const T x, const t_ident<T> y)                                   {return (x > y) ? x : y;}
     template <typename T>                      static constexpr T Med         (const T x, const t_ident<T> y, const t_ident<T> z)               {return MAX(MIN(MAX(x, y), z), MIN(x, y));}
-    template <typename T>                      static constexpr T Clamp       (const T x, const t_ident<T> a, const t_ident<T> b)               {return MIN(MAX(x, a), b);}
-    template <typename T>                      static constexpr T Sign        (const T x)                                                       {return (x < T(0)) ? T(-1) : T(1);}                 // never return 0
+    template <typename T>                      static constexpr T Clamp       (const T x, const t_ident<T> a, const t_ident<T> b)               {return MIN(MAX(x, a), b);}                         // (a > b) always returns b
+    template <typename T>                      static constexpr T Sign        (const T x)                                                       {return (x < T(0)) ? T(-1) : T(1);}                 // never returns 0
     template <typename T>                      static constexpr T Signum      (const T x)                                                       {return (x) ? SIGN(x) : T(0);}
     template <coreFloatingPoint    T>          static constexpr T Abs         (const T x)                                                       {return std::is_constant_evaluated() ? ((x < T(0)) ? T(-x) : T(x)) : T(std::abs(x));}
     template <std::signed_integral T>          static constexpr T Abs         (const T x)                                                       {return std::is_constant_evaluated() ? ((x < T(0)) ? T(-x) : T(x)) : T(std::abs(MAX(x, -std::numeric_limits<T>::max())));}
@@ -137,7 +137,7 @@ public:
     template <typename T, coreFloatingPoint S> static constexpr T LerpHermite5(const T x, const T y, const S s)                                 {return LERP(x, y, (S(10) + (S(-15) + S(6) * s) * s) * s * s * s);}
     template <typename T, coreFloatingPoint S> static inline    T LerpExp     (const T x, const T y, const S s)                                 {return POW(x, S(1) - s) * POW(y, s);}
     template <typename T, coreFloatingPoint S> static inline    T LerpPow     (const T x, const T y, const S s, const S k)                      {return LERP(x, y, POW(s, k));}                     // inverted curve with (k < 1)
-    template <coreFloatingPoint T>             static constexpr T Step        (const T a, const t_ident<T> b, const t_ident<T> x)               {return CLAMP01((x - a) / (b - a));}                // linearstep
+    template <coreFloatingPoint T>             static constexpr T Step        (const T a, const t_ident<T> b, const t_ident<T> x)               {return CLAMP01((x - a) / (b - a));}                // linearstep, (a > b) is defined for all step functions
     template <coreFloatingPoint T>             static inline    T StepSmooth  (const T a, const t_ident<T> b, const t_ident<T> x)               {return LERPS (T(0), T(1), STEP(a, b, x));}
     template <coreFloatingPoint T>             static inline    T StepBreak   (const T a, const t_ident<T> b, const t_ident<T> x)               {return LERPB (T(0), T(1), STEP(a, b, x));}
     template <coreFloatingPoint T>             static inline    T StepBreakRev(const T a, const t_ident<T> b, const t_ident<T> x)               {return LERPBR(T(0), T(1), STEP(a, b, x));}

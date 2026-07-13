@@ -385,7 +385,7 @@ ONCE_START_STR
         const HMODULE pLibrary = GetModuleHandleW(L"ntdll.dll");
         if(pLibrary)
         {
-            using coreGetString = const coreChar* (__cdecl *)();
+            using coreGetString = const coreChar* (__cdecl *) ();
 
             // load Wine specific functions
             const coreGetString nWineGetVersion = r_cast<coreGetString>(GetProcAddress(pLibrary, "wine_get_version"));
@@ -1079,7 +1079,7 @@ const coreChar* coreData::GetCurDir()
     if(iLen)
     {
         // add path-delimiter and return (with known length)
-        std::memcpy(acPath + iLen, L"/", 4u);
+        std::memcpy(acPath + iLen, L"/", sizeof(coreWchar) * 2u);
         return coreData::__ToAnsiChar(acPath);
     }
 
