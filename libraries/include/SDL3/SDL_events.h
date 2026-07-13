@@ -1070,7 +1070,7 @@ typedef union SDL_Event
        the next multiple of 16, 64, and on architectures where pointers are
        even larger the size of SDL_UserEvent will dominate as being 3 pointers.
     */
-    Uint8 padding[128];
+    Uint8 padding[64];
 } SDL_Event;
 
 /* Make sure we haven't broken binary compatibility */
