@@ -14,7 +14,7 @@
 // TODO 4: rename count to contains/exists/other, for list, set and map
 // TODO 3: check on T& and co. parameters for list, set, map, switch-box
 // TODO 4: cbegin, cend, crbegin, crend
-// TODO 4: the coreIterator<>coreConstIterator split for certain functions seems unnecessary and just the const version would be enough (also in other containers)
+// TODO 4: the coreIterator<>coreConstIterator split for certain functions seems unnecessary and just the const version would be enough (also in other containers), mainly as parameter
 
 
 // ****************************************************************
@@ -65,6 +65,12 @@ public:
     constexpr coreUintW index_first(const T& tItem)const              {return this->index(this->__retrieve_first(tItem));}
     constexpr coreUintW index_last (const T& tItem)const              {return this->index(this->__retrieve_last (tItem));}
 
+    /* get internal iterator */
+    constexpr coreIterator      find_first(const T& tItem)      {return this->__retrieve_first(tItem);}
+    constexpr coreConstIterator find_first(const T& tItem)const {return this->__retrieve_first(tItem);}
+    constexpr coreIterator      find_last (const T& tItem)      {return this->__retrieve_last (tItem);}
+    constexpr coreConstIterator find_last (const T& tItem)const {return this->__retrieve_last (tItem);}
+
     /* change front item */
     constexpr void push_front(const T& tItem) {this->insert(this->begin(), tItem);}
     constexpr void push_front(T&&      tItem) {this->insert(this->begin(), std::move(tItem));}
@@ -73,7 +79,9 @@ public:
 
 private:
     /* lookup item */
+    constexpr coreIterator      __retrieve_first(const T& tItem)      {return std::find(this->begin(),  this->end(),  tItem);}
     constexpr coreConstIterator __retrieve_first(const T& tItem)const {return std::find(this->begin(),  this->end(),  tItem);}
+    constexpr coreIterator      __retrieve_last (const T& tItem)      {return std::find(this->rbegin(), this->rend(), tItem).base();}
     constexpr coreConstIterator __retrieve_last (const T& tItem)const {return std::find(this->rbegin(), this->rend(), tItem).base();}
 };
 

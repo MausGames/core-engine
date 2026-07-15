@@ -31,6 +31,8 @@ private:
     using coreList<T>::count_num;
     using coreList<T>::index_first;
     using coreList<T>::index_last;
+    using coreList<T>::find_first;
+    using coreList<T>::find_last;
     using coreList<T>::push_back;
     using coreList<T>::push_back_unsafe;
     using coreList<T>::push_front;
@@ -71,6 +73,12 @@ public:
     constexpr coreUintW index   (const T& tItem)const {return this->index(this->__retrieve   (tItem));}
     constexpr coreUintW index_bs(const T& tItem)const {return this->index(this->__retrieve_bs(tItem));}
 
+    /* get internal iterator */
+    constexpr coreIterator      find   (const T& tItem)      {return this->__retrieve   (tItem);}
+    constexpr coreConstIterator find   (const T& tItem)const {return this->__retrieve   (tItem);}
+    constexpr coreIterator      find_bs(const T& tItem)      {return this->__retrieve_bs(tItem);}
+    constexpr coreConstIterator find_bs(const T& tItem)const {return this->__retrieve_bs(tItem);}
+
 
 private:
     /* check for successful item lookup */
@@ -78,7 +86,9 @@ private:
     constexpr coreBool __check_bs(const coreConstIterator& it, const T& tItem)const {return (it != this->end()) && ((*it) == tItem);}
 
     /* lookup item */
+    constexpr coreIterator      __retrieve   (const T& tItem)      {return std::find(this->begin(), this->end(), tItem);}
     constexpr coreConstIterator __retrieve   (const T& tItem)const {return std::find(this->begin(), this->end(), tItem);}
+    constexpr coreIterator      __retrieve_bs(const T& tItem)      {ASSERT(std::is_sorted(this->begin(), this->end())) return std::lower_bound(this->begin(), this->end(), tItem);}
     constexpr coreConstIterator __retrieve_bs(const T& tItem)const {ASSERT(std::is_sorted(this->begin(), this->end())) return std::lower_bound(this->begin(), this->end(), tItem);}
 };
 
