@@ -11,8 +11,7 @@
 #define _CORE_GUARD_CONFIG_H_
 
 // TODO 3: add a way to control default values per project (dynamically ?)
-// TODO 3: changing a bool to an int can cause problems with existing config values, remove bool entirely ?
-// TODO 3: allow loading config files from archives
+// TODO 5: allow loading config files from archives
 // TODO 3: implement coreVariant
 
 
@@ -112,9 +111,9 @@ private:
     void     __ChangeEntry  (const coreHashString& sSection, const coreHashString& sKey, const coreChar* pcValue);
 
     /* convert to type */
-    static inline coreBool  __ToBool (const coreString& sString) {return (sString[0] != 'f') && (sString[0] != 'F') && (sString[0] != '0');}
-    static inline coreInt32 __ToInt  (const coreString& sString) {return coreData::FromChars<coreInt32>(sString.c_str(), sString.length());}
-    static inline coreFloat __ToFloat(const coreString& sString) {return coreData::FromChars<coreFloat>(sString.c_str(), sString.length());}
+    static inline coreBool  __ToBool (const coreString& sString) {return (sString[0] != 'f') && (sString[0] != '0');}
+    static inline coreInt32 __ToInt  (const coreString& sString) {return (sString[0] == 't') ? 1    : coreData::FromChars<coreInt32>(sString.c_str(), sString.length());}
+    static inline coreFloat __ToFloat(const coreString& sString) {return (sString[0] == 't') ? 1.0f : coreData::FromChars<coreFloat>(sString.c_str(), sString.length());}
 
     /* convert to string */
     static inline const coreChar* __FromBool (const coreBool  bValue) {return (bValue ? "true" : "false");}
