@@ -53,7 +53,7 @@ public:
     ENABLE_COPY(coreTimer)
 
     /* update the timer */
-    coreBool Update(const coreFloat fSpeedModifier);
+    coreUint16 Update(const coreFloat fSpeedModifier);
 
     /* control the timer */
     constexpr void Play (const coreTimerPlay eReset) {m_bStatus = true; if(eReset) this->Reset();}
