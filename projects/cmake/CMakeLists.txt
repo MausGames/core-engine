@@ -134,7 +134,7 @@ else()
 
     target_compile_options(
         CoreEngine PUBLIC
-        -msse3 -pipe -Wall -Wextra -Wpedantic
+        -msse3 -ftls-model=local-exec -pipe -Wall -Wextra -Wpedantic
         $<IF:$<CONFIG:DEBUG>, -O0 -g3 -gsplit-dwarf -gz=zstd -ftrivial-auto-var-init=pattern, -Os -flto -fvisibility=hidden -ftrivial-auto-var-init=uninitialized -fwhole-program-vtables -fvirtual-function-elimination -fforce-emit-vtables -fstrict-vtable-pointers -fno-strict-overflow -ffinite-math-only -fno-signed-zeros -fno-trapping-math -fno-math-errno -ffp-contract=off -fno-rtti -fno-exceptions -Werror>
     )
 

@@ -148,6 +148,7 @@ void __coreInitOpenGL()
     #define __IMPROVE(x,y) {coreString* T = &A; if(!(x)) {(__ ## x) = (y); T = (y) ? &C : &B;} T->append(" GL").append(&(#x[4]));}
     {
         coreString A, B, C;
+        A.reserve(0x1000u);
 
         __IMPROVE(GLEW_AMD_framebuffer_multisample_advanced, false)
         __IMPROVE(GLEW_AMD_gpu_shader_half_float,            false)                                                        // shader extension

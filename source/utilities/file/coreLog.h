@@ -93,7 +93,7 @@ private:
     void __WriteStandard(coreWorkString& sMessage);
 
     /* check remaining number of warnings */
-    inline coreBool __CheckWarnLimit() {return (m_iWarnLimit && (m_iWarnLimit--));}
+    inline coreBool __CheckWarnLimit() {WARN_IF(!m_iWarnLimit) return false; return (m_iWarnLimit--);}
 };
 
 

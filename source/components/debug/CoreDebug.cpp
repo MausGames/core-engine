@@ -455,7 +455,7 @@ void CoreDebug::RenderCollision(const coreObject3D* pObject)
         // set object properties
         m_DebugVolume.DefineModel   (pVolume);
         m_DebugVolume.SetPosition   (pObject->GetPosition      ());
-        m_DebugVolume.SetSize       (pObject->GetCollisionRange());
+        m_DebugVolume.SetSize       (pObject->GetCollisionRange() / pVolume->GetBoundingRange());
         m_DebugVolume.SetDirection  (pObject->GetDirection     ());
         m_DebugVolume.SetOrientation(pObject->GetOrientation   ());
         m_DebugVolume.Move();
@@ -469,7 +469,7 @@ void CoreDebug::RenderCollision(const coreObject3D* pObject)
     else
     {
         // render enclosing cube
-        this->RenderCube(pObject->GetPosition(), pObject->GetCollisionRange(), pObject->GetDirection(), pObject->GetOrientation());
+        this->RenderCube(pObject->GetPosition(), pObject->GetCollisionRange() / pVolume->GetBoundingRange(), pObject->GetDirection(), pObject->GetOrientation());
     }
 }
 

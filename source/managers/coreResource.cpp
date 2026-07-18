@@ -109,6 +109,11 @@ coreResourceManager::coreResourceManager()noexcept
 , m_FileLock     ()
 , m_bActive      (false)
 {
+    // reserve some memory
+    m_apHandle    .reserve(0x1000u);
+    m_apDirectFile.reserve(0x1000u);
+    m_apRelation  .reserve(0x1000u);
+
     // configure resource thread
     this->SetFrequency(120.0f);
 

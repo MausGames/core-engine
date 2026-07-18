@@ -205,7 +205,7 @@ public:
     /* access keyboard input */
     inline void            SetKeyboardButton   (const coreInputKey  iButton, const coreBool bStatus)         {WARN_IF(iButton >= CORE_INPUT_BUTTONS_KEYBOARD) return; SET_BIT(m_Keyboard.aiButton[iButton], CORE_INPUT_DATA, bStatus) if(bStatus) m_Keyboard.iLast = iButton;}
     inline void            SetKeyboardButtonNow(const coreInputKey  iButton, const coreBool bStatus)         {WARN_IF(iButton >= CORE_INPUT_BUTTONS_KEYBOARD) return; this->SetKeyboardButton(iButton, bStatus); if(bStatus) __CORE_INPUT_PRESS(m_Keyboard.aiButton[iButton]) else __CORE_INPUT_RELEASE(m_Keyboard.aiButton[iButton])}
-    inline void            SetKeyboardChar     (const coreInputChar iChar)                                   {m_Keyboard.iChar = iChar;     m_Keyboard.sText.assign(1u, iChar);}
+    inline void            SetKeyboardChar     (const coreInputChar iChar)                                   {m_Keyboard.iChar = iChar;     if(iChar <= 0xFFu) m_Keyboard.sText.assign(1u, iChar); else m_Keyboard.sText.clear();}
     inline void            SetKeyboardCharText (const coreChar*     pcText)                                  {m_Keyboard.iChar = pcText[0]; m_Keyboard.sText = pcText;}
     inline coreBool        GetKeyboardButton   (const coreInputKey  iButton, const coreInputType eType)const {ASSERT(iButton < CORE_INPUT_BUTTONS_KEYBOARD) return HAS_BIT(m_Keyboard.aiButton[iButton], eType);}
     inline coreInputChar   GetKeyboardChar     ()const                                                       {return m_Keyboard.iChar;}

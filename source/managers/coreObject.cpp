@@ -42,6 +42,9 @@ coreObjectManager::coreObjectManager()noexcept
     m_pLowQuad     = Core::Manager::Resource->LoadNew<coreModel>();
     m_pLowTriangle = Core::Manager::Resource->LoadNew<coreModel>();
 
+    // reserve some memory
+    m_apSpriteList.reserve(0x1000u);
+
     // start up the object manager
     this->__Reset(CORE_RESOURCE_RESET_INIT);
 
