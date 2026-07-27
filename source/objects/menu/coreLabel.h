@@ -15,6 +15,8 @@
 // TODO 3: there is empty space over and under text in the texture (not on every font, default.ttf has it)
 // TODO 3: optional mipmapping to allow proper rendering in 3d space
 // TODO 3: support text shadow (fully configurable), also for coreRichText
+// TODO 1: delayed rectify (N frames (3-5)) (what about invalidate ?)
+// TODO 3: RetrieveTextHeight could also use m_iExtent, but that comes with a delay (or a branch)
 
 
 // ****************************************************************
@@ -70,8 +72,9 @@ public:
     virtual void Render()override;
     virtual void Move  ()override;
 
-    /* retrieve desired size without rendering */
-    template <typename F> void RetrieveDesiredSize(F&& nRetrieveFunc)const;   // [](const coreVector2 vSize) -> void
+    /* retrieve actual text size */
+    template <typename F> void RetrieveTextSize  (F&& nRetrieveFunc)const;   // [](const coreVector2 vSize) -> void
+    coreFloat                  RetrieveTextHeight()const;
 
     /* invoke texture generation */
     inline void RegenerateTexture() {ADD_FLAG(m_eRefresh, CORE_LABEL_REFRESH_ALL)}
@@ -116,8 +119,8 @@ private:
 
 
 // ****************************************************************
-/* retrieve desired size without rendering */
-template <typename F> void coreLabel::RetrieveDesiredSize(F&& nRetrieveFunc)const
+/* retrieve actual text size (may be async) */
+template <typename F> void coreLabel::RetrieveTextSize(F&& nRetrieveFunc)const
 {
     if(HAS_FLAG(m_eRefresh, CORE_LABEL_REFRESH_SIZE))
     {
@@ -128,19 +131,15 @@ template <typename F> void coreLabel::RetrieveDesiredSize(F&& nRetrieveFunc)cons
             const coreUint16 iRelHeight  = CORE_LABEL_HEIGHT_RELATIVE (m_iHeight);
             const coreUint8  iRelOutline = CORE_LABEL_OUTLINE_RELATIVE(m_iOutline);
 
-            // retrieve vertical overhang
-            coreInt8 iTop, iBottom;
-            m_pFont->RetrieveTextShift(m_sText.c_str(), iRelHeight, iRelOutline, &iTop, &iBottom);
-
             // return the dimensions of the current text
             const coreVector2 vDimensions = m_pFont->RetrieveTextDimensions(m_sText.c_str(), m_sText.length(), iRelHeight, iRelOutline);
-            nRetrieveFunc((vDimensions - coreVector2(0.0f, I_TO_F(iTop - iBottom))) * m_vScale / CORE_LABEL_DETAIL);
+            nRetrieveFunc(coreVector2(vDimensions.x * m_vScale.x / CORE_LABEL_DETAIL, this->RetrieveTextHeight()));
         });
     }
     else
     {
         // return actual size
-        nRetrieveFunc(this->GetSize());
+        nRetrieveFunc(coreVector2(this->GetSize().x, this->RetrieveTextHeight()));
     }
 }
 

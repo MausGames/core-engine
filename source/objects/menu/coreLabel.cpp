@@ -136,6 +136,19 @@ void coreLabel::Move()
 
 
 // ****************************************************************
+/* retrieve actual text height */
+coreFloat coreLabel::RetrieveTextHeight()const
+{
+    // get relative font height and outline
+    const coreUint16 iRelHeight  = CORE_LABEL_HEIGHT_RELATIVE (m_iHeight);
+    const coreUint8  iRelOutline = CORE_LABEL_OUTLINE_RELATIVE(m_iOutline);
+
+    // return simple calculation based on font properties
+    return I_TO_F(iRelHeight + iRelOutline * 2u) / Core::System->GetResolution().y * m_vScale.y;
+}
+
+
+// ****************************************************************
 /* change the current text */
 coreBool coreLabel::SetText(const coreChar* pcText)
 {
