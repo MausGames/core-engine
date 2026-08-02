@@ -69,13 +69,16 @@ coreBool GLEW_CORE_gl2_compatibility = false;
 
 // ****************************************************************
 /* pool structure */
-struct coreNamePool final
+namespace
 {
-    GLuint    aiArray[CORE_GL_POOL_SIZE];   // actual pool holding all pre-generated resource names
-    coreUintW iNext = CORE_GL_POOL_SIZE;    // next unused resource name in the pool
-    coreUintW iAll  = 0u;                   // number of active resource names
-    coreLock  oLock = coreLock();           // lock to allow multiple threads to access the pool
-};
+    struct coreNamePool final
+    {
+        GLuint    aiArray[CORE_GL_POOL_SIZE];   // actual pool holding all pre-generated resource names
+        coreUintW iNext = CORE_GL_POOL_SIZE;    // next unused resource name in the pool
+        coreUintW iAll  = 0u;                   // number of active resource names
+        coreLock  oLock = coreLock();           // lock to allow multiple threads to access the pool
+    };
+}
 
 static coreNamePool s_PoolTextures2D;
 static coreNamePool s_PoolBuffers;

@@ -136,6 +136,8 @@ private:
 
     coreUint8 m_iStatsStore;                 // achievement store status (0 = idle | 1 = send query | 2 = wait on response)
 
+    coreVector2 m_vLastResolution;           // last reported game resolution
+
     coreLeaderboardMap m_aiLeaderboard;      // leaderboard handles
 
     coreAsyncMap m_anAsyncMap;               // asynchronous callbacks
@@ -206,22 +208,23 @@ private:
 // ****************************************************************
 /* constructor */
 inline coreBackendSteam::coreBackendSteam()noexcept
-: coreBackend      ()
-, m_pClient        (NULL)
-, m_iPipe          (0u)
-, m_iUser          (0u)
-, m_pApps          (NULL)
-, m_pFriends       (NULL)
-, m_pRemoteStorage (NULL)
-, m_pUser          (NULL)
-, m_pUserStats     (NULL)
-, m_pUtils         (NULL)
-, m_pTimeline      (NULL)
-, m_iStatsStore    (0u)
-, m_aiLeaderboard  {}
-, m_anAsyncMap     {}
-, m_pAsyncResult   (NULL)
-, m_iAsyncSize     (0u)
+: coreBackend       ()
+, m_pClient         (NULL)
+, m_iPipe           (0u)
+, m_iUser           (0u)
+, m_pApps           (NULL)
+, m_pFriends        (NULL)
+, m_pRemoteStorage  (NULL)
+, m_pUser           (NULL)
+, m_pUserStats      (NULL)
+, m_pUtils          (NULL)
+, m_pTimeline       (NULL)
+, m_iStatsStore     (0u)
+, m_vLastResolution (coreVector2(0.0f,0.0f))
+, m_aiLeaderboard   {}
+, m_anAsyncMap      {}
+, m_pAsyncResult    (NULL)
+, m_iAsyncSize      (0u)
 {
 }
 
@@ -326,6 +329,13 @@ inline void coreBackendSteam::Update()
     {
         // update achievement data
         if(m_iStatsStore == 1u) if(m_pUserStats->StoreStats()) m_iStatsStore = 2u;
+
+        // update reported game resolution
+        if(m_vLastResolution != Core::System->GetResolution())
+        {
+            m_vLastResolution = Core::System->GetResolution();
+            m_pApps->SetGameRenderResolution(F_TO_UI(m_vLastResolution.x), F_TO_UI(m_vLastResolution.y));
+        }
 
         // update manual callback dispatch
         nSteamAPI_ManualDispatch_RunFrame(m_iPipe);

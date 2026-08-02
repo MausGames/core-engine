@@ -1017,7 +1017,7 @@ constexpr coreMatrix4 coreMatrix4::ShearZY(const coreFloat fFactor)
 /* calculate orientation matrix */
 constexpr coreMatrix4 coreMatrix4::Orientation(const coreVector3 vDirection, const coreVector3 vOrientation)
 {
-    ASSERT(vDirection.IsNormalized() && vOrientation.IsNormalized())
+    ASSERT(vDirection.IsNormalized() && vOrientation.IsNormalized() && !coreVector3::SameLine(vDirection, vOrientation))
 
     const coreVector3 D = vDirection;
     const coreVector3 O = vOrientation;

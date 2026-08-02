@@ -221,7 +221,7 @@
     #define OUTPUT           __restrict__
     #define INTERFACE
     #define UNUSED           [[maybe_unused]]
-    #define THREAD_LOCAL     __thread
+    #define THREAD_LOCAL     __attribute__((tls_model("local-exec"))) __thread
     #define FORCE_INLINE     __attribute__((always_inline)) inline
     #define DONT_INLINE      __attribute__((noinline))
     #define FALLTHROUGH      [[fallthrough]];

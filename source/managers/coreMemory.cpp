@@ -92,24 +92,28 @@ static void* SDLCALL coreCalloc (const coreUintW iNum, const coreUintW iSize) {r
 static void* SDLCALL coreRealloc(void* pPointer, const coreUintW iSize)       {coreData::HeapRealloc(s_pHeap, &pPointer, iSize); return pPointer;}
 static void  SDLCALL coreFree   (void* pPointer)                              {coreData::HeapFree   (s_pHeap, &pPointer);}
 
-static struct coreInit final
+namespace
 {
-    coreInit()noexcept
+    struct coreInit final
     {
-        // create private heap object
-        s_pHeap = coreData::HeapCreate(true);
+        coreInit()noexcept
+        {
+            // create private heap object
+            s_pHeap = coreData::HeapCreate(true);
 
-        // register allocation functions
-        SDL_SetMemoryFunctions(coreMalloc, coreCalloc, coreRealloc, coreFree);
-    }
+            // register allocation functions
+            SDL_SetMemoryFunctions(coreMalloc, coreCalloc, coreRealloc, coreFree);
+        }
 
-    ~coreInit()
-    {
-        // destroy private heap object
-        coreData::HeapDestroy(s_pHeap);
-    }
+        ~coreInit()
+        {
+            // destroy private heap object
+            coreData::HeapDestroy(s_pHeap);
+        }
+    };
 }
-s_Init;
+
+static const coreInit s_Init;
 
 #endif
 

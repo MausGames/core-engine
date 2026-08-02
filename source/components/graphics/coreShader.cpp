@@ -20,14 +20,17 @@ coreLock                   coreProgram::s_BinaryLock      = coreLock();
 
 // ****************************************************************
 /* create static string lists */
-template <const coreChar* pcString, coreUintW iLength, coreUintW iNum> struct coreStringList final
+namespace
 {
-    coreChar       aacCharArray[iNum][iLength];
-    coreHashString asHashString[iNum];
+    template <const coreChar* pcString, coreUintW iLength, coreUintW iNum> struct coreStringList final
+    {
+        coreChar       aacCharArray[iNum][iLength];
+        coreHashString asHashString[iNum];
 
-    coreStringList()noexcept {for(coreUintW i = 0u; i < iNum; ++i) {WARN_IF(coreUintW(coreData::PrintBase(aacCharArray[i], iLength, pcString, i)) >= iLength) {} asHashString[i] = aacCharArray[i];}}
-    inline const coreHashString& operator [] (const coreUintW iIndex)const {ASSERT(iIndex < iNum) return asHashString[iIndex];}
-};
+        coreStringList()noexcept {for(coreUintW i = 0u; i < iNum; ++i) {WARN_IF(coreUintW(coreData::PrintBase(aacCharArray[i], iLength, pcString, i)) >= iLength) {} asHashString[i] = aacCharArray[i];}}
+        inline const coreHashString& operator [] (const coreUintW iIndex)const {ASSERT(iIndex < iNum) return asHashString[iIndex];}
+    };
+}
 
 #define __STRING_LIST(s,n,v)              \
     static const coreChar v ## __a[] = s; \
