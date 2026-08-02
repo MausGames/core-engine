@@ -55,7 +55,6 @@ CoreSystem::CoreSystem()noexcept
         // set SDL behavior hints
         SDL_SetHint(SDL_HINT_EVENT_LOGGING,                      DEFINED(_CORE_DEBUG_) ? "1" : "0");
         SDL_SetHint(SDL_HINT_INVALID_PARAM_CHECKS,               DEFINED(_CORE_DEBUG_) ? "2" : "1");
-        SDL_SetHint(SDL_HINT_JOYSTICK_ALLOW_BACKGROUND_EVENTS,   "1");
         SDL_SetHint(SDL_HINT_MOUSE_RELATIVE_MODE_CENTER,         "0");
         SDL_SetHint(SDL_HINT_OPENGL_ES_DRIVER,                   "1");
         SDL_SetHint(SDL_HINT_VIDEO_DOUBLE_BUFFER,                "1");
@@ -752,8 +751,16 @@ void CoreSystem::__UpdateWindow()
 #if !defined(_CORE_EMSCRIPTEN_) && !defined(_CORE_SWITCH_)
 
     // reduce overhead if window is not visible
-    if(HAS_FLAG_ANY(SDL_GetWindowFlags(m_pWindow), SDL_WINDOW_OCCLUDED | SDL_WINDOW_HIDDEN | SDL_WINDOW_MINIMIZED))
-        SDL_Delay(30u);
+    const coreBool bHidden = HAS_FLAG_ANY(SDL_GetWindowFlags(m_pWindow), SDL_WINDOW_OCCLUDED | SDL_WINDOW_HIDDEN | SDL_WINDOW_MINIMIZED);
+    if(bHidden) SDL_Delay(30u);
+
+    // disable joystick events if window is not visible
+    static coreBool s_bDisabled = true;
+    if(s_bDisabled != bHidden)
+    {
+        s_bDisabled = bHidden;
+        SDL_SetHint(SDL_HINT_JOYSTICK_ALLOW_BACKGROUND_EVENTS, s_bDisabled ? "0" : "1");
+    }
 
     // toggle between borderless and windowed mode
     if(Core::Input->GetKeyboardButton(CORE_INPUT_KEY(LALT),   CORE_INPUT_HOLD) &&
