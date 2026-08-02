@@ -151,8 +151,8 @@ else()
 
     target_link_options(
         CoreEngine INTERFACE
-        -fuse-ld=mold LINKER:--compress-debug-sections=zstd
-        $<IF:$<CONFIG:DEBUG>, LINKER:--separate-debug-file, -flto LINKER:--gc-sections LINKER:--icf=all LINKER:--ignore-data-address-equality LINKER:--as-needed>
+        -fuse-ld=lld LINKER:--compress-debug-sections=zstd
+        $<IF:$<CONFIG:DEBUG>, , -flto LINKER:--gc-sections LINKER:--icf=all LINKER:--ignore-data-address-equality LINKER:--as-needed>
     )
 
     if(NOT CORE_DEBUG)

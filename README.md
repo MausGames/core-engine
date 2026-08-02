@@ -162,7 +162,7 @@ It is **designed to be supportive, versatile and powerful**, and to dynamically 
 ### 🚧 Building
 
 - **Project Files:** Visual Studio (Windows), CMake/CLion (Linux, [Emscripten](https://emscripten.org/)), Xcode (macOS)
-- **Compiler Support:** MSVC, Clang with [Mold](https://github.com/rui314/mold), GCC (unmaintained), usually only the newest versions
+- **Compiler Support:** MSVC, Clang with LLD, GCC (unmaintained), usually only the newest versions
 - **Architecture Support:** x86 (SSE), ARM (NEON), WebAssembly, both 32-bit and 64-bit
 - **Eclectic C++:** mix of modern features and traditional coding style
 - **Optimized for Size and Precision:** no fast-math allowed
