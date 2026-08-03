@@ -478,6 +478,11 @@ CoreSystem::CoreSystem()noexcept
 
     // log xxHash library version
     Core::Log->Info("xxHash initialized (%s)", XXH_versionString());
+
+    // log ICU library version
+    UVersionInfo oIcuVersion;                               u_getVersion     (oIcuVersion);
+    coreChar     acIcuVersion[U_MAX_VERSION_STRING_LENGTH]; u_versionToString(oIcuVersion, acIcuVersion);
+    Core::Log->Info("ICU initialized (%s)", acIcuVersion);
 }
 
 

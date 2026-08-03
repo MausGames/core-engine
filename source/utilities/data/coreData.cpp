@@ -49,6 +49,7 @@ ZSTD_CCtx*                            coreData::s_pCompressContext   = ZSTD_crea
 ZSTD_DCtx*                            coreData::s_pDecompressContext = ZSTD_createDCtx();
 coreLock                              coreData::s_CompressLock       = coreLock();
 coreLock                              coreData::s_DecompressLock     = coreLock();
+UCaseMap*                             coreData::s_pCaseMap           = NULL;
 
 extern "C" const coreChar*        g_pcUserFolder = "";   // to allow access from C files
 extern "C" coreInt32              g_iArgc        = 0;
@@ -2634,6 +2635,86 @@ void coreData::Unscramble(coreByte* OUTPUT pData, const coreUintW iSize, const c
 
 
 // ****************************************************************
+/* transform UTF-8 string to upper-case */
+const coreChar* coreData::StrToUpperUTF8(const coreChar* pcInput)
+{
+    ASSERT(pcInput)
+
+    coreChar* pcString = coreData::__NextTempString();
+
+    // initialize ICU library
+    coreData::__SetupICU();
+
+    // upper-case all UTF-8 characters
+    UErrorCode eError = U_ZERO_ERROR;
+    ucasemap_utf8ToUpper(s_pCaseMap, pcString, CORE_DATA_STRING_LEN, pcInput, -1, &eError);
+    ASSERT(U_SUCCESS(eError))
+
+    return pcString;
+}
+
+
+// ****************************************************************
+/* transform UTF-8 string to lower-case */
+const coreChar* coreData::StrToLowerUTF8(const coreChar* pcInput)
+{
+    ASSERT(pcInput)
+
+    coreChar* pcString = coreData::__NextTempString();
+
+    // initialize ICU library
+    coreData::__SetupICU();
+
+    // lower-case all UTF-8 characters
+    UErrorCode eError = U_ZERO_ERROR;
+    ucasemap_utf8ToLower(s_pCaseMap, pcString, CORE_DATA_STRING_LEN, pcInput, -1, &eError);
+    ASSERT(U_SUCCESS(eError))
+
+    return pcString;
+}
+
+
+// ****************************************************************
+/* test if UTF-8 string contains only upper-case characters */
+coreBool coreData::StrIsUpperUTF8(const coreChar* pcInput)
+{
+    ASSERT(pcInput)
+
+    for(coreUintW i = 0u; pcInput[i]; )
+    {
+        // retrieve next UTF-8 character
+        UChar32 cChar;
+        U8_NEXT_UNSAFE(pcInput, i, cChar);
+
+        // check for lower-case
+        if(u_isULowercase(cChar)) return false;
+    }
+
+    return true;
+}
+
+
+// ****************************************************************
+/* test if UTF-8 string contains only lower-case characters */
+coreBool coreData::StrIsLowerUTF8(const coreChar* pcInput)
+{
+    ASSERT(pcInput)
+
+    for(coreUintW i = 0u; pcInput[i]; )
+    {
+        // retrieve next UTF-8 character
+        UChar32 cChar;
+        U8_NEXT_UNSAFE(pcInput, i, cChar);
+
+        // check for upper-case
+        if(u_isUUppercase(cChar)) return false;
+    }
+
+    return true;
+}
+
+
+// ****************************************************************
 /* safely get first characters of a string */
 const coreChar* coreData::StrLeft(const coreChar* pcInput, const coreUintW iNum)
 {
@@ -2903,6 +2984,21 @@ const coreWchar* coreData::__ToNormalizedPath(const coreChar* pcPath)
 #endif
 
     return NULL;
+}
+
+
+// ****************************************************************
+/* initialize ICU library */
+void coreData::__SetupICU()
+{
+    // open ICU case mapping function service object (defined here to remove symbols if not used)
+    UNUSED static const coreBool s_bOnce = []()
+    {
+        UErrorCode eError = U_ZERO_ERROR;
+        s_pCaseMap = ucasemap_open(NULL, U_FOLD_CASE_DEFAULT, &eError);   // never cleaned up
+
+        return U_SUCCESS(eError);
+    }();
 }
 
 

@@ -217,7 +217,7 @@
       <ForceSymbolReferences>_wWinMain@16</ForceSymbolReferences>
       <GenerateDebugInformation>DebugFull</GenerateDebugInformation>
       <IgnoreSpecificDefaultLibraries>msvcrt.lib</IgnoreSpecificDefaultLibraries>
-      <AdditionalOptions>CoreEngine_debug.lib SDL3.lib SDL3_ttf.lib SDL3_image.lib OpenGL32.lib OpenAL32.lib LibZstd.lib OpusFile.lib version.lib psapi.lib %(AdditionalOptions)</AdditionalOptions>
+      <AdditionalOptions>CoreEngine_debug.lib SDL3.lib SDL3_ttf.lib SDL3_image.lib OpenGL32.lib OpenAL32.lib OpusFile.lib LibZstd.lib LibICU_debug.lib version.lib psapi.lib %(AdditionalOptions)</AdditionalOptions>
       <TreatLinkerWarningAsErrors>true</TreatLinkerWarningAsErrors>
     </Link>
     <Manifest>
@@ -250,7 +250,7 @@
       <ForceSymbolReferences>_wWinMain@16</ForceSymbolReferences>
       <GenerateDebugInformation>DebugFull</GenerateDebugInformation>
       <IgnoreSpecificDefaultLibraries>msvcrt.lib</IgnoreSpecificDefaultLibraries>
-      <AdditionalOptions>CoreEngine_angle_debug.lib SDL3.lib SDL3_ttf.lib SDL3_image.lib LibEGL.lib LibGLESv2.lib OpenAL32.lib LibZstd.lib OpusFile.lib version.lib psapi.lib %(AdditionalOptions)</AdditionalOptions>
+      <AdditionalOptions>CoreEngine_angle_debug.lib SDL3.lib SDL3_ttf.lib SDL3_image.lib LibEGL.lib LibGLESv2.lib OpenAL32.lib OpusFile.lib LibZstd.lib LibICU_debug.lib version.lib psapi.lib %(AdditionalOptions)</AdditionalOptions>
       <TreatLinkerWarningAsErrors>true</TreatLinkerWarningAsErrors>
     </Link>
     <Manifest>
@@ -283,7 +283,7 @@
       <ForceSymbolReferences>wWinMain</ForceSymbolReferences>
       <GenerateDebugInformation>DebugFull</GenerateDebugInformation>
       <IgnoreSpecificDefaultLibraries>msvcrt.lib</IgnoreSpecificDefaultLibraries>
-      <AdditionalOptions>CoreEngine_debug.lib SDL3.lib SDL3_ttf.lib SDL3_image.lib OpenGL32.lib OpenAL32.lib LibZstd.lib OpusFile.lib version.lib %(AdditionalOptions)</AdditionalOptions>
+      <AdditionalOptions>CoreEngine_debug.lib SDL3.lib SDL3_ttf.lib SDL3_image.lib OpenGL32.lib OpenAL32.lib OpusFile.lib LibZstd.lib LibICU_debug.lib version.lib %(AdditionalOptions)</AdditionalOptions>
       <TreatLinkerWarningAsErrors>true</TreatLinkerWarningAsErrors>
     </Link>
     <Manifest>
@@ -316,7 +316,7 @@
       <ForceSymbolReferences>wWinMain</ForceSymbolReferences>
       <GenerateDebugInformation>DebugFull</GenerateDebugInformation>
       <IgnoreSpecificDefaultLibraries>msvcrt.lib</IgnoreSpecificDefaultLibraries>
-      <AdditionalOptions>CoreEngine_angle_debug.lib SDL3.lib SDL3_ttf.lib SDL3_image.lib LibEGL.lib LibGLESv2.lib OpenAL32.lib LibZstd.lib OpusFile.lib version.lib %(AdditionalOptions)</AdditionalOptions>
+      <AdditionalOptions>CoreEngine_angle_debug.lib SDL3.lib SDL3_ttf.lib SDL3_image.lib LibEGL.lib LibGLESv2.lib OpenAL32.lib OpusFile.lib LibZstd.lib LibICU_debug.lib version.lib %(AdditionalOptions)</AdditionalOptions>
       <TreatLinkerWarningAsErrors>true</TreatLinkerWarningAsErrors>
     </Link>
     <Manifest>
@@ -357,7 +357,7 @@
       <ForceSymbolReferences>_wWinMain@16</ForceSymbolReferences>
       <GenerateDebugInformation>DebugFull</GenerateDebugInformation>
       <LinkTimeCodeGeneration>UseLinkTimeCodeGeneration</LinkTimeCodeGeneration>
-      <AdditionalOptions>CoreEngine.lib SDL3.lib SDL3_ttf.lib SDL3_image.lib OpenGL32.lib OpenAL32.lib LibZstd.lib OpusFile.lib version.lib psapi.lib %(AdditionalOptions)</AdditionalOptions>
+      <AdditionalOptions>CoreEngine.lib SDL3.lib SDL3_ttf.lib SDL3_image.lib OpenGL32.lib OpenAL32.lib OpusFile.lib LibZstd.lib LibICU_release.lib version.lib psapi.lib %(AdditionalOptions)</AdditionalOptions>
       <TreatLinkerWarningAsErrors>true</TreatLinkerWarningAsErrors>
       <OptimizeReferences>true</OptimizeReferences>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
@@ -403,7 +403,7 @@
       <ForceSymbolReferences>_wWinMain@16</ForceSymbolReferences>
       <GenerateDebugInformation>DebugFull</GenerateDebugInformation>
       <LinkTimeCodeGeneration>UseLinkTimeCodeGeneration</LinkTimeCodeGeneration>
-      <AdditionalOptions>CoreEngine_angle.lib SDL3.lib SDL3_ttf.lib SDL3_image.lib LibEGL.lib LibGLESv2.lib OpenAL32.lib LibZstd.lib OpusFile.lib version.lib psapi.lib %(AdditionalOptions)</AdditionalOptions>
+      <AdditionalOptions>CoreEngine_angle.lib SDL3.lib SDL3_ttf.lib SDL3_image.lib LibEGL.lib LibGLESv2.lib OpenAL32.lib OpusFile.lib LibZstd.lib LibICU_release.lib version.lib psapi.lib %(AdditionalOptions)</AdditionalOptions>
       <TreatLinkerWarningAsErrors>true</TreatLinkerWarningAsErrors>
       <OptimizeReferences>true</OptimizeReferences>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
@@ -449,7 +449,7 @@
       <ForceSymbolReferences>wWinMain</ForceSymbolReferences>
       <GenerateDebugInformation>DebugFull</GenerateDebugInformation>
       <LinkTimeCodeGeneration>UseLinkTimeCodeGeneration</LinkTimeCodeGeneration>
-      <AdditionalOptions>CoreEngine.lib SDL3.lib SDL3_ttf.lib SDL3_image.lib OpenGL32.lib OpenAL32.lib LibZstd.lib OpusFile.lib version.lib %(AdditionalOptions)</AdditionalOptions>
+      <AdditionalOptions>CoreEngine.lib SDL3.lib SDL3_ttf.lib SDL3_image.lib OpenGL32.lib OpenAL32.lib OpusFile.lib LibZstd.lib LibICU_release.lib version.lib %(AdditionalOptions)</AdditionalOptions>
       <TreatLinkerWarningAsErrors>true</TreatLinkerWarningAsErrors>
       <OptimizeReferences>true</OptimizeReferences>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
@@ -495,7 +495,7 @@
       <ForceSymbolReferences>wWinMain</ForceSymbolReferences>
       <GenerateDebugInformation>DebugFull</GenerateDebugInformation>
       <LinkTimeCodeGeneration>UseLinkTimeCodeGeneration</LinkTimeCodeGeneration>
-      <AdditionalOptions>CoreEngine_angle.lib SDL3.lib SDL3_ttf.lib SDL3_image.lib LibEGL.lib LibGLESv2.lib OpenAL32.lib LibZstd.lib OpusFile.lib version.lib %(AdditionalOptions)</AdditionalOptions>
+      <AdditionalOptions>CoreEngine_angle.lib SDL3.lib SDL3_ttf.lib SDL3_image.lib LibEGL.lib LibGLESv2.lib OpenAL32.lib OpusFile.lib LibZstd.lib LibICU_release.lib version.lib %(AdditionalOptions)</AdditionalOptions>
       <TreatLinkerWarningAsErrors>true</TreatLinkerWarningAsErrors>
       <OptimizeReferences>true</OptimizeReferences>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
