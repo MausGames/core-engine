@@ -95,10 +95,10 @@ public:
     /* project vector */
     constexpr        coreVector2 MapToAxis           (const coreVector2 vAxis)const;
     constexpr        coreVector2 MapToAxisInv        (const coreVector2 vAxis)const;
-    constexpr        coreVector2 MapStepRotated45    (const coreUint8   iStep)const;
-    constexpr        coreVector2 MapStepRotated45X   (const coreUint8   iStep)const {return this->MapStepRotated45 (iStep).MapToAxis(coreVector2(0.382683456f, 0.923879504f));}
-    constexpr        coreVector2 MapStepRotated90    (const coreUint8   iStep)const {return this->MapStepRotated45 (iStep * 2u);}
-    constexpr        coreVector2 MapStepRotated90X   (const coreUint8   iStep)const {return this->MapStepRotated45 (iStep * 2u + 1u);}
+    constexpr        coreVector2 MapStepRotated45    (const coreUint8   iStep)const {return this->MapToAxis(coreVector2::UnpackWay8(iStep));}
+    constexpr        coreVector2 MapStepRotated45X   (const coreUint8   iStep)const {return this->MapToAxis(coreVector2::UnpackWay8(iStep)).MapToAxis(coreVector2(0.382683456f, 0.923879504f));}
+    constexpr        coreVector2 MapStepRotated90    (const coreUint8   iStep)const {return this->MapToAxis(coreVector2::UnpackWay8(iStep * 2u));}
+    constexpr        coreVector2 MapStepRotated90X   (const coreUint8   iStep)const {return this->MapToAxis(coreVector2::UnpackWay8(iStep * 2u + 1u));}
     constexpr        coreVector2 MapStepRotatedInv45 (const coreUint8   iStep)const {return this->MapStepRotated45 ((8u - iStep) % 8u);}
     constexpr        coreVector2 MapStepRotatedInv45X(const coreUint8   iStep)const {return this->MapStepRotated45X((8u - iStep) % 8u);}
     constexpr        coreVector2 MapStepRotatedInv90 (const coreUint8   iStep)const {return this->MapStepRotated90 ((4u - iStep) % 4u);}
@@ -530,25 +530,6 @@ constexpr coreVector2 coreVector2::MapToAxisInv(const coreVector2 vAxis)const
     return this->MapToAxis(vAxis.InvertedX());
 }
 
-constexpr coreVector2 coreVector2::MapStepRotated45(const coreUint8 iStep)const
-{
-    // 1 0 7
-    // 2 ^ 6
-    // 3 4 5
-    switch(iStep)
-    {
-    default: UNREACHABLE
-    case 0u: return  (*this);
-    case 1u: return -this->Rotated135();
-    case 2u: return -this->Rotated90 ();
-    case 3u: return -this->Rotated45 ();
-    case 4u: return -(*this);
-    case 5u: return  this->Rotated135();
-    case 6u: return  this->Rotated90 ();
-    case 7u: return  this->Rotated45 ();
-    }
-}
-
 
 // ****************************************************************
 /* calculate normalized perpendicular vector */
@@ -795,36 +776,40 @@ constexpr coreVector2 coreVector2::UnpackWay8(const coreUint8 iNumber)
     // 1 0 7
     // 2 8 6
     // 3 4 5
-    switch(iNumber)
+    constexpr coreVector2 avTable[] =
     {
-    default: UNREACHABLE
-    case 0u: return coreVector2( 0.0f, 1.0f);
-    case 1u: return coreVector2(-1.0f, 1.0f) / SQRT2;
-    case 2u: return coreVector2(-1.0f, 0.0f);
-    case 3u: return coreVector2(-1.0f,-1.0f) / SQRT2;
-    case 4u: return coreVector2( 0.0f,-1.0f);
-    case 5u: return coreVector2( 1.0f,-1.0f) / SQRT2;
-    case 6u: return coreVector2( 1.0f, 0.0f);
-    case 7u: return coreVector2( 1.0f, 1.0f) / SQRT2;
-    case 8u: return coreVector2( 0.0f, 0.0f);
-    }
+        coreVector2( 0.0f, 1.0f),
+        coreVector2(-1.0f, 1.0f) / SQRT2,
+        coreVector2(-1.0f, 0.0f),
+        coreVector2(-1.0f,-1.0f) / SQRT2,
+        coreVector2( 0.0f,-1.0f),
+        coreVector2( 1.0f,-1.0f) / SQRT2,
+        coreVector2( 1.0f, 0.0f),
+        coreVector2( 1.0f, 1.0f) / SQRT2,
+        coreVector2( 0.0f, 0.0f)
+    };
+
+    ASSERT(iNumber < ARRAY_SIZE(avTable))
+    return avTable[iNumber];
 }
 
 constexpr coreVector2 coreVector2::UnpackWaySign8(const coreUint8 iNumber)
 {
-    switch(iNumber)
+    constexpr coreVector2 avTable[] =
     {
-    default: UNREACHABLE
-    case 0u: return coreVector2( 0.0f, 1.0f);
-    case 1u: return coreVector2(-1.0f, 1.0f);
-    case 2u: return coreVector2(-1.0f, 0.0f);
-    case 3u: return coreVector2(-1.0f,-1.0f);
-    case 4u: return coreVector2( 0.0f,-1.0f);
-    case 5u: return coreVector2( 1.0f,-1.0f);
-    case 6u: return coreVector2( 1.0f, 0.0f);
-    case 7u: return coreVector2( 1.0f, 1.0f);
-    case 8u: return coreVector2( 0.0f, 0.0f);
-    }
+        coreVector2( 0.0f, 1.0f),
+        coreVector2(-1.0f, 1.0f),
+        coreVector2(-1.0f, 0.0f),
+        coreVector2(-1.0f,-1.0f),
+        coreVector2( 0.0f,-1.0f),
+        coreVector2( 1.0f,-1.0f),
+        coreVector2( 1.0f, 0.0f),
+        coreVector2( 1.0f, 1.0f),
+        coreVector2( 0.0f, 0.0f)
+    };
+
+    ASSERT(iNumber < ARRAY_SIZE(avTable))
+    return avTable[iNumber];
 }
 
 
