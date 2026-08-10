@@ -58,6 +58,8 @@ public:
         coreUint16 iColorIndex;       // color index
         coreUint16 iTexParamsIndex;   // texture coordinate index
         coreUint16 iOrder;            // order of the character within the text (excluding invisible characters)
+
+        inline coreVector2 GetPosition()const {return coreVector2::UnpackFloat2x16(iPosition);}
     };
 
     /* animation structure */

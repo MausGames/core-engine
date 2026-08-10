@@ -87,10 +87,10 @@ public:
     constexpr coreVector2 Rotated90 ()const {return coreVector2(y,   -x);}
     constexpr coreVector2 Rotated45 ()const {return coreVector2(y+x, -x+y) / SQRT2;}
     constexpr coreVector2 Rotated135()const {return coreVector2(y-x, -x-y) / SQRT2;}
-    constexpr coreVector2 Rotated30 ()const {return coreVector2( y, -x) * 0.5f + coreVector2( x,  y) * 0.8660254037844386467637231707529f;}
-    constexpr coreVector2 Rotated60 ()const {return coreVector2( x,  y) * 0.5f + coreVector2( y, -x) * 0.8660254037844386467637231707529f;}
-    constexpr coreVector2 Rotated120()const {return coreVector2(-x, -y) * 0.5f + coreVector2( y, -x) * 0.8660254037844386467637231707529f;}
-    constexpr coreVector2 Rotated150()const {return coreVector2( y, -x) * 0.5f + coreVector2(-x, -y) * 0.8660254037844386467637231707529f;}
+    constexpr coreVector2 Rotated30 ()const {return coreVector2( y, -x) * 0.5f + coreVector2( x,  y) * (SQRT3 / 2.0f);}
+    constexpr coreVector2 Rotated60 ()const {return coreVector2( x,  y) * 0.5f + coreVector2( y, -x) * (SQRT3 / 2.0f);}
+    constexpr coreVector2 Rotated120()const {return coreVector2(-x, -y) * 0.5f + coreVector2( y, -x) * (SQRT3 / 2.0f);}
+    constexpr coreVector2 Rotated150()const {return coreVector2( y, -x) * 0.5f + coreVector2(-x, -y) * (SQRT3 / 2.0f);}
 
     /* project vector */
     constexpr        coreVector2 MapToAxis           (const coreVector2 vAxis)const;
@@ -115,8 +115,8 @@ public:
     constexpr coreVector2 AlongWay4Normal  ()const                        {return (this->IsHorizontal() ? coreVector2(SIGN(x), 0.0f) : coreVector2(0.0f, SIGN(y)));}
     constexpr coreVector2 AlongWay4X       ()const                        {return -this->Rotated45().AlongWay4      ().Rotated135();}
     constexpr coreVector2 AlongWay4XNormal ()const                        {return -this->Rotated45().AlongWay4Normal().Rotated135();}
-    inline    coreVector2 AlongWay8        ()const                        {return UnpackWay8(this->PackWay8()) * this->Length();}
-    inline    coreVector2 AlongWay8Normal  ()const                        {return UnpackWay8(this->PackWay8());}
+    inline    coreVector2 AlongWay8        ()const                        {return coreVector2::UnpackWay8(this->PackWay8()) * this->Length();}
+    inline    coreVector2 AlongWay8Normal  ()const                        {return coreVector2::UnpackWay8(this->PackWay8());}
     constexpr coreVector2 AlongAxis4       (const coreVector2 vAxis)const {return (this->MapToAxisInv(vAxis).AlongWay4       ().MapToAxis(vAxis));}
     constexpr coreVector2 AlongAxis4Normal (const coreVector2 vAxis)const {return (this->MapToAxisInv(vAxis).AlongWay4Normal ().MapToAxis(vAxis));}
     constexpr coreVector2 AlongAxis4X      (const coreVector2 vAxis)const {return (this->MapToAxisInv(vAxis).AlongWay4X      ().MapToAxis(vAxis));}
@@ -273,15 +273,15 @@ public:
     constexpr coreVector3 InvertedZ  ()const {return coreVector3( x,  y, -z);}
 
     /* rotate vector */
-    constexpr coreVector3 RotatedX90 ()const {return coreVector3(x, this->yz().Rotated90 ());}
-    constexpr coreVector3 RotatedX45 ()const {return coreVector3(x, this->yz().Rotated45 ());}
-    constexpr coreVector3 RotatedX135()const {return coreVector3(x, this->yz().Rotated135());}
-    constexpr coreVector3 RotatedY90 ()const {return coreVector3(this->xz().Rotated90 (), y).xzy();}
-    constexpr coreVector3 RotatedY45 ()const {return coreVector3(this->xz().Rotated45 (), y).xzy();}
-    constexpr coreVector3 RotatedY135()const {return coreVector3(this->xz().Rotated135(), y).xzy();}
-    constexpr coreVector3 RotatedZ90 ()const {return coreVector3(this->xy().Rotated90 (), z);}
-    constexpr coreVector3 RotatedZ45 ()const {return coreVector3(this->xy().Rotated45 (), z);}
-    constexpr coreVector3 RotatedZ135()const {return coreVector3(this->xy().Rotated135(), z);}
+    constexpr coreVector3 RotatedX90    ()const {return coreVector3(this->yz().Rotated90 (), x).zxy();}
+    constexpr coreVector3 RotatedX45    ()const {return coreVector3(this->yz().Rotated45 (), x).zxy();}
+    constexpr coreVector3 RotatedX135   ()const {return coreVector3(this->yz().Rotated135(), x).zxy();}
+    constexpr coreVector3 RotatedY90    ()const {return coreVector3(this->xz().Rotated90 (), y).xzy();}
+    constexpr coreVector3 RotatedY45    ()const {return coreVector3(this->xz().Rotated45 (), y).xzy();}
+    constexpr coreVector3 RotatedY135   ()const {return coreVector3(this->xz().Rotated135(), y).xzy();}
+    constexpr coreVector3 RotatedZ90    ()const {return coreVector3(this->xy().Rotated90 (), z);}
+    constexpr coreVector3 RotatedZ45    ()const {return coreVector3(this->xy().Rotated45 (), z);}
+    constexpr coreVector3 RotatedZ135   ()const {return coreVector3(this->xy().Rotated135(), z);}
 
     /* constrain vector */
     inline coreVector3 AlongWay6      ()const {const coreUintW A = this->Processed(ABS).MaxDimension(); return ((A == 0u) ? coreVector3(SIGN(x), 0.0f, 0.0f) : (A == 1u) ? coreVector3(0.0f, SIGN(y), 0.0f) : coreVector3(0.0f, 0.0f, SIGN(z))) * this->Length();}

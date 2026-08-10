@@ -14,7 +14,6 @@
 // TODO 3: add ToChars float precision parameter (+ search for 'PRINT("%f' and 'PRINT("%.')
 // TODO 3: add compiled/included Windows SDK version to BuildLibrary string
 // TODO 2: implement checks and proper handling for paths exceeding the max length (currently they are truncated and might throw "not enough buffer-space" errors on some APIs)
-// TODO 3: manually convert Win32 paths to \\?\ format, only for absolute paths (expand relative paths ? similar to user-folder ?), and requires changing path-delimiter '/' to '\' (what about SDL RWops ?)
 // TODO 1: handle distinction between user-folder (read+write) and data-folder (read only), for all platforms, and all file+directory functions
 // TODO 2: implement locked/scoped temp-string return
 // TODO 3: getpwuid_r and getlogin_r

@@ -89,7 +89,7 @@ void coreRichText::Render()
     const auto nCharDataFunc = [&](const coreCharacter& oCharacter, const coreAnim& oAnim, const corePass& oPass)
     {
         // calculate base parameters
-        const coreVector2 vPosition  = oAnim.vPosition + coreVector2::UnpackFloat2x16(oCharacter.iPosition);
+        const coreVector2 vPosition  = oAnim.vPosition + oCharacter.GetPosition();
         const coreVector2 vSize      = oPass.avTexParams[oCharacter.iTexParamsIndex].xy() * CORE_RICHTEXT_TEXTURE_SIZE / CORE_LABEL_DETAIL;
         const coreVector2 vDirection = oAnim.vDirection;
 

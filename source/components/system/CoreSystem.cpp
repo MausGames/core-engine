@@ -759,7 +759,7 @@ void CoreSystem::__UpdateWindow()
     const coreBool bHidden = HAS_FLAG_ANY(SDL_GetWindowFlags(m_pWindow), SDL_WINDOW_OCCLUDED | SDL_WINDOW_HIDDEN | SDL_WINDOW_MINIMIZED);
     if(bHidden) SDL_Delay(30u);
 
-    // disable joystick events if window is not visible
+    // disable joystick events if window is not visible (static)
     static coreBool s_bDisabled = true;
     if(s_bDisabled != bHidden)
     {

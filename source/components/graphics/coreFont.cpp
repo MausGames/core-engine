@@ -230,10 +230,9 @@ void coreFont::RetrieveGlyphMetrics(const coreChar32 cGlyph, const coreUint16 iH
 {
     // check for requested height and outline
     this->__EnsureHeight(iHeight, iOutline);
-    TTF_Font* pFont = m_aapFont.at(iHeight).at(iOutline);
 
     // retrieve dimensions
-    WARN_IF(!TTF_GetGlyphMetrics(pFont, cGlyph, piMinX, piMaxX, piMinY, piMaxY, piAdvance)) {}
+    WARN_IF(!TTF_GetGlyphMetrics(m_aapFont.at(iHeight).at(iOutline), cGlyph, piMinX, piMaxX, piMinY, piMaxY, piAdvance)) {}
 }
 
 coreUint8 coreFont::RetrieveGlyphMetrics(const coreChar* pcMultiByte, const coreUint16 iHeight, const coreUint8 iOutline, coreInt32* OUTPUT piMinX, coreInt32* OUTPUT piMaxX, coreInt32* OUTPUT piMinY, coreInt32* OUTPUT piMaxY, coreInt32* OUTPUT piAdvance)
@@ -321,7 +320,7 @@ coreBool coreFont::__InitHeight(const coreUint16 iHeight, const coreUint8 iOutli
 
     // create new sub-font
     TTF_Font* pNewFont = TTF_OpenFontWithProperties(oProps);
-    if(!pNewFont)
+    WARN_IF(!pNewFont)
     {
         Core::Log->Warning("Sub-Font (%s, height %u, outline %u) could not be loaded", m_sName.c_str(), iHeight, iOutline);
         return false;

@@ -286,7 +286,8 @@ public:
     static inline    coreMatrix4 RotationY   (const coreFloat   fAngle);
     static constexpr coreMatrix4 RotationZ   (const coreVector2 vDirection);
     static inline    coreMatrix4 RotationZ   (const coreFloat   fAngle);
-    static inline    coreMatrix4 RotationAxis(const coreFloat   fAngle, const coreVector3 vAxis);
+    static constexpr coreMatrix4 RotationAxis(const coreVector2 vDirection, const coreVector3 vAxis);
+    static inline    coreMatrix4 RotationAxis(const coreFloat   fAngle,     const coreVector3 vAxis);
     static constexpr coreMatrix4 ShearXY     (const coreFloat   fFactor);
     static constexpr coreMatrix4 ShearXZ     (const coreFloat   fFactor);
     static constexpr coreMatrix4 ShearYX     (const coreFloat   fFactor);
@@ -920,12 +921,12 @@ inline coreMatrix4 coreMatrix4::RotationZ(const coreFloat fAngle)
 
 // ****************************************************************
 /* get rotation matrix around arbitrary axis */
-inline coreMatrix4 coreMatrix4::RotationAxis(const coreFloat fAngle, const coreVector3 vAxis)
+constexpr coreMatrix4 coreMatrix4::RotationAxis(const coreVector2 vDirection, const coreVector3 vAxis)
 {
-    ASSERT(vAxis.IsNormalized())
+    ASSERT(vDirection.IsNormalized() && vAxis.IsNormalized())
 
-    const coreFloat C = COS(fAngle);
-    const coreFloat S = SIN(fAngle);
+    const coreFloat S = vDirection.x;
+    const coreFloat C = vDirection.y;
     const coreFloat I = 1.0f - C;
 
     const coreFloat XX = vAxis.x * vAxis.x * I;
@@ -936,14 +937,19 @@ inline coreMatrix4 coreMatrix4::RotationAxis(const coreFloat fAngle, const coreV
     const coreFloat XZ = vAxis.x * vAxis.z * I;
     const coreFloat YZ = vAxis.y * vAxis.z * I;
 
-    const coreFloat SX = vAxis.x * S;
-    const coreFloat SY = vAxis.y * S;
-    const coreFloat SZ = vAxis.z * S;
+    const coreFloat S1 = vAxis.x * S;
+    const coreFloat S2 = vAxis.y * S;
+    const coreFloat S3 = vAxis.z * S;
 
-    return coreMatrix4(XX +  C, XY + SZ, XZ - SY, 0.0f,
-                       XY - SZ, YY +  C, YZ + SX, 0.0f,
-                       XZ + SY, YZ - SX, ZZ +  C, 0.0f,
+    return coreMatrix4(XX +  C, XY - S3, XZ + S2, 0.0f,
+                       XY + S3, YY +  C, YZ - S1, 0.0f,
+                       XZ - S2, YZ + S1, ZZ +  C, 0.0f,
                           0.0f,    0.0f,    0.0f, 1.0f);
+}
+
+inline coreMatrix4 coreMatrix4::RotationAxis(const coreFloat fAngle, const coreVector3 vAxis)
+{
+    return coreMatrix4::RotationAxis(coreVector2::Direction(fAngle), vAxis);
 }
 
 
