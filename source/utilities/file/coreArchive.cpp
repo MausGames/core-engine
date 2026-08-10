@@ -205,8 +205,16 @@ SDL_IOStream* coreFile::CreateReadStream()const
         if(!m_pData || !m_iSize) return NULL;
         pFile = SDL_IOFromConstMem(m_pData, m_iSize);
     }
-    else if(m_pArchive)
+    else if(m_iArchivePos == __CORE_FILE_TYPE_DIRECT)
     {
+        // open direct file
+        pFile = SDL_IOFromFile(m_sPath.c_str(), CORE_FILE_OPEN_READ);
+        if(!pFile) return NULL;
+    }
+    else
+    {
+        ASSERT(m_pArchive)
+
         // open archive
         pFile = SDL_IOFromFile(m_pArchive->GetPath(), CORE_FILE_OPEN_READ);
         if(!pFile) return NULL;
@@ -218,14 +226,36 @@ SDL_IOStream* coreFile::CreateReadStream()const
             return NULL;
         }
     }
-    else
-    {
-        // open direct file
-        pFile = SDL_IOFromFile(m_sPath.c_str(), CORE_FILE_OPEN_READ);
-        if(!pFile) return NULL;
-    }
 
     return pFile;
+}
+
+
+// ****************************************************************
+/* retrieve full file info (from disk) */
+coreFileStats coreFile::RetrieveFileStats()const
+{
+    coreFileStats oStats = {};
+    if(m_iArchivePos == __CORE_FILE_TYPE_MEMORY)
+    {
+        // just return the file size
+        oStats.iSize = m_iSize;
+    }
+    else if(m_iArchivePos == __CORE_FILE_TYPE_DIRECT)
+    {
+        // query direct file
+        oStats = coreData::FileStats(m_sPath.c_str());
+    }
+    else
+    {
+        ASSERT(m_pArchive)
+
+        // query archive and override the file size
+        oStats = coreData::FileStats(m_pArchive->GetPath());
+        oStats.iSize = m_iSize;
+    }
+
+    return oStats;
 }
 
 

@@ -85,6 +85,9 @@ public:
     /* create stream for reading file data */
     SDL_IOStream* CreateReadStream()const;
 
+    /* retrieve full file info (from disk) */
+    coreFileStats RetrieveFileStats()const;
+
     /* load and unload file data */
     coreStatus LoadData(const coreBool bMapped = false);
     coreStatus UnloadData();
