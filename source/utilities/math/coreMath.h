@@ -23,21 +23,21 @@
 
 // ****************************************************************
 /* math definitions */
-#define CORE_MATH_PRECISION (0.0005f)                              // default floating-point precision
+#define EPSILON       (0.0005f)                                    // default floating-point precision
 
-#define PI_D    (3.141592653589793238462643383279502884)           // Archimedes' constant
-#define EU_D    (2.718281828459045235360287471352662498)           // Euler's number
-#define GR_D    (1.618033988749894848204586834365638118)           // golden ratio ((a+b)/a = a/b)
-#define GA_D    (2.399963229728653322231555506633613853)           // golden angle (radians, PI * (3 - SQRT(5)))
-#define SQRT2_D (1.414213562373095048801688724209698079)           // principal square root of 2
-#define SQRT3_D (1.732050807568877293527446341505872367)           // principal square root of 3
+#define PI_D          (3.141592653589793238462643383279502884)     // Archimedes' constant
+#define EU_D          (2.718281828459045235360287471352662498)     // Euler's number
+#define GR_D          (1.618033988749894848204586834365638118)     // golden ratio ((a+b)/a = a/b)
+#define GA_D          (2.399963229728653322231555506633613853)     // golden angle (radians, PI * (3 - SQRT(5)))
+#define SQRT2_D       (1.414213562373095048801688724209698079)     // principal square root of 2
+#define SQRT3_D       (1.732050807568877293527446341505872367)     // principal square root of 3
 
-#define PI      (coreFloat(PI_D))
-#define EU      (coreFloat(EU_D))
-#define GR      (coreFloat(GR_D))
-#define GA      (coreFloat(GA_D))
-#define SQRT2   (coreFloat(SQRT2_D))
-#define SQRT3   (coreFloat(SQRT3_D))
+#define PI            (coreFloat(PI_D))
+#define EU            (coreFloat(EU_D))
+#define GR            (coreFloat(GR_D))
+#define GA            (coreFloat(GA_D))
+#define SQRT2         (coreFloat(SQRT2_D))
+#define SQRT3         (coreFloat(SQRT3_D))
 
 #define DEG_TO_RAD(x) ((x) * 0.0174532925199432957692369076848f)   // convert degrees to radians
 #define RAD_TO_DEG(x) ((x) * 57.295779513082320876798154814105f)   // convert radians to degrees
@@ -192,9 +192,9 @@ public:
     template <typename          T> static constexpr T* FloorAlignPtr(const T* ptInput, const coreUintW iAlign) {ASSERT(coreMath::IsPot(iAlign)) const coreUintW k = iAlign - 1u; return s_cast<T*>(I_TO_P((P_TO_UI(ptInput))     & ~k));}
 
     /* analyzing operations */
-    template <std::integral T> static constexpr coreBool IsPot    (const T tInput)                                                         {ASSERT(tInput >= T(0)) return (tInput && !(tInput & (tInput - T(1))));}
-    template <std::integral T> static constexpr coreBool IsAligned(const T tInput,  const coreUintW iAlign)                                {ASSERT(tInput >= T(0)) return ((coreUintW(tInput) % iAlign) == 0u);}
-    template <typename      T> static constexpr coreBool IsNear   (const T tValue1, const T tValue2, const T tRange = CORE_MATH_PRECISION) {ASSERT(tRange >  T(0)) return (ABS(tValue1 - tValue2) <= tRange);}
+    template <std::integral T> static constexpr coreBool IsPot    (const T tInput)                                             {ASSERT(tInput >= T(0)) return (tInput && !(tInput & (tInput - T(1))));}
+    template <std::integral T> static constexpr coreBool IsAligned(const T tInput,  const coreUintW iAlign)                    {ASSERT(tInput >= T(0)) return ((coreUintW(tInput) % iAlign) == 0u);}
+    template <typename      T> static constexpr coreBool IsNear   (const T tValue1, const T tValue2, const T tRange = EPSILON) {ASSERT(tRange >  T(0)) return (ABS(tValue1 - tValue2) <= tRange);}
 
     /* bit operations */
     static constexpr coreUint32 PopCount      (const coreUint64 iInput);

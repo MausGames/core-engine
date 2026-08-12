@@ -49,7 +49,7 @@ public:
     constexpr coreFloat  Float(const coreFloat  fMax)                        {return (coreFloat(this->Raw()) / coreFloat(CORE_RAND_MAX)) * (fMax);}   // min = 0.0f
     constexpr coreFloat  Float(const coreFloat  fMin, const coreFloat  fMax) {return (coreFloat(this->Raw()) / coreFloat(CORE_RAND_MAX)) * (fMax - fMin) + fMin;}
     constexpr coreBool   Bool ()                                             {return (this->Raw() & 0x01u);}
-    constexpr coreBool   Bool (const coreFloat fChance)                      {return (this->Float(1.0f - CORE_MATH_PRECISION) < fChance);}
+    constexpr coreBool   Bool (const coreFloat fChance)                      {return (this->Float(1.0f - EPSILON) < fChance);}
 
     /* set object properties */
     constexpr void SetSeed     (const coreUint64 iSeed) {m_iSeed = iSeed;}

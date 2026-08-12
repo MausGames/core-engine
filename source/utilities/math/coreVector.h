@@ -576,13 +576,13 @@ constexpr coreFloat coreVector2::Dot(const coreVector2 v1, const coreVector2 v2)
 constexpr coreBool coreVector2::SameDir(const coreVector2 v1, const coreVector2 v2)
 {
     ASSERT(v1.IsNormalized() && v2.IsNormalized())
-    return (coreVector2::Dot(v1, v2) >= (1.0f) - CORE_MATH_PRECISION);
+    return (coreVector2::Dot(v1, v2) >= (1.0f) - EPSILON);
 }
 
 constexpr coreBool coreVector2::SameDir90(const coreVector2 v1, const coreVector2 v2)
 {
     ASSERT(v1.IsNormalized() && v2.IsNormalized())
-    return (coreVector2::Dot(v1, v2) >= (1.0f / SQRT2) - CORE_MATH_PRECISION);
+    return (coreVector2::Dot(v1, v2) >= (1.0f / SQRT2) - EPSILON);
 }
 
 constexpr coreBool coreVector2::SameDir180(const coreVector2 v1, const coreVector2 v2)
@@ -593,13 +593,13 @@ constexpr coreBool coreVector2::SameDir180(const coreVector2 v1, const coreVecto
 constexpr coreBool coreVector2::SameLine(const coreVector2 v1, const coreVector2 v2)
 {
     ASSERT(v1.IsNormalized() && v2.IsNormalized())
-    return (ABS(coreVector2::Dot(v1, v2)) >= (1.0f) - CORE_MATH_PRECISION);
+    return (ABS(coreVector2::Dot(v1, v2)) >= (1.0f) - EPSILON);
 }
 
 constexpr coreBool coreVector2::SameLine90(const coreVector2 v1, const coreVector2 v2)
 {
     ASSERT(v1.IsNormalized() && v2.IsNormalized())
-    return (ABS(coreVector2::Dot(v1, v2)) >= (1.0f / SQRT2) - CORE_MATH_PRECISION);
+    return (ABS(coreVector2::Dot(v1, v2)) >= (1.0f / SQRT2) - EPSILON);
 }
 
 
@@ -909,13 +909,13 @@ constexpr coreVector3 coreVector3::Cross(const coreVector3 v1, const coreVector3
 constexpr coreBool coreVector3::SameDir(const coreVector3 v1, const coreVector3 v2)
 {
     ASSERT(v1.IsNormalized() && v2.IsNormalized())
-    return (coreVector3::Dot(v1, v2) >= (1.0f) - CORE_MATH_PRECISION);
+    return (coreVector3::Dot(v1, v2) >= (1.0f) - EPSILON);
 }
 
 constexpr coreBool coreVector3::SameDir90(const coreVector3 v1, const coreVector3 v2)
 {
     ASSERT(v1.IsNormalized() && v2.IsNormalized())
-    return (coreVector3::Dot(v1, v2) >= (1.0f / SQRT2) - CORE_MATH_PRECISION);
+    return (coreVector3::Dot(v1, v2) >= (1.0f / SQRT2) - EPSILON);
 }
 
 constexpr coreBool coreVector3::SameDir180(const coreVector3 v1, const coreVector3 v2)
@@ -926,13 +926,13 @@ constexpr coreBool coreVector3::SameDir180(const coreVector3 v1, const coreVecto
 constexpr coreBool coreVector3::SameLine(const coreVector3 v1, const coreVector3 v2)
 {
     ASSERT(v1.IsNormalized() && v2.IsNormalized())
-    return (ABS(coreVector3::Dot(v1, v2)) >= (1.0f) - CORE_MATH_PRECISION);
+    return (ABS(coreVector3::Dot(v1, v2)) >= (1.0f) - EPSILON);
 }
 
 constexpr coreBool coreVector3::SameLine90(const coreVector3 v1, const coreVector3 v2)
 {
     ASSERT(v1.IsNormalized() && v2.IsNormalized())
-    return (ABS(coreVector3::Dot(v1, v2)) >= (1.0f / SQRT2) - CORE_MATH_PRECISION);
+    return (ABS(coreVector3::Dot(v1, v2)) >= (1.0f / SQRT2) - EPSILON);
 }
 
 

@@ -181,7 +181,7 @@ coreStatus coreModel::Load(coreFile* pFile)
         for(coreUintW i = 0u, ie = m_iNumVertices; i < ie; ++i) m_pvVertexPosition[i] = oImport.aVertexData[i].vPosition;
 
         // get range factor for target cluster calculations
-        const coreVector3 vRangeDiff = coreVector3(1.0f,1.0f,1.0f) / (vRangeMax - vRangeMin).Processed(MAX, CORE_MATH_PRECISION);
+        const coreVector3 vRangeDiff = coreVector3(1.0f,1.0f,1.0f) / (vRangeMax - vRangeMin).Processed(MAX, EPSILON);
 
         // assign triangles to different clusters based on their vertex positions (uniform grid)
         coreList<coreUint16> aiTempIndex[CORE_MODEL_CLUSTERS_MAX];
@@ -195,7 +195,7 @@ coreStatus coreModel::Load(coreFile* pFile)
                                             coreVector3(MAX(vPos1.x, vPos2.x, vPos3.x), MAX(vPos1.y, vPos2.y, vPos3.y), MAX(vPos1.z, vPos2.z, vPos3.z))) * 0.5f;
 
             // calculate target cluster
-            const coreVector3 vRangePos = ((vCenterPos - vRangeMin) * vRangeDiff).Processed(CLAMP, 0.0f, 1.0f - CORE_MATH_PRECISION) * I_TO_F(CORE_MODEL_CLUSTERS_AXIS);
+            const coreVector3 vRangePos = ((vCenterPos - vRangeMin) * vRangeDiff).Processed(CLAMP, 0.0f, 1.0f - EPSILON) * I_TO_F(CORE_MODEL_CLUSTERS_AXIS);
             const coreUintW   iIndex    = (F_TO_UI(vRangePos.x) * CORE_MODEL_CLUSTERS_AXIS * CORE_MODEL_CLUSTERS_AXIS) +
                                           (F_TO_UI(vRangePos.y) * CORE_MODEL_CLUSTERS_AXIS)                            +
                                           (F_TO_UI(vRangePos.z));
