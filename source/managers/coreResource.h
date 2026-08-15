@@ -15,14 +15,16 @@
 // TODO 3: set textures which are still loaded to default values (default_white.webp, default_normal.webp) "placeholder", as those do not prevent rendering (like models and shaders), and cause flickering (because textures of previous render-calls are used), but how to handle IsLoaded/IsUsable state for situations where components wait on textures, maybe set manually, or use LOAD option
 // TODO 3: set resources which could not be found (or loaded) to fallback values
 // TODO 3: CORE_OK for non-automatic resource-handle constructor and nullify might be wrong (as it gets marked as successful)
+// TODO 3: calling OnUsableOnce and then deleting the handle may crash (same for OnLoadedOnce ?)
 
 
 // ****************************************************************
 /* resource definitions */
-#define CORE_RESOURCE_INDICES (4096u)   // max number of concurrent resource indices
+#define CORE_RESOURCE_INDICES       (4096u)   // max number of concurrent resource indices
+#define CORE_RESOURCE_INDEX_INVALID (0u)      // invalid/unused resource index value
 
-#define CORE_RESOURCE_WAIT_DEFAULT (1.0f)
-#define CORE_RESOURCE_WAIT_STARTUP ((Core::Config->GetBool(CORE_CONFIG_BASE_PERSISTMODE) || DEFINED(_CORE_SWITCH_)) ? 10.0f : 3.0f)
+#define CORE_RESOURCE_WAIT_DEFAULT  (1.0f)
+#define CORE_RESOURCE_WAIT_STARTUP  ((Core::Config->GetBool(CORE_CONFIG_BASE_PERSISTMODE) || DEFINED(_CORE_SWITCH_)) ? 10.0f : 3.0f)
 
 using coreResourceIndex = coreUint16;   // resource index type
 
@@ -141,7 +143,7 @@ public:
     template <typename F> inline void LockResource(F&& nFunction) {const coreLocker oLocker(&m_UpdateLock); nFunction(d_cast<typename TRAIT_ARG_TYPE(F, 0u)>(m_pResource));}   // [](coreResource* OUTPUT pResource) -> void
 
     /* attach asynchronous callbacks */
-    template <typename F> coreUint32 OnLoadedOnce(F&& nFunction, const coreUint32 iDependency = 0u)const;   // [](void) -> void
+    template <typename F> coreThreadToken OnLoadedOnce(F&& nFunction, const coreThreadToken iDependency = CORE_THREAD_TOKEN_INVALID)const;   // [](void) -> void
 
     /* get object properties */
     inline const coreChar*          GetName    ()const {return m_sName.c_str();}
@@ -300,15 +302,15 @@ public:
     inline T*                       GetResource()const {return d_cast<T*>(coreResourceManager::FetchResource(m_iIndex));}
     inline coreResourceHandle*      GetHandle  ()const {return coreResourceManager::FetchHandle(m_iIndex);}
     inline const coreResourceIndex& GetIndex   ()const {return m_iIndex;}
-    inline explicit operator coreBool          ()const {return m_iIndex != 0u;}
+    inline explicit operator coreBool          ()const {return m_iIndex != CORE_RESOURCE_INDEX_INVALID;}
     inline T*       operator ->                ()const {return  this->GetResource();}
     inline T&       operator *                 ()const {return *this->GetResource();}
 
     /* check for usable resource object */
-    inline coreBool IsUsable()const {return (m_iIndex && this->GetHandle()->IsSuccessful());}
+    inline coreBool IsUsable()const {return (m_iIndex != CORE_RESOURCE_INDEX_INVALID) && this->GetHandle()->IsSuccessful();}
 
     /* attach asynchronous callbacks */
-    template <typename F> coreUint32 OnUsableOnce(F&& nFunction, const coreUint32 iDependency = 0u)const {WARN_IF(!m_iIndex) return 0u; const coreResourceHandle* pHandle = this->GetHandle(); return pHandle->OnLoadedOnce([=, nFunction = std::forward<F>(nFunction)]() {if(pHandle->IsSuccessful()) nFunction();}, iDependency);}   // [](void) -> void
+    template <typename F> coreThreadToken OnUsableOnce(F&& nFunction, const coreThreadToken iDependency = CORE_THREAD_TOKEN_INVALID)const;   // [](void) -> void
 };
 
 
@@ -319,13 +321,13 @@ using coreDummyPtr = coreResourcePtr<coreResourceDummy>;
 
 // ****************************************************************
 /* attach asynchronous callbacks */
-template <typename F> coreUint32 coreResourceHandle::OnLoadedOnce(F&& nFunction, const coreUint32 iDependency)const
+template <typename F> coreThreadToken coreResourceHandle::OnLoadedOnce(F&& nFunction, const coreThreadToken iDependency)const
 {
-    if(this->IsLoaded() && (!iDependency || !Core::Manager::Resource->GetNumFunctions()))
+    if(this->IsLoaded() && ((iDependency == CORE_THREAD_TOKEN_INVALID) || !Core::Manager::Resource->GetNumFunctions()))
     {
         // call function immediately
         nFunction();
-        return 0u;
+        return CORE_THREAD_TOKEN_INVALID;
     }
     else
     {
@@ -452,24 +454,24 @@ template <typename T> void coreResourceManager::Free(coreResourcePtr<T>* OUTPUT 
 // ****************************************************************
 /* constructor */
 template <typename T> constexpr coreResourcePtr<T>::coreResourcePtr(std::nullptr_t)noexcept
-: m_iIndex (0u)
+: m_iIndex (CORE_RESOURCE_INDEX_INVALID)
 {
 }
 
 template <typename T> coreResourcePtr<T>::coreResourcePtr(coreResourceHandle* pHandle)noexcept
-: m_iIndex (pHandle ? pHandle->GetIndex() : 0u)
+: m_iIndex (pHandle ? pHandle->GetIndex() : CORE_RESOURCE_INDEX_INVALID)
 {
-    if(m_iIndex) pHandle->RefIncrease();
+    if(m_iIndex != CORE_RESOURCE_INDEX_INVALID) pHandle->RefIncrease();
 }
 
 template <typename T> coreResourcePtr<T>::coreResourcePtr(const coreResourcePtr& c)noexcept
 : m_iIndex (c.m_iIndex)
 {
-    if(m_iIndex) this->GetHandle()->RefIncrease();
+    if(m_iIndex != CORE_RESOURCE_INDEX_INVALID) this->GetHandle()->RefIncrease();
 }
 
 template <typename T> coreResourcePtr<T>::coreResourcePtr(coreResourcePtr&& m)noexcept
-: m_iIndex (std::exchange(m.m_iIndex, 0u))
+: m_iIndex (std::exchange(m.m_iIndex, CORE_RESOURCE_INDEX_INVALID))
 {
 }
 
@@ -478,7 +480,7 @@ template <typename T> coreResourcePtr<T>::coreResourcePtr(coreResourcePtr&& m)no
 /* destructor */
 template <typename T> coreResourcePtr<T>::~coreResourcePtr()
 {
-    if(m_iIndex) this->GetHandle()->RefDecrease();
+    if(m_iIndex != CORE_RESOURCE_INDEX_INVALID) this->GetHandle()->RefDecrease();
 }
 
 
@@ -490,6 +492,24 @@ template <typename T> coreResourcePtr<T>& coreResourcePtr<T>::operator = (coreRe
     std::swap(m_iIndex, o.m_iIndex);
 
     return *this;
+}
+
+
+// ****************************************************************
+/* attach asynchronous callbacks */
+template <typename T> template <typename F> coreThreadToken coreResourcePtr<T>::OnUsableOnce(F&& nFunction, const coreThreadToken iDependency)const
+{
+    WARN_IF(m_iIndex == CORE_RESOURCE_INDEX_INVALID) return CORE_THREAD_TOKEN_INVALID;
+
+    // retrieve resource handle
+    const coreResourceHandle* pHandle = this->GetHandle();
+
+    // attach wrapper to the resource handle
+    return pHandle->OnLoadedOnce([=, nFunction = std::forward<F>(nFunction)]()
+    {
+        if(pHandle->IsSuccessful()) nFunction();
+    },
+    iDependency);
 }
 
 

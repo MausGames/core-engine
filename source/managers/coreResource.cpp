@@ -23,7 +23,7 @@ coreResourceHandle::coreResourceHandle(coreResource* pResource, coreFile* pFile,
 , m_bPersist   (bPersist)
 , m_bProxy     (false)
 , m_bUnload    (false)
-, m_iIndex     (0u)
+, m_iIndex     (CORE_RESOURCE_INDEX_INVALID)
 , m_UpdateLock ()
 , m_eStatus    ((pFile || bAutomatic) ? CORE_BUSY : CORE_OK)
 , m_iRefCount  (0u)
@@ -440,7 +440,7 @@ void coreResourceManager::Reshape()
 /* acquire resource index table space */
 void coreResourceManager::AllocIndex(coreResourceHandle* OUTPUT pHandle)
 {
-    ASSERT(pHandle && !pHandle->m_iIndex && (SDL_GetCurrentThreadID() == Core::System->GetMainThread()))
+    ASSERT(pHandle && (pHandle->m_iIndex == CORE_RESOURCE_INDEX_INVALID) && (SDL_GetCurrentThreadID() == Core::System->GetMainThread()))
 
     for(coreUintW i = s_iTableStart; i < CORE_RESOURCE_INDICES; ++i)
     {
@@ -468,7 +468,7 @@ void coreResourceManager::AllocIndex(coreResourceHandle* OUTPUT pHandle)
 /* release resource index table space */
 void coreResourceManager::FreeIndex(coreResourceHandle* OUTPUT pHandle)
 {
-    ASSERT(pHandle && pHandle->m_iIndex && (SDL_GetCurrentThreadID() == Core::System->GetMainThread()))
+    ASSERT(pHandle && (pHandle->m_iIndex != CORE_RESOURCE_INDEX_INVALID) && (SDL_GetCurrentThreadID() == Core::System->GetMainThread()))
 
     const coreResourceIndex iIndex = pHandle->m_iIndex;
     ASSERT(pHandle == s_apHandleTable[iIndex])
@@ -481,7 +481,7 @@ void coreResourceManager::FreeIndex(coreResourceHandle* OUTPUT pHandle)
     s_iTableStart = MIN(s_iTableStart, iIndex);
 
     // reset resource index
-    pHandle->m_iIndex = 0u;
+    pHandle->m_iIndex = CORE_RESOURCE_INDEX_INVALID;
 }
 
 
