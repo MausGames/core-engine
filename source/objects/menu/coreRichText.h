@@ -176,8 +176,8 @@ public:
     inline const coreUint16& GetMaxOrder ()const {return m_iMaxOrder;}
     inline const coreFloat&  GetMaxWidth ()const {return m_fMaxWidth;}
     inline const coreFloat&  GetLineSkip ()const {return m_fLineSkip;}
-    inline const coreUint16& GetNumLines ()const {return m_iNumLines;}
-    inline const coreUint16& GetNumOrders()const {return m_iNumOrders;}
+    inline const coreUint16& GetNumLines ()const {ASSERT(!HAS_FLAG(m_eRefresh, CORE_RICHTEXT_REFRESH_LAYOUT)) return m_iNumLines;}
+    inline const coreUint16& GetNumOrders()const {ASSERT(!HAS_FLAG(m_eRefresh, CORE_RICHTEXT_REFRESH_LAYOUT)) return m_iNumOrders;}
 
 
 private:

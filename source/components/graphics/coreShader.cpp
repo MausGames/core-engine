@@ -366,7 +366,12 @@ coreStatus coreProgram::Load(coreFile* pFile)
     const coreStatus eCheck = m_Sync.Check(0u);
     if(eCheck == CORE_BUSY) return CORE_BUSY;
 
-    if(m_eStatus == CORE_PROGRAM_DEFINED)
+    if(m_eStatus == CORE_PROGRAM_NEW)
+    {
+        // not yet configured
+        return CORE_BUSY;
+    }
+    else if(m_eStatus == CORE_PROGRAM_DEFINED)
     {
         // load all required shader objects
         if(m_apShader.empty()) FOR_EACH(it, m_apShaderHandle) m_apShader.emplace_back_unsafe(*it);
@@ -445,8 +450,7 @@ coreStatus coreProgram::Load(coreFile* pFile)
         }
 
         m_eStatus = CORE_PROGRAM_LINKING;
-        m_Sync.Create(CORE_SYNC_CREATE_FLUSHED);
-        return CORE_BUSY;
+        return m_Sync.Create(CORE_SYNC_CREATE_FLUSHED) ? CORE_BUSY : CORE_BUSY;
     }
     else if(m_eStatus == CORE_PROGRAM_LINKING)
     {

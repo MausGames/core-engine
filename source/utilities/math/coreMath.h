@@ -23,7 +23,7 @@
 
 // ****************************************************************
 /* math definitions */
-#define EPSILON       (0.0005f)                                    // default floating-point precision
+#define EPSILON       (0.0001f)                                    // default floating-point precision
 
 #define PI_D          (3.141592653589793238462643383279502884)     // Archimedes' constant
 #define EU_D          (2.718281828459045235360287471352662498)     // Euler's number
@@ -41,10 +41,12 @@
 
 #define DEG_TO_RAD(x) ((x) * 0.0174532925199432957692369076848f)   // convert degrees to radians
 #define RAD_TO_DEG(x) ((x) * 57.295779513082320876798154814105f)   // convert radians to degrees
-#define KM_TO_MI(x)   ((x) * 0.621371192237f)                      // convert kilometers to miles
-#define MI_TO_KM(x)   ((x) * 1.609344000000f)                      // convert miles to kilometers
-#define M_TO_FT(x)    ((x) * 0.304800000f)                         // convert meters to feet
-#define FT_TO_M(x)    ((x) * 3.280839895f)                         // convert feet to meters
+#define KM_TO_MI(x)   ((x) * 0.6213711922373339696174341843633f)   // convert kilometers to miles
+#define MI_TO_KM(x)   ((x) * 1.6093440000000000000000000000000f)   // convert miles to kilometers (exact)
+#define M_TO_FT(x)    ((x) * 0.3048000000000000000000000000000f)   // convert meters to feet      (exact)
+#define FT_TO_M(x)    ((x) * 3.2808398950131233595800524934383f)   // convert feet to meters
+#define KG_TO_LB(x)   ((x) * 2.2046226218487758072297380134503f)   // convert kilograms to pounds
+#define LB_TO_KG(x)   ((x) * 0.4535923700000000000000000000000f)   // convert pounds to kilograms (exact)
 
 #define MIN    coreMath::Min                                       // for better visibility in formulas
 #define MAX    coreMath::Max

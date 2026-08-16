@@ -92,7 +92,7 @@ public:
     inline const coreFontPtr& GetFont      ()const {return m_pFont;}
     inline const coreUint16&  GetHeight    ()const {return m_iHeight;}
     inline const coreUint8&   GetOutline   ()const {return m_iOutline;}
-    inline const coreVector2& GetResolution()const {return m_vResolution;}
+    inline const coreVector2& GetResolution()const {ASSERT(!HAS_FLAG(m_eRefresh, CORE_LABEL_REFRESH_TEXTURE)) return m_vResolution;}
     inline const coreChar*    GetText      ()const {return m_sText.c_str();}
     inline       coreUintW    GetTextLen   ()const {return m_sText.length();}
     inline const coreVector2& GetScale     ()const {return m_vScale;}
