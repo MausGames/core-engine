@@ -296,24 +296,15 @@ coreUint8 coreFont::ConvertToGlyph(const coreChar* pcMultiByte, coreChar32* OUTP
 {
     ASSERT(pcMultiByte && pcGlyph)
 
-    // handle UTF-8 encoding
-    if(HAS_FLAG((*pcMultiByte), 0x80u))
-    {
-        // count number of bytes
-        const coreUint8 iBytes = 2u + HAS_FLAG((*pcMultiByte), 0xE0u) + HAS_FLAG((*pcMultiByte), 0xF0u);
-        ASSERT(iBytes <= 4u)
+    UChar32   cChar;
+    coreUint8 iBytes = 0u;
 
-        // convert character
-        (*pcGlyph) = SDL_StepUTF8(&pcMultiByte, NULL);
-        ASSERT((*pcGlyph) != SDL_INVALID_UNICODE_CODEPOINT)
+    // convert UTF-8 character
+    U8_NEXT_CORE(pcMultiByte, iBytes, U8_MAX_LENGTH, cChar)
+    (*pcGlyph) = cChar;
 
-        return iBytes;
-    }
-
-    // just forward the character
-    (*pcGlyph) = (*pcMultiByte);
-
-    return 1u;
+    // return number of bytes
+    return iBytes;
 }
 
 

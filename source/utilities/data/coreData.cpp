@@ -2684,7 +2684,7 @@ coreBool coreData::StrIsUpperUTF8(const coreChar* pcInput)
     {
         // retrieve next UTF-8 character
         UChar32 cChar;
-        U8_NEXT_UNSAFE(pcInput, i, cChar);
+        U8_NEXT_CORE(pcInput, i, SIZE_MAX, cChar)
 
         // check for lower-case
         if(u_isULowercase(cChar)) return false;
@@ -2704,7 +2704,7 @@ coreBool coreData::StrIsLowerUTF8(const coreChar* pcInput)
     {
         // retrieve next UTF-8 character
         UChar32 cChar;
-        U8_NEXT_UNSAFE(pcInput, i, cChar);
+        U8_NEXT_CORE(pcInput, i, SIZE_MAX, cChar)
 
         // check for upper-case
         if(u_isUUppercase(cChar)) return false;
@@ -2988,13 +2988,16 @@ const coreWchar* coreData::__ToNormalizedPath(const coreChar* pcPath)
 /* initialize ICU library */
 void coreData::__SetupICU()
 {
-    // open ICU case mapping function service object (defined here to remove symbols if not used)
     UNUSED static const coreBool s_bOnce = []()
     {
+        // open ICU case mapping function service object (defined here to remove symbols if not used)
         UErrorCode eError = U_ZERO_ERROR;
-        s_pCaseMap = ucasemap_open(NULL, U_FOLD_CASE_DEFAULT, &eError);   // never cleaned up
+        s_pCaseMap = ucasemap_open(NULL, U_FOLD_CASE_DEFAULT, &eError);
+        ASSERT(U_SUCCESS(eError))
 
-        return U_SUCCESS(eError);
+        // automatically shut down ICU library on exit
+        WARN_IF(std::atexit([]() {ucasemap_close(s_pCaseMap); u_cleanup();})) {}
+        return true;
     }();
 }
 

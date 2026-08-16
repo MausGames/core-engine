@@ -189,10 +189,7 @@ constexpr coreString& coreString::pop_back_utf8()
     ASSERT(!this->empty())
 
     // handle UTF-8 encoding
-    if(HAS_FLAG(this->back(), 0x80u))
-    {
-        while(!HAS_FLAG(this->back(), 0xC0u)) this->pop_back();
-    }
+    while(U8_IS_TRAIL(this->back())) this->pop_back();
 
     // remove remaining byte
     this->pop_back();

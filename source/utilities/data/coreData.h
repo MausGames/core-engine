@@ -23,6 +23,8 @@
 // TODO 2: improve all the unreliable file and directory checks (sub-paths, separator handling)
 // TODO 4: when to use #else or individual platforms? #else for generic solutions, individual even for posix stuff? (though return-value at the bottom needs adjustment)
 // TODO 3: posix_fadvise(iFileFrom, 0, iLen, POSIX_FADV_SEQUENTIAL);
+// TODO 3: use MemAvailable from proc/meminfo to remove cache memory
+// TODO 3: give own heap to ICU (u_setMemoryFunctions)
 
 
 // ****************************************************************
@@ -37,6 +39,12 @@ STATIC_ASSERT(CORE_DATA_STRING_LEN >= CORE_DATA_MAX_PATH)
     #define PRINT(...)   ([&]() {if(false) std::printf(__VA_ARGS__); return coreData::Print(__VA_ARGS__);}())   // enable format-specifier checking
 #else
     #define PRINT(...)   (coreData::Print(__VA_ARGS__))
+#endif
+
+#if defined(_CORE_DEBUG_)
+    #define U8_NEXT_CORE(s,i,l,c) {U8_NEXT(s, i, l, c); ASSERT(((c) >= UCHAR_MIN_VALUE) && ((c) <= UCHAR_MAX_VALUE))}   // enable illegal sequence and string boundary checking
+#else
+    #define U8_NEXT_CORE(s,i,l,c) {U8_NEXT_UNSAFE(s, i, c); ASSERT(((c) >= UCHAR_MIN_VALUE) && ((c) <= UCHAR_MAX_VALUE))}
 #endif
 
 #define TIMEMAP_LOCAL(t) ([](const std::time_t iValue) {static std::tm s_Buffer = {}; return localtime_r(&iValue, &s_Buffer);}(t))

@@ -378,6 +378,7 @@
 #include <AL/efx-presets.h>
 #include <opus/opusfile.h>
 #include <zstd/zstd.h>
+#include <unicode/uclean.h>
 #include <unicode/ucasemap.h>
 #include <unicode/uchar.h>
 
