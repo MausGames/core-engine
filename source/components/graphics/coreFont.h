@@ -13,7 +13,6 @@
 // TODO 3: distance fields for sharper text (TTF_SetFontSDF + TTF_RenderGlyph_Blended)
 // TODO 5: clear-type font rendering (TTF_RenderGlyph_LCD) -> 4 channel, but how to add (clear-type) outlines?
 // TODO 5: <old comment style>
-// TODO 3: TTF_AddFallbackFont
 // TODO 3: check support for color emojis
 // TODO 3: allow floating-point font height, but that would increase permutations significantly (maybe somehow use unmodified base-height as key)
 // TODO 3: get rid of sharp+smooth shader variants
@@ -37,6 +36,10 @@ private:
     coreMap<coreUint16, coreMap<coreUint8, TTF_Font*>> m_aapFont;   // list with sub-fonts in different heights <height, <outline>>
     coreFile* m_pFile;                                              // file object with resource data
 
+    coreList<coreResourcePtr<coreFont>> m_apFallback;               // attached fallback font objects
+    coreList<coreResourceHandle*>       m_apFallbackHandle;         // raw fallback font handles (to preserve while unloaded)
+    coreBool                            m_bStatus;                  // current status
+
     TTF_HintingFlags m_eHinting;                                    // hinting-algorithm to use
     coreBool         m_bKerning;                                    // apply kerning if available
 
@@ -56,6 +59,12 @@ public:
 
     /* get resource type */
     inline coreResourceType GetResourceType()const final {return CORE_RESOURCE_TYPE_DEFAULT;}
+
+    /* define fallback font objects */
+    inline coreFont* AttachFallback(coreResourceHandle*   pFont) {WARN_IF(m_bStatus) return this; m_apFallbackHandle.push_back(pFont);                               return this;}
+    inline coreFont* AttachFallback(const coreHashString& sName) {WARN_IF(m_bStatus) return this; m_apFallbackHandle.push_back(Core::Manager::Resource->Get(sName)); return this;}
+    inline void      Finish        ()                            {WARN_IF(m_bStatus) return;      m_apFallback.reserve(m_apFallbackHandle.size()); m_apFallbackHandle.shrink_to_fit(); m_bStatus = true;}
+    inline void      Restart       ()                            {this->Unload();                 m_apFallback.clear();                            m_apFallbackHandle.clear();         m_bStatus = false;}
 
     /* create solid text with the font */
     SDL_Surface* CreateText (const coreChar*  pcText, const coreUintW iNum, const coreUint16 iHeight);

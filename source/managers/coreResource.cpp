@@ -577,7 +577,9 @@ void coreResourceManager::__LoadDefault()
     this->Load<coreShader> ("default_label_smooth_inst.frag", CORE_RESOURCE_UPDATE_MANUAL, "data/shaders/default_label_smooth.frag", CORE_SHADER_OPTION_INSTANCING CORE_SHADER_OPTION_NO_PERSPECTIVE);
     this->Load<coreShader> ("default_particle.vert",          CORE_RESOURCE_UPDATE_MANUAL, "data/shaders/default_particle.vert",     CORE_SHADER_OPTION_INSTANCING);
     this->Load<coreShader> ("default_particle.frag",          CORE_RESOURCE_UPDATE_MANUAL, "data/shaders/default_particle.frag",     CORE_SHADER_OPTION_INSTANCING);
-    this->Load<coreFont>   ("default.ttf",                    CORE_RESOURCE_UPDATE_AUTO,   "data/fonts/default.ttf");
+
+    d_cast<coreFont*>(this->Load<coreFont>("default.ttf", CORE_RESOURCE_UPDATE_AUTO, "data/fonts/default.ttf")->GetRawResource())
+        ->Finish();
 
     d_cast<coreProgram*>(this->Load<coreProgram>("default_2d_program", CORE_RESOURCE_UPDATE_AUTO, NULL)->GetRawResource())
         ->AttachShader  (this->Get              ("default_2d.vert"))

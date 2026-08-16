@@ -15,6 +15,7 @@
 // TODO 3: set textures which are still loaded to default values (default_white.webp, default_normal.webp) "placeholder", as those do not prevent rendering (like models and shaders), and cause flickering (because textures of previous render-calls are used), but how to handle IsLoaded/IsUsable state for situations where components wait on textures, maybe set manually, or use LOAD option
 // TODO 3: set resources which could not be found (or loaded) to fallback values
 // TODO 3: CORE_OK for non-automatic resource-handle constructor and nullify might be wrong (as it gets marked as successful)
+// TODO 3: reduce startup time on persist-mode, by still waiting on all required resources (ref >= 2) but loading everything else async (ref == 1) (this doesn't work for individual persist resources) (not even trying to load !!) (persist resources are the only ones which require Finish() for programs and fonts)
 // TODO 3: calling OnUsableOnce and then deleting the handle may crash (same for OnLoadedOnce ?)
 
 

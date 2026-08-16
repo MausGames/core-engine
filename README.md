@@ -33,7 +33,7 @@ It is **designed to be supportive, versatile and powerful**, and to dynamically 
 - **Models:** custom model format (for now), pre and post-transform vertex cache optimization, attribute packing, acceleration structure generation
 - **Textures:** PNG (flexible), WebP (fast), animated WebP, pixel-format conversion, block compression ([DXT](https://en.wikipedia.org/wiki/S3_Texture_Compression), [BC7](https://en.wikipedia.org/wiki/S3_Texture_Compression#BC6H_and_BC7)), mipmap generation, async upload, volume textures (simple), cube textures (simple)
 - **Shaders:** support for various GLSL shader types (vertex, tessellation, geometry, fragment, compute), parallel compilation, shader caching, [driver blob caching](https://registry.khronos.org/EGL/extensions/ANDROID/EGL_ANDROID_blob_cache.txt) (EGL), include system, compatibility layer, utility library, dynamic code injection, error and stats logging
-- **Fonts:** hinting, kerning, text and glyph layouting
+- **Fonts:** hinting, kerning, text and glyph layouting, fallback fonts
 - **Async Screenshots**
 
 ### 🎺 Audio

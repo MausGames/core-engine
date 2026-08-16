@@ -12,13 +12,16 @@
 // ****************************************************************
 /* constructor */
 coreFont::coreFont(const TTF_HintingFlags eHinting, const coreBool bKerning)noexcept
-: coreResource   ()
-, m_aapFont      {}
-, m_pFile        (NULL)
-, m_eHinting     (eHinting)
-, m_bKerning     (bKerning)
-, m_iLastHeight  (0u)
-, m_iLastOutline (0u)
+: coreResource       ()
+, m_aapFont          {}
+, m_pFile            (NULL)
+, m_apFallback       {}
+, m_apFallbackHandle {}
+, m_bStatus          (false)
+, m_eHinting         (eHinting)
+, m_bKerning         (bKerning)
+, m_iLastHeight      (0u)
+, m_iLastOutline     (0u)
 {
 }
 
@@ -38,6 +41,19 @@ coreStatus coreFont::Load(coreFile* pFile)
     WARN_IF(m_pFile)      return CORE_INVALID_CALL;
     if(!pFile)            return CORE_INVALID_INPUT;
     if(!pFile->GetSize()) return CORE_ERROR_FILE;   // do not load file data
+
+    // not yet configured
+    if(!m_bStatus) return CORE_BUSY;
+
+    // load all required fallback font objects
+    if(m_apFallback.empty()) FOR_EACH(it, m_apFallbackHandle) m_apFallback.emplace_back_unsafe(*it);
+    FOR_EACH(it, m_apFallback)
+    {
+        if(!it->GetHandle()->IsLoaded())
+        {
+            return CORE_BUSY;
+        }
+    }
 
     // copy file object for later sub-font creation
     coreFile::InternalNew(&m_pFile, pFile);
@@ -61,6 +77,9 @@ coreStatus coreFont::Load(coreFile* pFile)
 coreStatus coreFont::Unload()
 {
     if(!m_pFile) return CORE_INVALID_CALL;
+
+    // disable fallback font objects
+    m_apFallback.clear();
 
     // delete all sub-fonts
     FOR_EACH(it, m_aapFont) FOR_EACH(et, *it) TTF_CloseFont(*et);
@@ -332,6 +351,19 @@ coreBool coreFont::__InitHeight(const coreUint16 iHeight, const coreUint8 iOutli
 
     // enable outlining
     WARN_IF(!TTF_SetFontOutline(pNewFont, iOutline)) {}
+
+    // add fallback font objects
+    FOR_EACH(it, m_apFallback)
+    {
+        coreFont* pFallback = it->GetResource();
+
+        // check other font and add on success
+        if(pFallback->__EnsureHeight(iHeight, iOutline))
+        {
+            ASSERT(it->IsUsable())
+            TTF_AddFallbackFont(pNewFont, pFallback->m_aapFont.at(iHeight).at(iOutline));
+        }
+    }
 
     // save sub-font
     m_aapFont[iHeight].emplace(iOutline, pNewFont);
