@@ -22,8 +22,8 @@ coreTexture::coreTexture(const coreTextureLoad eLoad)noexcept
 , m_vResolution (coreVector2(0.0f,0.0f))
 , m_iLevels     (0u)
 , m_iCompressed (0u)
+, m_Spec        (CORE_TEXTURE_SPEC_ZERO)
 , m_eMode       (CORE_TEXTURE_MODE_DEFAULT)
-, m_Spec        (coreTextureSpec(0u, 0u, 0u, 0u, 0u))
 , m_eLoad       (eLoad)
 , m_Sync        ()
 {
@@ -126,8 +126,8 @@ coreStatus coreTexture::Unload()
     m_vResolution = coreVector2(0.0f,0.0f);
     m_iLevels     = 0u;
     m_iCompressed = 0u;
+    m_Spec        = CORE_TEXTURE_SPEC_ZERO;
     m_eMode       = CORE_TEXTURE_MODE_DEFAULT;
-    m_Spec        = coreTextureSpec(0u, 0u, 0u, 0u, 0u);
 
     return CORE_OK;
 }
@@ -152,8 +152,8 @@ void coreTexture::Create(const coreUint32 iWidth, const coreUint32 iHeight, cons
     // save properties
     m_vResolution = coreVector2(I_TO_F(iWidth), I_TO_F(iHeight));
     m_iLevels     = (bMipMap || bMipMapOld) ? F_TO_UI(LOG2(m_vResolution.Max())) + 1u : 1u;
-    m_eMode       = eMode;
     m_Spec        = oSpec;
+    m_eMode       = eMode;
 
     // set filter mode
     const GLenum iMagFilter = (HAS_FLAG(eMode, CORE_TEXTURE_MODE_NEAREST) || !bFilterable) ? GL_NEAREST : GL_LINEAR;
@@ -810,8 +810,8 @@ void coreTexture::__BindTexture(const coreUintW iUnit, coreTexture* pTexture)
 coreTextureVolume::coreTextureVolume()noexcept
 : m_iIdentifier (0u)
 , m_vResolution (coreVector3(0.0f,0.0f,0.0f))
+, m_Spec        (CORE_TEXTURE_SPEC_ZERO)
 , m_eMode       (CORE_TEXTURE_MODE_DEFAULT)
-, m_Spec        (coreTextureSpec(0u, 0u, 0u, 0u, 0u))
 {
 }
 
@@ -836,8 +836,8 @@ coreStatus coreTextureVolume::Create(const coreUint32 iWidth, const coreUint32 i
 
     // save properties
     m_vResolution = coreVector3(I_TO_F(iWidth), I_TO_F(iHeight), I_TO_F(iDepth));
-    m_eMode       = eMode;
     m_Spec        = oSpec;
+    m_eMode       = eMode;
 
     // set filter mode
     const GLenum iMagFilter = HAS_FLAG(eMode, CORE_TEXTURE_MODE_NEAREST) ? GL_NEAREST : GL_LINEAR;
@@ -934,8 +934,8 @@ void coreTextureVolume::Delete()
     // reset properties
     m_iIdentifier = 0u;
     m_vResolution = coreVector3(0.0f,0.0f,0.0f);
+    m_Spec        = CORE_TEXTURE_SPEC_ZERO;
     m_eMode       = CORE_TEXTURE_MODE_DEFAULT;
-    m_Spec        = coreTextureSpec(0u, 0u, 0u, 0u, 0u);
 }
 
 
@@ -944,8 +944,8 @@ void coreTextureVolume::Delete()
 coreTextureCube::coreTextureCube()noexcept
 : m_iIdentifier (0u)
 , m_vResolution (coreVector2(0.0f,0.0f))
+, m_Spec        (CORE_TEXTURE_SPEC_ZERO)
 , m_eMode       (CORE_TEXTURE_MODE_DEFAULT)
-, m_Spec        (coreTextureSpec(0u, 0u, 0u, 0u, 0u))
 {
 }
 
@@ -967,8 +967,8 @@ coreStatus coreTextureCube::Create(const coreUint32 iWidth, const coreUint32 iHe
 
     // save properties
     m_vResolution = coreVector2(I_TO_F(iWidth), I_TO_F(iHeight));
-    m_eMode       = eMode;
     m_Spec        = oSpec;
+    m_eMode       = eMode;
 
     // set filter mode
     const GLenum iMagFilter = HAS_FLAG(eMode, CORE_TEXTURE_MODE_NEAREST) ? GL_NEAREST : GL_LINEAR;
@@ -1065,6 +1065,6 @@ void coreTextureCube::Delete()
     // reset properties
     m_iIdentifier = 0u;
     m_vResolution = coreVector2(0.0f,0.0f);
+    m_Spec        = CORE_TEXTURE_SPEC_ZERO;
     m_eMode       = CORE_TEXTURE_MODE_DEFAULT;
-    m_Spec        = coreTextureSpec(0u, 0u, 0u, 0u, 0u);
 }

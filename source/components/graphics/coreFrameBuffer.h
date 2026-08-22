@@ -54,7 +54,7 @@ private:
         coreTexturePtr  pTexture;   // render target texture (readable)
         GLuint          iBuffer;    // render target buffer (fast, multisampled)
         coreTextureSpec oSpec;      // texture and buffer specification (format)
-        coreTextureMode eMode;      // texture mode (sampling)
+        coreTextureMode eMode;      // texture mode
 
         constexpr coreRenderTarget()noexcept;
         inline coreBool IsTexture()const {return pTexture ? true : false;}
@@ -141,7 +141,7 @@ private:
 constexpr coreFrameBuffer::coreRenderTarget::coreRenderTarget()noexcept
 : pTexture (NULL)
 , iBuffer  (0u)
-, oSpec    (coreTextureSpec(0u, 0u, 0u, 0u, 0u))
+, oSpec    (CORE_TEXTURE_SPEC_ZERO)
 , eMode    (CORE_TEXTURE_MODE_DEFAULT)
 {
 }

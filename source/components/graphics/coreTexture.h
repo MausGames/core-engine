@@ -31,6 +31,7 @@
 #define GL_R8_LUMINANCE8   (CORE_GL_SUPPORT(ARB_texture_rg) ? GL_R8  : GL_LUMINANCE8)
 #define GL_R16_LUMINANCE16 (CORE_GL_SUPPORT(ARB_texture_rg) ? GL_R16 : GL_LUMINANCE16)
 
+#define CORE_TEXTURE_SPEC_ZERO             (coreTextureSpec(0u,                               0u,                               0u,                              0u, 0u))   // -
 #define CORE_TEXTURE_SPEC_R8               (coreTextureSpec(GL_R8_LUMINANCE8,                 GL_RED_LUMINANCE,                 GL_UNSIGNED_BYTE,                1u, 1u))   // ARB_texture_rg (wrapped)
 #define CORE_TEXTURE_SPEC_RG8              (coreTextureSpec(GL_RG8,                           GL_RG,                            GL_UNSIGNED_BYTE,                2u, 2u))   // ARB_texture_rg
 #define CORE_TEXTURE_SPEC_RGB8             (coreTextureSpec(GL_RGB8,                          GL_RGB,                           GL_UNSIGNED_BYTE,                3u, 3u))   // -
@@ -126,8 +127,8 @@ private:
     coreUint8   m_iLevels;                               // number of texture levels
     coreUint8   m_iCompressed;                           // compression status (0 = no compression | 1 = fast | 2 = high quality)
 
-    coreTextureMode m_eMode;                             // texture mode (sampling)
     coreTextureSpec m_Spec;                              // texture specification (format)
+    coreTextureMode m_eMode;                             // texture mode
 
     coreTextureLoad m_eLoad;                             // resource load configuration
 
@@ -180,8 +181,8 @@ public:
     inline const coreVector2&     GetResolution()const {return m_vResolution;}
     inline const coreUint8&       GetLevels    ()const {return m_iLevels;}
     inline const coreUint8&       GetCompressed()const {return m_iCompressed;}
-    inline const coreTextureMode& GetMode      ()const {return m_eMode;}
     inline const coreTextureSpec& GetSpec      ()const {return m_Spec;}
+    inline const coreTextureMode& GetMode      ()const {return m_eMode;}
 
     /* process and convert image data */
     static void         CreateNextLevel    (const coreUintW iInWidth, const coreUintW iInHeight, const coreUintW iComponents, const coreByte* pInput, coreByte* OUTPUT pOutput);
@@ -210,8 +211,8 @@ private:
 
     coreVector3 m_vResolution;   // resolution of the base level
 
-    coreTextureMode m_eMode;     // texture mode (sampling)
     coreTextureSpec m_Spec;      // texture specification (format)
+    coreTextureMode m_eMode;     // texture mode
 
 
 public:
@@ -228,8 +229,8 @@ public:
     /* get object properties */
     inline const GLuint&          GetIdentifier()const {return m_iIdentifier;}
     inline const coreVector3&     GetResolution()const {return m_vResolution;}
-    inline const coreTextureMode& GetMode      ()const {return m_eMode;}
     inline const coreTextureSpec& GetSpec      ()const {return m_Spec;}
+    inline const coreTextureMode& GetMode      ()const {return m_eMode;}
 };
 
 
@@ -242,8 +243,8 @@ private:
 
     coreVector2 m_vResolution;   // resolution of the base level
 
-    coreTextureMode m_eMode;     // texture mode (sampling)
     coreTextureSpec m_Spec;      // texture specification (format)
+    coreTextureMode m_eMode;     // texture mode
 
 
 public:
@@ -260,8 +261,8 @@ public:
     /* get object properties */
     inline const GLuint&          GetIdentifier()const {return m_iIdentifier;}
     inline const coreVector2&     GetResolution()const {return m_vResolution;}
-    inline const coreTextureMode& GetMode      ()const {return m_eMode;}
     inline const coreTextureSpec& GetSpec      ()const {return m_Spec;}
+    inline const coreTextureMode& GetMode      ()const {return m_eMode;}
 };
 
 

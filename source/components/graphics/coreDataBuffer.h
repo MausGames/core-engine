@@ -20,6 +20,7 @@
 
 // ****************************************************************
 /* data buffer definitions */
+#define CORE_VERTEX_SPEC_ZERO       (coreVertexSpec(0u,                              0u, 0u,  false))   // -
 #define CORE_VERTEX_SPEC_FLOAT_011  (coreVertexSpec(GL_UNSIGNED_INT_10F_11F_11F_REV, 3u, 4u,  false))   // ARB_vertex_type_10f_11f_11f_rev
 #define CORE_VERTEX_SPEC_FLOAT_2X16 (coreVertexSpec(GL_HALF_FLOAT,                   2u, 4u,  false))   // ARB_half_float_vertex
 #define CORE_VERTEX_SPEC_FLOAT_4X16 (coreVertexSpec(GL_HALF_FLOAT,                   4u, 8u,  false))   // ARB_half_float_vertex
