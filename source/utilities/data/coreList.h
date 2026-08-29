@@ -30,6 +30,7 @@ private:
     /* internal types */
     using coreIterator      = coreListBase<T>::iterator;
     using coreConstIterator = coreListBase<T>::const_iterator;
+    using coreSizeType      = coreListBase<T>::size_type;
 
     /* hide undesired functions */
     using coreListBase<T>::at;
@@ -83,6 +84,9 @@ private:
     constexpr coreConstIterator __retrieve_first(const T& tItem)const {return std::find(this->begin(),  this->end(),  tItem);}
     constexpr coreIterator      __retrieve_last (const T& tItem)      {return std::find(this->rbegin(), this->rend(), tItem).base();}
     constexpr coreConstIterator __retrieve_last (const T& tItem)const {return std::find(this->rbegin(), this->rend(), tItem).base();}
+
+    /* increment number of items */
+    constexpr void __increment();
 };
 
 
@@ -100,13 +104,11 @@ template <typename T> template <typename... A> constexpr T& coreList<T>::emplace
     else
     {
         // access raw container pointers
-        T** pptRaw = r_cast<T**>(this);
-        ASSERT(pptRaw[0] == std::to_address(this->begin()))
-        ASSERT(pptRaw[1] == std::to_address(this->end  ()))
+        T* ptEnd = std::to_address(this->end());
 
         // manually construct object in place
-        CALL_CONSTRUCTOR(pptRaw[1], std::forward<A>(vArgs)...);
-        pptRaw[1] += 1u;
+        CALL_CONSTRUCTOR(ptEnd, std::forward<A>(vArgs)...);
+        this->__increment();
 
         return this->back();
     }
@@ -124,9 +126,8 @@ template <typename T> template <typename... A> constexpr coreList<T>::coreIterat
     else
     {
         // access raw container pointers
-        T** pptRaw = r_cast<T**>(this);
-        ASSERT(pptRaw[0] == std::to_address(this->begin()))
-        ASSERT(pptRaw[1] == std::to_address(this->end  ()))
+        T* ptBegin = std::to_address(this->begin());
+        T* ptEnd   = std::to_address(this->end  ());
 
         // get target index
         const coreUintW iIndex = this->index(it);
@@ -135,8 +136,8 @@ template <typename T> template <typename... A> constexpr coreList<T>::coreIterat
         if(it == this->end())
         {
             // manually construct object in place
-            CALL_CONSTRUCTOR(pptRaw[1], std::forward<A>(vArgs)...);
-            pptRaw[1] += 1u;
+            CALL_CONSTRUCTOR(ptEnd, std::forward<A>(vArgs)...);
+            this->__increment();
         }
         else
         {
@@ -144,12 +145,12 @@ template <typename T> template <typename... A> constexpr coreList<T>::coreIterat
             T tTemp(std::forward<A>(vArgs)...);
 
             // move old elements back
-            CALL_CONSTRUCTOR(pptRaw[1], std::move(*(pptRaw[1] - 1u)));
-            std::move_backward(pptRaw[0] + iIndex, pptRaw[1] - 1u, pptRaw[1]);
+            CALL_CONSTRUCTOR(ptEnd, std::move(*(ptEnd - 1u)));
+            std::move_backward(ptBegin + iIndex, ptEnd - 1u, ptEnd);
 
             // insert new element
-            (*(pptRaw[0] + iIndex)) = std::move(tTemp);
-            pptRaw[1] += 1u;
+            (*(ptBegin + iIndex)) = std::move(tTemp);
+            this->__increment();
         }
 
         return (this->begin() + iIndex);
@@ -172,6 +173,18 @@ template <typename T> constexpr coreList<T>::coreIterator coreList<T>::erase_swa
     this->pop_back();
 
     return (this->begin() + iIndex);
+}
+
+
+// ****************************************************************
+/* increment number of items */
+template <typename T> constexpr void coreList<T>::__increment()
+{
+#if defined(_LIBCPP_ABI_VECTOR_LAYOUT_SIZE_BASED)
+    (*r_cast<coreSizeType*>(r_cast<coreByte*>(this) + sizeof(T*))) += 1u;   // size based
+#else
+    (*r_cast<T**>(r_cast<coreByte*>(this) + sizeof(T*))) += 1u;             // pointer based
+#endif
 }
 
 
