@@ -358,7 +358,9 @@ void coreBatchList::MoveNormal()
 
         // increase render-count (# after move)
         if(pObject->IsEnabled(CORE_OBJECT_ENABLE_RENDER))
+        {
             ++m_iNumEnabled;
+        }
     }
 
     // set the update status
@@ -415,7 +417,9 @@ void coreBatchList::MoveSort()
 
         // increase render-count (# after move)
         if(pObject->IsEnabled(CORE_OBJECT_ENABLE_RENDER))
+        {
             ++m_iNumEnabled;
+        }
     }
 
     // set the update status

@@ -527,11 +527,11 @@
     RETURN_NODISCARD constexpr auto operator <=> (const c&)const = default;
 
 // disable heap-operations with the defined class
-#define DISABLE_HEAP                                \
-    void* operator new      (std::size_t) = delete; \
-    void* operator new[]    (std::size_t) = delete; \
-    void  operator delete   (void*)       = delete; \
-    void  operator delete[] (void*)       = delete;
+#define DISABLE_HEAP                              \
+    void* operator new      (coreUintW) = delete; \
+    void* operator new[]    (coreUintW) = delete; \
+    void  operator delete   (void*)     = delete; \
+    void  operator delete[] (void*)     = delete;
 
 // enable bitwise-operations with the defined enumeration
 #define ENABLE_BITWISE(e)                                                                                                                  \

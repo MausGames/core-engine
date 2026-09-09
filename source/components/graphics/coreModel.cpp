@@ -465,9 +465,9 @@ void coreModel::Enable()
         }
 
         // set vertex data
-        for(coreUintW i = 0u, ie = m_aVertexBuffer.size(); i < ie; ++i)
+        FOR_EACH(it, m_aVertexBuffer)
         {
-            m_aVertexBuffer[i].Activate(0u);
+            it->Activate(0u);
         }
 
         // set index data

@@ -9,7 +9,6 @@
 #if defined(__linux__)
 
 #pragma clang diagnostic ignored "-Wunused-function"
-#pragma clang diagnostic ignored "-Wunused-parameter"
 
 #include <unistd.h>
 #include <signal.h>

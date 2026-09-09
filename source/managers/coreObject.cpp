@@ -513,7 +513,9 @@ void coreObjectManager::__UpdateObjects()
 
             // reconstruct index
             for(coreUintW i = 0u, ie = it->size(); i < ie; ++i)
+            {
                 m_aiIndex.emplace((*it)[i], i);
+            }
         }
 
         // sort index explicitly (faster than sorting on reconstruction)
@@ -551,11 +553,11 @@ void coreObjectManager::__BindObject(coreObject3D* pObject, const coreInt32 iTyp
 #endif
 
     // get requested list
-    coreObjectList& oList = m_aapObjectList[iType];
+    coreObjectList& apList = m_aapObjectList[iType];
 
     // add object and index
-    m_aiIndex.emplace_bs(pObject, oList.size());
-    oList.push_back(pObject);
+    m_aiIndex.emplace_bs(pObject, apList.size());
+    apList.push_back(pObject);
 }
 
 

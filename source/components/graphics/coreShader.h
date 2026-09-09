@@ -19,6 +19,7 @@
 // TODO 3: GL_MESH_SHADER_NV, GL_TASK_SHADER_NV, .mesh, .task
 // TODO 3: glUniform1ui etc. required GL3, GLES3, GL_EXT_gpu_shader4 (GL), no GLES ext
 // TODO 4: v_av4LightDir <> u_av4LightDir (and *Pos) is a bit confusing in shaders (u_ is base, v_ is transformed)
+// TODO 5: could includes be handled as own compiled shader resources, or do some drivers have issues with multiple shaders of the same type in one program ?
 
 
 // ****************************************************************

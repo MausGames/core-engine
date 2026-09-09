@@ -12,6 +12,7 @@
 
 // TODO 3: add debug-logging to catch global hash-collisions (currently only in map-container)
 // TODO 3: get constexpr evaluation in implicit contructors working on MSVC (and GCC) (>90% of all hash-strings benefit from compile-time hashing)
+// TODO 4: expose coreUint32 for only the hash as new typedef
 
 
 // ****************************************************************

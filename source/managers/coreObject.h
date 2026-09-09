@@ -204,17 +204,17 @@ template <typename F> void coreObjectManager::TestCollision(const coreInt32 iTyp
     ASSERT(iType)
 
     // get requested list
-    const coreObjectList& oList = m_aapObjectList[iType];
+    const coreObjectList& apList = m_aapObjectList[iType];
 
     // loop through all objects
-    for(coreUintW i = 0u, ie = oList.size(); i < ie; ++i)
+    for(coreUintW i = 0u, ie = apList.size(); i < ie; ++i)   // # container may change
     {
         for(coreUintW j = i + 1u; j < ie; ++j)
         {
-            coreObject3D* pObject1 = oList[i];   // # may change
+            coreObject3D* pObject1 = apList[i];   // # object may change
             if(!pObject1) continue;
 
-            coreObject3D* pObject2 = oList[j];
+            coreObject3D* pObject2 = apList[j];
             if(!pObject2) continue;
 
             // test collision and call function
@@ -236,22 +236,22 @@ template <typename F> void coreObjectManager::TestCollision(const coreInt32 iTyp
 {
     ASSERT(iType1 && iType2 && (iType1 != iType2))
 
-    // make sure both lists are available (first reference may get invalid otherwise)
-    m_aapObjectList[iType2]; m_aapObjectList[iType1];
+    // make sure second list is available (first reference may get invalid otherwise)
+    m_aapObjectList[iType2];
 
     // get requested lists
-    const coreObjectList& oList1 = m_aapObjectList.at(iType1);
-    const coreObjectList& oList2 = m_aapObjectList.at(iType2);
+    const coreObjectList& apList1 = m_aapObjectList   [iType1];
+    const coreObjectList& apList2 = m_aapObjectList.at(iType2);
 
     // loop through all objects
-    for(coreUintW i = 0u, ie = oList1.size(), je = oList2.size(); i < ie; ++i)
+    for(coreUintW i = 0u, ie = apList1.size(), je = apList2.size(); i < ie; ++i)   // # container may change
     {
         for(coreUintW j = 0u; j < je; ++j)
         {
-            coreObject3D* pObject1 = oList1[i];   // # may change
+            coreObject3D* pObject1 = apList1[i];   // # object may change
             if(!pObject1) continue;
 
-            coreObject3D* pObject2 = oList2[j];
+            coreObject3D* pObject2 = apList2[j];
             if(!pObject2) continue;
 
             // test collision and call function
@@ -274,12 +274,12 @@ template <typename F> void coreObjectManager::TestCollision(const coreInt32 iTyp
     ASSERT(iType && pObject)
 
     // get requested list
-    const coreObjectList& oList = m_aapObjectList[iType];
+    const coreObjectList& apList = m_aapObjectList[iType];
 
     // loop through all objects
-    for(coreUintW i = 0u, ie = oList.size(); i < ie; ++i)
+    for(coreUintW i = 0u, ie = apList.size(); i < ie; ++i)   // # container may change
     {
-        coreObject3D* pCurObject = oList[i];
+        coreObject3D* pCurObject = apList[i];
         if(!pCurObject) continue;
 
         // never compare with itself
@@ -304,12 +304,12 @@ template <typename F> void coreObjectManager::TestCollision(const coreInt32 iTyp
     ASSERT(iType)
 
     // get requested list
-    const coreObjectList& oList = m_aapObjectList[iType];
+    const coreObjectList& apList = m_aapObjectList[iType];
 
     // loop through all objects
-    for(coreUintW i = 0u, ie = oList.size(); i < ie; ++i)
+    for(coreUintW i = 0u, ie = apList.size(); i < ie; ++i)   // # container may change
     {
-        coreObject3D* pCurObject = oList[i];
+        coreObject3D* pCurObject = apList[i];
         if(!pCurObject) continue;
 
         // test collision and call function
