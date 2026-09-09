@@ -348,6 +348,7 @@
 #include <ios>
 #include <limits>
 #include <memory>
+#include <span>
 #include <string>
 #include <type_traits>
 #include <utility>

@@ -77,6 +77,9 @@ public:
     constexpr void push_front(T&&      tItem) {this->insert(this->begin(), std::move(tItem));}
     constexpr void pop_front ()               {ASSERT(!this->empty()) this->erase(this->begin());}
 
+    /* interact with spans */
+    template <typename S> constexpr coreBool is_valid(const std::span<S> atSpan)const {return (this->data() == atSpan.data()) && (this->size() == atSpan.size());}
+
 
 private:
     /* lookup item */

@@ -248,14 +248,16 @@ template <typename T> void coreSpline<T>::Refine()
 {
     ASSERT(!m_apNode.empty())
 
+    const std::span apNodeSpan = m_apNode;
+
     // reset total distance
     m_fTotalDistance = 0.0f;
 
-    for(coreUintW i = 0u, ie = m_apNode.size() - 1u; i < ie; ++i)
+    for(coreUintW i = 0u, ie = apNodeSpan.size() - 1u; i < ie; ++i)
     {
         // get both enclosing nodes
-        coreNode&       oCurNode  = m_apNode[i];
-        const coreNode& oNextNode = m_apNode[i + 1u];
+        coreNode&       oCurNode  = apNodeSpan[i];
+        const coreNode& oNextNode = apNodeSpan[i + 1u];
 
         // normalize distance
         const coreFloat fModifier     = (oCurNode.fSpeed + oNextNode.fSpeed) * 0.5f;
