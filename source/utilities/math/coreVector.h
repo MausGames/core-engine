@@ -336,11 +336,13 @@ public:
     constexpr        coreUint16  PackSnorm565   ()const;
     constexpr        coreUint32  PackUnorm011   ()const;
     constexpr        coreUint32  PackSnorm011   ()const;
+    constexpr        coreUint32  PackFloat011   ()const;
     constexpr        coreVector2 PackSnormOcta  ()const;
     static constexpr coreVector3 UnpackUnorm565 (const coreUint16  iNumber);
     static constexpr coreVector3 UnpackSnorm565 (const coreUint16  iNumber);
     static constexpr coreVector3 UnpackUnorm011 (const coreUint32  iNumber);
     static constexpr coreVector3 UnpackSnorm011 (const coreUint32  iNumber);
+    static constexpr coreVector3 UnpackFloat011 (const coreUint32  iNumber);
     static constexpr coreVector3 UnpackSnormOcta(const coreVector2 vVector);
 
     /* color functions */
@@ -1058,6 +1060,16 @@ constexpr coreUint32 coreVector3::PackSnorm011()const
 
 
 // ****************************************************************
+/* compress unsigned vector into 10f_11f_11f_rev packed uint32 */
+constexpr coreUint32 coreVector3::PackFloat011()const
+{
+    return (coreUint32(coreMath::Float32To10(z)) << 22u) |
+           (coreUint32(coreMath::Float32To11(y)) << 11u) |
+           (coreUint32(coreMath::Float32To11(x)));
+}
+
+
+// ****************************************************************
 /* compress regular normal-vector into octahedron normal-vector */
 constexpr coreVector2 coreVector3::PackSnormOcta()const
 {
@@ -1120,6 +1132,16 @@ constexpr coreVector3 coreVector3::UnpackSnorm011(const coreUint32 iNumber)
     return coreVector3((A.x >= 1024.0f) ? ((A.x - 2048.0f)/1024.0f) : (A.x/1023.0f),
                        (A.y >= 1024.0f) ? ((A.y - 2048.0f)/1024.0f) : (A.y/1023.0f),
                        (A.z >=  512.0f) ? ((A.z - 1024.0f)/ 512.0f) : (A.z/ 511.0f));
+}
+
+
+// ****************************************************************
+/* uncompress 10f_11f_11f_rev packed uint32 into unsigned vector */
+constexpr coreVector3 coreVector3::UnpackFloat011(const coreUint32 iNumber)
+{
+    return coreVector3(coreMath::Float11To32( iNumber         & 0x7FFu),
+                       coreMath::Float11To32((iNumber >> 11u) & 0x7FFu),
+                       coreMath::Float10To32((iNumber >> 22u) & 0x3FFu));
 }
 
 

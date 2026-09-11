@@ -223,6 +223,10 @@ public:
     static constexpr coreFloat  BitsToFloat(const coreUint32 iInput);
     static constexpr coreUint16 Float32To16(const coreFloat  fInput);
     static constexpr coreFloat  Float16To32(const coreUint16 iInput);
+    static constexpr coreUint16 Float32To11(const coreFloat  fInput);
+    static constexpr coreFloat  Float11To32(const coreUint16 iInput);
+    static constexpr coreUint16 Float32To10(const coreFloat  fInput);
+    static constexpr coreFloat  Float10To32(const coreUint16 iInput);
 
     /* miscellaneous functions */
     static inline void ControlExceptions(const coreBool bEnabled);
@@ -908,6 +912,208 @@ constexpr coreFloat coreMath::Float16To32(const coreUint16 iInput)
         e = e + (127 - 15);
 
         return s | (e << 23) | (m << 13);
+    }(iInput));
+}
+
+
+// ****************************************************************
+/* convert single-precision float into unsigned 11-bit */
+constexpr coreUint16 coreMath::Float32To11(const coreFloat fInput)
+{
+    ASSERT(fInput >= 0.0f)
+
+    return [](const coreInt32 A)
+    {
+        coreInt32 e = ((A >> 23) & 0x000000FF) - (127 - 15);
+        coreInt32 m = ((A)       & 0x007FFFFF);
+
+        if(e <= 0)
+        {
+            if(e <= -11)
+            {
+                return 0;
+            }
+            else
+            {
+                m = m | 0x00800000;
+
+                const coreInt32 t = 18 - e;
+                const coreInt32 a = (1 << (t - 1)) - 1;
+                const coreInt32 b = (m >> t) & 1;
+
+                return (m + a + b) >> t;
+            }
+        }
+        else if(e == 0xFF - (127 - 15))
+        {
+            if(m == 0)
+            {
+                return 0x07C0;
+            }
+            else
+            {
+                return 0x07C0 | MAX(m >> 17, 1);
+            }
+        }
+        else
+        {
+            m = m + 0x00000FFF + ((m >> 17) & 1);
+
+            if(m & 0x00800000)
+            {
+                m = 0;
+                e = e + 1;
+            }
+
+            if(e >= 31)
+            {
+                return 0x07C0;
+            }
+            else
+            {
+                return (e << 6) | (m >> 17);
+            }
+        }
+    }(coreMath::FloatToBits(fInput));
+}
+
+
+// ****************************************************************
+/* convert unsigned 11-bit float into single-precision */
+constexpr coreFloat coreMath::Float11To32(const coreUint16 iInput)
+{
+    return coreMath::BitsToFloat([](const coreInt32 A)
+    {
+        coreInt32 e = (A >> 6) & 0x0000001F;
+        coreInt32 m = (A)      & 0x0000003F;
+
+        if(e == 0)
+        {
+            if(m == 0)
+            {
+                return 0;
+            }
+            else
+            {
+                while(!(m & 0x00000040))
+                {
+                    e = e -  1;
+                    m = m << 1;
+                }
+
+                e = e +  1;
+                m = m & ~0x00000040;
+            }
+        }
+        else if(e == 31)
+        {
+            return 0x7F800000 | (m << 17);
+        }
+
+        e = e + (127 - 15);
+
+        return (e << 23) | (m << 17);
+    }(iInput));
+}
+
+
+// ****************************************************************
+/* convert single-precision float into unsigned 10-bit */
+constexpr coreUint16 coreMath::Float32To10(const coreFloat fInput)
+{
+    ASSERT(fInput >= 0.0f)
+
+    return [](const coreInt32 A)
+    {
+        coreInt32 e = ((A >> 23) & 0x000000FF) - (127 - 15);
+        coreInt32 m = ((A)       & 0x007FFFFF);
+
+        if(e <= 0)
+        {
+            if(e <= -11)
+            {
+                return 0;
+            }
+            else
+            {
+                m = m | 0x00800000;
+
+                const coreInt32 t = 19 - e;
+                const coreInt32 a = (1 << (t - 1)) - 1;
+                const coreInt32 b = (m >> t) & 1;
+
+                return (m + a + b) >> t;
+            }
+        }
+        else if(e == 0xFF - (127 - 15))
+        {
+            if(m == 0)
+            {
+                return 0x03E0;
+            }
+            else
+            {
+                return 0x03E0 | MAX(m >> 18, 1);
+            }
+        }
+        else
+        {
+            m = m + 0x00000FFF + ((m >> 18) & 1);
+
+            if(m & 0x00800000)
+            {
+                m = 0;
+                e = e + 1;
+            }
+
+            if(e >= 31)
+            {
+                return 0x03E0;
+            }
+            else
+            {
+                return (e << 5) | (m >> 18);
+            }
+        }
+    }(coreMath::FloatToBits(fInput));
+}
+
+
+// ****************************************************************
+/* convert unsigned 10-bit float into single-precision */
+constexpr coreFloat coreMath::Float10To32(const coreUint16 iInput)
+{
+    return coreMath::BitsToFloat([](const coreInt32 A)
+    {
+        coreInt32 e = (A >> 5) & 0x0000001F;
+        coreInt32 m = (A)      & 0x0000001F;
+
+        if(e == 0)
+        {
+            if(m == 0)
+            {
+                return 0;
+            }
+            else
+            {
+                while(!(m & 0x00000020))
+                {
+                    e = e -  1;
+                    m = m << 1;
+                }
+
+                e = e +  1;
+                m = m & ~0x00000020;
+            }
+        }
+        else if(e == 31)
+        {
+            return 0x7F800000 | (m << 18);
+        }
+
+        e = e + (127 - 15);
+
+        return (e << 23) | (m << 18);
     }(iInput));
 }
 

@@ -169,6 +169,43 @@ DOCTEST_TEST_CASE("Unit Tests")
             DOCTEST_CHECK_EQ(coreMath::DivUp(1, 4), 1);
             DOCTEST_CHECK_EQ(coreMath::DivUp(0, 4), 0);
         }
+
+        DOCTEST_SUBCASE("Float32To16")
+        {
+            DOCTEST_CHECK_EQ(coreMath::Float16To32(coreMath::Float32To16(    0.0f)),     0.0f);
+            DOCTEST_CHECK_EQ(coreMath::Float16To32(coreMath::Float32To16(    0.0625f)),  0.0625f);
+            DOCTEST_CHECK_EQ(coreMath::Float16To32(coreMath::Float32To16(    0.5f)),     0.5f);
+            DOCTEST_CHECK_EQ(coreMath::Float16To32(coreMath::Float32To16(    1.0f)),     1.0f);
+            DOCTEST_CHECK_EQ(coreMath::Float16To32(coreMath::Float32To16(   10.0f)),    10.0f);
+            DOCTEST_CHECK_EQ(coreMath::Float16To32(coreMath::Float32To16(  100.0f)),   100.0f);
+            DOCTEST_CHECK_EQ(coreMath::Float16To32(coreMath::Float32To16( 1000.0f)),  1000.0f);
+            DOCTEST_CHECK_EQ(coreMath::Float16To32(coreMath::Float32To16(   -0.0625f)), -0.0625f);
+            DOCTEST_CHECK_EQ(coreMath::Float16To32(coreMath::Float32To16(   -0.5f)),    -0.5f);
+            DOCTEST_CHECK_EQ(coreMath::Float16To32(coreMath::Float32To16(   -1.0f)),    -1.0f);
+            DOCTEST_CHECK_EQ(coreMath::Float16To32(coreMath::Float32To16(  -10.0f)),   -10.0f);
+            DOCTEST_CHECK_EQ(coreMath::Float16To32(coreMath::Float32To16( -100.0f)),  -100.0f);
+            DOCTEST_CHECK_EQ(coreMath::Float16To32(coreMath::Float32To16(-1000.0f)), -1000.0f);
+        }
+
+        DOCTEST_SUBCASE("Float32To11")
+        {
+            DOCTEST_CHECK_EQ(coreMath::Float11To32(coreMath::Float32To11(  0.0f)),    0.0f);
+            DOCTEST_CHECK_EQ(coreMath::Float11To32(coreMath::Float32To11(  0.0625f)), 0.0625f);
+            DOCTEST_CHECK_EQ(coreMath::Float11To32(coreMath::Float32To11(  0.5f)),    0.5f);
+            DOCTEST_CHECK_EQ(coreMath::Float11To32(coreMath::Float32To11(  1.0f)),    1.0f);
+            DOCTEST_CHECK_EQ(coreMath::Float11To32(coreMath::Float32To11( 10.0f)),   10.0f);
+            DOCTEST_CHECK_EQ(coreMath::Float11To32(coreMath::Float32To11(100.0f)),  100.0f);
+        }
+
+        DOCTEST_SUBCASE("Float32To10")
+        {
+            DOCTEST_CHECK_EQ(coreMath::Float10To32(coreMath::Float32To10(  0.0f)),    0.0f);
+            DOCTEST_CHECK_EQ(coreMath::Float10To32(coreMath::Float32To10(  0.0625f)), 0.0625f);
+            DOCTEST_CHECK_EQ(coreMath::Float10To32(coreMath::Float32To10(  0.5f)),    0.5f);
+            DOCTEST_CHECK_EQ(coreMath::Float10To32(coreMath::Float32To10(  1.0f)),    1.0f);
+            DOCTEST_CHECK_EQ(coreMath::Float10To32(coreMath::Float32To10( 10.0f)),   10.0f);
+            DOCTEST_CHECK_EQ(coreMath::Float10To32(coreMath::Float32To10(100.0f)),  100.0f);
+        }
     }
 }
 
