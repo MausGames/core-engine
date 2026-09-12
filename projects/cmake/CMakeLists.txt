@@ -27,6 +27,7 @@ target_sources(
     ${BASE_DIRECTORY}/source/additional/engine/coreTest.cpp
     ${BASE_DIRECTORY}/source/additional/coreAL.cpp
     ${BASE_DIRECTORY}/source/additional/coreCPUID.cpp
+    ${BASE_DIRECTORY}/source/additional/coreEGL.cpp
     ${BASE_DIRECTORY}/source/components/audio/CoreAudio.cpp
     ${BASE_DIRECTORY}/source/components/audio/coreMusic.cpp
     ${BASE_DIRECTORY}/source/components/audio/coreSound.cpp

@@ -864,6 +864,7 @@ private:
 #endif
 #include "additional/coreAL.h"
 #include "additional/coreCPUID.h"
+#include "additional/coreEGL.h"
 #include "utilities/math/coreMath.h"
 #include "utilities/data/hash/CRC32.h"
 #include "utilities/data/hash/FNV1.h"

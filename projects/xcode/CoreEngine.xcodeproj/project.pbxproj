@@ -28,7 +28,7 @@
 		5B8BA1252FBFB68B0026E082 /* coreReplay.h in Headers */ = {isa = PBXBuildFile; fileRef = 5B8BA1232FBFB68B0026E082 /* coreReplay.h */; };
 		5B8BA1262FBFB68B0026E082 /* coreReplay.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5B8BA1242FBFB68B0026E082 /* coreReplay.cpp */; };
 		5B979FCC2A3C73A200C5292D /* epic.h in Headers */ = {isa = PBXBuildFile; fileRef = 5B979FCB2A3C73A200C5292D /* epic.h */; };
-		5BA975552D8DF01C00D916E6 /* coreBlob.h in Headers */ = {isa = PBXBuildFile; fileRef = 5BA975542D8DF01C00D916E6 /* coreBlob.h */; };
+		5BA975552D8DF01C00D916E6 /* coreEGL.h in Headers */ = {isa = PBXBuildFile; fileRef = 5BA975542D8DF01C00D916E6 /* coreEGL.h */; };
 		5BA975572D8DF06100D916E6 /* discord.h in Headers */ = {isa = PBXBuildFile; fileRef = 5BA975562D8DF06100D916E6 /* discord.h */; };
 		5BA9755A2D8DF08A00D916E6 /* coreRichText.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5BA975592D8DF08A00D916E6 /* coreRichText.cpp */; };
 		5BA9755B2D8DF08A00D916E6 /* coreRichText.h in Headers */ = {isa = PBXBuildFile; fileRef = 5BA975582D8DF08A00D916E6 /* coreRichText.h */; };
@@ -155,7 +155,7 @@
 		5B8BA1232FBFB68B0026E082 /* coreReplay.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = coreReplay.h; sourceTree = "<group>"; };
 		5B8BA1242FBFB68B0026E082 /* coreReplay.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = coreReplay.cpp; sourceTree = "<group>"; };
 		5B979FCB2A3C73A200C5292D /* epic.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = epic.h; sourceTree = "<group>"; };
-		5BA975542D8DF01C00D916E6 /* coreBlob.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = coreBlob.h; sourceTree = "<group>"; };
+		5BA975542D8DF01C00D916E6 /* coreEGL.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = coreEGL.h; sourceTree = "<group>"; };
 		5BA975562D8DF06100D916E6 /* discord.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = discord.h; sourceTree = "<group>"; };
 		5BA975582D8DF08A00D916E6 /* coreRichText.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = coreRichText.h; sourceTree = "<group>"; };
 		5BA975592D8DF08A00D916E6 /* coreRichText.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = coreRichText.cpp; sourceTree = "<group>"; };
@@ -344,7 +344,7 @@
 				5BB8C2CA27C94E4100BBB338 /* windows */,
 				5B0916E92ED3BA92002FC68A /* coreAL.h */,
 				5B0916EA2ED3BA92002FC68A /* coreAL.cpp */,
-				5BA975542D8DF01C00D916E6 /* coreBlob.h */,
+				5BA975542D8DF01C00D916E6 /* coreEGL.h */,
 				5BB8C2BE27C94E4100BBB338 /* coreCPUID.cpp */,
 				5BB8C2CD27C94E4100BBB338 /* coreCPUID.h */,
 				5BB8C2BF27C94E4100BBB338 /* coreGL.cpp */,
@@ -679,7 +679,7 @@
 				5BB8C38427C94E4200BBB338 /* coreScope.h in Headers */,
 				5BB8C35C27C94E4200BBB338 /* ALAW.h in Headers */,
 				5BB8C36927C94E4200BBB338 /* coreModel.h in Headers */,
-				5BA975552D8DF01C00D916E6 /* coreBlob.h in Headers */,
+				5BA975552D8DF01C00D916E6 /* coreEGL.h in Headers */,
 				5BB8C39327C94E4200BBB338 /* coreParticle.h in Headers */,
 				5B660CE727E0B7AB009BB1CB /* XXH.h in Headers */,
 				5B8BA10F2FBFB4270026E082 /* coreObject.h in Headers */,

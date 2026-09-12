@@ -6,9 +6,7 @@
 //| Released under the zlib License                     |//
 //*-----------------------------------------------------*//
 ///////////////////////////////////////////////////////////
-#pragma once
-#ifndef _CORE_GUARD_BLOB_H_
-#define _CORE_GUARD_BLOB_H_
+#include "Core.h"
 
 #if __has_include(<EGL/egl.h>) && !defined(_CORE_EMSCRIPTEN_)
 
@@ -16,31 +14,35 @@
 
 
 // ****************************************************************
-/* blob-cache definitions */
+/* EGL definitions */
 #if defined(_CORE_WINDOWS_)
-    #define CORE_BLOB_LIBRARY_NAME "libEGL.dll"
+    #define CORE_EGL_LIBRARY_NAME "libEGL.dll"
 #elif defined(_CORE_LINUX_)
-    #define CORE_BLOB_LIBRARY_NAME "libEGL.so"
+    #define CORE_EGL_LIBRARY_NAME "libEGL.so"
 #endif
 
 #define CORE_BLOB_CACHE_NAME    (Core::Debug->IsEnabled() ? "blob_debug.cache" : "blob.cache")   // file name of the blob-cache
 #define CORE_BLOB_CACHE_MAGIC   (UINT_LITERAL("CBC0"))                                           // magic number of the blob-cache
 #define CORE_BLOB_CACHE_VERSION (0x00000001u)                                                    // current file version of the blob-cache
 
-struct coreCacheEntry final
+namespace
 {
-    coreByte*  pData;   // driver-blob data
-    coreUint32 iSize;   // size of the data (in bytes)
-};
+    struct coreCacheEntry final
+    {
+        coreByte*  pData;   // driver-blob data
+        coreUint32 iSize;   // size of the data (in bytes)
+    };
+}
 
 static coreMap<coreUint64, coreCacheEntry> s_aCacheMap   = {};           // driver-blob map (blob-cache)
 static coreUint32                          s_iCacheSize  = 0u;           // total size of all data in the map (in bytes)
 static coreLock                            s_CacheLock   = coreLock();   // lock to prevent concurrent map access
 static coreAtomic<coreBool>                s_bCacheState = false;        // dedicated ready state (as changing or removing the callbacks is not possible)
 
-using PFNEGLSETBLOBFUNCANDROIDPROC       = void            (SDLCALL     *) (const void* pKey, khronos_ssize_t iKeySize, const void* pValue, khronos_ssize_t iValueSize);
-using PFNEGLGETBLOBFUNCANDROIDPROC       = khronos_ssize_t (SDLCALL     *) (const void* pKey, khronos_ssize_t iKeySize, void*       pValue, khronos_ssize_t iValueSize);
-using PFNEGLSETBLOBCACHEFUNCSANDROIDPROC = void            (EGLAPIENTRY *) (EGLDisplay pDisplay, PFNEGLSETBLOBFUNCANDROIDPROC nSetFunc, PFNEGLGETBLOBFUNCANDROIDPROC nGetFunc);
+using PFNEGLSETBLOBFUNCANDROIDPROC        = void            (SDLCALL     *) (const void* pKey, khronos_ssize_t iKeySize, const void* pValue, khronos_ssize_t iValueSize);
+using PFNEGLGETBLOBFUNCANDROIDPROC        = khronos_ssize_t (SDLCALL     *) (const void* pKey, khronos_ssize_t iKeySize, void*       pValue, khronos_ssize_t iValueSize);
+using PFNEGLSETBLOBCACHEFUNCSANDROIDPROC  = void            (EGLAPIENTRY *) (EGLDisplay pDisplay, PFNEGLSETBLOBFUNCANDROIDPROC nSetFunc, PFNEGLGETBLOBFUNCANDROIDPROC nGetFunc);
+using PFNEGLSETVALIDATIONENABLEDANGLEPROC = void            (EGLAPIENTRY *) (EGLBoolean bValidationState);
 
 
 // ****************************************************************
@@ -111,7 +113,7 @@ static khronos_ssize_t SDLCALL coreGetBlobValue(const void* pKey, khronos_ssize_
 
 // ****************************************************************
 /* load blob-cache from file */
-inline coreBool coreLoadBlobCache(const coreChar* pcPath)   // # parameter for internal use
+static coreBool coreLoadBlobCache(const coreChar* pcPath)   // # parameter for internal use
 {
     ASSERT(s_aCacheMap.empty() && !s_iCacheSize)
 
@@ -182,7 +184,7 @@ inline coreBool coreLoadBlobCache(const coreChar* pcPath)   // # parameter for i
 
 // ****************************************************************
 /* save blob-cache to file */
-inline void coreSaveBlobCache()
+static void coreSaveBlobCacheInternal()
 {
     s_CacheLock.Lock();
     {
@@ -232,7 +234,7 @@ inline void coreSaveBlobCache()
 
 // ****************************************************************
 /* remove all entries from the blob-cache */
-inline void coreClearBlobCache()
+static void coreClearBlobCache()
 {
     const coreLocker oLocker(&s_CacheLock);
 
@@ -252,14 +254,14 @@ inline void coreClearBlobCache()
 
 // ****************************************************************
 /* start up blob-cache */
-inline void coreInitBlobCache()
+void coreInitBlobCache()
 {
     if(s_bCacheState || !Core::Config->GetBool(CORE_CONFIG_GRAPHICS_SHADERCACHE)) return;
 
     #define __LOAD_FUNCTION(x,y) decltype(x)* __ ## x = r_cast<decltype(x)*>(coreData::GetAddress(y, #x));
     {
         // open EGL library
-        void* pLibrary = coreData::OpenLibrary(CORE_BLOB_LIBRARY_NAME);
+        void* pLibrary = coreData::OpenLibrary(CORE_EGL_LIBRARY_NAME);
         if(pLibrary)
         {
             __LOAD_FUNCTION(eglGetCurrentDisplay, pLibrary)
@@ -297,16 +299,64 @@ inline void coreInitBlobCache()
 
 // ****************************************************************
 /* shut down blob-cache */
-inline void coreExitBlobCache()
+void coreExitBlobCache()
 {
-    if(!s_bCacheState || !Core::Config->GetBool(CORE_CONFIG_GRAPHICS_SHADERCACHE)) return;
+    if(!s_bCacheState) return;
 
     // disable processing
     s_bCacheState = false;
 
     // save and clear blob-cache
-    coreSaveBlobCache();
+    coreSaveBlobCacheInternal();
     coreClearBlobCache();
+}
+
+
+// ****************************************************************
+/* save blob-cache to file (external) */
+void coreSaveBlobCache()
+{
+    if(!s_bCacheState) return;
+
+    // save blob-cache
+    coreSaveBlobCacheInternal();
+}
+
+
+// ****************************************************************
+/* init EGL */
+void coreInitEGL()
+{
+    #define __LOAD_FUNCTION(x,y) decltype(x)* __ ## x = r_cast<decltype(x)*>(coreData::GetAddress(y, #x));
+    {
+        // open EGL library
+        void* pLibrary = coreData::OpenLibrary(CORE_EGL_LIBRARY_NAME);
+        if(pLibrary)
+        {
+            __LOAD_FUNCTION(eglGetCurrentDisplay, pLibrary)
+            __LOAD_FUNCTION(eglGetProcAddress,    pLibrary)
+
+            if(__eglGetCurrentDisplay && __eglGetProcAddress)
+            {
+                // get connection to default display
+                const EGLDisplay pDisplay = __eglGetCurrentDisplay();
+                if(pDisplay)
+                {
+                    // get function pointer from extension (EGL_ANGLE_no_error)
+                    const PFNEGLSETVALIDATIONENABLEDANGLEPROC eglSetValidationEnabled = r_cast<PFNEGLSETVALIDATIONENABLEDANGLEPROC>(__eglGetProcAddress("eglSetValidationEnabledANGLE"));
+                    if(eglSetValidationEnabled)
+                    {
+                        // set EGL validation
+                        eglSetValidationEnabled(Core::Debug->IsEnabled());
+                    }
+                }
+            }
+
+            // close EGL library
+            coreData::CloseLibrary(pLibrary);
+        }
+    }
+    #undef __LOAD_FUNCTION
 }
 
 
@@ -314,11 +364,11 @@ inline void coreExitBlobCache()
 
 
 // ****************************************************************
-/* blob-cache disabled */
-inline void coreInitBlobCache() {}
-inline void coreExitBlobCache() {}
+/* disable all EGL functions */
+void coreInitBlobCache() {}
+void coreExitBlobCache() {}
+void coreSaveBlobCache() {}
+void coreInitEGL      () {}
 
 
 #endif
-
-#endif /* _CORE_GUARD_BLOB_H_ */

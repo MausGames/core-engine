@@ -261,6 +261,9 @@ CoreGraphics::CoreGraphics()noexcept
     else if(SDL_GL_SetSwapInterval(1))      Core::Log->Info   ("Vertical synchronization configured (default)");
     else                                    Core::Log->Warning("Vertical synchronization not directly supported (SDL: %s)", SDL_GetError());
 
+    // start up blob-cache
+    coreInitBlobCache();
+
     // load shader-cache
     coreProgram::LoadShaderCache();
 }
@@ -273,6 +276,9 @@ CoreGraphics::~CoreGraphics()
     // save and clear shader-cache
     coreProgram::SaveShaderCache();
     coreProgram::ClearShaderCache();
+
+    // shut down blob-cache
+    coreExitBlobCache();
 
     // delete uniform buffer objects
     m_Transform3DBuffer.Delete();

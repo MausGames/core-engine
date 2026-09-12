@@ -195,6 +195,9 @@
     <ClCompile Include="..\..\..\source\additional\engine\coreTest.cpp">
       <Filter>additional\engine</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\..\source\additional\coreEGL.cpp">
+      <Filter>additional</Filter>
+    </ClCompile>
     <ClCompile Include="..\..\..\source\additional\coreGL.cpp">
       <Filter>additional</Filter>
     </ClCompile>
@@ -364,6 +367,9 @@
       <Filter>objects\game</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\source\additional\coreAL.h">
+      <Filter>additional</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\source\additional\coreEGL.h">
       <Filter>additional</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\source\additional\coreGL.h">

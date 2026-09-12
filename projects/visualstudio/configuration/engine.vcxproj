@@ -405,6 +405,7 @@
   <ItemGroup>
     <ClCompile Include="..\..\..\source\additional\coreAL.cpp" />
     <ClCompile Include="..\..\..\source\additional\coreCPUID.cpp" />
+    <ClCompile Include="..\..\..\source\additional\coreEGL.cpp" />
     <ClCompile Include="..\..\..\source\additional\coreGLES.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)'=='Debug'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)'=='Release'">true</ExcludedFromBuild>
@@ -496,6 +497,7 @@
   <ItemGroup>
     <ClInclude Include="..\..\..\source\additional\coreAL.h" />
     <ClInclude Include="..\..\..\source\additional\coreCPUID.h" />
+    <ClInclude Include="..\..\..\source\additional\coreEGL.h" />
     <ClInclude Include="..\..\..\source\additional\coreGLES.h" />
     <ClInclude Include="..\..\..\source\additional\coreGL.h" />
     <ClInclude Include="..\..\..\source\additional\macos\cocoa.h" />

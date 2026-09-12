@@ -7,7 +7,6 @@
 //*-----------------------------------------------------*//
 ///////////////////////////////////////////////////////////
 #include "Core.h"
-#include "coreBlob.h"
 #include <EGL/egl.h>
 
 coreString      g_sExtensions = "";
@@ -394,9 +393,6 @@ void __coreInitOpenGLES()
     {
         g_ContextGLES.__GL_OES_get_program_binary = false;
     }
-
-    // start up blob-cache
-    coreInitBlobCache();
 }
 
 
@@ -404,8 +400,6 @@ void __coreInitOpenGLES()
 /* exit OpenGL ES */
 void __coreExitOpenGLES()
 {
-    // shut down blob-cache
-    coreExitBlobCache();
 }
 
 

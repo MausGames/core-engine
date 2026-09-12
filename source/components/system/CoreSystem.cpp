@@ -102,6 +102,9 @@ CoreSystem::CoreSystem()noexcept
                             SDL_VERSIONNUM_MAJOR(iVersionIMG), SDL_VERSIONNUM_MINOR(iVersionIMG), SDL_VERSIONNUM_MICRO(iVersionIMG), SDL_GetPlatform(), SDL_GetSandbox());
         }
 
+        // init EGL
+        coreInitEGL();
+
         // execute main-thread with higher priority
         ASSERT(SDL_IsMainThread())
         SDL_SetCurrentThreadPriority(SDL_THREAD_PRIORITY_HIGH);
