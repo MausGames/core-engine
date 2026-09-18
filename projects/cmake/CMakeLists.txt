@@ -136,7 +136,7 @@ else()
     target_compile_options(
         CoreEngine PUBLIC
         -msse3 -ftls-model=initial-exec -pipe -Wall -Wextra -Wpedantic
-        $<IF:$<CONFIG:DEBUG>, -O0 -g3 -gsplit-dwarf -gz=zstd -ftrivial-auto-var-init=pattern, -Os -flto -fvisibility=hidden -ftrivial-auto-var-init=uninitialized -fwhole-program-vtables -fvirtual-function-elimination -fforce-emit-vtables -fstrict-vtable-pointers -fno-strict-overflow -ffinite-math-only -fno-signed-zeros -fno-trapping-math -fno-math-errno -ffp-contract=off -fno-rtti -fno-exceptions -Werror>
+        $<IF:$<CONFIG:DEBUG>, -O0 -g3 -gsplit-dwarf -gz=zstd -ftrivial-auto-var-init=pattern, -Os -flto -fvisibility=hidden -fno-plt -ftrivial-auto-var-init=uninitialized -fwhole-program-vtables -fvirtual-function-elimination -fforce-emit-vtables -fstrict-vtable-pointers -fno-strict-overflow -ffinite-math-only -fno-signed-zeros -fno-trapping-math -fno-math-errno -ffp-contract=off -fno-rtti -fno-exceptions -Werror>
     )
 
     target_link_directories(
@@ -207,7 +207,7 @@ if(NOT CORE_DEBUG)
         ${BASE_DIRECTORY}/source/components/graphics/coreTexture.cpp
         ${BASE_DIRECTORY}/source/managers/coreObject.cpp
         PROPERTIES
-        COMPILE_FLAGS -O3
+        COMPILE_FLAGS "-O3"
         SKIP_PRECOMPILE_HEADERS ON
     )
 

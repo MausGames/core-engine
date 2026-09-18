@@ -42,7 +42,6 @@
 // TODO 4: noexcept = default, ~T()noexcept
 // TODO 5: re-introduce __declspec(noalias), __attribute__((pure)), __attribute__((const)) and __attribute__((returns_nonnull)) if it ever makes sense again, also __attribute__((noescape)), e.g. for dynamic functions
 // TODO 1: [CORE2] upgrade minimum: Windows 7 (2009) -> 10 (2015), glibc 2.26/Kernel 4.6 (2017) -> 2.30 (2019), macOS 10.13 (2017) -> 10.15 (2019), also stop shipping Win 32-bit for newer projects (keep support for sanity checking though) (what about launcher?)
-// TODO 3: coreSpan
 // TODO 3: consteval if (no ternary though)
 // TODO 5: windows_arm_64 (those AI devices), linux_arm_64 (higher prio, on raspberry)
 // TODO 4: use std::to_address for &(* iterator accesses (also in games)

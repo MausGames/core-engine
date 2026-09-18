@@ -265,7 +265,10 @@
 				MACOSX_DEPLOYMENT_TARGET = 10.13;
 				MARKETING_VERSION = 0.0.1;
 				ONLY_ACTIVE_ARCH = YES;
-				OTHER_CFLAGS = "-ftrivial-auto-var-init=pattern";
+				OTHER_CFLAGS = (
+					"-ftls-model=initial-exec",
+					"-ftrivial-auto-var-init=pattern",
+				);
 				OTHER_LDFLAGS = (
 					"-framework",
 					Foundation,
@@ -341,6 +344,7 @@
 				MACOSX_DEPLOYMENT_TARGET = 10.13;
 				MARKETING_VERSION = 0.0.1;
 				OTHER_CFLAGS = (
+					"-ftls-model=initial-exec",
 					"-ftrivial-auto-var-init=uninitialized",
 					"-fno-strict-overflow",
 					"-ffinite-math-only",

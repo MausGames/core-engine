@@ -877,7 +877,10 @@
 				MACOSX_DEPLOYMENT_TARGET = 10.13;
 				MARKETING_VERSION = 1.0.0;
 				ONLY_ACTIVE_ARCH = YES;
-				OTHER_CFLAGS = "-ftrivial-auto-var-init=pattern";
+				OTHER_CFLAGS = (
+					"-ftls-model=initial-exec",
+					"-ftrivial-auto-var-init=pattern",
+				);
 				PRODUCT_BUNDLE_IDENTIFIER = MausGames.CoreEngine;
 				PRODUCT_NAME = CoreEngine;
 				SDKROOT = macosx;
@@ -929,6 +932,7 @@
 				MACOSX_DEPLOYMENT_TARGET = 10.13;
 				MARKETING_VERSION = 1.0.0;
 				OTHER_CFLAGS = (
+					"-ftls-model=initial-exec",
 					"-ftrivial-auto-var-init=uninitialized",
 					"-fno-strict-overflow",
 					"-ffinite-math-only",

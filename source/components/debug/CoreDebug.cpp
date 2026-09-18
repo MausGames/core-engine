@@ -8,7 +8,7 @@
 ///////////////////////////////////////////////////////////
 #include "Core.h"
 
-#if defined(_CORE_DEBUG_)
+#if defined(_CORE_DEBUG_) && __has_include(<imgui/imgui.cpp>)
     #include <imgui/imgui.h>
     #include <imgui/imgui_impl_sdl3.h>
     #include <imgui/imgui_impl_opengl3.h>

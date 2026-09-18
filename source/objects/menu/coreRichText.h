@@ -20,6 +20,7 @@
 // TODO 3: support adding arbitrary 2d-objects into the text
 // TODO 3: implement horizontal text alignment (left, center, right), correct for multiple lines
 // TODO 3: use temp-allocation for merge buffer (currently DYNAMIC_RESIZE)
+// TODO 3: furigana support: [大地|だいち]の[精霊|せいれい] and [..|..|1] for attributes, to force?
 
 
 // ****************************************************************
