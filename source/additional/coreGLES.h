@@ -18,6 +18,7 @@
 // TODO 4: add all missing "shader extensions"
 // TODO 3: CORE_CONFIG_GRAPHICS_DISABLEEXTENSIONS does not work for static version-checked extensions (looks like I need to map strings to booleans for best support)
 // TODO 3: EGL_ANGLE_memory_usage_report
+// TODO 3: GL_MESA_sampler_objects
 // TODO 3: do not use string-contains for checking extensions, and fix all wrappers to handle alt-extensions
 // TODO 4: maybe also move all extension defines up to the top (like in coreAL)
 // TODO 4: integrate WEBGL_provoking_vertex into C++ once available in Emscripten
@@ -36,6 +37,7 @@
 #define CORE_GL_ARB_multisample                     (false)
 #define CORE_GL_ARB_pipeline_statistics_query       (false)
 #define CORE_GL_ARB_program_interface_query         (__CORE_GLES_VAR(bES31) && !DEFINED(_CORE_EMSCRIPTEN_))
+#define CORE_GL_ARB_sampler_objects                 (__CORE_GLES_VAR(bES30))
 #define CORE_GL_ARB_seamless_cube_map               (false)
 #define CORE_GL_ARB_shader_image_load_store         (__CORE_GLES_VAR(bES31) && !DEFINED(_CORE_EMSCRIPTEN_))
 #define CORE_GL_ARB_sync                            (__CORE_GLES_VAR(bES30))

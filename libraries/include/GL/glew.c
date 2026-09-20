@@ -807,6 +807,21 @@ PFNGLREADNPIXELSARBPROC __glewReadnPixelsARB = NULL;
 
 PFNGLMINSAMPLESHADINGARBPROC __glewMinSampleShadingARB = NULL;
 
+PFNGLBINDSAMPLERPROC __glewBindSampler = NULL;
+PFNGLDELETESAMPLERSPROC __glewDeleteSamplers = NULL;
+PFNGLGENSAMPLERSPROC __glewGenSamplers = NULL;
+PFNGLGETSAMPLERPARAMETERIIVPROC __glewGetSamplerParameterIiv = NULL;
+PFNGLGETSAMPLERPARAMETERIUIVPROC __glewGetSamplerParameterIuiv = NULL;
+PFNGLGETSAMPLERPARAMETERFVPROC __glewGetSamplerParameterfv = NULL;
+PFNGLGETSAMPLERPARAMETERIVPROC __glewGetSamplerParameteriv = NULL;
+PFNGLISSAMPLERPROC __glewIsSampler = NULL;
+PFNGLSAMPLERPARAMETERIIVPROC __glewSamplerParameterIiv = NULL;
+PFNGLSAMPLERPARAMETERIUIVPROC __glewSamplerParameterIuiv = NULL;
+PFNGLSAMPLERPARAMETERFPROC __glewSamplerParameterf = NULL;
+PFNGLSAMPLERPARAMETERFVPROC __glewSamplerParameterfv = NULL;
+PFNGLSAMPLERPARAMETERIPROC __glewSamplerParameteri = NULL;
+PFNGLSAMPLERPARAMETERIVPROC __glewSamplerParameteriv = NULL;
+
 PFNGLBINDIMAGETEXTUREPROC __glewBindImageTexture = NULL;
 PFNGLMEMORYBARRIERPROC __glewMemoryBarrier = NULL;
 
@@ -1314,6 +1329,7 @@ GLboolean __GLEW_ARB_provoking_vertex = GL_FALSE;
 GLboolean __GLEW_ARB_robust_buffer_access_behavior = GL_FALSE;
 GLboolean __GLEW_ARB_robustness = GL_FALSE;
 GLboolean __GLEW_ARB_sample_shading = GL_FALSE;
+GLboolean __GLEW_ARB_sampler_objects = GL_FALSE;
 GLboolean __GLEW_ARB_seamless_cube_map = GL_FALSE;
 GLboolean __GLEW_ARB_shader_group_vote = GL_FALSE;
 GLboolean __GLEW_ARB_shader_image_load_store = GL_FALSE;
@@ -1481,6 +1497,9 @@ static const char * _glewExtensionLookup[] = {
 #endif
 #ifdef GL_ARB_sample_shading
   "GL_ARB_sample_shading",
+#endif
+#ifdef GL_ARB_sampler_objects
+  "GL_ARB_sampler_objects",
 #endif
 #ifdef GL_ARB_seamless_cube_map
   "GL_ARB_seamless_cube_map",
@@ -1820,6 +1839,9 @@ static GLboolean* _glewExtensionEnabled[] = {
 #ifdef GL_ARB_sample_shading
   &__GLEW_ARB_sample_shading,
 #endif
+#ifdef GL_ARB_sampler_objects
+  &__GLEW_ARB_sampler_objects,
+#endif
 #ifdef GL_ARB_seamless_cube_map
   &__GLEW_ARB_seamless_cube_map,
 #endif
@@ -2082,6 +2104,7 @@ static GLboolean _glewInit_GL_ARB_program_interface_query (void);
 static GLboolean _glewInit_GL_ARB_provoking_vertex (void);
 static GLboolean _glewInit_GL_ARB_robustness (void);
 static GLboolean _glewInit_GL_ARB_sample_shading (void);
+static GLboolean _glewInit_GL_ARB_sampler_objects (void);
 static GLboolean _glewInit_GL_ARB_shader_image_load_store (void);
 static GLboolean _glewInit_GL_ARB_sync (void);
 static GLboolean _glewInit_GL_ARB_tessellation_shader (void);
@@ -2549,6 +2572,7 @@ static GLboolean _glewInit_GL_VERSION_3_3 (void)
 
   // additional
   _glewInit_GL_ARB_instanced_arrays();
+  _glewInit_GL_ARB_sampler_objects();
   _glewInit_GL_ARB_vertex_type_2_10_10_10_rev();
 
   return r;
@@ -3177,6 +3201,32 @@ static GLboolean _glewInit_GL_ARB_sample_shading (void)
 }
 
 #endif /* GL_ARB_sample_shading */
+
+#ifdef GL_ARB_sampler_objects
+
+static GLboolean _glewInit_GL_ARB_sampler_objects (void)
+{
+  GLboolean r = GL_FALSE;
+
+  r = ((glBindSampler = (PFNGLBINDSAMPLERPROC)glewGetProcAddress((const GLubyte*)"glBindSampler")) == NULL) || r;
+  r = ((glDeleteSamplers = (PFNGLDELETESAMPLERSPROC)glewGetProcAddress((const GLubyte*)"glDeleteSamplers")) == NULL) || r;
+  r = ((glGenSamplers = (PFNGLGENSAMPLERSPROC)glewGetProcAddress((const GLubyte*)"glGenSamplers")) == NULL) || r;
+  r = ((glGetSamplerParameterIiv = (PFNGLGETSAMPLERPARAMETERIIVPROC)glewGetProcAddress((const GLubyte*)"glGetSamplerParameterIiv")) == NULL) || r;
+  r = ((glGetSamplerParameterIuiv = (PFNGLGETSAMPLERPARAMETERIUIVPROC)glewGetProcAddress((const GLubyte*)"glGetSamplerParameterIuiv")) == NULL) || r;
+  r = ((glGetSamplerParameterfv = (PFNGLGETSAMPLERPARAMETERFVPROC)glewGetProcAddress((const GLubyte*)"glGetSamplerParameterfv")) == NULL) || r;
+  r = ((glGetSamplerParameteriv = (PFNGLGETSAMPLERPARAMETERIVPROC)glewGetProcAddress((const GLubyte*)"glGetSamplerParameteriv")) == NULL) || r;
+  r = ((glIsSampler = (PFNGLISSAMPLERPROC)glewGetProcAddress((const GLubyte*)"glIsSampler")) == NULL) || r;
+  r = ((glSamplerParameterIiv = (PFNGLSAMPLERPARAMETERIIVPROC)glewGetProcAddress((const GLubyte*)"glSamplerParameterIiv")) == NULL) || r;
+  r = ((glSamplerParameterIuiv = (PFNGLSAMPLERPARAMETERIUIVPROC)glewGetProcAddress((const GLubyte*)"glSamplerParameterIuiv")) == NULL) || r;
+  r = ((glSamplerParameterf = (PFNGLSAMPLERPARAMETERFPROC)glewGetProcAddress((const GLubyte*)"glSamplerParameterf")) == NULL) || r;
+  r = ((glSamplerParameterfv = (PFNGLSAMPLERPARAMETERFVPROC)glewGetProcAddress((const GLubyte*)"glSamplerParameterfv")) == NULL) || r;
+  r = ((glSamplerParameteri = (PFNGLSAMPLERPARAMETERIPROC)glewGetProcAddress((const GLubyte*)"glSamplerParameteri")) == NULL) || r;
+  r = ((glSamplerParameteriv = (PFNGLSAMPLERPARAMETERIVPROC)glewGetProcAddress((const GLubyte*)"glSamplerParameteriv")) == NULL) || r;
+
+  return r;
+}
+
+#endif /* GL_ARB_sampler_objects */
 
 #ifdef GL_ARB_shader_image_load_store
 
@@ -4267,6 +4317,9 @@ static GLenum GLEWAPIENTRY glewContextInit (void)
 #ifdef GL_ARB_sample_shading
   if (glewExperimental || GLEW_ARB_sample_shading) GLEW_ARB_sample_shading = !_glewInit_GL_ARB_sample_shading();
 #endif /* GL_ARB_sample_shading */
+#ifdef GL_ARB_sampler_objects
+  if (glewExperimental || GLEW_ARB_sampler_objects) GLEW_ARB_sampler_objects = !_glewInit_GL_ARB_sampler_objects();
+#endif /* GL_ARB_sampler_objects */
 #ifdef GL_ARB_shader_image_load_store
   if (glewExperimental || GLEW_ARB_shader_image_load_store) GLEW_ARB_shader_image_load_store = !_glewInit_GL_ARB_shader_image_load_store();
 #endif /* GL_ARB_shader_image_load_store */
@@ -4883,6 +4936,13 @@ GLboolean GLEWAPIENTRY glewIsSupported (const char* name)
         if (_glewStrSame3(&pos, &len, (const GLubyte*)"sample_shading", 14))
         {
           ret = GLEW_ARB_sample_shading;
+          continue;
+        }
+#endif
+#ifdef GL_ARB_sampler_objects
+        if (_glewStrSame3(&pos, &len, (const GLubyte*)"sampler_objects", 15))
+        {
+          ret = GLEW_ARB_sampler_objects;
           continue;
         }
 #endif

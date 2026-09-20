@@ -3898,6 +3898,47 @@ typedef void (GLAPIENTRY * PFNGLMINSAMPLESHADINGARBPROC) (GLclampf value);
 
 #endif /* GL_ARB_sample_shading */
 
+/* ------------------------- GL_ARB_sampler_objects ------------------------ */
+
+#ifndef GL_ARB_sampler_objects
+#define GL_ARB_sampler_objects 1
+
+#define GL_SAMPLER_BINDING 0x8919
+
+typedef void (GLAPIENTRY * PFNGLBINDSAMPLERPROC) (GLuint unit, GLuint sampler);
+typedef void (GLAPIENTRY * PFNGLDELETESAMPLERSPROC) (GLsizei count, const GLuint * samplers);
+typedef void (GLAPIENTRY * PFNGLGENSAMPLERSPROC) (GLsizei count, GLuint* samplers);
+typedef void (GLAPIENTRY * PFNGLGETSAMPLERPARAMETERIIVPROC) (GLuint sampler, GLenum pname, GLint* params);
+typedef void (GLAPIENTRY * PFNGLGETSAMPLERPARAMETERIUIVPROC) (GLuint sampler, GLenum pname, GLuint* params);
+typedef void (GLAPIENTRY * PFNGLGETSAMPLERPARAMETERFVPROC) (GLuint sampler, GLenum pname, GLfloat* params);
+typedef void (GLAPIENTRY * PFNGLGETSAMPLERPARAMETERIVPROC) (GLuint sampler, GLenum pname, GLint* params);
+typedef GLboolean (GLAPIENTRY * PFNGLISSAMPLERPROC) (GLuint sampler);
+typedef void (GLAPIENTRY * PFNGLSAMPLERPARAMETERIIVPROC) (GLuint sampler, GLenum pname, const GLint* params);
+typedef void (GLAPIENTRY * PFNGLSAMPLERPARAMETERIUIVPROC) (GLuint sampler, GLenum pname, const GLuint* params);
+typedef void (GLAPIENTRY * PFNGLSAMPLERPARAMETERFPROC) (GLuint sampler, GLenum pname, GLfloat param);
+typedef void (GLAPIENTRY * PFNGLSAMPLERPARAMETERFVPROC) (GLuint sampler, GLenum pname, const GLfloat* params);
+typedef void (GLAPIENTRY * PFNGLSAMPLERPARAMETERIPROC) (GLuint sampler, GLenum pname, GLint param);
+typedef void (GLAPIENTRY * PFNGLSAMPLERPARAMETERIVPROC) (GLuint sampler, GLenum pname, const GLint* params);
+
+#define glBindSampler GLEW_GET_FUN(__glewBindSampler)
+#define glDeleteSamplers GLEW_GET_FUN(__glewDeleteSamplers)
+#define glGenSamplers GLEW_GET_FUN(__glewGenSamplers)
+#define glGetSamplerParameterIiv GLEW_GET_FUN(__glewGetSamplerParameterIiv)
+#define glGetSamplerParameterIuiv GLEW_GET_FUN(__glewGetSamplerParameterIuiv)
+#define glGetSamplerParameterfv GLEW_GET_FUN(__glewGetSamplerParameterfv)
+#define glGetSamplerParameteriv GLEW_GET_FUN(__glewGetSamplerParameteriv)
+#define glIsSampler GLEW_GET_FUN(__glewIsSampler)
+#define glSamplerParameterIiv GLEW_GET_FUN(__glewSamplerParameterIiv)
+#define glSamplerParameterIuiv GLEW_GET_FUN(__glewSamplerParameterIuiv)
+#define glSamplerParameterf GLEW_GET_FUN(__glewSamplerParameterf)
+#define glSamplerParameterfv GLEW_GET_FUN(__glewSamplerParameterfv)
+#define glSamplerParameteri GLEW_GET_FUN(__glewSamplerParameteri)
+#define glSamplerParameteriv GLEW_GET_FUN(__glewSamplerParameteriv)
+
+#define GLEW_ARB_sampler_objects GLEW_GET_VAR(__GLEW_ARB_sampler_objects)
+
+#endif /* GL_ARB_sampler_objects */
+
 /* ------------------------ GL_ARB_seamless_cube_map ----------------------- */
 
 #ifndef GL_ARB_seamless_cube_map
@@ -6487,6 +6528,21 @@ GLEW_FUN_EXPORT PFNGLREADNPIXELSARBPROC __glewReadnPixelsARB;
 
 GLEW_FUN_EXPORT PFNGLMINSAMPLESHADINGARBPROC __glewMinSampleShadingARB;
 
+GLEW_FUN_EXPORT PFNGLBINDSAMPLERPROC __glewBindSampler;
+GLEW_FUN_EXPORT PFNGLDELETESAMPLERSPROC __glewDeleteSamplers;
+GLEW_FUN_EXPORT PFNGLGENSAMPLERSPROC __glewGenSamplers;
+GLEW_FUN_EXPORT PFNGLGETSAMPLERPARAMETERIIVPROC __glewGetSamplerParameterIiv;
+GLEW_FUN_EXPORT PFNGLGETSAMPLERPARAMETERIUIVPROC __glewGetSamplerParameterIuiv;
+GLEW_FUN_EXPORT PFNGLGETSAMPLERPARAMETERFVPROC __glewGetSamplerParameterfv;
+GLEW_FUN_EXPORT PFNGLGETSAMPLERPARAMETERIVPROC __glewGetSamplerParameteriv;
+GLEW_FUN_EXPORT PFNGLISSAMPLERPROC __glewIsSampler;
+GLEW_FUN_EXPORT PFNGLSAMPLERPARAMETERIIVPROC __glewSamplerParameterIiv;
+GLEW_FUN_EXPORT PFNGLSAMPLERPARAMETERIUIVPROC __glewSamplerParameterIuiv;
+GLEW_FUN_EXPORT PFNGLSAMPLERPARAMETERFPROC __glewSamplerParameterf;
+GLEW_FUN_EXPORT PFNGLSAMPLERPARAMETERFVPROC __glewSamplerParameterfv;
+GLEW_FUN_EXPORT PFNGLSAMPLERPARAMETERIPROC __glewSamplerParameteri;
+GLEW_FUN_EXPORT PFNGLSAMPLERPARAMETERIVPROC __glewSamplerParameteriv;
+
 GLEW_FUN_EXPORT PFNGLBINDIMAGETEXTUREPROC __glewBindImageTexture;
 GLEW_FUN_EXPORT PFNGLMEMORYBARRIERPROC __glewMemoryBarrier;
 
@@ -6994,6 +7050,7 @@ GLEW_VAR_EXPORT GLboolean __GLEW_ARB_provoking_vertex;
 GLEW_VAR_EXPORT GLboolean __GLEW_ARB_robust_buffer_access_behavior;
 GLEW_VAR_EXPORT GLboolean __GLEW_ARB_robustness;
 GLEW_VAR_EXPORT GLboolean __GLEW_ARB_sample_shading;
+GLEW_VAR_EXPORT GLboolean __GLEW_ARB_sampler_objects;
 GLEW_VAR_EXPORT GLboolean __GLEW_ARB_seamless_cube_map;
 GLEW_VAR_EXPORT GLboolean __GLEW_ARB_shader_group_vote;
 GLEW_VAR_EXPORT GLboolean __GLEW_ARB_shader_image_load_store;
