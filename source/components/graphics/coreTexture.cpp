@@ -48,7 +48,7 @@ coreStatus coreTexture::Load(coreFile* pFile)
 
     WARN_IF(m_iIdentifier) return CORE_INVALID_CALL;
     if(!pFile)             return CORE_INVALID_INPUT;
-    if(!pFile->GetSize())  return CORE_ERROR_FILE;   // do not load file data
+    if(!pFile->IsValid())  return CORE_ERROR_FILE;
 
     // decompress file to plain pixel data
     coreSurfaceScope pData = IMG_LoadTyped_IO(pFile->CreateReadStream(), true, coreData::StrExtension(pFile->GetPath()));

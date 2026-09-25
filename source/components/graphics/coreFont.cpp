@@ -40,7 +40,7 @@ coreStatus coreFont::Load(coreFile* pFile)
 {
     WARN_IF(m_pFile)      return CORE_INVALID_CALL;
     if(!pFile)            return CORE_INVALID_INPUT;
-    if(!pFile->GetSize()) return CORE_ERROR_FILE;   // do not load file data
+    if(!pFile->IsValid()) return CORE_ERROR_FILE;
 
     // not yet configured
     if(!m_bStatus) return CORE_BUSY;

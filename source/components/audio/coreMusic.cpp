@@ -67,7 +67,7 @@ coreMusic::coreMusic(coreFile* pFile)noexcept
 , m_bLoop      (false)
 {
     if(!pFile)            return;
-    if(!pFile->GetSize()) return;   // do not load file data
+    if(!pFile->IsValid()) return;
 
     // copy file object as streaming source
     coreFile::InternalNew(&m_pFile, pFile);

@@ -74,7 +74,7 @@ coreStatus Core::__RunCommand()
 
         // open input file
         coreFile oFile(pcInput);
-        if(!oFile.GetSize())
+        if(!oFile.IsValid())
         {
             std::printf("File (%s) could not be opened\n", pcInput);
             return CORE_ERROR_FILE;
@@ -145,7 +145,7 @@ coreStatus Core::__RunCommand()
 
         // open input file
         coreFile oFile(pcInput);
-        if(!oFile.GetSize())
+        if(!oFile.IsValid())
         {
             std::printf("File (%s) could not be opened\n", pcInput);
             return CORE_ERROR_FILE;

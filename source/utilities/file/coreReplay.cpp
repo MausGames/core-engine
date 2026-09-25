@@ -83,7 +83,7 @@ coreStatus coreReplay::StartPlayback(const coreChar* pcPath)
 
     // open playback file
     m_pPlaybackFile = new coreFile(m_sPath.c_str());
-    if(!m_pPlaybackFile->GetSize())
+    if(!m_pPlaybackFile->IsValid())
     {
         Core::Log->Warning("Replay Playback (%s) could not be started", m_sPath.c_str());
         return CORE_ERROR_FILE;

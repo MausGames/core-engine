@@ -52,7 +52,7 @@ coreStatus coreAnimation::Load(coreFile* pFile)
 
     WARN_IF(m_piTime)     return CORE_INVALID_CALL;
     if(!pFile)            return CORE_INVALID_INPUT;
-    if(!pFile->GetSize()) return CORE_ERROR_FILE;   // do not load file data
+    if(!pFile->IsValid()) return CORE_ERROR_FILE;
 
     // decompress file to animation data
     coreAnimationScope pAnim = IMG_LoadAnimationTyped_IO(pFile->CreateReadStream(), true, coreData::StrExtension(pFile->GetPath()));

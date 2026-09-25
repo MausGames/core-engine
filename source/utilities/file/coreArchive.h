@@ -99,6 +99,9 @@ public:
     inline void Acquire() {m_iRefCount.FetchAdd(1u); ASSERT(m_iRefCount)}
     inline void Release() {ASSERT(m_iRefCount) if(!m_iRefCount.SubFetch(1u)) this->UnloadData();}
 
+    /* check for current file status */
+    inline coreBool IsValid()const {return (m_iSize != 0u);}
+
     /* get object properties */
     inline const coreChar*   GetPath()const {return m_sPath.c_str();}
     inline const coreByte*   GetData()      {this->LoadData(); return m_pData;}

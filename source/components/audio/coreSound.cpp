@@ -45,7 +45,7 @@ coreStatus coreSound::Load(coreFile* pFile)
 
     WARN_IF(m_iBuffer)    return CORE_INVALID_CALL;
     if(!pFile)            return CORE_INVALID_INPUT;
-    if(!pFile->GetSize()) return CORE_ERROR_FILE;   // do not load file data
+    if(!pFile->IsValid()) return CORE_ERROR_FILE;
 
     const coreByte* pSoundData = NULL;
     coreUint32      iSoundSize = 0u;

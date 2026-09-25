@@ -62,7 +62,7 @@ coreStatus coreModel::Load(coreFile* pFile)
 
     WARN_IF(!m_aVertexBuffer.empty()) return CORE_INVALID_CALL;
     if(!pFile)                        return CORE_INVALID_INPUT;
-    if(!pFile->GetData())             return CORE_ERROR_FILE;
+    if(!pFile->IsValid())             return CORE_ERROR_FILE;
 
     // extract file extension
     const coreChar* pcExtension = coreData::StrToLower(coreData::StrExtension(pFile->GetPath()));
