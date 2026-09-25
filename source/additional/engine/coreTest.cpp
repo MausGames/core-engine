@@ -149,6 +149,30 @@ DOCTEST_TEST_CASE("Unit Tests")
             DOCTEST_CHECK_EQ(coreData::StrIsLowerUTF8("그림자 품질"), true);
         }
 
+        DOCTEST_SUBCASE("StrLeft/StrLeftRev")
+        {
+            DOCTEST_CHECK_EQ(coreData::StrLeft   ("ABCDEF", 0u),       "");
+            DOCTEST_CHECK_EQ(coreData::StrLeft   ("ABCDEF", 2u),       "AB");
+            DOCTEST_CHECK_EQ(coreData::StrLeft   ("ABCDEF", 10u),      "ABCDEF");
+            DOCTEST_CHECK_EQ(coreData::StrLeft   ("ABCDEF", SIZE_MAX), "ABCDEF");
+            DOCTEST_CHECK_EQ(coreData::StrLeftRev("ABCDEF", 0u),       "ABCDEF");
+            DOCTEST_CHECK_EQ(coreData::StrLeftRev("ABCDEF", 2u),       "ABCD");
+            DOCTEST_CHECK_EQ(coreData::StrLeftRev("ABCDEF", 10u),      "");
+            DOCTEST_CHECK_EQ(coreData::StrLeftRev("ABCDEF", SIZE_MAX), "");
+        }
+
+        DOCTEST_SUBCASE("StrRight/StrRightRev")
+        {
+            DOCTEST_CHECK_EQ(coreData::StrRight   ("ABCDEF", 0u),       "");
+            DOCTEST_CHECK_EQ(coreData::StrRight   ("ABCDEF", 2u),       "EF");
+            DOCTEST_CHECK_EQ(coreData::StrRight   ("ABCDEF", 10u),      "ABCDEF");
+            DOCTEST_CHECK_EQ(coreData::StrRight   ("ABCDEF", SIZE_MAX), "ABCDEF");
+            DOCTEST_CHECK_EQ(coreData::StrRightRev("ABCDEF", 0u),       "ABCDEF");
+            DOCTEST_CHECK_EQ(coreData::StrRightRev("ABCDEF", 2u),       "CDEF");
+            DOCTEST_CHECK_EQ(coreData::StrRightRev("ABCDEF", 10u),      "");
+            DOCTEST_CHECK_EQ(coreData::StrRightRev("ABCDEF", SIZE_MAX), "");
+        }
+
         DOCTEST_SUBCASE("StrVersion")
         {
             DOCTEST_CHECK_EQ(coreData::StrVersion("21.1.7"),     corePoint3U8(21u, 1u,  7u));

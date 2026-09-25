@@ -159,7 +159,7 @@ coreStatus Core::__RunCommand()
         const coreUint32 iSizeAfter = oFile.GetSize();
 
         // write to new location
-        const coreChar* pcOutput = coreData::StrLeft(pcInput, coreStrLen(pcInput) - 1u);
+        const coreChar* pcOutput = coreData::StrLeftRev(pcInput, 1u);
 
         // save output file
         if(oFile.Save(pcOutput) != CORE_OK)

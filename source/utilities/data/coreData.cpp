@@ -2723,11 +2723,29 @@ const coreChar* coreData::StrLeft(const coreChar* pcInput, const coreUintW iNum)
     coreChar* pcString = coreData::__NextTempString();
 
     // calculate string length
-    const coreUintW iLen = MIN(iNum, coreStrLen(pcInput), CORE_DATA_STRING_LEN - 1u);
+    const coreUintW iLen = coreStrLen(pcInput);
+    const coreUintW iEnd = MIN(iNum, iLen, CORE_DATA_STRING_LEN - 1u);
 
     // copy characters into new string
-    std::memcpy(pcString, pcInput, iLen);
-    pcString[iLen] = '\0';
+    std::memcpy(pcString, pcInput, iEnd);
+    pcString[iEnd] = '\0';
+
+    return pcString;
+}
+
+const coreChar* coreData::StrLeftRev(const coreChar* pcInput, const coreUintW iNum)
+{
+    WARN_IF(!pcInput) return "";
+
+    coreChar* pcString = coreData::__NextTempString();
+
+    // calculate string length (reversed)
+    const coreUintW iLen = coreStrLen(pcInput);
+    const coreUintW iEnd = MIN(iLen - MIN(iNum, iLen), CORE_DATA_STRING_LEN - 1u);
+
+    // copy characters into new string
+    std::memcpy(pcString, pcInput, iEnd);
+    pcString[iEnd] = '\0';
 
     return pcString;
 }
@@ -2740,7 +2758,15 @@ const coreChar* coreData::StrRight(const coreChar* pcInput, const coreUintW iNum
     WARN_IF(!pcInput) return "";
 
     const coreUintW iLen = coreStrLen(pcInput);
-    return pcInput + (iLen - MIN(iLen, iNum));
+    return pcInput + (iLen - MIN(iNum, iLen));
+}
+
+const coreChar* coreData::StrRightRev(const coreChar* pcInput, const coreUintW iNum)
+{
+    WARN_IF(!pcInput) return "";
+
+    const coreUintW iLen = coreStrLen(pcInput);
+    return pcInput + MIN(iNum, iLen);
 }
 
 

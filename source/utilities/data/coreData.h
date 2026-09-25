@@ -272,7 +272,9 @@ public:
     static       coreBool         StrIsUpperUTF8(const coreChar* pcInput);
     static       coreBool         StrIsLowerUTF8(const coreChar* pcInput);
     static const coreChar*        StrLeft       (const coreChar* pcInput, const coreUintW iNum);
+    static const coreChar*        StrLeftRev    (const coreChar* pcInput, const coreUintW iNum);
     static const coreChar*        StrRight      (const coreChar* pcInput, const coreUintW iNum);
+    static const coreChar*        StrRightRev   (const coreChar* pcInput, const coreUintW iNum);
     static const coreChar*        StrFilename   (const coreChar* pcInput, const coreBool bExtension = true);
     static const coreChar*        StrDirectory  (const coreChar* pcInput);
     static const coreChar*        StrExtension  (const coreChar* pcInput);
