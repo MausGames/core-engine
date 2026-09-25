@@ -86,7 +86,6 @@ DOCTEST_TEST_CASE("Unit Tests")
         DOCTEST_SUBCASE("StrToUpperUTF8")
         {
             DOCTEST_CHECK_EQ(coreData::StrToUpperUTF8("Straße 123"), "STRASSE 123");
-
             DOCTEST_CHECK_EQ(coreData::StrToUpperUTF8("Shadow Quality"), "SHADOW QUALITY");
             DOCTEST_CHECK_EQ(coreData::StrToUpperUTF8("Qualité des ombres"), "QUALITÉ DES OMBRES");
             DOCTEST_CHECK_EQ(coreData::StrToUpperUTF8("Calidad de las sombras"), "CALIDAD DE LAS SOMBRAS");
@@ -102,7 +101,6 @@ DOCTEST_TEST_CASE("Unit Tests")
         DOCTEST_SUBCASE("StrToLowerUTF8")
         {
             DOCTEST_CHECK_EQ(coreData::StrToLowerUTF8("Straße 123"), "straße 123");
-
             DOCTEST_CHECK_EQ(coreData::StrToLowerUTF8("Shadow Quality"), "shadow quality");
             DOCTEST_CHECK_EQ(coreData::StrToLowerUTF8("Qualité des ombres"), "qualité des ombres");
             DOCTEST_CHECK_EQ(coreData::StrToLowerUTF8("Calidad de las sombras"), "calidad de las sombras");
@@ -119,7 +117,6 @@ DOCTEST_TEST_CASE("Unit Tests")
         {
             DOCTEST_CHECK_EQ(coreData::StrIsUpperUTF8("Straße 123"), false);
             DOCTEST_CHECK_EQ(coreData::StrIsUpperUTF8("STRAßE 123"), false);
-
             DOCTEST_CHECK_EQ(coreData::StrIsUpperUTF8("SHADOW QUALITY"), true);
             DOCTEST_CHECK_EQ(coreData::StrIsUpperUTF8("Qualité des ombres"), false);
             DOCTEST_CHECK_EQ(coreData::StrIsUpperUTF8("calidad de las sombras"), false);
@@ -136,7 +133,6 @@ DOCTEST_TEST_CASE("Unit Tests")
         {
             DOCTEST_CHECK_EQ(coreData::StrIsLowerUTF8("Straße 123"), false);
             DOCTEST_CHECK_EQ(coreData::StrIsLowerUTF8("straße 123"), true);
-
             DOCTEST_CHECK_EQ(coreData::StrIsLowerUTF8("SHADOW QUALITY"), false);
             DOCTEST_CHECK_EQ(coreData::StrIsLowerUTF8("Qualité des ombres"), false);
             DOCTEST_CHECK_EQ(coreData::StrIsLowerUTF8("calidad de las sombras"), true);
@@ -194,7 +190,7 @@ DOCTEST_TEST_CASE("Unit Tests")
             DOCTEST_CHECK_EQ(coreMath::DivUp(0, 4), 0);
         }
 
-        DOCTEST_SUBCASE("Float32To16")
+        DOCTEST_SUBCASE("Float32To16/Float16To32")
         {
             DOCTEST_CHECK_EQ(coreMath::Float16To32(coreMath::Float32To16(    0.0f)),     0.0f);
             DOCTEST_CHECK_EQ(coreMath::Float16To32(coreMath::Float32To16(    0.0625f)),  0.0625f);
@@ -211,7 +207,7 @@ DOCTEST_TEST_CASE("Unit Tests")
             DOCTEST_CHECK_EQ(coreMath::Float16To32(coreMath::Float32To16(-1000.0f)), -1000.0f);
         }
 
-        DOCTEST_SUBCASE("Float32To11")
+        DOCTEST_SUBCASE("Float32To11/Float11To32")
         {
             DOCTEST_CHECK_EQ(coreMath::Float11To32(coreMath::Float32To11(  0.0f)),    0.0f);
             DOCTEST_CHECK_EQ(coreMath::Float11To32(coreMath::Float32To11(  0.0625f)), 0.0625f);
@@ -221,7 +217,7 @@ DOCTEST_TEST_CASE("Unit Tests")
             DOCTEST_CHECK_EQ(coreMath::Float11To32(coreMath::Float32To11(100.0f)),  100.0f);
         }
 
-        DOCTEST_SUBCASE("Float32To10")
+        DOCTEST_SUBCASE("Float32To10/Float10To32")
         {
             DOCTEST_CHECK_EQ(coreMath::Float10To32(coreMath::Float32To10(  0.0f)),    0.0f);
             DOCTEST_CHECK_EQ(coreMath::Float10To32(coreMath::Float32To10(  0.0625f)), 0.0625f);

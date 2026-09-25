@@ -208,12 +208,12 @@ typedef char *STBSP_SPRINTFCB(const char *buf, void *user, int len);
 #define STB_SPRINTF_DECORATE(name) stbsp_##name // define this before including if you want to change the names
 #endif
 
-STBSP__PUBLICDEC int STB_SPRINTF_DECORATE(vsprintf)(char *buf, char const *fmt, va_list va);
-STBSP__PUBLICDEC int STB_SPRINTF_DECORATE(vsnprintf)(char *buf, int count, char const *fmt, va_list va);
-STBSP__PUBLICDEC int STB_SPRINTF_DECORATE(sprintf)(char *buf, char const *fmt, ...) STBSP__ATTRIBUTE_FORMAT(2,3);
-STBSP__PUBLICDEC int STB_SPRINTF_DECORATE(snprintf)(char *buf, int count, char const *fmt, ...) STBSP__ATTRIBUTE_FORMAT(3,4);
+STBSP__PUBLICDEC int STB_SPRINTF_DECORATE(vsprintf)(char *__restrict buf, char const *fmt, va_list va);
+STBSP__PUBLICDEC int STB_SPRINTF_DECORATE(vsnprintf)(char *__restrict buf, int count, char const *fmt, va_list va);
+STBSP__PUBLICDEC int STB_SPRINTF_DECORATE(sprintf)(char *__restrict buf, char const *fmt, ...) STBSP__ATTRIBUTE_FORMAT(2,3);
+STBSP__PUBLICDEC int STB_SPRINTF_DECORATE(snprintf)(char *__restrict buf, int count, char const *fmt, ...) STBSP__ATTRIBUTE_FORMAT(3,4);
 
-STBSP__PUBLICDEC int STB_SPRINTF_DECORATE(vsprintfcb)(STBSP_SPRINTFCB *callback, void *user, char *buf, char const *fmt, va_list va);
+STBSP__PUBLICDEC int STB_SPRINTF_DECORATE(vsprintfcb)(STBSP_SPRINTFCB *callback, void *user, char *__restrict buf, char const *fmt, va_list va);
 STBSP__PUBLICDEC void STB_SPRINTF_DECORATE(set_separators)(char comma, char period);
 
 #endif // STB_SPRINTF_H_INCLUDE
@@ -350,11 +350,11 @@ static STBSP__ASAN stbsp__uint32 stbsp__strlen_limited(char const *s, stbsp__uin
    return (stbsp__uint32)(sn - s);
 }
 
-STBSP__PUBLICDEF int STB_SPRINTF_DECORATE(vsprintfcb)(STBSP_SPRINTFCB *callback, void *user, char *buf, char const *fmt, va_list va)
+STBSP__PUBLICDEF int STB_SPRINTF_DECORATE(vsprintfcb)(STBSP_SPRINTFCB *callback, void *user, char *__restrict buf, char const *fmt, va_list va)
 {
    static char hex[] = "0123456789abcdefxp";
    static char hexu[] = "0123456789ABCDEFXP";
-   char *bf;
+   char *__restrict bf;
    char const *f;
    int tlen = 0;
 
@@ -1377,7 +1377,7 @@ done:
 // ============================================================================
 //   wrapper functions
 
-STBSP__PUBLICDEF int STB_SPRINTF_DECORATE(sprintf)(char *buf, char const *fmt, ...)
+STBSP__PUBLICDEF int STB_SPRINTF_DECORATE(sprintf)(char *__restrict buf, char const *fmt, ...)
 {
    int result;
    va_list va;
@@ -1388,7 +1388,7 @@ STBSP__PUBLICDEF int STB_SPRINTF_DECORATE(sprintf)(char *buf, char const *fmt, .
 }
 
 typedef struct stbsp__context {
-   char *buf;
+   char *__restrict buf;
    int count;
    int length;
    char tmp[STB_SPRINTF_MIN];
@@ -1422,7 +1422,7 @@ static char *stbsp__clamp_callback(const char *buf, void *user, int len)
    return (c->count >= STB_SPRINTF_MIN) ? c->buf : c->tmp; // go direct into buffer if you can
 }
 
-static char * stbsp__count_clamp_callback( const char * buf, void * user, int len )
+static char * stbsp__count_clamp_callback(const char *buf, void *user, int len)
 {
    stbsp__context * c = (stbsp__context*)user;
    (void) sizeof(buf);
@@ -1431,7 +1431,7 @@ static char * stbsp__count_clamp_callback( const char * buf, void * user, int le
    return c->tmp; // go direct into buffer if you can
 }
 
-STBSP__PUBLICDEF int STB_SPRINTF_DECORATE( vsnprintf )( char * buf, int count, char const * fmt, va_list va )
+STBSP__PUBLICDEF int STB_SPRINTF_DECORATE(vsnprintf)(char *__restrict buf, int count, char const *fmt, va_list va)
 {
    stbsp__context c;
 
@@ -1461,7 +1461,7 @@ STBSP__PUBLICDEF int STB_SPRINTF_DECORATE( vsnprintf )( char * buf, int count, c
    return c.length;
 }
 
-STBSP__PUBLICDEF int STB_SPRINTF_DECORATE(snprintf)(char *buf, int count, char const *fmt, ...)
+STBSP__PUBLICDEF int STB_SPRINTF_DECORATE(snprintf)(char *__restrict buf, int count, char const *fmt, ...)
 {
    int result;
    va_list va;
@@ -1473,7 +1473,7 @@ STBSP__PUBLICDEF int STB_SPRINTF_DECORATE(snprintf)(char *buf, int count, char c
    return result;
 }
 
-STBSP__PUBLICDEF int STB_SPRINTF_DECORATE(vsprintf)(char *buf, char const *fmt, va_list va)
+STBSP__PUBLICDEF int STB_SPRINTF_DECORATE(vsprintf)(char *__restrict buf, char const *fmt, va_list va)
 {
    return STB_SPRINTF_DECORATE(vsprintfcb)(0, 0, buf, fmt, va);
 }

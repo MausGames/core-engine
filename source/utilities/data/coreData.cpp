@@ -1345,7 +1345,13 @@ void* coreData::OpenLibrary(const coreChar* pcName)
 
 #if defined(_CORE_WINDOWS_)
 
-    return LoadLibraryW(coreData::__ToWideChar(pcName));
+    // try to open dynamic library
+    const HMODULE pLibrary = LoadLibraryW(coreData::__ToWideChar(pcName));
+
+    // log error message
+    if(!pLibrary) Core::Log->Warning("Dynamic Library (%s) could not be loaded", pcName);
+
+    return pLibrary;
 
 #elif defined(_CORE_LINUX_) || defined(_CORE_MACOS_)
 
@@ -1360,6 +1366,9 @@ void* coreData::OpenLibrary(const coreChar* pcName)
     void* pLibrary = NULL;
     if(!pLibrary) pLibrary = dlopen(pcLocal, RTLD_LAZY);   // independent of library paths (DT_RPATH, LD_LIBRARY_PATH, etc.)
     if(!pLibrary) pLibrary = dlopen(pcName,  RTLD_LAZY);
+
+    // log error message
+    if(!pLibrary) Core::Log->Warning("Dynamic Library (%s) could not be loaded (dlerror: %s)", pcName, dlerror());
 
     return pLibrary;
 
@@ -2537,7 +2546,7 @@ coreStatus coreData::Compress(const coreByte* pInput, const coreUint32 iInputSiz
 /* decompress data with Zstandard library */
 coreStatus coreData::Decompress(const coreByte* pInput, const coreUint32 iInputSize, coreByte** OUTPUT ppOutput, coreUint32* OUTPUT piOutputSize, const coreUint32 iLimit)
 {
-    ASSERT(pInput && iInputSize && ppOutput && piOutputSize && iLimit)
+    ASSERT(pInput && (iInputSize >= sizeof(coreUint32)) && ppOutput && piOutputSize && iLimit)
 
     // check data integrity
     const coreUint64 iContentSize = ZSTD_getFrameContentSize(pInput + sizeof(coreUint32), iInputSize - sizeof(coreUint32));
@@ -2572,7 +2581,7 @@ coreStatus coreData::Decompress(const coreByte* pInput, const coreUint32 iInputS
 
 coreStatus coreData::Decompress(const coreByte* pInput, const coreUint32 iInputSize, coreByte* OUTPUT pOutput, coreUint32* OUTPUT piOutputSize)
 {
-    ASSERT(pInput && iInputSize && piOutputSize)
+    ASSERT(pInput && (iInputSize >= sizeof(coreUint32)) && piOutputSize)
 
     // check data integrity
     const coreUint64 iContentSize = ZSTD_getFrameContentSize(pInput + sizeof(coreUint32), iInputSize - sizeof(coreUint32));

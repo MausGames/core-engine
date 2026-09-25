@@ -98,15 +98,19 @@ namespace
     {
         coreInit()noexcept
         {
+            ASSERT(SDL_GetNumAllocations() <= 0)
+
             // create private heap object
             s_pHeap = coreData::HeapCreate(true);
 
-            // register allocation functions
+            // register custom allocation functions
             SDL_SetMemoryFunctions(coreMalloc, coreCalloc, coreRealloc, coreFree);
         }
 
         ~coreInit()
         {
+            ASSERT(SDL_GetNumAllocations() <= 0)
+
             // destroy private heap object
             coreData::HeapDestroy(s_pHeap);
         }
