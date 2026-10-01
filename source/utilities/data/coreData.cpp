@@ -979,6 +979,8 @@ coreBool coreData::DetectDebugger()
 /* detect attached RenderDoc */
 coreBool coreData::DetectRenderDoc()
 {
+ONCE_START
+
 #if defined(_CORE_WINDOWS_)
 
     return coreData::TestLibrary("renderdoc.dll");
@@ -992,6 +994,8 @@ coreBool coreData::DetectRenderDoc()
     return false;
 
 #endif
+
+ONCE_END
 }
 
 
@@ -999,8 +1003,12 @@ coreBool coreData::DetectRenderDoc()
 /* detect Steam Deck hardware */
 coreBool coreData::DetectSteamDeck()
 {
+ONCE_START
+
     const coreChar* pcVariable = coreData::GetEnvironment("SteamDeck");
     return (pcVariable && !coreStrCmp(pcVariable, "1"));
+
+ONCE_END
 }
 
 
@@ -1008,8 +1016,20 @@ coreBool coreData::DetectSteamDeck()
 /* detect X11 compositor */
 coreBool coreData::DetectX11()
 {
+ONCE_START
+
+#if defined(_CORE_LINUX_)
+
     const coreChar* pcVariable = coreData::GetEnvironment("XDG_SESSION_TYPE");
     return (pcVariable && !coreStrCmp(pcVariable, "x11"));
+
+#else
+
+    return false;
+
+#endif
+
+ONCE_END
 }
 
 
@@ -1017,8 +1037,20 @@ coreBool coreData::DetectX11()
 /* detect Wayland compositor */
 coreBool coreData::DetectWayland()
 {
+ONCE_START
+
+#if defined(_CORE_LINUX_)
+
     const coreChar* pcVariable = coreData::GetEnvironment("XDG_SESSION_TYPE");
     return (pcVariable && !coreStrCmp(pcVariable, "wayland"));
+
+#else
+
+    return false;
+
+#endif
+
+ONCE_END
 }
 
 
@@ -1026,8 +1058,20 @@ coreBool coreData::DetectWayland()
 /* detect Gamescope compositor */
 coreBool coreData::DetectGamescope()
 {
+ONCE_START
+
+#if defined(_CORE_LINUX_)
+
     const coreChar* pcVariable = coreData::GetEnvironment("XDG_CURRENT_DESKTOP");
     return (pcVariable && std::strstr(pcVariable, "gamescope"));   // strstr
+
+#else
+
+    return false;
+
+#endif
+
+ONCE_END
 }
 
 
@@ -1035,6 +1079,8 @@ coreBool coreData::DetectGamescope()
 /* detect Wine or Proton layer */
 coreBool coreData::DetectWine()
 {
+ONCE_START
+
 #if defined(_CORE_WINDOWS_)
 
     return (GetProcAddress(GetModuleHandleW(L"ntdll.dll"), "wine_get_version") != NULL);
@@ -1044,6 +1090,8 @@ coreBool coreData::DetectWine()
     return false;
 
 #endif
+
+ONCE_END
 }
 
 
