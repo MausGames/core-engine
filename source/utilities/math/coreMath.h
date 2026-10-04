@@ -57,6 +57,8 @@
 #define ABS    coreMath::Abs
 #define POW2   coreMath::Pow2
 #define POW3   coreMath::Pow3
+#define POW4   coreMath::Pow4
+#define POW5   coreMath::Pow5
 #define LERP   coreMath::Lerp
 #define LERPS  coreMath::LerpSmooth
 #define LERPB  coreMath::LerpBreak
@@ -71,6 +73,8 @@
 #define STEPBR coreMath::StepBreakRev
 #define STEPH3 coreMath::StepHermite3
 #define STEPH5 coreMath::StepHermite5
+#define POS    coreMath::Positive
+#define NEG    coreMath::Negative
 #define FMODR  coreMath::FmodRepeat
 #define FMODM  coreMath::FmodMirror
 #define FMOD   coreMath::Fmod
@@ -129,8 +133,10 @@ public:
     template <typename T>                      static constexpr T Signum      (const T x)                                                       {return (x) ? SIGN(x) : T(0);}
     template <coreFloatingPoint    T>          static constexpr T Abs         (const T x)                                                       {return std::is_constant_evaluated() ? ((x < T(0)) ? T(-x) : T(x)) : T(std::abs(x));}
     template <std::signed_integral T>          static constexpr T Abs         (const T x)                                                       {return std::is_constant_evaluated() ? ((x < T(0)) ? T(-x) : T(x)) : T(std::abs(MAX(x, -std::numeric_limits<T>::max())));}
-    template <typename T>                      static constexpr T Pow2        (const T x)                                                       {return x * x;}
-    template <typename T>                      static constexpr T Pow3        (const T x)                                                       {return x * x * x;}
+    template <typename T>                      static constexpr T Pow2        (const T x)                                                       {return (x * x);}
+    template <typename T>                      static constexpr T Pow3        (const T x)                                                       {return (x * x) * (x);}
+    template <typename T>                      static constexpr T Pow4        (const T x)                                                       {return (x * x) * (x * x);}                         // braces for sub-expression elimination
+    template <typename T>                      static constexpr T Pow5        (const T x)                                                       {return (x * x) * (x * x) * (x);}
     template <typename T, coreFloatingPoint S> static constexpr T Lerp        (const T x, const T y, const S s)                                 {return x * (S(1) - s) + y * s;}                    // better precision than (x + (y - x) * s)
     template <typename T, coreFloatingPoint S> static inline    T LerpSmooth  (const T x, const T y, const S s)                                 {return LERP(x, y, S(0.5) - S(0.5) * COS(s * S(PI_D)));}
     template <typename T, coreFloatingPoint S> static inline    T LerpBreak   (const T x, const T y, const S s)                                 {return LERP(x, y, SIN(s * (S(PI_D) * S(0.5))));}
@@ -146,6 +152,8 @@ public:
     template <coreFloatingPoint T>             static constexpr T StepHermite3(const T a, const t_ident<T> b, const t_ident<T> x)               {return LERPH3(T(0), T(1), STEP(a, b, x));}         // smoothstep
     template <coreFloatingPoint T>             static constexpr T StepHermite5(const T a, const t_ident<T> b, const t_ident<T> x)               {return LERPH5(T(0), T(1), STEP(a, b, x));}         // smootherstep
     template <coreFloatingPoint T>             static inline    T Friction    (const T tRate, const T tTime)                                    {return EXP(-tRate * tTime);}                       // lerp(to, from, friction)
+    template <typename T = coreFloat>          static constexpr T Positive    (const coreBool bCond)                                            {return bCond ? T( 1) : T(-1);}
+    template <typename T = coreFloat>          static constexpr T Negative    (const coreBool bCond)                                            {return bCond ? T(-1) : T( 1);}
 
     /* base operations */
     template <coreFloatingPoint T> static inline T FmodRepeat(const T tNum, const t_ident<T> tFrom, const t_ident<T> tTo);
