@@ -286,6 +286,8 @@ typedef _W64 int ptrdiff_t;
 #define GLEW_STATIC_MINIMUM
 #endif
 
+#define GLEW_IGNORE_DEPRECATED
+
 #ifdef __cplusplus
 extern "C" {
 #endif
