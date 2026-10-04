@@ -778,7 +778,7 @@ constexpr coreVector2 coreVector2::UnpackWay8(const coreUint8 iNumber)
     // 1 0 7
     // 2 8 6
     // 3 4 5
-    constexpr coreVector2 avTable[] =
+    alignas(ALIGNMENT_CACHE) constexpr coreVector2 avTable[] =
     {
         coreVector2( 0.0f, 1.0f),
         coreVector2(-1.0f, 1.0f) / SQRT2,
@@ -797,7 +797,7 @@ constexpr coreVector2 coreVector2::UnpackWay8(const coreUint8 iNumber)
 
 constexpr coreVector2 coreVector2::UnpackWaySign8(const coreUint8 iNumber)
 {
-    constexpr coreVector2 avTable[] =
+    alignas(ALIGNMENT_CACHE) constexpr coreVector2 avTable[] =
     {
         coreVector2( 0.0f, 1.0f),
         coreVector2(-1.0f, 1.0f),

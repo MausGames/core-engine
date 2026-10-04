@@ -248,7 +248,7 @@ coreBool CoreInput::ProcessEvent(const SDL_Event& oEvent)
                 else if(oEvent.jaxis.axis == SDL_GAMEPAD_AXIS_RIGHT_TRIGGER) this->SetJoystickButton(iIndex, CORE_INPUT_BUTTON_RIGHT_TRIGGER, bNew);
             }
 
-            if(bNew) this->SetJoystickAxis(iIndex, oEvent.jaxis.axis, CLAMP(I_TO_F(oEvent.jaxis.value) / I_TO_F(MAX(Core::Config->GetInt(CORE_CONFIG_INPUT_JOYSTICKMAX), 1)) * (((oEvent.jaxis.axis == 1u) || (oEvent.jaxis.axis == 3u)) ? -1.0f : 1.0f), -1.0f, 1.0f));
+            if(bNew) this->SetJoystickAxis(iIndex, oEvent.jaxis.axis, CLAMP(I_TO_F(oEvent.jaxis.value) / I_TO_F(MAX(Core::Config->GetInt(CORE_CONFIG_INPUT_JOYSTICKMAX), 1)) * NEG((oEvent.jaxis.axis == 1u) || (oEvent.jaxis.axis == 3u)), -1.0f, 1.0f));
                 else this->SetJoystickAxis(iIndex, oEvent.jaxis.axis, 0.0f);
         }
         break;
@@ -654,7 +654,7 @@ void CoreInput::__OpenJoysticks()
                     // identify special gamepad types
                     if((iVendor == 0x28DEu) && (iProduct == 0x11FFu))
                     {
-                        oJoystick.eGamepadType = CORE_INPUT_TYPE_STEAM;
+                        oJoystick.eGamepadType = CORE_INPUT_TYPE_STEAMDECK;
                     }
                     else if(((iVendor == 0x1949u) && (iProduct == 0x0419u)) || ((iVendor == 0x0171u) && (iProduct == 0x0419u)))
                     {

@@ -103,7 +103,7 @@
 #if (defined(GL_ARB_shader_image_load_store) || defined(GL_EXT_shader_image_load_store) || (CORE_GL_VERSION >= 420) || (CORE_GL_ES_VERSION >= 310))
     #define CORE_GL_shader_image_load_store
 #endif
-#if (defined(GL_EXT_shader_io_blocks) || defined(GL_OES_shader_io_blocks) || (CORE_GL_VERSION >= 140) || (CORE_GL_ES_VERSION >= 320))
+#if (defined(GL_EXT_shader_io_blocks) || defined(GL_OES_shader_io_blocks) || (CORE_GL_VERSION >= 150) || (CORE_GL_ES_VERSION >= 320))
     #define CORE_GL_shader_io_blocks
 #endif
 #if (defined(GL_OES_standard_derivatives) || (CORE_GL_VERSION >= 110) || (CORE_GL_ES_VERSION >= 300))

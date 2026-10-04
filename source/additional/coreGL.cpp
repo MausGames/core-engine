@@ -185,7 +185,7 @@ void __coreInitOpenGL()
         __IMPROVE(GLEW_ARB_robustness,                       GLEW_VERSION_4_5 || GLEW_KHR_robustness)
         __IMPROVE(GLEW_ARB_sample_shading,                   GLEW_VERSION_4_0)                                             // shader extension (also)
         __IMPROVE(GLEW_ARB_sampler_objects,                  GLEW_VERSION_3_3)
-        __IMPROVE(GLEW_ARB_seamless_cube_map,                GLEW_VERSION_3_1)
+        __IMPROVE(GLEW_ARB_seamless_cube_map,                GLEW_VERSION_3_2)
         __IMPROVE(GLEW_ARB_shader_group_vote,                GLEW_VERSION_4_6)                                             // shader extension
         __IMPROVE(GLEW_ARB_shader_image_load_store,          GLEW_VERSION_4_2 || GLEW_EXT_shader_image_load_store)         // shader extension (also)
         __IMPROVE(GLEW_ARB_shader_texture_lod,               GLEW_VERSION_3_0)                                             // shader extension

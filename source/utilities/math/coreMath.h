@@ -10,7 +10,7 @@
 #ifndef _CORE_GUARD_MATH_H_
 #define _CORE_GUARD_MATH_H_
 
-// TODO 5: RETURN_NODISCARD and FORCEINLINE on every function in this class (beware of errno changes, maybe not const) ?
+// TODO 5: RETURN_NODISCARD and FORCEINLINE on every function in this class ?
 // TODO 5: add integer-log (macro)
 // TODO 5: use std::common_type for return values
 // TODO 4: should HashCombine be moved to coreData? hashes are all defined in data-category
