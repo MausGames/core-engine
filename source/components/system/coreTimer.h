@@ -112,14 +112,20 @@ public:
     inline void UpdateMod(const coreFloat fSpeed, const coreFloat fMod, const coreUint8 iTimeID) {m_fValue = FMOD(m_fValue + fSpeed * Core::System->GetTime(iTimeID), fMod);}
 
     /* update the flowing value with min and max operation */
-    inline void UpdateMin(const coreFloat fSpeed, const coreFloat fMin)                          {m_fValue = MIN(m_fValue + fSpeed * Core::System->GetTime(),        fMin);}
-    inline void UpdateMin(const coreFloat fSpeed, const coreFloat fMin, const coreUint8 iTimeID) {m_fValue = MIN(m_fValue + fSpeed * Core::System->GetTime(iTimeID), fMin);}
-    inline void UpdateMax(const coreFloat fSpeed, const coreFloat fMax)                          {m_fValue = MAX(m_fValue + fSpeed * Core::System->GetTime(),        fMax);}
-    inline void UpdateMax(const coreFloat fSpeed, const coreFloat fMax, const coreUint8 iTimeID) {m_fValue = MAX(m_fValue + fSpeed * Core::System->GetTime(iTimeID), fMax);}
+    inline void UpdateMin (const coreFloat fSpeed, const coreFloat fMin)                          {m_fValue = MIN (m_fValue + fSpeed * Core::System->GetTime(),        fMin);}
+    inline void UpdateMin (const coreFloat fSpeed, const coreFloat fMin, const coreUint8 iTimeID) {m_fValue = MIN (m_fValue + fSpeed * Core::System->GetTime(iTimeID), fMin);}
+    inline void UpdateMax (const coreFloat fSpeed, const coreFloat fMax)                          {m_fValue = MAX (m_fValue + fSpeed * Core::System->GetTime(),        fMax);}
+    inline void UpdateMax (const coreFloat fSpeed, const coreFloat fMax, const coreUint8 iTimeID) {m_fValue = MAX (m_fValue + fSpeed * Core::System->GetTime(iTimeID), fMax);}
+    inline void UpdateMin1(const coreFloat fSpeed)                                                {m_fValue = MIN1(m_fValue + fSpeed * Core::System->GetTime());}
+    inline void UpdateMin1(const coreFloat fSpeed, const coreUint8 iTimeID)                       {m_fValue = MIN1(m_fValue + fSpeed * Core::System->GetTime(iTimeID));}
+    inline void UpdateMax0(const coreFloat fSpeed)                                                {m_fValue = MAX0(m_fValue + fSpeed * Core::System->GetTime());}
+    inline void UpdateMax0(const coreFloat fSpeed, const coreUint8 iTimeID)                       {m_fValue = MAX0(m_fValue + fSpeed * Core::System->GetTime(iTimeID));}
 
     /* update the flowing value with clamp operation */
-    inline void UpdateClamp(const coreFloat fSpeed, const coreFloat fMin, const coreFloat fMax)                          {m_fValue = CLAMP(m_fValue + fSpeed * Core::System->GetTime(),        fMin, fMax);}
-    inline void UpdateClamp(const coreFloat fSpeed, const coreFloat fMin, const coreFloat fMax, const coreUint8 iTimeID) {m_fValue = CLAMP(m_fValue + fSpeed * Core::System->GetTime(iTimeID), fMin, fMax);}
+    inline void UpdateClamp  (const coreFloat fSpeed, const coreFloat fMin, const coreFloat fMax)                          {m_fValue = CLAMP  (m_fValue + fSpeed * Core::System->GetTime(),        fMin, fMax);}
+    inline void UpdateClamp  (const coreFloat fSpeed, const coreFloat fMin, const coreFloat fMax, const coreUint8 iTimeID) {m_fValue = CLAMP  (m_fValue + fSpeed * Core::System->GetTime(iTimeID), fMin, fMax);}
+    inline void UpdateClamp01(const coreFloat fSpeed)                                                                      {m_fValue = CLAMP01(m_fValue + fSpeed * Core::System->GetTime());}
+    inline void UpdateClamp01(const coreFloat fSpeed, const coreUint8 iTimeID)                                             {m_fValue = CLAMP01(m_fValue + fSpeed * Core::System->GetTime(iTimeID));}
 };
 
 
