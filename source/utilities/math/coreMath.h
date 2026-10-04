@@ -128,30 +128,30 @@ public:
     template <typename T>                      static constexpr T Min         (const T x, const t_ident<T> y)                                   {return (x < y) ? x : y;}
     template <typename T>                      static constexpr T Max         (const T x, const t_ident<T> y)                                   {return (x > y) ? x : y;}
     template <typename T>                      static constexpr T Med         (const T x, const t_ident<T> y, const t_ident<T> z)               {return MAX(MIN(MAX(x, y), z), MIN(x, y));}
-    template <typename T>                      static constexpr T Clamp       (const T x, const t_ident<T> a, const t_ident<T> b)               {return MIN(MAX(x, a), b);}                         // (a > b) always returns b
-    template <typename T>                      static constexpr T Sign        (const T x)                                                       {return (x < T(0)) ? T(-1) : T(1);}                 // never returns 0
+    template <typename T>                      static constexpr T Clamp       (const T x, const t_ident<T> a, const t_ident<T> b)               {return MIN(MAX(x, a), b);}                        // (a > b) always returns b
+    template <typename T>                      static constexpr T Sign        (const T x)                                                       {return (x < T(0)) ? T(-1) : T(1);}                // never returns 0
     template <typename T>                      static constexpr T Signum      (const T x)                                                       {return (x) ? SIGN(x) : T(0);}
     template <coreFloatingPoint    T>          static constexpr T Abs         (const T x)                                                       {return std::is_constant_evaluated() ? ((x < T(0)) ? T(-x) : T(x)) : T(std::abs(x));}
     template <std::signed_integral T>          static constexpr T Abs         (const T x)                                                       {return std::is_constant_evaluated() ? ((x < T(0)) ? T(-x) : T(x)) : T(std::abs(MAX(x, -std::numeric_limits<T>::max())));}
     template <typename T>                      static constexpr T Pow2        (const T x)                                                       {return (x * x);}
     template <typename T>                      static constexpr T Pow3        (const T x)                                                       {return (x * x) * (x);}
-    template <typename T>                      static constexpr T Pow4        (const T x)                                                       {return (x * x) * (x * x);}                         // braces for sub-expression elimination
+    template <typename T>                      static constexpr T Pow4        (const T x)                                                       {return (x * x) * (x * x);}                        // braces for sub-expression elimination
     template <typename T>                      static constexpr T Pow5        (const T x)                                                       {return (x * x) * (x * x) * (x);}
-    template <typename T, coreFloatingPoint S> static constexpr T Lerp        (const T x, const T y, const S s)                                 {return x * (S(1) - s) + y * s;}                    // better precision than (x + (y - x) * s)
-    template <typename T, coreFloatingPoint S> static inline    T LerpSmooth  (const T x, const T y, const S s)                                 {return LERP(x, y, S(0.5) - S(0.5) * COS(s * S(PI_D)));}
-    template <typename T, coreFloatingPoint S> static inline    T LerpBreak   (const T x, const T y, const S s)                                 {return LERP(x, y, SIN(s * (S(PI_D) * S(0.5))));}
-    template <typename T, coreFloatingPoint S> static inline    T LerpBreakRev(const T x, const T y, const S s)                                 {return LERP(y, x, COS(s * (S(PI_D) * S(0.5))));}   // (y, x)
+    template <typename T, coreFloatingPoint S> static constexpr T Lerp        (const T x, const T y, const S s)                                 {return x * (S(1) - s) + y * s;}                   // better precision than (x + (y - x) * s)
+    template <typename T, coreFloatingPoint S> static constexpr T LerpSmooth  (const T x, const T y, const S s)                                 {return LERP(x, y, coreMath::EasePow2InOut(s));}
+    template <typename T, coreFloatingPoint S> static constexpr T LerpBreak   (const T x, const T y, const S s)                                 {return LERP(x, y, coreMath::EasePow2Out  (s));}
+    template <typename T, coreFloatingPoint S> static constexpr T LerpBreakRev(const T x, const T y, const S s)                                 {return LERP(x, y, coreMath::EasePow2In   (s));}
     template <typename T, coreFloatingPoint S> static constexpr T LerpHermite3(const T x, const T y, const S s)                                 {return LERP(x, y, (S(3) - S(2) * s) * s * s);}
     template <typename T, coreFloatingPoint S> static constexpr T LerpHermite5(const T x, const T y, const S s)                                 {return LERP(x, y, (S(10) + (S(-15) + S(6) * s) * s) * s * s * s);}
     template <typename T, coreFloatingPoint S> static inline    T LerpExp     (const T x, const T y, const S s)                                 {return POW(x, S(1) - s) * POW(y, s);}
-    template <typename T, coreFloatingPoint S> static inline    T LerpPow     (const T x, const T y, const S s, const S k)                      {return LERP(x, y, POW(s, k));}                     // inverted curve with (k < 1)
-    template <coreFloatingPoint T>             static constexpr T Step        (const T a, const t_ident<T> b, const t_ident<T> x)               {return CLAMP01((x - a) / (b - a));}                // linearstep, (a > b) is defined for all step functions
-    template <coreFloatingPoint T>             static inline    T StepSmooth  (const T a, const t_ident<T> b, const t_ident<T> x)               {return LERPS (T(0), T(1), STEP(a, b, x));}
-    template <coreFloatingPoint T>             static inline    T StepBreak   (const T a, const t_ident<T> b, const t_ident<T> x)               {return LERPB (T(0), T(1), STEP(a, b, x));}
-    template <coreFloatingPoint T>             static inline    T StepBreakRev(const T a, const t_ident<T> b, const t_ident<T> x)               {return LERPBR(T(0), T(1), STEP(a, b, x));}
-    template <coreFloatingPoint T>             static constexpr T StepHermite3(const T a, const t_ident<T> b, const t_ident<T> x)               {return LERPH3(T(0), T(1), STEP(a, b, x));}         // smoothstep
-    template <coreFloatingPoint T>             static constexpr T StepHermite5(const T a, const t_ident<T> b, const t_ident<T> x)               {return LERPH5(T(0), T(1), STEP(a, b, x));}         // smootherstep
-    template <coreFloatingPoint T>             static inline    T Friction    (const T tRate, const T tTime)                                    {return EXP(-tRate * tTime);}                       // lerp(to, from, friction)
+    template <typename T, coreFloatingPoint S> static inline    T LerpPow     (const T x, const T y, const S s, const S k)                      {return LERP(x, y, POW(s, k));}                    // inverted curve with (k < 1)
+    template <coreFloatingPoint T>             static constexpr T Step        (const T a, const t_ident<T> b, const t_ident<T> x)               {return CLAMP01((x - a) / (b - a));}               // linearstep, (a > b) is defined for all step functions
+    template <coreFloatingPoint T>             static constexpr T StepSmooth  (const T a, const t_ident<T> b, const t_ident<T> x)               {return LERPS (T(0), T(1), STEP(a, b, x));}
+    template <coreFloatingPoint T>             static constexpr T StepBreak   (const T a, const t_ident<T> b, const t_ident<T> x)               {return LERPB (T(0), T(1), STEP(a, b, x));}
+    template <coreFloatingPoint T>             static constexpr T StepBreakRev(const T a, const t_ident<T> b, const t_ident<T> x)               {return LERPBR(T(0), T(1), STEP(a, b, x));}
+    template <coreFloatingPoint T>             static constexpr T StepHermite3(const T a, const t_ident<T> b, const t_ident<T> x)               {return LERPH3(T(0), T(1), STEP(a, b, x));}        // smoothstep
+    template <coreFloatingPoint T>             static constexpr T StepHermite5(const T a, const t_ident<T> b, const t_ident<T> x)               {return LERPH5(T(0), T(1), STEP(a, b, x));}        // smootherstep
+    template <coreFloatingPoint T>             static inline    T Friction    (const T tRate, const T tTime)                                    {return EXP(-tRate * tTime);}                      // lerp(to, from, friction)
     template <typename T = coreFloat>          static constexpr T Positive    (const coreBool bCond)                                            {return bCond ? T( 1) : T(-1);}
     template <typename T = coreFloat>          static constexpr T Negative    (const coreBool bCond)                                            {return bCond ? T(-1) : T( 1);}
 
@@ -205,6 +205,35 @@ public:
     template <std::integral T> static constexpr coreBool IsPot    (const T tInput)                                             {ASSERT(tInput >= T(0)) return (tInput && !(tInput & (tInput - T(1))));}
     template <std::integral T> static constexpr coreBool IsAligned(const T tInput,  const coreUintW iAlign)                    {ASSERT(tInput >= T(0)) return ((coreUintW(tInput) % iAlign) == 0u);}
     template <typename      T> static constexpr coreBool IsNear   (const T tValue1, const T tValue2, const T tRange = EPSILON) {ASSERT(tRange >  T(0)) return (ABS(tValue1 - tValue2) <= tRange);}
+
+    /* easing operations */
+    template <coreFloatingPoint T> static inline    T EaseSinIn       (const T x)                                             {return T(1) - COS(x * (T(PI_D) * T(0.5)));}
+    template <coreFloatingPoint T> static inline    T EaseSinOut      (const T x)                                             {return SIN(x * (T(PI_D) * T(0.5)));}
+    template <coreFloatingPoint T> static inline    T EaseSinInOut    (const T x)                                             {return T(0.5) - T(0.5) * COS(x * T(PI_D));}
+    template <coreFloatingPoint T> static constexpr T EasePow2In      (const T x)                                             {return POW2(x);}
+    template <coreFloatingPoint T> static constexpr T EasePow2Out     (const T x)                                             {return x * (T(2) - x);}
+    template <coreFloatingPoint T> static constexpr T EasePow2InOut   (const T x)                                             {return (x < T(0.5)) ? (T(2) * POW2(x)) : (T(1) - T(2) * POW2(T(1) - x));}
+    template <coreFloatingPoint T> static constexpr T EasePow3In      (const T x)                                             {return POW3(x);}
+    template <coreFloatingPoint T> static constexpr T EasePow3Out     (const T x)                                             {return T(1) - POW3(T(1) - x);}
+    template <coreFloatingPoint T> static constexpr T EasePow3InOut   (const T x)                                             {return (x < T(0.5)) ? (T(4) * POW3(x)) : (T(1) - T(4) * POW3(T(1) - x));}
+    template <coreFloatingPoint T> static constexpr T EasePow4In      (const T x)                                             {return POW4(x);}
+    template <coreFloatingPoint T> static constexpr T EasePow4Out     (const T x)                                             {return T(1) - POW4(T(1) - x);}
+    template <coreFloatingPoint T> static constexpr T EasePow4InOut   (const T x)                                             {return (x < T(0.5)) ? (T(8) * POW4(x)) : (T(1) - T(8) * POW4(T(1) - x));}
+    template <coreFloatingPoint T> static constexpr T EasePow5In      (const T x)                                             {return POW5(x);}
+    template <coreFloatingPoint T> static constexpr T EasePow5Out     (const T x)                                             {return T(1) - POW5(T(1) - x);}
+    template <coreFloatingPoint T> static constexpr T EasePow5InOut   (const T x)                                             {return (x < T(0.5)) ? (T(16) * POW5(x)) : (T(1) - T(16) * POW5(T(1) - x));}
+    template <coreFloatingPoint T> static constexpr T EaseCircleIn    (const T x)                                             {return T(1) - SQRT(T(1) - x * x);}
+    template <coreFloatingPoint T> static constexpr T EaseCircleOut   (const T x)                                             {return SQRT(x * (T(2) - x));}
+    template <coreFloatingPoint T> static constexpr T EaseCircleInOut (const T x)                                             {return (x < T(0.5)) ? (T(0.5) * coreMath::EaseCircleIn(x * T(2))) : (T(0.5) + T(0.5) * coreMath::EaseCircleOut(x * T(2) - T(1)));}
+    template <coreFloatingPoint T> static constexpr T EaseOverIn      (const T x, const T a = T(1.7))                         {return ((a + T(1)) * x - a) * x * x;}
+    template <coreFloatingPoint T> static constexpr T EaseOverOut     (const T x, const T a = T(1.7))                         {return T(1) - coreMath::EaseOverIn(T(1) - x, a);}
+    template <coreFloatingPoint T> static constexpr T EaseOverInOut   (const T x, const T a = T(1.7))                         {return (x < T(0.5)) ? (T(0.5) * coreMath::EaseOverIn(x * T(2), a)) : (T(0.5) + T(0.5) * coreMath::EaseOverOut(x * T(2) - T(1), a));}
+    template <coreFloatingPoint T> static inline    T EaseElasticIn   (const T x, const T a = T(10), const coreUint32 b = 6u) {return SIN(((T(I_TO_F(b)) + T(0.5)) * T(NEG(b % 2u)) * T(PI_D)) * x) * POW(T(2), (x - T(1)) * a);}
+    template <coreFloatingPoint T> static inline    T EaseElasticOut  (const T x, const T a = T(10), const coreUint32 b = 6u) {return SIN(((T(I_TO_F(b)) + T(0.5)) * T(POS(b % 2u)) * T(PI_D)) * (x + T(1))) * POW(T(2), x * -a) + T(1);}
+    template <coreFloatingPoint T> static inline    T EaseElasticInOut(const T x, const T a = T(10), const coreUint32 b = 6u) {return (x < T(0.5)) ? (T(0.5) * coreMath::EaseElasticIn(x * T(2), a, b)) : (T(0.5) + T(0.5) * coreMath::EaseElasticOut(x * T(2) - T(1), a, b));}
+    template <coreFloatingPoint T> static constexpr T EaseBounceIn    (const T x, const T a = T(1))                           {return T(1) - coreMath::EaseBounceOut(T(1) - x, a);}
+    template <coreFloatingPoint T> static constexpr T EaseBounceOut   (const T x, const T a = T(1))                           {if(x < T(40)/T(110)) return POW2(x) * T(7.5625); if(x < T(80)/T(110)) return POW2(x - T(60)/T(110)) * (T(7.5625) * a) + (T(1) - T(0.25) * a); if(x < T(100)/T(110)) return POW2(x - T(90)/T(110)) * (T(7.5625) * POW2(a)) + (T(1) - POW2(T(0.25) * a)); return POW2(x - T(105)/T(110)) * (T(7.5625) * POW3(a)) + (T(1) - POW3(T(0.25) * a));}
+    template <coreFloatingPoint T> static constexpr T EaseBounceInOut (const T x, const T a = T(1))                           {return (x < T(0.5)) ? (T(0.5) * coreMath::EaseBounceIn(x * T(2), a)) : (T(0.5) + T(0.5) * coreMath::EaseBounceOut(x * T(2) - T(1), a));}
 
     /* bit operations */
     static constexpr coreUint32 PopCount      (const coreUint64 iInput);
