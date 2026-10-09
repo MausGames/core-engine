@@ -112,8 +112,8 @@ private:
 
     /* convert to type */
     static inline coreBool  __ToBool (const coreString& sString) {return (sString[0] != 'f') && (sString[0] != '0');}
-    static inline coreInt32 __ToInt  (const coreString& sString) {return (sString[0] == 't') ? 1    : coreData::FromChars<coreInt32>(sString.c_str(), sString.length());}
-    static inline coreFloat __ToFloat(const coreString& sString) {return (sString[0] == 't') ? 1.0f : coreData::FromChars<coreFloat>(sString.c_str(), sString.length());}
+    static inline coreInt32 __ToInt  (const coreString& sString) {return (sString[0] == 't') ? 1    : coreData::FromChars<coreInt32>(sString.c_str(), sString.c_str() + sString.length());}
+    static inline coreFloat __ToFloat(const coreString& sString) {return (sString[0] == 't') ? 1.0f : coreData::FromChars<coreFloat>(sString.c_str(), sString.c_str() + sString.length());}
 
     /* convert to string */
     static inline const coreChar* __FromBool (const coreBool  bValue) {return (bValue ? "true" : "false");}

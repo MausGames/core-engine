@@ -676,7 +676,7 @@ ONCE_START
                 {
                     if(!std::isspace(*pcCursor))
                     {
-                        iCount = coreData::FromChars<coreUint32>(pcCursor, acBuffer + iResult - pcCursor);
+                        iCount = coreData::FromChars<coreUint32>(pcCursor, acBuffer + iResult);
                         break;
                     }
                 }
@@ -2901,9 +2901,9 @@ corePoint3U8 coreData::StrVersion(const coreChar* pcInput)
     }
 
     // return extracted version number
-    return corePoint3U8((A[1] > A[0]) ? coreData::FromChars<coreUint8>(A[0], A[1] - A[0]) : 0u,
-                        (A[2] > A[1]) ? coreData::FromChars<coreUint8>(A[1], A[2] - A[1]) : 0u,
-                        (A[3] > A[2]) ? coreData::FromChars<coreUint8>(A[2], A[3] - A[2]) : 0u);
+    return corePoint3U8((A[1] > A[0]) ? coreData::FromChars<coreUint8>(A[0], A[1]) : 0u,
+                        (A[2] > A[1]) ? coreData::FromChars<coreUint8>(A[1], A[2]) : 0u,
+                        (A[3] > A[2]) ? coreData::FromChars<coreUint8>(A[2], A[3]) : 0u);
 }
 
 

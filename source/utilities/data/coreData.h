@@ -146,7 +146,7 @@ public:
 
     /* convert between trivial value and string */
     template <typename T, typename... A> static const coreChar* ToChars  (const T tValue,                                 A&&... vArgs);
-    template <typename T, typename... A> static T               FromChars(const coreChar* pcString, const coreUintW iLen, A&&... vArgs);
+    template <typename T, typename... A> static T               FromChars(const coreChar* pcBegin, const coreChar* pcEnd, A&&... vArgs);
 
     /* get application properties */
     static              coreUint32 ProcessID    ();
@@ -355,21 +355,21 @@ template <typename T, typename... A> const coreChar* coreData::ToChars(const T t
 
 // ****************************************************************
 /* convert string to trivial value */
-template <typename T, typename... A> T coreData::FromChars(const coreChar* pcString, const coreUintW iLen, A&&... vArgs)
+template <typename T, typename... A> T coreData::FromChars(const coreChar* pcBegin, const coreChar* pcEnd, A&&... vArgs)
 {
-    ASSERT(pcString)
+    ASSERT(pcBegin && pcEnd)
 
     T tValue;
 
     // use high-performance conversion
-    const std::from_chars_result oResult = std::from_chars(pcString, pcString + iLen, tValue, std::forward<A>(vArgs)...);
+    const std::from_chars_result oResult = std::from_chars(pcBegin, pcEnd, tValue, std::forward<A>(vArgs)...);
     WARN_IF(oResult.ec != std::errc()) return T(0);
 
     return tValue;
 }
 
 #if defined(_CORE_MACOS_) || defined(_CORE_EMSCRIPTEN_) || defined(_CORE_SWITCH_)
-    template <> inline coreFloat coreData::FromChars(const coreChar* pcString, const coreUintW iLen) {ASSERT(pcString) return coreFloat(std::atof(pcString));}
+    template <> inline coreFloat coreData::FromChars(const coreChar* pcBegin, const coreChar* pcEnd) {ASSERT(pcBegin && pcEnd) return coreFloat(std::atof(pcBegin));}
 #endif
 
 
