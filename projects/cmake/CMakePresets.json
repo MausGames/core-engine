@@ -59,7 +59,9 @@
             "name": "linux",
             "cacheVariables":
             {
-                "CORE_LINUX": "1"
+                "CORE_LINUX": "1",
+                "CMAKE_C_COMPILER": "clang",
+                "CMAKE_CXX_COMPILER": "clang++"
             },
             "vendor":
             {
@@ -73,13 +75,25 @@
             "name": "emscripten",
             "cacheVariables":
             {
-                "CORE_EMSCRIPTEN": "1"
+                "CORE_EMSCRIPTEN": "1",
+                "CMAKE_C_COMPILER": "emcc",
+                "CMAKE_CXX_COMPILER": "em++"
             },
             "vendor":
             {
                 "jetbrains.com/clion":
                 {
                     "toolchain": "Emscripten"
+                }
+            }
+        },
+        {
+            "name": "remote",
+            "vendor":
+            {
+                "jetbrains.com/clion":
+                {
+                    "toolchain": "Remote"
                 }
             }
         },
@@ -97,11 +111,11 @@
         },
         {
             "name": "linux-arm-64-debug",
-            "inherits": ["linux", "arm-64", "debug", "base"]
+            "inherits": ["remote", "linux", "arm-64", "debug", "base"]
         },
         {
             "name": "linux-arm-64-release",
-            "inherits": ["linux", "arm-64", "release", "base"]
+            "inherits": ["remote", "linux", "arm-64", "release", "base"]
         },
         {
             "name": "emscripten-debug",

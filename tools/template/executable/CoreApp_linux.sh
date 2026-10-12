@@ -1,7 +1,13 @@
 #!/bin/bash
-cd bin/linux_x86_64
 
-# set library path
+# select target architecture
+if [ "$(uname -m)" = "aarch64" ]; then
+  cd bin/linux_arm_64
+else
+  cd bin/linux_x86_64
+fi
+
+# add library path
 export LD_LIBRARY_PATH=".:$LD_LIBRARY_PATH"
 
 # use Wayland/EGL instead of X11/GLX (or vice versa)

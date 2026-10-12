@@ -34,10 +34,14 @@
     #if defined(_CORE_64BIT_)
         #define EPIC_LIBRARY_NAME "EOSSDK-Win64-Shipping.dll"
     #else
-        #define EPIC_LIBRARY_NAME "EOSSDK-Win32-Shipping.dll"
+        #define EPIC_LIBRARY_NAME "EOSSDK-Win32-Shipping.dll"   // not supported anymore
     #endif
 #elif defined(_CORE_LINUX_)
-    #define EPIC_LIBRARY_NAME "libEOSSDK-Linux-Shipping.so"
+    #if defined(_CORE_X86_)
+        #define EPIC_LIBRARY_NAME "libEOSSDK-Linux-Shipping.so"
+    #elif defined(_CORE_ARM_)
+        #define EPIC_LIBRARY_NAME "libEOSSDK-LinuxArm64-Shipping.so"
+    #endif
 #elif defined(_CORE_MACOS_)
     #define EPIC_LIBRARY_NAME "libEOSSDK-Mac-Shipping.dylib"
 #endif

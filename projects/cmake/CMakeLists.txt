@@ -10,6 +10,7 @@ project(
     LANGUAGES C CXX
 )
 
+include(${BASE_DIRECTORY}/projects/cmake/shared.cmake)
 add_library(CoreEngine STATIC)
 
 set_target_properties(
@@ -18,6 +19,7 @@ set_target_properties(
     CXX_STANDARD 23
     CXX_SCAN_FOR_MODULES OFF
     DEBUG_POSTFIX _debug
+    ARCHIVE_OUTPUT_DIRECTORY ${BASE_DIRECTORY}/output/${PLATFORM_NAME}
 )
 
 target_sources(
@@ -81,12 +83,12 @@ target_precompile_headers(
     $<$<COMPILE_LANGUAGE:CXX>: ${BASE_DIRECTORY}/source/Core.h>
 )
 
-if(CORE_EMSCRIPTEN)
+target_link_directories(
+    CoreEngine INTERFACE
+    $<IF:$<CONFIG:DEBUG>, ${BASE_DIRECTORY}/libraries/bin/${PLATFORM_NAME}/debug, ${BASE_DIRECTORY}/libraries/bin/${PLATFORM_NAME}/release>
+)
 
-    set_target_properties(
-        CoreEngine PROPERTIES
-        ARCHIVE_OUTPUT_DIRECTORY ${BASE_DIRECTORY}/output/emscripten
-    )
+if(CORE_EMSCRIPTEN)
 
     target_sources(
         CoreEngine PRIVATE
@@ -96,14 +98,9 @@ if(CORE_EMSCRIPTEN)
 
     target_compile_options(
         CoreEngine PUBLIC
-        -msse3 -pipe -Wall -Wextra -Wpedantic
+        -pipe -Wall -Wextra -Wpedantic -msse3
         -matomics -mbulk-memory -mextended-const -mmultivalue -mmutable-globals -mnontrapping-fptoint -mreference-types -msign-ext -msimd128 -mtail-call
         $<IF:$<CONFIG:DEBUG>, -O0 -g3 -gsource-map -gsplit-dwarf -gz=zlib -ftrivial-auto-var-init=pattern, -Os -flto -ftrivial-auto-var-init=uninitialized -fwhole-program-vtables -fvirtual-function-elimination -fforce-emit-vtables -fstrict-vtable-pointers -fno-strict-overflow -ffinite-math-only -fno-signed-zeros -fno-trapping-math -fno-math-errno -ffp-contract=off -fno-rtti -fno-exceptions -Werror>
-    )
-
-    target_link_directories(
-        CoreEngine INTERFACE
-        $<IF:$<CONFIG:DEBUG>, ${BASE_DIRECTORY}/libraries/bin/emscripten/debug, ${BASE_DIRECTORY}/libraries/bin/emscripten/release>
     )
 
     target_link_libraries(
@@ -121,11 +118,6 @@ if(CORE_EMSCRIPTEN)
 
 else()
 
-    set_target_properties(
-        CoreEngine PROPERTIES
-        ARCHIVE_OUTPUT_DIRECTORY ${BASE_DIRECTORY}/output/linux_x86_64
-    )
-
     target_sources(
         CoreEngine PRIVATE
         ${BASE_DIRECTORY}/source/additional/build/coreGLEW.c
@@ -135,13 +127,8 @@ else()
 
     target_compile_options(
         CoreEngine PUBLIC
-        -msse3 -ftls-model=initial-exec -pipe -Wall -Wextra -Wpedantic
+        -pipe -Wall -Wextra -Wpedantic -ftls-model=initial-exec $<IF:$<BOOL:${CORE_ARM}>, , -msse3>
         $<IF:$<CONFIG:DEBUG>, -O0 -g3 -gsplit-dwarf -gz=zstd -ftrivial-auto-var-init=pattern, -Os -flto -fvisibility=hidden -fno-plt -ftrivial-auto-var-init=uninitialized -fwhole-program-vtables -fvirtual-function-elimination -fforce-emit-vtables -fstrict-vtable-pointers -fno-strict-overflow -ffinite-math-only -fno-signed-zeros -fno-trapping-math -fno-math-errno -ffp-contract=off -fno-rtti -fno-exceptions -Werror>
-    )
-
-    target_link_directories(
-        CoreEngine INTERFACE
-        $<IF:$<CONFIG:DEBUG>, ${BASE_DIRECTORY}/libraries/bin/linux_x86_64/debug, ${BASE_DIRECTORY}/libraries/bin/linux_x86_64/release>
     )
 
     target_link_libraries(
@@ -187,7 +174,7 @@ else()
 
         target_link_libraries(
             CoreEngine INTERFACE
-            -lm -lc
+            -lm -lc $<IF:$<BOOL:${CORE_ARM}>, -lgcc, >
             -l:libc++.so
         )
 

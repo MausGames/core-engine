@@ -1,3 +1,13 @@
+if(CORE_EMSCRIPTEN)
+    set(PLATFORM_NAME emscripten)
+else()
+    if(CORE_ARM)
+        set(PLATFORM_NAME linux_arm_64)
+    else()
+        set(PLATFORM_NAME linux_x86_64)
+    endif()
+endif()
+
 function(core_add_executable TARGET)
 
     add_subdirectory(${ENGINE_DIRECTORY}/projects/cmake CoreEngine)
@@ -9,6 +19,7 @@ function(core_add_executable TARGET)
         CXX_STANDARD 23
         CXX_SCAN_FOR_MODULES OFF
         DEBUG_POSTFIX _debug
+        RUNTIME_OUTPUT_DIRECTORY ${BASE_DIRECTORY}/executable/bin/${PLATFORM_NAME}
     )
 
     target_include_directories(
@@ -31,7 +42,6 @@ function(core_add_executable TARGET)
         set_target_properties(
             ${TARGET} PROPERTIES
             SUFFIX .html
-            RUNTIME_OUTPUT_DIRECTORY ${BASE_DIRECTORY}/executable/bin/emscripten
         )
 
         if(NOT CORE_DEBUG)
@@ -48,7 +58,6 @@ function(core_add_executable TARGET)
         set_target_properties(
             ${TARGET} PROPERTIES
             SUFFIX .elf
-            RUNTIME_OUTPUT_DIRECTORY ${BASE_DIRECTORY}/executable/bin/linux_x86_64
         )
 
         if(NOT CORE_DEBUG)
