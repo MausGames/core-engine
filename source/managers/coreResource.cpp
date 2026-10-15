@@ -99,15 +99,16 @@ void coreResourceRelation::__Reshape()
 // ****************************************************************
 /* constructor */
 coreResourceManager::coreResourceManager()noexcept
-: coreThread     ("resource_thread")
-, m_apHandle     {}
-, m_apArchive    {}
-, m_apDirectFile {}
-, m_apProxy      {}
-, m_apRelation   {}
-, m_ResourceLock ()
-, m_FileLock     ()
-, m_bActive      (false)
+: coreThread      ("resource_thread")
+, m_apHandle      {}
+, m_apArchive     {}
+, m_apDirectFile  {}
+, m_apProxy       {}
+, m_apRelation    {}
+, m_iNumUnmanaged (0u)
+, m_ResourceLock  ()
+, m_FileLock      ()
+, m_bActive       (false)
 {
     // reserve some memory
     m_apHandle    .reserve(0x1000u);
@@ -133,6 +134,7 @@ coreResourceManager::coreResourceManager()noexcept
 coreResourceManager::~coreResourceManager()
 {
     ASSERT(m_apRelation.empty())
+    ASSERT(!m_iNumUnmanaged)
 
     // shut down the resource manager
     this->Reset(CORE_RESOURCE_RESET_EXIT);

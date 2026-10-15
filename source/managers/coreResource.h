@@ -196,6 +196,8 @@ private:
 
     coreSet<coreResourceRelation*> m_apRelation;                           // objects to reset with the resource manager
 
+    coreUint16 m_iNumUnmanaged;                                            // current number of unmanaged resource handles
+
     coreLock m_ResourceLock;                                               // lock to prevent invalid resource handle access
     coreLock m_FileLock;                                                   // lock to prevent invalid resource file access
     coreBool m_bActive;                                                    // current management status
@@ -224,7 +226,7 @@ public:
 
     /* create and delete resource and resource handle */
     template <typename T, typename... A>                 coreResourceHandle* Load        (const coreHashString& sName, const coreResourceUpdate eUpdate, const coreHashString& sPath, A&&... vArgs);
-    template <typename T, typename... A> RETURN_RESTRICT coreResourceHandle* LoadNew     (A&&... vArgs)const;
+    template <typename T, typename... A> RETURN_RESTRICT coreResourceHandle* LoadNew     (A&&... vArgs);
     inline                                               coreResourceHandle* LoadProxy   (const coreHashString& sName);
     inline                               RETURN_RESTRICT coreResourceHandle* LoadProxyNew();
     template <typename T>                                void                Free        (coreResourcePtr<T>* OUTPUT pptResourcePtr);
@@ -373,8 +375,12 @@ template <typename T, typename... A> coreResourceHandle* coreResourceManager::Lo
     return pNewHandle;
 }
 
-template <typename T, typename... A> RETURN_RESTRICT coreResourceHandle* coreResourceManager::LoadNew(A&&... vArgs)const
+template <typename T, typename... A> RETURN_RESTRICT coreResourceHandle* coreResourceManager::LoadNew(A&&... vArgs)
 {
+    // increase number of unmanaged resource handles
+    m_iNumUnmanaged += 1u;
+    ASSERT(m_iNumUnmanaged)
+
     // create unique unmanaged resource handle
     return MANAGED_NEW(coreResourceHandle, std::is_same_v<T, coreResourceDummy> ? NULL : new T(std::forward<A>(vArgs)...), NULL, "", false, false);
 }
@@ -433,6 +439,12 @@ template <typename T> void coreResourceManager::Free(coreResourcePtr<T>* OUTPUT 
                 m_apHandle.erase_bs(pHandle->m_sName.c_str());
             }
             m_ResourceLock.Unlock();
+        }
+        else
+        {
+            // decrease number of unmanaged resource handles
+            ASSERT(m_iNumUnmanaged)
+            m_iNumUnmanaged -= 1u;
         }
 
         // delete possible resource proxy
