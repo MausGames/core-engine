@@ -683,7 +683,7 @@ void CoreInput::__OpenJoysticks()
                 // log joystick information
                 Core::Log->ListAdd(CORE_LOG_BOLD("%s:") " %s (%s, %s, %s, %s (%d), connection %d, battery %d (%d%%), %d buttons, %d axes, %d hats, %d balls, %d touchpads, rumble %s, led %s, accelerometer %s, gyroscope %s)",
                                    oJoystick.pGamepad ? "Gamepad" : "Joystick", this->GetJoystickName(i), this->GetJoystickSerial(i), this->GetJoystickPath(i), this->GetJoystickGUID(i),
-                                   SDL_GetGamepadStringForType(oJoystick.eGamepadType), oJoystick.eJoystickType, eConnectionState, ePowerState, MAX0(iPercent), iNumButtons, iNumAxes, iNumHats, iNumBalls, iNumTouchpads,
+                                   SDL_GetGamepadStringForType(oJoystick.eGamepadType), oJoystick.eJoystickType, eConnectionState, ePowerState, MAX(iPercent, 0), iNumButtons, iNumAxes, iNumHats, iNumBalls, iNumTouchpads,
                                    this->GetJoystickHasRumble(i) ? "YES" : "NO", this->GetJoystickHasLED(i) ? "YES" : "NO", this->GetJoystickHasAccel(i) ? "YES" : "NO", this->GetJoystickHasGyro(i) ? "YES" : "NO");
             }
         }

@@ -48,69 +48,70 @@
 #define KG_TO_LB(x)   ((x) * 2.2046226218487758072297380134503f)   // convert kilograms to pounds
 #define LB_TO_KG(x)   ((x) * 0.4535923700000000000000000000000f)   // convert pounds to kilograms (exact)
 
-#define MIN    coreMath::Min                                       // for better visibility in formulas
-#define MAX    coreMath::Max
-#define MED    coreMath::Med
-#define CLAMP  coreMath::Clamp
-#define SIGN   coreMath::Sign
-#define SIGNUM coreMath::Signum
-#define ABS    coreMath::Abs
-#define POW2   coreMath::Pow2
-#define POW3   coreMath::Pow3
-#define POW4   coreMath::Pow4
-#define POW5   coreMath::Pow5
-#define LERP   coreMath::Lerp
-#define LERPS  coreMath::LerpSmooth
-#define LERPB  coreMath::LerpBreak
-#define LERPBR coreMath::LerpBreakRev
-#define LERPH3 coreMath::LerpHermite3
-#define LERPH5 coreMath::LerpHermite5
-#define LERPE  coreMath::LerpExp
-#define LERPP  coreMath::LerpPow
-#define STEP   coreMath::Step
-#define STEPS  coreMath::StepSmooth
-#define STEPB  coreMath::StepBreak
-#define STEPBR coreMath::StepBreakRev
-#define STEPH3 coreMath::StepHermite3
-#define STEPH5 coreMath::StepHermite5
-#define POS    coreMath::Positive
-#define NEG    coreMath::Negative
-#define FMODR  coreMath::FmodRepeat
-#define FMODM  coreMath::FmodMirror
-#define FMOD   coreMath::Fmod
-#define TRUNC  coreMath::Trunc
-#define FRACT  coreMath::Fract
-#define CBRT   coreMath::Cbrt
-#define SQRT   coreMath::Sqrt
-#define RSQRT  coreMath::Rsqrt
-#define RCP    coreMath::Rcp
-#define POW    coreMath::Pow
-#define LOG    coreMath::Log
-#define LOGB   coreMath::LogB
-#define LOG2   coreMath::Log2
-#define LOG10  coreMath::Log10
-#define EXP    coreMath::Exp
-#define EXP2   coreMath::Exp2
-#define EXP10  coreMath::Exp10
-#define SIN    coreMath::Sin
-#define COS    coreMath::Cos
-#define TAN    coreMath::Tan
-#define ASIN   coreMath::Asin
-#define ACOS   coreMath::Acos
-#define ATAN   coreMath::Atan
-#define COT    coreMath::Cot
-#define CEIL   coreMath::Ceil
-#define FLOOR  coreMath::Floor
-#define ROUND  coreMath::Round
+#define MIN     coreMath::Min                                       // for better visibility in formulas
+#define MAX     coreMath::Max
+#define MED     coreMath::Med
+#define CLAMP   coreMath::Clamp
+#define SIGN    coreMath::Sign
+#define SIGNUM  coreMath::Signum
+#define ABS     coreMath::Abs
+#define POW2    coreMath::Pow2
+#define POW3    coreMath::Pow3
+#define POW4    coreMath::Pow4
+#define POW5    coreMath::Pow5
+#define LERP    coreMath::Lerp
+#define LERPS   coreMath::LerpSmooth
+#define LERPB   coreMath::LerpBreak
+#define LERPBR  coreMath::LerpBreakRev
+#define LERPH3  coreMath::LerpHermite3
+#define LERPH5  coreMath::LerpHermite5
+#define LERPE   coreMath::LerpExp
+#define LERPP   coreMath::LerpPow
+#define STEP    coreMath::Step
+#define STEPS   coreMath::StepSmooth
+#define STEPB   coreMath::StepBreak
+#define STEPBR  coreMath::StepBreakRev
+#define STEPH3  coreMath::StepHermite3
+#define STEPH5  coreMath::StepHermite5
+#define POS     coreMath::Positive
+#define NEG     coreMath::Negative
+#define FMODR   coreMath::FmodRepeat
+#define FMODM   coreMath::FmodMirror
+#define FMOD    coreMath::Fmod
+#define TRUNC   coreMath::Trunc
+#define FRACT   coreMath::Fract
+#define CBRT    coreMath::Cbrt
+#define SQRT    coreMath::Sqrt
+#define RSQRT   coreMath::Rsqrt
+#define RCP     coreMath::Rcp
+#define POW     coreMath::Pow
+#define LOG     coreMath::Log
+#define LOGB    coreMath::LogB
+#define LOG2    coreMath::Log2
+#define LOG10   coreMath::Log10
+#define EXP     coreMath::Exp
+#define EXP2    coreMath::Exp2
+#define EXP10   coreMath::Exp10
+#define SIN     coreMath::Sin
+#define COS     coreMath::Cos
+#define TAN     coreMath::Tan
+#define ASIN    coreMath::Asin
+#define ACOS    coreMath::Acos
+#define ATAN    coreMath::Atan
+#define COT     coreMath::Cot
+#define CEIL    coreMath::Ceil
+#define FLOOR   coreMath::Floor
+#define ROUND   coreMath::Round
+#define MIN1    coreMath::Min1
+#define MAX0    coreMath::Max0
+#define CLAMP01 coreMath::Clamp01
+#define BLENDS  coreMath::BlendSmooth
+#define BLENDB  coreMath::BlendBreak
+#define BLENDBR coreMath::BlendBreakRev
+#define BLENDH3 coreMath::BlendHermite3
+#define BLENDH5 coreMath::BlendHermite5
+#define SIN01   coreMath::Sin01
 
-#define MIN1(x)    (MIN   (x, 1.0f))
-#define MAX0(x)    (MAX   (x, 0.0f))
-#define CLAMP01(x) (CLAMP (x, 0.0f, 1.0f))
-#define BLENDS(x)  (LERPS (0.0f, 1.0f, x))
-#define BLENDB(x)  (LERPB (0.0f, 1.0f, x))
-#define BLENDBR(x) (LERPBR(0.0f, 1.0f, x))
-#define BLENDH3(x) (LERPH3(0.0f, 1.0f, x))
-#define BLENDH5(x) (LERPH5(0.0f, 1.0f, x))
 
 template <typename T> concept coreFloatingPoint = std::floating_point<T> || (std::is_class_v<T> && std::is_convertible_v<T, coreFloat>);
 
@@ -205,6 +206,17 @@ public:
     template <std::integral T> static constexpr coreBool IsPot    (const T tInput)                                             {ASSERT(tInput >= T(0)) return (tInput && !(tInput & (tInput - T(1))));}
     template <std::integral T> static constexpr coreBool IsAligned(const T tInput,  const coreUintW iAlign)                    {ASSERT(tInput >= T(0)) return ((coreUintW(tInput) % iAlign) == 0u);}
     template <typename      T> static constexpr coreBool IsNear   (const T tValue1, const T tValue2, const T tRange = EPSILON) {ASSERT(tRange >  T(0)) return (ABS(tValue1 - tValue2) <= tRange);}
+
+    /* shortcut operations */
+    template <coreFloatingPoint T> static constexpr T Min1         (const T x) {return MIN   (x, T(1));}
+    template <coreFloatingPoint T> static constexpr T Max0         (const T x) {return MAX   (x, T(0));}
+    template <coreFloatingPoint T> static constexpr T Clamp01      (const T x) {return CLAMP (x, T(0), T(1));}
+    template <coreFloatingPoint T> static constexpr T BlendSmooth  (const T x) {return LERPS (T(0), T(1), x);}
+    template <coreFloatingPoint T> static constexpr T BlendBreak   (const T x) {return LERPB (T(0), T(1), x);}
+    template <coreFloatingPoint T> static constexpr T BlendBreakRev(const T x) {return LERPBR(T(0), T(1), x);}
+    template <coreFloatingPoint T> static constexpr T BlendHermite3(const T x) {return LERPH3(T(0), T(1), x);}
+    template <coreFloatingPoint T> static constexpr T BlendHermite5(const T x) {return LERPH5(T(0), T(1), x);}
+    template <coreFloatingPoint T> static inline    T Sin01        (const T x) {return T(0.5) + T(0.5) * SIN(x);}
 
     /* easing operations */
     template <coreFloatingPoint T> static inline    T EaseSinIn       (const T x)                                                      {return T(1) - COS(x * (T(PI_D) * T(0.5)));}

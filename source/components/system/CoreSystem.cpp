@@ -459,7 +459,7 @@ CoreSystem::CoreSystem()noexcept
         Core::Log->ListAdd(CORE_LOG_BOLD("System Memory:")     " %llu/%llu MB (%.1f%%)",                                         iMemoryUsed / (1024u * 1024u), iMemoryTotal / (1024u * 1024u), dMemoryPct);
         Core::Log->ListAdd(CORE_LOG_BOLD("Disk Space:")        " %llu MB available",                                             iSpaceAvailable / (1024u * 1024u));
         Core::Log->ListAdd(CORE_LOG_BOLD("Preferred Locales:") " %s",                                                            sLocaleStr.c_str());
-        Core::Log->ListAdd(CORE_LOG_BOLD("Battery Status:")    " %d (%d%%, %d minutes)",                                         ePowerState, MAX0(iPercent), MAX0(iSeconds) / 60);
+        Core::Log->ListAdd(CORE_LOG_BOLD("Battery Status:")    " %d (%d%%, %d minutes)",                                         ePowerState, MAX(iPercent, 0), MAX(iSeconds, 0) / 60);
     }
     Core::Log->ListEnd();
 

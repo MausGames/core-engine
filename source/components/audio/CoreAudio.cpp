@@ -688,7 +688,7 @@ void CoreAudio::__UpdateSources()
     const auto nUpdateVolumeFunc = [](coreFloat* OUTPUT pfVolume, const coreChar* pcSection, const coreChar* pcKey, const coreFloat fDefault)
     {
         // read current config value
-        const coreFloat fNewVolume = MAX(Core::Config->GetFloat(pcSection, pcKey, fDefault), 0.0f);
+        const coreFloat fNewVolume = MAX0(Core::Config->GetFloat(pcSection, pcKey, fDefault));
 
         // compare and forward
         if(pfVolume[2] != fNewVolume)  {pfVolume[1] = pfVolume[2] = fNewVolume;}   // forward config

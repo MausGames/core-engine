@@ -194,7 +194,7 @@ coreStatus coreThread::__Main()
             dWait      -= coreDouble(iBeforeTime - iAfterTime) / dFrequency;
 
             // wait for next iteration
-            dWait = MAX(dWait + (1.0 / coreDouble(m_fFrequency)), 0.0);
+            dWait = MAX0(dWait + (1.0 / coreDouble(m_fFrequency)));
             SDL_DelayNS(coreUint64(dWait * 1.0e09));
 
             // handle waiting-overhead

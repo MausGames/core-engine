@@ -549,8 +549,8 @@ void CoreGraphics::StartScissorTest(const coreVector2 vLowerLeft, const coreVect
     ASSERT(vLowerLeft <= vUpperRight)
 
     // convert center coordinates to window coordinates
-    const coreVector2 vRealLowerLeft  = (vLowerLeft  + 0.5f).Processed(CLAMP, 0.0f, 1.0f);
-    const coreVector2 vRealUpperRight = (vUpperRight + 0.5f).Processed(CLAMP, 0.0f, 1.0f);
+    const coreVector2 vRealLowerLeft  = (vLowerLeft  + 0.5f).Processed(CLAMP01);
+    const coreVector2 vRealUpperRight = (vUpperRight + 0.5f).Processed(CLAMP01);
     const coreVector2 vRealSize       = vRealUpperRight - vRealLowerLeft;
 
     // calculate scissor properties
