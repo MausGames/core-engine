@@ -254,6 +254,16 @@ void __coreInitOpenGLES()
         if(!g_ContextGLES.__glMaxShaderCompilerThreads) g_ContextGLES.__glMaxShaderCompilerThreads = [](GLuint){};   // not available in WebGL
     }
 
+    // implement GL_MESA_sampler_objects
+    if(__CORE_GLES_CHECK(GL_MESA_sampler_objects, bES30))
+    {
+        __CORE_GLES_FETCH(glBindSampler,       CORE, true)
+        __CORE_GLES_FETCH(glDeleteSamplers,    CORE, true)
+        __CORE_GLES_FETCH(glGenSamplers,       CORE, true)
+        __CORE_GLES_FETCH(glSamplerParameterf, CORE, true)
+        __CORE_GLES_FETCH(glSamplerParameteri, CORE, true)
+    }
+
     // implement GL_NV_conservative_raster
     __CORE_GLES_CHECK(GL_NV_conservative_raster, false);
 

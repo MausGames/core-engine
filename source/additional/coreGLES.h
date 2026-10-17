@@ -13,12 +13,11 @@
 // TODO 3: add name-pooling to OpenGL ES (but not for WebGL, as there are no multi-gen functions)
 // TODO 2: extensions should only be enabled, when all related functions are successfully retrieved
 // TODO 5: GL_EXT_map_buffer_range
-// TODO 5: GL_EXT_texture_storage_compression, GL_IMG_texture_filter_cubic
+// TODO 5: GL_IMG_texture_filter_cubic
 // TODO 3: static functions for WebGL (removing GetProcAddress, extension-checks could be enough, how to merge extensions-functions?)
 // TODO 4: add all missing "shader extensions"
 // TODO 3: CORE_CONFIG_GRAPHICS_DISABLEEXTENSIONS does not work for static version-checked extensions (looks like I need to map strings to booleans for best support)
 // TODO 3: EGL_ANGLE_memory_usage_report
-// TODO 3: GL_MESA_sampler_objects
 // TODO 3: do not use string-contains for checking extensions, and fix all wrappers to handle alt-extensions
 // TODO 4: maybe also move all extension defines up to the top (like in coreAL)
 // TODO 4: integrate WEBGL_provoking_vertex into C++ once available in Emscripten
@@ -37,7 +36,6 @@
 #define CORE_GL_ARB_multisample                     (false)
 #define CORE_GL_ARB_pipeline_statistics_query       (false)
 #define CORE_GL_ARB_program_interface_query         (__CORE_GLES_VAR(bES31) && !DEFINED(_CORE_EMSCRIPTEN_))
-#define CORE_GL_ARB_sampler_objects                 (__CORE_GLES_VAR(bES30))
 #define CORE_GL_ARB_seamless_cube_map               (false)
 #define CORE_GL_ARB_shader_image_load_store         (__CORE_GLES_VAR(bES31) && !DEFINED(_CORE_EMSCRIPTEN_))
 #define CORE_GL_ARB_sync                            (__CORE_GLES_VAR(bES30))
@@ -308,6 +306,22 @@ using PFNGLMAXSHADERCOMPILERTHREADSPROC = void (GL_APIENTRY *) (GLuint count);
 
 
 // ****************************************************************
+/* GL_MESA_sampler_objects */
+#define CORE_GL_ARB_sampler_objects (__CORE_GLES_VAR(GL_MESA_sampler_objects))
+
+using PFNGLBINDSAMPLERPROC       = void (GL_APIENTRY *) (GLuint unit, GLuint sampler);
+using PFNGLDELETESAMPLERSPROC    = void (GL_APIENTRY *) (GLsizei count, const GLuint* samplers);
+using PFNGLGENSAMPLERSPROC       = void (GL_APIENTRY *) (GLsizei count, GLuint* samplers);
+using PFNGLSAMPLERPARAMETERFPROC = void (GL_APIENTRY *) (GLuint sampler, GLenum pname, GLfloat param);
+using PFNGLSAMPLERPARAMETERIPROC = void (GL_APIENTRY *) (GLuint sampler, GLenum pname, GLint param);
+#define glBindSampler(...)       __CORE_GLES_FUNC_STATIC(bES30, glBindSampler,       __VA_ARGS__)
+#define glDeleteSamplers(...)    __CORE_GLES_FUNC_STATIC(bES30, glDeleteSamplers,    __VA_ARGS__)
+#define glGenSamplers(...)       __CORE_GLES_FUNC_STATIC(bES30, glGenSamplers,       __VA_ARGS__)
+#define glSamplerParameterf(...) __CORE_GLES_FUNC_STATIC(bES30, glSamplerParameterf, __VA_ARGS__)
+#define glSamplerParameteri(...) __CORE_GLES_FUNC_STATIC(bES30, glSamplerParameteri, __VA_ARGS__)
+
+
+// ****************************************************************
 /* GL_NV_conservative_raster */
 #define CORE_GL_NV_conservative_raster (__CORE_GLES_VAR(GL_NV_conservative_raster) && !DEFINED(_CORE_EMSCRIPTEN_))
 
@@ -471,6 +485,7 @@ using PFNGLGETBUFFERSUBDATAPROC = void (GL_APIENTRY *) (GLenum target, GLintptr 
 
 #define glBindFragDataLocation(...)
 #define glBindMultiTextureEXT(...)
+#define glBindSamplers(...) __CORE_GLES_UNUSED_ARGS(__VA_ARGS__)
 #define glBindTextures(...) __CORE_GLES_UNUSED_ARGS(__VA_ARGS__)
 #define glBindTextureUnit(...)
 #define glBindVertexBuffers(...)
@@ -563,6 +578,7 @@ struct coreContextGLES final
     coreBool __GL_INTEL_framebuffer_CMAA;
     coreBool __GL_KHR_debug;
     coreBool __GL_KHR_parallel_shader_compile;
+    coreBool __GL_MESA_sampler_objects;
     coreBool __GL_NV_conservative_raster;
     coreBool __GL_NV_copy_buffer;
     coreBool __GL_NV_framebuffer_blit;
@@ -608,6 +624,11 @@ struct coreContextGLES final
     PFNGLDEBUGMESSAGECONTROLPROC                    __glDebugMessageControl;
     PFNGLOBJECTLABELPROC                            __glObjectLabel;
     PFNGLMAXSHADERCOMPILERTHREADSPROC               __glMaxShaderCompilerThreads;
+    PFNGLBINDSAMPLERPROC                            __glBindSampler;
+    PFNGLDELETESAMPLERSPROC                         __glDeleteSamplers;
+    PFNGLGENSAMPLERSPROC                            __glGenSamplers;
+    PFNGLSAMPLERPARAMETERFPROC                      __glSamplerParameterf;
+    PFNGLSAMPLERPARAMETERIPROC                      __glSamplerParameteri;
     PFNGLCOPYBUFFERSUBDATAPROC                      __glCopyBufferSubData;
     PFNGLBLITFRAMEBUFFERPROC                        __glBlitFramebuffer;
     PFNGLRENDERBUFFERSTORAGEMULTISAMPLEPROC         __glRenderbufferStorageMultisample;
