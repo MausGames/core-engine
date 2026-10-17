@@ -364,7 +364,7 @@ void CoreDebug::MeasureEnd(const coreHashString& sName)
 
         // add additional performance information (frame rate and process memory)
         const coreFloat fTime = Core::System->GetTime();
-        if(fTime) pcName = PRINT("%s %.2f FPS%s %.2f MB / %.2f MB", pcName, 1.0f / fTime, SDL_GL_GetSwapIntervalInline() ? "*" : "", coreDouble(coreData::ProcessMemory()) / (1024.0 * 1024.0), coreDouble(Core::Graphics->ProcessGpuMemory()) / (1024.0 * 1024.0));
+        if(fTime) pcName = PRINT("%s %.2f FPS%s / %.2f MB / %.2f MB", pcName, 1.0f / fTime, SDL_GL_GetSwapIntervalInline() ? "*" : "", coreDouble(coreData::ProcessMemory()) / (1024.0 * 1024.0), coreDouble(Core::Graphics->ProcessGpuMemory()) / (1024.0 * 1024.0));
     }
 
     // update CPU performance value

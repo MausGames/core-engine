@@ -10,7 +10,7 @@ project(
     LANGUAGES C CXX
 )
 
-include(${BASE_DIRECTORY}/projects/cmake/shared.cmake)
+include(shared.cmake)
 add_library(CoreEngine STATIC)
 
 set_target_properties(
@@ -127,14 +127,14 @@ else()
 
     target_compile_options(
         CoreEngine PUBLIC
-        -pipe -Wall -Wextra -Wpedantic -ftls-model=initial-exec $<IF:$<BOOL:${CORE_ARM}>, , -msse3>
+        -pipe -Wall -Wextra -Wpedantic -ftls-model=initial-exec $<IF:$<BOOL:${CORE_ARM}>, -march=armv8-a, -msse3>
         $<IF:$<CONFIG:DEBUG>, -O0 -g3 -gsplit-dwarf -gz=zstd -ftrivial-auto-var-init=pattern, -Os -flto -fvisibility=hidden -fno-plt -ftrivial-auto-var-init=uninitialized -fwhole-program-vtables -fvirtual-function-elimination -fforce-emit-vtables -fstrict-vtable-pointers -fno-strict-overflow -ffinite-math-only -fno-signed-zeros -fno-trapping-math -fno-math-errno -ffp-contract=off -fno-rtti -fno-exceptions -Werror>
     )
 
     target_link_libraries(
         CoreEngine INTERFACE
         -ldl -lpthread -lGL
-        -l:libSDL3.so -l:libSDL3_ttf.so -l:libSDL3_image.so -l:libopenal.so -l:libopusfile.so -l:libzstd.so -l:libicu.a
+        -l:libSDL3.so -l:libSDL3_ttf.so -l:libSDL3_image.so -l:libopenal.so -l:libopusfile.so -l:libzstd.a -l:libicu.a
     )
 
     target_link_options(

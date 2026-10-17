@@ -25,6 +25,7 @@
 // TODO 3: implement haptics again
 // TODO 3: ABXY, ACCEPT and CANCEL cannot be detected with iLast (only NORTH, EAST, etc.), and are also added to aiCount
 // TODO 3: mouse events should cause menu interaction on press, touch events should on release (use own coreInputType enum mapped to appropriate value ?)
+// TODO 4: std::is_corresponding_member for event checks, when clang and libc++ supports it
 
 
 // ****************************************************************

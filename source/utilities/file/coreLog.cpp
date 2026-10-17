@@ -47,10 +47,10 @@ coreLog::coreLog(const coreChar* pcPath)noexcept
         std::fputs("</style>"                                                        "\n", m_pFile);
 
         // write application data
-        std::fprintf(m_pFile, "<title>%s | %s</title>"                                 "\n", CoreApp::Settings::Name, pcDateTime);
-        std::fprintf(m_pFile, CORE_LOG_BOLD("Executable:") " %s (%s, %s%s, %s %s)" "<br>\n", coreData::ProcessPath(), CoreApp::Settings::Identifier, CoreApp::Settings::Version, CoreApp::Settings::IsDemo() ? " demo" : "", __DATE__, __TIME__);
-        std::fprintf(m_pFile, CORE_LOG_BOLD("Built with:") " %s, %s, %s"           "<br>\n", coreData::BuildCompiler(), coreData::BuildLibraryC(), coreData::BuildLibraryCpp());
-        std::fprintf(m_pFile, CORE_LOG_BOLD("Started on:") " %s (PID %u)"          "<br>\n", pcDateTime, coreData::ProcessID());
+        std::fprintf(m_pFile, "<title>%s | %s</title>"                                   "\n", CoreApp::Settings::Name, pcDateTime);
+        std::fprintf(m_pFile, CORE_LOG_BOLD("Executable:") " %s (%s, %s, %s %s, %s)" "<br>\n", coreData::ProcessPath(), CoreApp::Settings::Identifier, CoreApp::Settings::Version, __DATE__, __TIME__, CoreApp::Settings::IsDemo() ? "demo" : "full");
+        std::fprintf(m_pFile, CORE_LOG_BOLD("Built with:") " %s, %s, %s"             "<br>\n", coreData::BuildCompiler(), coreData::BuildLibraryC(), coreData::BuildLibraryCpp());
+        std::fprintf(m_pFile, CORE_LOG_BOLD("Started on:") " %s (PID %u)"            "<br>\n", pcDateTime, coreData::ProcessID());
 
         // flush log file
         std::fflush(m_pFile);

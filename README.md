@@ -48,7 +48,7 @@ It is **designed to be supportive, versatile and powerful**, and to dynamically 
 - **Keyboard:** [IME](https://en.wikipedia.org/wiki/Input_method) support, screen keyboard support
 - **Joysticks/Gamepads:** aggregation, hot plugging, rumble, led colors, both location and label-specific button testing
 - **Touch:** for mobile and desktop (including Steam Deck)
-- **Replay Files**: deterministically record and play back input events
+- **Replay Files:** deterministically record and play back input events
 
 ### 🔬 Debug
 
@@ -61,7 +61,7 @@ It is **designed to be supportive, versatile and powerful**, and to dynamically 
 - **Debug Input:** show debug overlay (ImGui, native), show debug drawing, frame stepping, explicit hot reloading
 - **Debug Visualizers:** [Natvis](https://learn.microsoft.com/en-us/visualstudio/debugger/create-custom-views-of-native-objects), [LLDB](https://lldb.llvm.org/use/variable.html)
 - **Crash Dumps:** Windows (full), Linux (custom)
-- **Unit Tests**: [Doctest](https://github.com/doctest/doctest/)
+- **Unit Tests:** [Doctest](https://github.com/doctest/doctest/)
 - **Pedantic Checking:** assertions everywhere, code sanitizer support (undefined behaviour, address, leak), floating-point exceptions
 
 ### 🏆 Platform
@@ -123,10 +123,10 @@ It is **designed to be supportive, versatile and powerful**, and to dynamically 
 
 - **Vectors:** 2D, 3D, 4D/quaterions, tons of utilities
 - **Matrices:** 2x2, 3x3, 4x4, other variants, also tons of utilities
-- **Color Space Conversion**: RGB, HSV, YIQ, YUV, YCbCr, Luminance
-- **Cubic Hermite Splines**: calculate position and direction, control tangents and acceleration, with refinement step
+- **Color Space Conversion:** RGB, HSV, YIQ, YUV, YCbCr, Luminance
+- **Cubic Hermite Splines:** calculate position and direction, control tangents and acceleration, with refinement step
 - **Points:** with variable type and dimension
-- **Interpolation and Stepping**
+- **Interpolation and Stepping:** various [easing functions](https://easings.net/) (improved)
 - **Rounding and Aligning**
 - **Value Packing:** half-float, various GPU formats, other general-purpose formats
 - **Bit and Byte Operations:** counting, rotating, reversing, converting
@@ -143,9 +143,9 @@ It is **designed to be supportive, versatile and powerful**, and to dynamically 
 - **File Handling:** chunk-based archive container class, safe file writing (temp + move), file memory mapping, various file and directory operations, recursive directory creation and enumeration, long path awareness (Windows)
 - **Process Handling:** application paths, application stats (CPU and GPU memory), dynamic library loading
 - **Operating System:** system paths, system stats (CPU and GPU memory, disk space), environment and hardware detections
-- **Synchronization**: recursive, non-recursive and read-write locks (spin-locks, mutexes), atomics
-- **Inline Text Formatting**: create formatted text without buffers or allocations
-- **Inline Preprocessor Testing**: check for any preprocessor symbol like a regular boolean
+- **Synchronization:** recursive, non-recursive and read-write locks (spin-locks, mutexes), atomics
+- **Inline Text Formatting:** create formatted text without buffers or allocations
+- **Inline Preprocessor Testing:** check for any preprocessor symbol like a regular boolean
 - **... and everything from SDL**
 
 ### 🛠️ Tools
