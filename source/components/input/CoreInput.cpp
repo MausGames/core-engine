@@ -592,8 +592,8 @@ void CoreInput::__UpdateButtonsEnd()
     // clear all numbers of input buttons with same status
     std::memset(m_Keyboard.aiCount, 0, sizeof(m_Keyboard.aiCount));
     std::memset(m_Mouse   .aiCount, 0, sizeof(m_Mouse   .aiCount));
-    FOR_EACH(it, m_aJoystick) std::memset(it->aiCount, 0, sizeof(it->aiCount));
     std::memset(m_aiTouchCount,     0, sizeof(m_aiTouchCount));
+    FOR_EACH(it, m_aJoystick) std::memset(it->aiCount, 0, sizeof(it->aiCount));
 
     // clear all last pressed input buttons
     m_Keyboard.iLast = CORE_INPUT_INVALID_KEYBOARD;

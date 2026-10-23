@@ -219,7 +219,7 @@ CoreGraphics::CoreGraphics()noexcept
     }
 
     // enable optimized provoking vertex convention
-    if(CORE_GL_SUPPORT(ANGLE_provoking_vertex))   // not ARB, only supported when more efficient
+    if(CORE_GL_SUPPORT(ANGLE_provoking_vertex))   // not ARB, only supported if more efficient
     {
         glProvokingVertex(GL_FIRST_VERTEX_CONVENTION);
     }
@@ -829,9 +829,7 @@ void CoreGraphics::__UpdateScene()
 #if defined(_CORE_ANGLE_)
 
     // # ANGLE/Steam hotfix: overlay injection invalidates UBO content
-    ADD_BIT(m_iUniformUpdate, 0u)
-    ADD_BIT(m_iUniformUpdate, 1u)
-    ADD_BIT(m_iUniformUpdate, 2u)
+    m_iUniformUpdate = 0xFFu;
 
 #endif
 

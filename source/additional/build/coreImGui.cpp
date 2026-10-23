@@ -48,12 +48,14 @@
 /* include library code */
 #define IMGUI_IGNORE_CLASS_EXTRA
 
-#include <imgui/imgui.cpp>
-#include <imgui/imgui_draw.cpp>
-#include <imgui/imgui_tables.cpp>
-#include <imgui/imgui_widgets.cpp>
-#include <imgui/imgui_impl_sdl3.cpp>
-#include <imgui/imgui_impl_opengl3.cpp>
+#if __has_include(<imgui/imgui.cpp>)
+    #include <imgui/imgui.cpp>
+    #include <imgui/imgui_draw.cpp>
+    #include <imgui/imgui_tables.cpp>
+    #include <imgui/imgui_widgets.cpp>
+    #include <imgui/imgui_impl_sdl3.cpp>
+    #include <imgui/imgui_impl_opengl3.cpp>
+#endif
 
 #if __has_include(<imgui/imgui_demo.cpp>)
     #include <imgui/imgui_demo.cpp>

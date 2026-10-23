@@ -211,7 +211,7 @@ void coreTexture::Create(const coreUint32 iWidth, const coreUint32 iHeight, cons
     if(bAnisotropic)          glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAX_ANISOTROPY, I_TO_F(CLAMP(Core::Config->GetInt(CORE_CONFIG_GRAPHICS_TEXTUREANISOTROPY), 1, Core::Graphics->GetMaxAnisotropy())));
     if(bMipMap || bMipMapOld) glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_LOD_BIAS,       CORE_TEXTURE_LOD_BIAS);
     if(bMipMapOld)            glTexParameteri(GL_TEXTURE_2D, GL_GENERATE_MIPMAP,        GL_TRUE);
-    if(bTarget)               glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_USAGE_ANGLE,    GL_FRAMEBUFFER_ATTACHMENT_ANGLE);
+    if(bTarget)               glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_USAGE_ANGLE,    GL_FRAMEBUFFER_ATTACHMENT_ANGLE);   // before allocating backing storage
 
     if(CORE_GL_SUPPORT(ARB_texture_storage))
     {

@@ -154,8 +154,9 @@ public:
     void ClearFiles();
 
     /* access file objects */
-    inline coreFile* GetFile(const coreUintW       iIndex) {return (iIndex < m_apFile.size()) ? m_apFile[iIndex]      : NULL;}
-    inline coreFile* GetFile(const coreHashString& sPath)  {return (m_apFile.count_bs(sPath)) ? m_apFile.at_bs(sPath) : NULL;}
+    inline coreFile* GetFile(const coreUintW       iIndex)     {return (iIndex < m_apFile.size()) ? m_apFile[iIndex]      : NULL;}
+    inline coreFile* GetFile(const coreHashString& sPath)      {return (m_apFile.count_bs(sPath)) ? m_apFile.at_bs(sPath) : NULL;}
+    inline coreBool  HasFile(const coreHashString& sPath)const {return (m_apFile.count_bs(sPath));}
 
     /* get object properties */
     inline const coreChar* GetPath    ()const {return m_sPath.c_str();}

@@ -22,7 +22,7 @@ It is **designed to be supportive, versatile and powerful**, and to dynamically 
 - **Windows and Events:** resizable window mode, exclusive fullscreen mode, window configuration (icon, title, progress), focus loss detection
 - **Displays:** resolutions, refresh rates, hot plugging, high DPI support
 - **Threads:** precise update rate, recursive work queue
-- **Time:** delta smoothing, speed configuration, simple timers (single float), complex timers (ticks/loops, state)
+- **Time:** delta smoothing, speed configuration, simple timers (single float), complex timers (ticks/loops, state), time scopes
 
 ### 🌈 Graphics
 

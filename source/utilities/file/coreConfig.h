@@ -13,6 +13,7 @@
 // TODO 3: add a way to control default values per project (dynamically ?)
 // TODO 5: allow loading config files from archives
 // TODO 3: implement coreVariant
+// TODO 3: configuration overrides should only be temporary (all types)
 
 
 // ****************************************************************

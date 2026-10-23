@@ -851,7 +851,7 @@
 				CLANG_WARN_STRICT_PROTOTYPES = YES;
 				CLANG_WARN_SUSPICIOUS_MOVE = YES;
 				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
-				CLANG_X86_VECTOR_INSTRUCTIONS = sse3;
+				CLANG_X86_VECTOR_INSTRUCTIONS = sse4.1;
 				COPY_PHASE_STRIP = NO;
 				DEBUG_INFORMATION_FORMAT = dwarf;
 				GCC_C_LANGUAGE_STANDARD = c17;
@@ -880,12 +880,17 @@
 				OTHER_CFLAGS = (
 					"-ftls-model=initial-exec",
 					"-ftrivial-auto-var-init=pattern",
+					"-Xarch_arm64",
+					"-march=armv8.4-a",
+					"-Xarch_x86_64",
+					"-msse4.1",
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = MausGames.CoreEngine;
 				PRODUCT_NAME = CoreEngine;
 				SDKROOT = macosx;
 				SKIP_INSTALL = YES;
 				STRINGS_FILE_OUTPUT_ENCODING = "UTF-8";
+				__DIAGNOSE_INVALID_DEPLOYMENT_TARGET_AS_ERROR = NO;
 			};
 			name = Debug;
 		};
@@ -906,7 +911,7 @@
 				CLANG_WARN_STRICT_PROTOTYPES = YES;
 				CLANG_WARN_SUSPICIOUS_MOVE = YES;
 				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
-				CLANG_X86_VECTOR_INSTRUCTIONS = sse3;
+				CLANG_X86_VECTOR_INSTRUCTIONS = sse4.1;
 				DEAD_CODE_STRIPPING = YES;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				GCC_C_LANGUAGE_STANDARD = c17;
@@ -940,6 +945,10 @@
 					"-fno-trapping-math",
 					"-fno-math-errno",
 					"-ffp-contract=off",
+					"-Xarch_arm64",
+					"-march=armv8.4-a",
+					"-Xarch_x86_64",
+					"-msse4.1",
 				);
 				OTHER_CPLUSPLUSFLAGS = (
 					"$(OTHER_CFLAGS)",
@@ -953,6 +962,7 @@
 				SDKROOT = macosx;
 				SKIP_INSTALL = YES;
 				STRINGS_FILE_OUTPUT_ENCODING = "UTF-8";
+				__DIAGNOSE_INVALID_DEPLOYMENT_TARGET_AS_ERROR = NO;
 			};
 			name = Release;
 		};

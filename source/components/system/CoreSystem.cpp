@@ -173,9 +173,9 @@ CoreSystem::CoreSystem()noexcept
                 coreAllocScope ppModeList = SDL_GetFullscreenDisplayModes(iDisplayID, &iModeCount);
                 if(iModeCount)
                 {
-                    Core::Log->ListDeeper(CORE_LOG_BOLD("Display %u:") " %s (%.0f x %.0f @ %.2f Hz, %.2f density, %.0f%% scale, %d/%d offset, %.0f/%.0f area, orientation %d, %s)",
+                    Core::Log->ListDeeper(CORE_LOG_BOLD("Display %u:") " %s (%.0f x %.0f @ %.2f Hz, %.2f density, %.0f%% scale, %d/%d offset, %.0f/%.0f area, orientation %d, HDR %s)",
                                           i, SDL_GetDisplayName(iDisplayID), oDisplayData.vDesktopRes.x, oDisplayData.vDesktopRes.y, oDisplayData.fDesktopRate, oDisplayData.fPixelDensity,
-                                          fScale * 100.0f, oWorkArea.x, oWorkArea.y, oDisplayData.vWorkAreaRes.x, oDisplayData.vWorkAreaRes.y, eOrientation, bHdr ? "HDR supported" : "HDR not supported");
+                                          fScale * 100.0f, oWorkArea.x, oWorkArea.y, oDisplayData.vWorkAreaRes.x, oDisplayData.vWorkAreaRes.y, eOrientation, bHdr ? "supported" : "not supported");
                     {
                         // reserve some memory
                         oDisplayData.avAvailableRes  .reserve(iModeCount);

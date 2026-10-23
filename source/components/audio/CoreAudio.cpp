@@ -127,7 +127,7 @@ CoreAudio::CoreAudio()noexcept
         },
         this);
 
-        // enable all events
+        // enable all events (even unused, for logging)
         constexpr ALCenum aiEvent[] = {ALC_EVENT_TYPE_DEFAULT_DEVICE_CHANGED_SOFT, ALC_EVENT_TYPE_DEVICE_ADDED_SOFT, ALC_EVENT_TYPE_DEVICE_REMOVED_SOFT};
         alcEventControlSOFT(ARRAY_SIZE(aiEvent), aiEvent, true);
     }
