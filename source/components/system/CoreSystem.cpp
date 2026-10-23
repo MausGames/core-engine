@@ -763,7 +763,7 @@ void CoreSystem::__UpdateWindow()
 
     // reduce overhead if window is not visible
     m_bWinHidden = HAS_FLAG_ANY(SDL_GetWindowFlags(m_pWindow), SDL_WINDOW_OCCLUDED | SDL_WINDOW_HIDDEN | SDL_WINDOW_MINIMIZED);
-    if(!m_bWinHidden) SDL_Delay(30u);
+    if(m_bWinHidden) SDL_Delay(30u);
 
     // toggle between borderless and windowed mode
     if(Core::Input->GetKeyboardButton(CORE_INPUT_KEY(LALT),   CORE_INPUT_HOLD) &&
