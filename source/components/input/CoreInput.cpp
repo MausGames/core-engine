@@ -502,6 +502,14 @@ void CoreInput::ClearButtonAll()
 /* update the input button interface (start) */
 void CoreInput::__UpdateButtonsStart()
 {
+    // disable joystick events if window is not visible (static, due to global state)
+    static coreBool s_bDisabled = true;
+    if(s_bDisabled != Core::System->GetWinHidden())
+    {
+        s_bDisabled = Core::System->GetWinHidden();
+        SDL_SetHint(SDL_HINT_JOYSTICK_ALLOW_BACKGROUND_EVENTS, s_bDisabled ? "0" : "1");
+    }
+
     // merge all available joysticks
     if(m_aJoystick.size() > 1u)
     {

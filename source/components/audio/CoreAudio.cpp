@@ -697,8 +697,21 @@ void CoreAudio::__UpdateSources()
         return false;
     };
 
+    const auto nMuteVolumeFunc = [](coreFloat* OUTPUT pfVolume)
+    {
+        // check if window is not visible
+        if(Core::System->GetWinHidden() && Core::Config->GetBool(CORE_CONFIG_AUDIO_MUTEHIDDEN))
+        {
+            // mute volume
+            pfVolume[0] = 0.0f;
+            return true;
+        }
+
+        return false;
+    };
+
     // update listener volume
-    if(nUpdateVolumeFunc(m_afGlobalVolume, CORE_CONFIG_AUDIO_GLOBALVOLUME))
+    if(nMuteVolumeFunc(m_afGlobalVolume) || nUpdateVolumeFunc(m_afGlobalVolume, CORE_CONFIG_AUDIO_GLOBALVOLUME))
     {
         alListenerf(AL_GAIN, m_afGlobalVolume[0] * CORE_AUDIO_MAX_GAIN);
     }

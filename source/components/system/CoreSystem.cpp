@@ -36,6 +36,7 @@ CoreSystem::CoreSystem()noexcept
 , m_bWinFocusLost    (false)
 , m_bWinPosChanged   (false)
 , m_bWinSizeChanged  (false)
+, m_bWinHidden       (false)
 , m_bTerminated      (false)
 {
     Core::Log->Header("System Interface");
@@ -761,16 +762,8 @@ void CoreSystem::__UpdateWindow()
 #if !defined(_CORE_EMSCRIPTEN_) && !defined(_CORE_SWITCH_)
 
     // reduce overhead if window is not visible
-    const coreBool bHidden = HAS_FLAG_ANY(SDL_GetWindowFlags(m_pWindow), SDL_WINDOW_OCCLUDED | SDL_WINDOW_HIDDEN | SDL_WINDOW_MINIMIZED);
-    if(bHidden) SDL_Delay(30u);
-
-    // disable joystick events if window is not visible (static)
-    static coreBool s_bDisabled = true;
-    if(s_bDisabled != bHidden)
-    {
-        s_bDisabled = bHidden;
-        SDL_SetHint(SDL_HINT_JOYSTICK_ALLOW_BACKGROUND_EVENTS, s_bDisabled ? "0" : "1");
-    }
+    m_bWinHidden = HAS_FLAG_ANY(SDL_GetWindowFlags(m_pWindow), SDL_WINDOW_OCCLUDED | SDL_WINDOW_HIDDEN | SDL_WINDOW_MINIMIZED);
+    if(!m_bWinHidden) SDL_Delay(30u);
 
     // toggle between borderless and windowed mode
     if(Core::Input->GetKeyboardButton(CORE_INPUT_KEY(LALT),   CORE_INPUT_HOLD) &&

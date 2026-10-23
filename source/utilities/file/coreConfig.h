@@ -48,6 +48,7 @@
 #define CORE_CONFIG_AUDIO_GLOBALVOLUME          "Audio",    "GlobalVolume",       (1.0f)
 #define CORE_CONFIG_AUDIO_MUSICVOLUME           "Audio",    "MusicVolume",        (1.0f)
 #define CORE_CONFIG_AUDIO_SOUNDVOLUME           "Audio",    "SoundVolume",        (1.0f)
+#define CORE_CONFIG_AUDIO_MUTEHIDDEN            "Audio",    "MuteHidden",         (true)
 
 #define CORE_CONFIG_INPUT_RUMBLE                "Input",    "Rumble",             (true)
 #define CORE_CONFIG_INPUT_JOYSTICKDEAD          "Input",    "JoystickDead",       (0x2800)

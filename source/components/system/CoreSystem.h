@@ -94,6 +94,7 @@ private:
     coreBool m_bWinFocusLost;                           // window/application lost focus (through event)
     coreBool m_bWinPosChanged;                          // window position changed (through event)
     coreBool m_bWinSizeChanged;                         // window size changed (through event)
+    coreBool m_bWinHidden;                              // window currently not visible
     coreBool m_bTerminated;                             // application will be terminated
 
 
@@ -148,6 +149,7 @@ public:
     inline const coreBool&       GetWinFocusLost   ()const                       {return m_bWinFocusLost;}
     inline const coreBool&       GetWinPosChanged  ()const                       {return m_bWinPosChanged;}
     inline const coreBool&       GetWinSizeChanged ()const                       {return m_bWinSizeChanged;}
+    inline const coreBool&       GetWinHidden      ()const                       {return m_bWinHidden;}
     inline const coreBool&       GetTerminated     ()const                       {return m_bTerminated;}
 
 
