@@ -31,20 +31,22 @@ DOCTEST_TEST_CASE("Unit Tests")
 {
     DOCTEST_SUBCASE("coreData")
     {
-        DOCTEST_SUBCASE("Compress/Decompress")
+        DOCTEST_SUBCASE("Compress/Decompress/IsCompressed")
         {
             const coreByte acData[] = "trans rights are human rights";
 
             coreByte*  pCompress     = NULL;
             coreUint32 iCompressSize = 0u;
-            DOCTEST_CHECK(coreData::Compress(acData, sizeof(acData), &pCompress, &iCompressSize) == CORE_OK);
+            DOCTEST_CHECK_EQ(coreData::Compress(acData, sizeof(acData), &pCompress, &iCompressSize), CORE_OK);
+            DOCTEST_CHECK_EQ(coreData::IsCompressed(pCompress, iCompressSize), true);
 
             coreByte*  pDecompress     = NULL;
             coreUint32 iDecompressSize = 0u;
-            DOCTEST_CHECK(coreData::Decompress(pCompress, iCompressSize, &pDecompress, &iDecompressSize) == CORE_OK);
+            DOCTEST_CHECK_EQ(coreData::Decompress(pCompress, iCompressSize, &pDecompress, &iDecompressSize), CORE_OK);
+            DOCTEST_CHECK_EQ(coreData::IsCompressed(pDecompress, iDecompressSize), false);
 
-            DOCTEST_CHECK(iDecompressSize == sizeof(acData));
-            DOCTEST_CHECK(!std::memcmp(pDecompress, "trans rights are human rights", iDecompressSize));
+            DOCTEST_CHECK_EQ(iDecompressSize, sizeof(acData));
+            DOCTEST_CHECK_EQ(std::memcmp(pDecompress, "trans rights are human rights", iDecompressSize), 0);
 
             SAFE_DELETE_ARRAY(pCompress)
             SAFE_DELETE_ARRAY(pDecompress)
@@ -55,10 +57,10 @@ DOCTEST_TEST_CASE("Unit Tests")
             coreByte acData[] = "be gay, do crime";
 
             coreData::Scramble(acData, sizeof(acData));
-            DOCTEST_CHECK(!std::memcmp(acData, "\x9e\x98\x2e\x72\xa5\x2f\x19\xe3\x21\xa2\x5a\xdd\xf9\xae\x96\x3c\x4d", sizeof(acData)));
+            DOCTEST_CHECK_EQ(std::memcmp(acData, "\x9e\x98\x2e\x72\xa5\x2f\x19\xe3\x21\xa2\x5a\xdd\xf9\xae\x96\x3c\x4d", sizeof(acData)), 0);
 
             coreData::Unscramble(acData, sizeof(acData));
-            DOCTEST_CHECK(!std::memcmp(acData, "be gay, do crime", sizeof(acData)));
+            DOCTEST_CHECK_EQ(std::memcmp(acData, "be gay, do crime", sizeof(acData)), 0);
         }
 
         DOCTEST_SUBCASE("StrToUpper")

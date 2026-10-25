@@ -359,9 +359,7 @@
 #define GLEW_NO_GLU
 #define GLEW_STATIC
 #define AL_DISABLE_NOEXCEPT
-#if defined(_CORE_MSVC_)
-    #define ZSTD_DLL_IMPORT 1
-#endif
+#define ZSTD_STATIC_LINKING_ONLY
 #if defined(_CORE_TEST_)
     #define STB_SPRINTF_NOUNALIGNED
 #endif

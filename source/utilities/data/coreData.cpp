@@ -2525,6 +2525,15 @@ const coreChar* coreData::DateTimePrint(const coreChar* pcFormat, const std::tm*
 
 
 // ****************************************************************
+/* check if data is compressed with Zstandard library */
+coreBool coreData::IsCompressed(const coreByte* pInput, const coreUint32 iInputSize)
+{
+    ASSERT(pInput && (iInputSize >= sizeof(coreUint32)))
+    return (ZSTD_isFrame(pInput + sizeof(coreUint32), iInputSize - sizeof(coreUint32)) != 0u);
+}
+
+
+// ****************************************************************
 /* compress data with Zstandard library */
 coreStatus coreData::Compress(const coreByte* pInput, const coreUint32 iInputSize, coreByte** OUTPUT ppOutput, coreUint32* OUTPUT piOutputSize, const coreInt32 iLevel)
 {

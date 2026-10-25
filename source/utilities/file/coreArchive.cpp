@@ -112,6 +112,19 @@ coreStatus coreFile::Save(const coreChar* pcPath)
 
 
 // ****************************************************************
+/* check if file data is compressed */
+coreBool coreFile::IsCompressed()
+{
+    // check file data
+    this->LoadData();
+    if(!m_pData || !m_iSize) return false;
+
+    // check if data is compressed
+    return coreData::IsCompressed(m_pData, m_iSize);
+}
+
+
+// ****************************************************************
 /* compress file data */
 coreStatus coreFile::Compress(const coreInt32 iLevel)
 {

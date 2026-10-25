@@ -77,10 +77,11 @@ public:
     coreStatus Save(const coreChar* pcPath = NULL);
 
     /* compress and decompress file data */
-    coreStatus Compress  (const coreInt32  iLevel = ZSTD_CLEVEL_DEFAULT);
-    coreStatus Decompress(const coreUint32 iLimit = UINT32_MAX);
-    coreStatus Scramble  (const coreUint64 iKey   = 0u);
-    coreStatus Unscramble(const coreUint64 iKey   = 0u);
+    coreBool   IsCompressed();
+    coreStatus Compress    (const coreInt32  iLevel = ZSTD_CLEVEL_DEFAULT);
+    coreStatus Decompress  (const coreUint32 iLimit = UINT32_MAX);
+    coreStatus Scramble    (const coreUint64 iKey   = 0u);
+    coreStatus Unscramble  (const coreUint64 iKey   = 0u);
 
     /* create stream for reading file data */
     SDL_IOStream* CreateReadStream()const;
