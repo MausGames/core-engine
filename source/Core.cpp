@@ -133,6 +133,7 @@ void Core::Reset()
     const coreDouble  dTotalTime       = System  ->m_dTotalTime;
     const coreDouble  dTotalTimeBefore = System  ->m_dTotalTimeBefore;
     const coreUint32  iCurFrame        = System  ->m_iCurFrame;
+    const coreUint8   iCurRoutine      = System  ->m_eCurRoutine;
     const coreUint64  iMemoryStart     = Graphics->m_iMemoryStart;
     const coreFloat   fFOV             = Graphics->m_fFOV;
     const coreFloat   fNearClip        = Graphics->m_fNearClip;
@@ -162,6 +163,7 @@ void Core::Reset()
     System  ->m_dTotalTime       = dTotalTime;
     System  ->m_dTotalTimeBefore = dTotalTimeBefore;
     System  ->m_iCurFrame        = iCurFrame;
+    System  ->m_eCurRoutine      = coreSystemRoutine(iCurRoutine);
     Graphics->m_iMemoryStart     = iMemoryStart;
     Graphics->SetView  (System->m_vResolution, fFOV, fNearClip, fFarClip, fAspectRatio);
     Graphics->SetCamera(vCamPosition, vCamDirection, vCamOrientation);
@@ -298,8 +300,11 @@ coreStatus Core::__RunEngine()
         Input ->__UpdateButtonsStart();
 
         // move and render the application
+        System->m_eCurRoutine = CORE_SYSTEM_ROUTINE_MOVE;
         Application->Move();
+        System->m_eCurRoutine = CORE_SYSTEM_ROUTINE_RENDER;
         Application->Render();
+        System->m_eCurRoutine = CORE_SYSTEM_ROUTINE_ENGINE;
 
         // update the object manager
         Manager::Object->__UpdateObjects();

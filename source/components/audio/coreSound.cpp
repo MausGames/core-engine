@@ -81,7 +81,7 @@ coreStatus coreSound::Load(coreFile* pFile)
         }
 
         // limit decoding amount per iteration (with overflow)
-        const coreInt32 iLimit = m_iDeferOffset + ((SDL_GetCurrentThreadID() == Core::System->GetMainThread()) ? 100 : 500) * 1024;
+        const coreInt32 iLimit = m_iDeferOffset + (Core::System->InMainThread() ? 100 : 500) * 1024;
 
         do
         {

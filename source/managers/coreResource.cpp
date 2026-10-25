@@ -442,7 +442,7 @@ void coreResourceManager::Reshape()
 /* acquire resource index table space */
 void coreResourceManager::AllocIndex(coreResourceHandle* OUTPUT pHandle)
 {
-    ASSERT(pHandle && (pHandle->m_iIndex == CORE_RESOURCE_INDEX_INVALID) && (SDL_GetCurrentThreadID() == Core::System->GetMainThread()))
+    ASSERT(pHandle && (pHandle->m_iIndex == CORE_RESOURCE_INDEX_INVALID) && Core::System->InMainThread())
 
     for(coreUintW i = s_iTableStart; i < CORE_RESOURCE_INDICES; ++i)
     {
@@ -470,7 +470,7 @@ void coreResourceManager::AllocIndex(coreResourceHandle* OUTPUT pHandle)
 /* release resource index table space */
 void coreResourceManager::FreeIndex(coreResourceHandle* OUTPUT pHandle)
 {
-    ASSERT(pHandle && (pHandle->m_iIndex != CORE_RESOURCE_INDEX_INVALID) && (SDL_GetCurrentThreadID() == Core::System->GetMainThread()))
+    ASSERT(pHandle && (pHandle->m_iIndex != CORE_RESOURCE_INDEX_INVALID) && Core::System->InMainThread())
 
     const coreResourceIndex iIndex = pHandle->m_iIndex;
     ASSERT(pHandle == s_apHandleTable[iIndex])

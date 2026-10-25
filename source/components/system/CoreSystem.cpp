@@ -33,6 +33,7 @@ CoreSystem::CoreSystem()noexcept
 , m_fFontFactor      (0.0f)
 , m_vCoordSize       (coreVector2(0.0f,0.0f))
 , m_iMainThread      (0u)
+, m_eCurRoutine      (CORE_SYSTEM_ROUTINE_INIT)
 , m_bWinFocusLost    (false)
 , m_bWinPosChanged   (false)
 , m_bWinSizeChanged  (false)

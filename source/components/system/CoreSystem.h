@@ -41,6 +41,14 @@ enum coreSystemMode : coreUint8
     CORE_SYSTEM_MODE_FULLSCREEN = 2u    // exclusive fullscreen mode (with grabbed mouse)
 };
 
+enum coreSystemRoutine : coreUint8
+{
+    CORE_SYSTEM_ROUTINE_INIT   = 0u,   // still in initialization
+    CORE_SYSTEM_ROUTINE_ENGINE = 1u,   // currently in engine routine
+    CORE_SYSTEM_ROUTINE_MOVE   = 2u,   // currently in application move routine
+    CORE_SYSTEM_ROUTINE_RENDER = 3u    // currently in application render routine
+};
+
 
 // ****************************************************************
 /* main system component */
@@ -89,7 +97,8 @@ private:
     coreFloat   m_fFontFactor;                          // global font factor (relative to current base resolution)
     coreVector2 m_vCoordSize;                           // window coordinate size (without pixel-density)
 
-    SDL_ThreadID m_iMainThread;                         // thread-ID from the main-thread
+    SDL_ThreadID      m_iMainThread;                    // thread-ID of the main-thread
+    coreSystemRoutine m_eCurRoutine;                    // current game routine
 
     coreBool m_bWinFocusLost;                           // window/application lost focus (through event)
     coreBool m_bWinPosChanged;                          // window position changed (through event)
@@ -123,6 +132,11 @@ public:
     /* terminate the application */
     inline void Quit() {m_bTerminated = true;}
 
+    /* check current execution scope */
+    inline coreBool InMainThread   ()const {return (m_iMainThread == SDL_GetCurrentThreadID());}
+    inline coreBool InMoveRoutine  ()const {ASSERT(this->InMainThread()) return (m_eCurRoutine == CORE_SYSTEM_ROUTINE_MOVE);}
+    inline coreBool InRenderRoutine()const {ASSERT(this->InMainThread()) return (m_eCurRoutine == CORE_SYSTEM_ROUTINE_RENDER);}
+
     /* get component properties */
     inline       SDL_Window*     GetWindow         ()const                       {return m_pWindow;}
     inline const coreDisplay&    GetDisplayData    ()const                       {return m_aDisplayData[m_iDisplayIndex];}
@@ -145,7 +159,6 @@ public:
     inline const coreVector2&    GetCanonSize      ()const                       {return m_vCanonSize;}
     inline const coreFloat&      GetFontFactor     ()const                       {return m_fFontFactor;}
     inline const coreVector2&    GetCoordSize      ()const                       {return m_vCoordSize;}
-    inline const SDL_ThreadID&   GetMainThread     ()const                       {return m_iMainThread;}
     inline const coreBool&       GetWinFocusLost   ()const                       {return m_bWinFocusLost;}
     inline const coreBool&       GetWinPosChanged  ()const                       {return m_bWinPosChanged;}
     inline const coreBool&       GetWinSizeChanged ()const                       {return m_bWinSizeChanged;}
