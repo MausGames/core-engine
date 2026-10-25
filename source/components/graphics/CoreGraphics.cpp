@@ -34,6 +34,7 @@ CoreGraphics::CoreGraphics()noexcept
 , m_apScreenshotQueue {}
 , m_ScreenshotLock    ()
 , m_iOverrideState    (0u)
+, m_bContextCheck     (false)
 , m_iMemoryStart      (0u)
 , m_iMaxSamples       (0u)
 , m_aiMaxSamplesEQAA  {}
@@ -222,6 +223,13 @@ CoreGraphics::CoreGraphics()noexcept
     if(CORE_GL_SUPPORT(ANGLE_provoking_vertex))   // not ARB, only supported if more efficient
     {
         glProvokingVertex(GL_FIRST_VERTEX_CONVENTION);
+    }
+
+    // enable render context loss checking (not for WebGL)
+    if(CORE_GL_SUPPORT(ARB_robustness))
+    {
+        GLint iStrategy = 0; glGetIntegerv(GL_RESET_NOTIFICATION_STRATEGY, &iStrategy);
+        m_bContextCheck = (iStrategy == GL_LOSE_CONTEXT_ON_RESET);
     }
 
     // create uniform buffer objects
@@ -857,7 +865,7 @@ void CoreGraphics::__UpdateScene()
 #if !defined(_CORE_EMSCRIPTEN_)
 
     // reset engine on OpenGL context loss
-    if(CORE_GL_SUPPORT(ARB_robustness))
+    if(m_bContextCheck)
     {
         if(glGetGraphicsResetStatus() != GL_NO_ERROR) Core::Reset();
     }

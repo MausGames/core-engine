@@ -86,6 +86,8 @@ private:
 
     coreUint8 m_iOverrideState;                     // track recently overridden properties
 
+    coreBool m_bContextCheck;                       // periodically check for render context loss (not for WebGL)
+
     coreUint64   m_iMemoryStart;                    // available graphics memory at the start of the application (in bytes)
     coreUint8    m_iMaxSamples;                     // max multisample anti aliasing level
     coreUint8    m_aiMaxSamplesEQAA[3];             // max enhanced quality anti aliasing levels (color, depth, storage)
