@@ -175,13 +175,14 @@ public:
     static const coreChar* BuildLibraryCpp();
 
     /* detect special conditions */
-    static coreBool DetectDebugger ();
-    static coreBool DetectRenderDoc();
-    static coreBool DetectSteamDeck();
-    static coreBool DetectX11      ();
-    static coreBool DetectWayland  ();
-    static coreBool DetectGamescope();
-    static coreBool DetectWine     ();
+    static coreBool DetectDebugger     ();
+    static coreBool DetectRemoteSession();
+    static coreBool DetectRenderDoc    ();
+    static coreBool DetectSteamDeck    ();
+    static coreBool DetectX11          ();
+    static coreBool DetectWayland      ();
+    static coreBool DetectGamescope    ();
+    static coreBool DetectWine         ();
 
     /* control current working directory */
     static coreStatus      SetCurDir(const coreChar* pcPath);

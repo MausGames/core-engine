@@ -976,6 +976,22 @@ coreBool coreData::DetectDebugger()
 
 
 // ****************************************************************
+/* detect active remote desktop session */
+coreBool coreData::DetectRemoteSession()
+{
+#if defined(_CORE_WINDOWS_)
+
+    return (GetSystemMetrics(SM_REMOTESESSION) != 0);
+
+#else
+
+    return false;
+
+#endif
+}
+
+
+// ****************************************************************
 /* detect attached RenderDoc */
 coreBool coreData::DetectRenderDoc()
 {
