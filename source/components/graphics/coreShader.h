@@ -203,6 +203,7 @@ private:
 
     coreUint64 m_iHash;                               // combined shader code hash-value
     coreBool   m_bBinary;                             // shader-program binary loaded
+    coreUint8  m_iUniformMask;                        // used default uniform buffer objects
     coreUint8  m_iNumTextures;                        // number of used texture units
 
     coreSync m_Sync;                                  // sync object for asynchronous shader-program loading

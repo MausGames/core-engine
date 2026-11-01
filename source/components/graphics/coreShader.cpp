@@ -336,6 +336,7 @@ coreProgram::coreProgram()noexcept
 , m_avCache        {}
 , m_iHash          (0u)
 , m_bBinary        (false)
+, m_iUniformMask   (0u)
 , m_iNumTextures   (0u)
 , m_Sync           ()
 {
@@ -500,10 +501,10 @@ coreStatus coreProgram::Load(coreFile* pFile)
             const GLuint iTransform2DBlock = glGetUniformBlockIndex(m_iIdentifier, CORE_SHADER_BUFFER_TRANSFORM2D);
             const GLuint iAmbientBlock     = glGetUniformBlockIndex(m_iIdentifier, CORE_SHADER_BUFFER_AMBIENT);
             const GLuint iDebugBlock       = glGetUniformBlockIndex(m_iIdentifier, CORE_SHADER_BUFFER_DEBUG);
-            if(iTransform3DBlock != GL_INVALID_INDEX) glUniformBlockBinding(m_iIdentifier, iTransform3DBlock, CORE_SHADER_BUFFER_TRANSFORM3D_NUM);
-            if(iTransform2DBlock != GL_INVALID_INDEX) glUniformBlockBinding(m_iIdentifier, iTransform2DBlock, CORE_SHADER_BUFFER_TRANSFORM2D_NUM);
-            if(iAmbientBlock     != GL_INVALID_INDEX) glUniformBlockBinding(m_iIdentifier, iAmbientBlock,     CORE_SHADER_BUFFER_AMBIENT_NUM);
-            if(iDebugBlock       != GL_INVALID_INDEX) glUniformBlockBinding(m_iIdentifier, iDebugBlock,       CORE_SHADER_BUFFER_DEBUG_NUM);
+            if(iTransform3DBlock != GL_INVALID_INDEX) {glUniformBlockBinding(m_iIdentifier, iTransform3DBlock, CORE_SHADER_BUFFER_TRANSFORM3D_NUM); ADD_BIT(m_iUniformMask, CORE_SHADER_BUFFER_TRANSFORM3D_NUM)}
+            if(iTransform2DBlock != GL_INVALID_INDEX) {glUniformBlockBinding(m_iIdentifier, iTransform2DBlock, CORE_SHADER_BUFFER_TRANSFORM2D_NUM); ADD_BIT(m_iUniformMask, CORE_SHADER_BUFFER_TRANSFORM2D_NUM)}
+            if(iAmbientBlock     != GL_INVALID_INDEX) {glUniformBlockBinding(m_iIdentifier, iAmbientBlock,     CORE_SHADER_BUFFER_AMBIENT_NUM);     ADD_BIT(m_iUniformMask, CORE_SHADER_BUFFER_AMBIENT_NUM)}
+            if(iDebugBlock       != GL_INVALID_INDEX) {glUniformBlockBinding(m_iIdentifier, iDebugBlock,       CORE_SHADER_BUFFER_DEBUG_NUM);       ADD_BIT(m_iUniformMask, CORE_SHADER_BUFFER_DEBUG_NUM)}
 
             // bind custom uniform buffer objects
             FOR_EACH(it, m_aiBuffer)
@@ -512,6 +513,7 @@ coreStatus coreProgram::Load(coreFile* pFile)
                 if(iBlock != GL_INVALID_INDEX) glUniformBlockBinding(m_iIdentifier, iBlock, (*it));
             }
         }
+        else m_iUniformMask = 0xFFu;
 
         // add debug label
         Core::Graphics->LabelOpenGL(GL_PROGRAM, m_iIdentifier, m_sName.c_str());
@@ -554,6 +556,7 @@ coreStatus coreProgram::Unload()
     m_eStatus      = CORE_PROGRAM_DEFINED;
     m_iHash        = 0u;
     m_bBinary      = false;
+    m_iUniformMask = 0u;
     m_iNumTextures = 0u;
 
     // clear uniform locations and cache
@@ -571,9 +574,9 @@ coreBool coreProgram::Enable()
     ASSERT(m_eStatus)
 
     // try to update global uniform data
-    Core::Graphics->UpdateTransformation3D();
-    Core::Graphics->UpdateTransformation2D();
-    Core::Graphics->UpdateAmbient();
+    if(HAS_BIT(m_iUniformMask, CORE_SHADER_BUFFER_TRANSFORM3D_NUM)) Core::Graphics->UpdateTransformation3D();
+    if(HAS_BIT(m_iUniformMask, CORE_SHADER_BUFFER_TRANSFORM2D_NUM)) Core::Graphics->UpdateTransformation2D();
+    if(HAS_BIT(m_iUniformMask, CORE_SHADER_BUFFER_AMBIENT_NUM))     Core::Graphics->UpdateAmbient();
 
     // check current shader-program
     if(s_pCurrent == this)                    return true;
