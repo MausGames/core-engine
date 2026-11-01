@@ -230,7 +230,7 @@ void coreFrameBuffer::Delete()
 
 // ****************************************************************
 /* attach render target texture */
-coreFrameBuffer::coreRenderTarget* coreFrameBuffer::AttachTargetTexture(const coreFrameBufferTarget eTarget, const coreUintW iColorIndex, const coreTextureSpec& oSpec, const coreTextureMode eMode, const coreChar* pcName)
+coreFrameBuffer::coreRenderTarget* coreFrameBuffer::AttachTargetTexture(const coreFrameBufferTarget eTarget, const coreUintW iColorIndex, const coreTextureSpec oSpec, const coreTextureMode eMode, const coreChar* pcName)
 {
     // get requested render target structure
     coreRenderTarget* pTarget = this->__AttachTarget(eTarget, iColorIndex, oSpec, eMode);
@@ -254,7 +254,7 @@ coreFrameBuffer::coreRenderTarget* coreFrameBuffer::AttachTargetTexture(const co
 
 // ****************************************************************
 /* attach render target buffer */
-coreFrameBuffer::coreRenderTarget* coreFrameBuffer::AttachTargetBuffer(const coreFrameBufferTarget eTarget, const coreUintW iColorIndex, const coreTextureSpec& oSpec)
+coreFrameBuffer::coreRenderTarget* coreFrameBuffer::AttachTargetBuffer(const coreFrameBufferTarget eTarget, const coreUintW iColorIndex, const coreTextureSpec oSpec)
 {
     // get requested render target structure
     if(CORE_GL_SUPPORT(EXT_framebuffer_blit)) return this->__AttachTarget     (eTarget, iColorIndex, oSpec, CORE_TEXTURE_MODE_DEFAULT);
@@ -476,7 +476,7 @@ coreStatus coreFrameBuffer::Invalidate(const coreFrameBufferTarget eTargets)
 
 // ****************************************************************
 /* attach default render target */
-coreFrameBuffer::coreRenderTarget* coreFrameBuffer::__AttachTarget(const coreFrameBufferTarget eTarget, const coreUintW iColorIndex, const coreTextureSpec& oSpec, const coreTextureMode eMode)
+coreFrameBuffer::coreRenderTarget* coreFrameBuffer::__AttachTarget(const coreFrameBufferTarget eTarget, const coreUintW iColorIndex, const coreTextureSpec oSpec, const coreTextureMode eMode)
 {
     ASSERT(!m_iIdentifier && (iColorIndex < CORE_SHADER_OUTPUT_COLORS))
 

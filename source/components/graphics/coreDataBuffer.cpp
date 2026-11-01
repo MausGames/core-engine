@@ -44,7 +44,7 @@ coreDataBuffer& coreDataBuffer::operator = (coreDataBuffer&& m)noexcept
 void coreDataBuffer::Create(const GLenum iTarget, const coreUint32 iSize, const void* pData, const coreDataBufferStorage eStorageType)
 {
     WARN_IF(m_iIdentifier) this->Delete();
-    ASSERT(iSize)
+    ASSERT((iTarget <= UINT16_MAX) && iSize)
 
     // save properties
     m_eStorageType = eStorageType;
@@ -395,7 +395,7 @@ coreStatus coreDataBuffer::Copy(const coreUint32 iReadOffset, const coreUint32 i
 
 // ****************************************************************
 /* clear content of the data buffer object */
-coreStatus coreDataBuffer::Clear(const coreTextureSpec& oTextureSpec, const void* pData)
+coreStatus coreDataBuffer::Clear(const coreTextureSpec oTextureSpec, const void* pData)
 {
     ASSERT(m_iIdentifier && this->IsWritable())
 
@@ -523,7 +523,7 @@ void coreVertexBuffer::Delete()
 
 // ****************************************************************
 /* define vertex attribute array */
-void coreVertexBuffer::DefineAttribute(const coreUint8 iLocation, const coreVertexSpec& oSpec, const coreUint8 iBufferOffset, const coreUint8 iVertexOffset)
+void coreVertexBuffer::DefineAttribute(const coreUint8 iLocation, const coreVertexSpec oSpec, const coreUint8 iBufferOffset, const coreUint8 iVertexOffset)
 {
     ASSERT(this->GetIdentifier() && (iLocation < CORE_VERTEXBUFFER_ATTRIBUTES))
 

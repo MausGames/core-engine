@@ -105,11 +105,11 @@ ENABLE_BITWISE(coreTextureLoad)
 /* texture specification structure */
 struct coreTextureSpec final
 {
-    GLenum    iInternal;     // internal memory format (e.g. GL_RGBA8)
-    GLenum    iFormat;       // pixel data format (e.g. GL_RGBA)
-    GLenum    iType;         // pixel data type (e.g. GL_UNSIGNED_BYTE)
-    coreUint8 iComponents;   // number of components
-    coreUint8 iBytes;        // size per texel (0 = nontrivial/compressed)
+    coreUint16 iInternal;     // internal memory format (e.g. GL_RGBA8)
+    coreUint16 iFormat;       // pixel data format (e.g. GL_RGBA)
+    coreUint16 iType;         // pixel data type (e.g. GL_UNSIGNED_BYTE)
+    coreUint8  iComponents;   // number of components
+    coreUint8  iBytes;        // size per texel (0 = nontrivial/compressed)
 
     coreTextureSpec() = default;
     constexpr coreTextureSpec(const GLenum iInternal, const GLenum iFormat, const GLenum iType, const coreUint8 iComponents, const coreUint8 iBytes)noexcept;
@@ -152,7 +152,7 @@ public:
     inline coreResourceType GetResourceType()const final {return CORE_RESOURCE_TYPE_GRAPHICS;}
 
     /* handle texture memory */
-    void Create(const coreUint32 iWidth, const coreUint32 iHeight, const coreTextureSpec& oSpec, const coreTextureMode eMode);
+    void Create(const coreUint32 iWidth, const coreUint32 iHeight, const coreTextureSpec oSpec, const coreTextureMode eMode);
     void Modify(const coreUint32 iOffsetX, const coreUint32 iOffsetY, const coreUint32 iWidth, const coreUint32 iHeight, const coreUint32 iDataSize, const coreByte* pData);
     void CopyFrameBuffer(const coreUint32 iSrcX, const coreUint32 iSrcY, const coreUint32 iDstX, const coreUint32 iDstY, const coreUint32 iWidth, const coreUint32 iHeight);
     void CopyFrameBuffer();
@@ -222,7 +222,7 @@ public:
     DISABLE_COPY(coreTextureVolume)
 
     /* handle texture memory */
-    coreStatus Create(const coreUint32 iWidth, const coreUint32 iHeight, const coreUint32 iDepth, const coreTextureSpec& oSpec, const coreTextureMode eMode);
+    coreStatus Create(const coreUint32 iWidth, const coreUint32 iHeight, const coreUint32 iDepth, const coreTextureSpec oSpec, const coreTextureMode eMode);
     void       Modify(const coreUint32 iOffsetX, const coreUint32 iOffsetY, const coreUint32 iOffsetZ, const coreUint32 iWidth, const coreUint32 iHeight, const coreUint32 iDepth, const coreUint32 iDataSize, const coreByte* pData);
     void       Delete();
 
@@ -254,7 +254,7 @@ public:
     DISABLE_COPY(coreTextureCube)
 
     /* handle texture memory */
-    coreStatus Create(const coreUint32 iWidth, const coreUint32 iHeight, const coreTextureSpec& oSpec, const coreTextureMode eMode);
+    coreStatus Create(const coreUint32 iWidth, const coreUint32 iHeight, const coreTextureSpec oSpec, const coreTextureMode eMode);
     void       Modify(const coreUint32 iOffsetX, const coreUint32 iOffsetY, const coreUint32 iWidth, const coreUint32 iHeight, const coreUint8 iFace, const coreUint32 iDataSize, const coreByte* pData);
     void       Delete();
 
@@ -275,6 +275,9 @@ constexpr coreTextureSpec::coreTextureSpec(const GLenum iInternal, const GLenum 
 , iComponents (iComponents)
 , iBytes      (iBytes)
 {
+    ASSERT(iInternal <= UINT16_MAX)
+    ASSERT(iFormat   <= UINT16_MAX)
+    ASSERT(iType     <= UINT16_MAX)
 }
 
 

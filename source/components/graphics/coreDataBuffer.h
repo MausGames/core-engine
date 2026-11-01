@@ -65,10 +65,10 @@ enum coreDataBufferMap : coreUint8
 /* vertex specification structure */
 struct coreVertexSpec final
 {
-    GLenum    iType;         // vertex data type (e.g. GL_FLOAT)
-    coreUint8 iComponents;   // number of components
-    coreUint8 iBytes;        // size per instance
-    coreBool  bInteger;      // handled as pure integer attribute (instead of UNORM/SNORM)
+    coreUint16 iType;         // vertex data type (e.g. GL_FLOAT)
+    coreUint8  iComponents;   // number of components
+    coreUint8  iBytes;        // size per instance
+    coreBool   bInteger;      // handled as pure integer attribute (instead of UNORM/SNORM)
 
     coreVertexSpec() = default;
     constexpr coreVertexSpec(const GLenum iType, const coreUint8 iComponents, const coreUint8 iBytes, const coreBool bInteger)noexcept;
@@ -83,7 +83,7 @@ private:
     GLuint                m_iIdentifier;        // data buffer identifier
     coreDataBufferStorage m_eStorageType;       // storage type
 
-    GLenum     m_iTarget;                       // buffer target (e.g. GL_ARRAY_BUFFER)
+    coreUint16 m_iTarget;                       // buffer target (e.g. GL_ARRAY_BUFFER)
     coreUint32 m_iSize;                         // data size in bytes
     coreUint32 m_iFallbackSize;                 // current size of fallback memory (if regular mapping is not supported)
 
@@ -129,7 +129,7 @@ public:
     inline coreStatus SyncCheck(const coreUint64 iNanoWait)       {return m_Sync.Check(iNanoWait);}
 
     /* reset content of the data buffer object */
-    coreStatus Clear(const coreTextureSpec& oTextureSpec, const void* pData = NULL);
+    coreStatus Clear(const coreTextureSpec oTextureSpec, const void* pData = NULL);
     coreStatus Invalidate();
 
     /* check for current buffer status */
@@ -192,7 +192,7 @@ public:
     void Delete();
 
     /* define and activate the vertex structure */
-    void DefineAttribute(const coreUint8 iLocation, const coreVertexSpec& oSpec, const coreUint8 iBufferOffset, const coreUint8 iVertexOffset);
+    void DefineAttribute(const coreUint8 iLocation, const coreVertexSpec oSpec, const coreUint8 iBufferOffset, const coreUint8 iVertexOffset);
     void Activate       (const coreUint8 iDivisor);
 
     /* get object properties */
@@ -245,6 +245,7 @@ constexpr coreVertexSpec::coreVertexSpec(const GLenum iType, const coreUint8 iCo
 , iBytes      (iBytes)
 , bInteger    (bInteger)
 {
+    ASSERT(iType <= UINT16_MAX)
 }
 
 

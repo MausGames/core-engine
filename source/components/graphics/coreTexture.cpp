@@ -135,7 +135,7 @@ coreStatus coreTexture::Unload()
 
 // ****************************************************************
 /* create texture memory */
-void coreTexture::Create(const coreUint32 iWidth, const coreUint32 iHeight, const coreTextureSpec& oSpec, const coreTextureMode eMode)
+void coreTexture::Create(const coreUint32 iWidth, const coreUint32 iHeight, const coreTextureSpec oSpec, const coreTextureMode eMode)
 {
     WARN_IF(m_iIdentifier) this->Unload();
     ASSERT(iWidth && iHeight)
@@ -826,7 +826,7 @@ coreTextureVolume::~coreTextureVolume()
 
 // ****************************************************************
 /* create texture memory */
-coreStatus coreTextureVolume::Create(const coreUint32 iWidth, const coreUint32 iHeight, const coreUint32 iDepth, const coreTextureSpec& oSpec, const coreTextureMode eMode)
+coreStatus coreTextureVolume::Create(const coreUint32 iWidth, const coreUint32 iHeight, const coreUint32 iDepth, const coreTextureSpec oSpec, const coreTextureMode eMode)
 {
     WARN_IF(m_iIdentifier) this->Delete();
     ASSERT(iWidth && iHeight && iDepth)
@@ -960,7 +960,7 @@ coreTextureCube::~coreTextureCube()
 
 // ****************************************************************
 /* create texture memory */
-coreStatus coreTextureCube::Create(const coreUint32 iWidth, const coreUint32 iHeight, const coreTextureSpec& oSpec, const coreTextureMode eMode)
+coreStatus coreTextureCube::Create(const coreUint32 iWidth, const coreUint32 iHeight, const coreTextureSpec oSpec, const coreTextureMode eMode)
 {
     WARN_IF(m_iIdentifier) this->Delete();
     ASSERT(iWidth && iHeight)
