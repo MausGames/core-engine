@@ -267,7 +267,9 @@ public:
     inline const GLuint&       GetIdentifier  ()const                       {return m_iIdentifier;}
     inline coreShader*         GetShader      (const coreUintW iIndex)const {ASSERT(iIndex < m_apShaderHandle.size()) return d_cast<coreShader*>(m_apShaderHandle[iIndex]->GetRawResource());}
     inline coreResourceHandle* GetShaderHandle(const coreUintW iIndex)const {ASSERT(iIndex < m_apShaderHandle.size()) return m_apShaderHandle[iIndex];}
+    inline const coreUint8&    GetBuffer      (const coreUintW iIndex)const {ASSERT(iIndex < m_aiBuffer      .size()) return m_aiBuffer      [iIndex];}
     inline coreUintW           GetNumShaders  ()const                       {return m_apShaderHandle.size();}
+    inline coreUintW           GetNumBuffers  ()const                       {return m_aiBuffer      .size();}
     inline const coreUint8&    GetNumTextures ()const                       {return m_iNumTextures;}
 
     /* load and save shader-cache */

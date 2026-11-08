@@ -117,7 +117,7 @@
 #endif
 
 // precision qualifiers
-#if defined(GL_ES)
+#if defined(GL_ES) || (CORE_GL_VERSION >= 130)
     #if !defined(GL_FRAGMENT_PRECISION_HIGH)
         #define highp mediump   // in all shaders
     #endif

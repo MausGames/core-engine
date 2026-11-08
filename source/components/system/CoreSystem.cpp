@@ -377,6 +377,7 @@ CoreSystem::CoreSystem()noexcept
     SDL_SetBooleanProperty(oProps, SDL_PROP_WINDOW_CREATE_MOUSE_GRABBED_BOOLEAN,      (m_eMode == CORE_SYSTEM_MODE_FULLSCREEN) && !DEFINED(_CORE_DEBUG_));
     SDL_SetBooleanProperty(oProps, SDL_PROP_WINDOW_CREATE_BORDERLESS_BOOLEAN,         (m_eMode != CORE_SYSTEM_MODE_WINDOWED));
     SDL_SetBooleanProperty(oProps, SDL_PROP_WINDOW_CREATE_RESIZABLE_BOOLEAN,          (m_eMode == CORE_SYSTEM_MODE_WINDOWED));
+    SDL_SetBooleanProperty(oProps, SDL_PROP_WINDOW_CREATE_TRANSPARENT_BOOLEAN,        CoreApp::Settings::Graphics::AlphaChannel);
 
     // create main window object
     m_pWindow = SDL_CreateWindowWithProperties(oProps);

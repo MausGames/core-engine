@@ -170,6 +170,16 @@ static GLuint _glewStrCopy (char *d, const char *s, char c)
   return i;
 }
 
+static GLint _glewInteger (const GLubyte* s, GLuint* n)
+{
+    GLint v=0;
+    GLuint i=0;
+    if (s != NULL)
+        while (s[i] >= '0' && s[i] <= '9') { v = v*10 + (GLint)(s[i]-'0'); i++; }
+    if (n) *n = i;
+    return v;
+}
+
 #if defined(_WIN32)
 
 static GLboolean _glewStrSame (const GLubyte* a, const GLubyte* b, GLuint n)
@@ -3406,7 +3416,16 @@ static GLboolean _glewInit_GL_ARB_vertex_attrib_binding (void)
 
 static GLboolean _glewInit_GL_ARB_vertex_type_2_10_10_10_rev (void)
 {
-  GLboolean r = GL_TRUE;   // #
+  GLboolean r = GL_FALSE;
+
+  r = ((glVertexAttribP1ui = (PFNGLVERTEXATTRIBP1UIPROC)glewGetProcAddress((const GLubyte*)"glVertexAttribP1ui")) == NULL) || r;
+  r = ((glVertexAttribP1uiv = (PFNGLVERTEXATTRIBP1UIVPROC)glewGetProcAddress((const GLubyte*)"glVertexAttribP1uiv")) == NULL) || r;
+  r = ((glVertexAttribP2ui = (PFNGLVERTEXATTRIBP2UIPROC)glewGetProcAddress((const GLubyte*)"glVertexAttribP2ui")) == NULL) || r;
+  r = ((glVertexAttribP2uiv = (PFNGLVERTEXATTRIBP2UIVPROC)glewGetProcAddress((const GLubyte*)"glVertexAttribP2uiv")) == NULL) || r;
+  r = ((glVertexAttribP3ui = (PFNGLVERTEXATTRIBP3UIPROC)glewGetProcAddress((const GLubyte*)"glVertexAttribP3ui")) == NULL) || r;
+  r = ((glVertexAttribP3uiv = (PFNGLVERTEXATTRIBP3UIVPROC)glewGetProcAddress((const GLubyte*)"glVertexAttribP3uiv")) == NULL) || r;
+  r = ((glVertexAttribP4ui = (PFNGLVERTEXATTRIBP4UIPROC)glewGetProcAddress((const GLubyte*)"glVertexAttribP4ui")) == NULL) || r;
+  r = ((glVertexAttribP4uiv = (PFNGLVERTEXATTRIBP4UIVPROC)glewGetProcAddress((const GLubyte*)"glVertexAttribP4uiv")) == NULL) || r;
 
 #if !defined(GLEW_IGNORE_DEPRECATED)
 
@@ -3434,14 +3453,6 @@ static GLboolean _glewInit_GL_ARB_vertex_type_2_10_10_10_rev (void)
   r = ((glTexCoordP3uiv = (PFNGLTEXCOORDP3UIVPROC)glewGetProcAddress((const GLubyte*)"glTexCoordP3uiv")) == NULL) || r;
   r = ((glTexCoordP4ui = (PFNGLTEXCOORDP4UIPROC)glewGetProcAddress((const GLubyte*)"glTexCoordP4ui")) == NULL) || r;
   r = ((glTexCoordP4uiv = (PFNGLTEXCOORDP4UIVPROC)glewGetProcAddress((const GLubyte*)"glTexCoordP4uiv")) == NULL) || r;
-  r = ((glVertexAttribP1ui = (PFNGLVERTEXATTRIBP1UIPROC)glewGetProcAddress((const GLubyte*)"glVertexAttribP1ui")) == NULL) || r;
-  r = ((glVertexAttribP1uiv = (PFNGLVERTEXATTRIBP1UIVPROC)glewGetProcAddress((const GLubyte*)"glVertexAttribP1uiv")) == NULL) || r;
-  r = ((glVertexAttribP2ui = (PFNGLVERTEXATTRIBP2UIPROC)glewGetProcAddress((const GLubyte*)"glVertexAttribP2ui")) == NULL) || r;
-  r = ((glVertexAttribP2uiv = (PFNGLVERTEXATTRIBP2UIVPROC)glewGetProcAddress((const GLubyte*)"glVertexAttribP2uiv")) == NULL) || r;
-  r = ((glVertexAttribP3ui = (PFNGLVERTEXATTRIBP3UIPROC)glewGetProcAddress((const GLubyte*)"glVertexAttribP3ui")) == NULL) || r;
-  r = ((glVertexAttribP3uiv = (PFNGLVERTEXATTRIBP3UIVPROC)glewGetProcAddress((const GLubyte*)"glVertexAttribP3uiv")) == NULL) || r;
-  r = ((glVertexAttribP4ui = (PFNGLVERTEXATTRIBP4UIPROC)glewGetProcAddress((const GLubyte*)"glVertexAttribP4ui")) == NULL) || r;
-  r = ((glVertexAttribP4uiv = (PFNGLVERTEXATTRIBP4UIVPROC)glewGetProcAddress((const GLubyte*)"glVertexAttribP4uiv")) == NULL) || r;
   r = ((glVertexP2ui = (PFNGLVERTEXP2UIPROC)glewGetProcAddress((const GLubyte*)"glVertexP2ui")) == NULL) || r;
   r = ((glVertexP2uiv = (PFNGLVERTEXP2UIVPROC)glewGetProcAddress((const GLubyte*)"glVertexP2uiv")) == NULL) || r;
   r = ((glVertexP3ui = (PFNGLVERTEXP3UIPROC)glewGetProcAddress((const GLubyte*)"glVertexP3ui")) == NULL) || r;
@@ -4105,10 +4116,10 @@ static GLenum GLEWAPIENTRY glewContextInit (void)
 {
   PFNGLGETSTRINGPROC getString;
   const GLubyte* s;
-  GLuint dot;
+  GLuint dot, majorDigits;
   GLint major, minor;
 
-  #ifdef _WIN32
+  #if defined(_WIN32) || defined(GLEW_STATIC_MINIMUM)
   getString = glGetString;
   #else
   getString = (PFNGLGETSTRINGPROC) glewGetProcAddress((const GLubyte*)"glGetString");
@@ -4118,17 +4129,18 @@ static GLenum GLEWAPIENTRY glewContextInit (void)
 
   /* query opengl version */
   s = getString(GL_VERSION);
+  if (s == NULL)
+    return GLEW_ERROR_NO_GL_VERSION;
+
   dot = _glewStrCLen(s, '.');
-  if (dot == 0)
+  if (dot == 0 || s[dot] != '.')
     return GLEW_ERROR_NO_GL_VERSION;
 
-  major = s[dot-1]-'0';
-  minor = s[dot+1]-'0';
-
-  if (minor < 0 || minor > 9)
-    minor = 0;
-  if (major<0 || major>9)
+  major = _glewInteger(s, &majorDigits);
+  if (majorDigits != dot)
     return GLEW_ERROR_NO_GL_VERSION;
+
+  minor = _glewInteger(s + dot + 1, NULL);
 
   if (major == 1 && minor == 0)
   {
@@ -4172,7 +4184,7 @@ static GLenum GLEWAPIENTRY glewContextInit (void)
     const char *ext;
     GLboolean *enable;
 
-    #ifdef _WIN32
+    #if defined(_WIN32) || defined(GLEW_STATIC_MINIMUM)
     getIntegerv = glGetIntegerv;
     #else
     getIntegerv = (PFNGLGETINTEGERVPROC) glewGetProcAddress((const GLubyte*)"glGetIntegerv");

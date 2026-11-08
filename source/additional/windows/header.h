@@ -45,7 +45,7 @@
 // #define NOSHOWWINDOW
 #define NOSOUND
 #define NOSYSCOMMANDS
-#define NOSYSMETRICS
+// #define NOSYSMETRICS
 #define NOTEXTMETRIC
 // #define NOUSER
 #define NOVIRTUALKEYCODES
