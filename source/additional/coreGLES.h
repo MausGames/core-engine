@@ -25,6 +25,7 @@
 
 // ****************************************************************
 /* default extensions */
+#define CORE_GL_ARB_ES2_compatibility               (true)   // always available
 #define CORE_GL_ARB_ES3_1_compatibility             (__CORE_GLES_VAR(bES31) && !DEFINED(_CORE_EMSCRIPTEN_))
 #define CORE_GL_ARB_clear_buffer_object             (false)
 #define CORE_GL_ARB_compute_shader                  (__CORE_GLES_VAR(bES31) && !DEFINED(_CORE_EMSCRIPTEN_))

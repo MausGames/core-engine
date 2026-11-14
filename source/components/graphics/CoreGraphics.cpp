@@ -142,6 +142,15 @@ CoreGraphics::CoreGraphics()noexcept
         const coreUint64 iMemoryUsed = iMemoryTotal - m_iMemoryStart;
         const coreDouble dMemoryPct  = 100.0 * (coreDouble(iMemoryUsed) / coreDouble(MAX(iMemoryTotal, 1u)));
 
+        GLint aiPrecision[3] = {};
+        if(CORE_GL_SUPPORT(ARB_ES2_compatibility))
+        {
+            GLint aiRange[2] = {};
+            glGetShaderPrecisionFormat(GL_FRAGMENT_SHADER, GL_LOW_FLOAT,    aiRange, &aiPrecision[0]); aiPrecision[0] += F_TO_SI(LOG2(I_TO_F(aiRange[0] + 1))) + 2;
+            glGetShaderPrecisionFormat(GL_FRAGMENT_SHADER, GL_MEDIUM_FLOAT, aiRange, &aiPrecision[1]); aiPrecision[1] += F_TO_SI(LOG2(I_TO_F(aiRange[0] + 1))) + 2;
+            glGetShaderPrecisionFormat(GL_FRAGMENT_SHADER, GL_HIGH_FLOAT,   aiRange, &aiPrecision[2]); aiPrecision[2] += F_TO_SI(LOG2(I_TO_F(aiRange[0] + 1))) + 2;
+        }
+
         coreString sExtensions;
         coreExtensions(&sExtensions);
 
@@ -153,11 +162,12 @@ CoreGraphics::CoreGraphics()noexcept
         glGetIntegerv(GL_CONTEXT_FLAGS,            &aiStatus[1]);
         glGetIntegerv(GL_CONTEXT_PROFILE_MASK,     &aiStatus[2]);
 
-        Core::Log->ListAdd(CORE_LOG_BOLD("Vendor:")          " %s",                    glGetString(GL_VENDOR));
-        Core::Log->ListAdd(CORE_LOG_BOLD("Renderer:")        " %s",                    glGetString(GL_RENDERER));
-        Core::Log->ListAdd(CORE_LOG_BOLD("OpenGL Version:")  " %s",                    glGetString(GL_VERSION));
-        Core::Log->ListAdd(CORE_LOG_BOLD("Shader Version:")  " %s",                    glGetString(GL_SHADING_LANGUAGE_VERSION));
-        Core::Log->ListAdd(CORE_LOG_BOLD("Graphics Memory:") " %llu/%llu MB (%.1f%%)", iMemoryUsed / (1024u * 1024u), iMemoryTotal / (1024u * 1024u), dMemoryPct);
+        Core::Log->ListAdd(CORE_LOG_BOLD("Vendor:")          " %s",                                glGetString(GL_VENDOR));
+        Core::Log->ListAdd(CORE_LOG_BOLD("Renderer:")        " %s",                                glGetString(GL_RENDERER));
+        Core::Log->ListAdd(CORE_LOG_BOLD("OpenGL Version:")  " %s",                                glGetString(GL_VERSION));
+        Core::Log->ListAdd(CORE_LOG_BOLD("Shader Version:")  " %s",                                glGetString(GL_SHADING_LANGUAGE_VERSION));
+        Core::Log->ListAdd(CORE_LOG_BOLD("Graphics Memory:") " %llu/%llu MB (%.1f%%)",             iMemoryUsed / (1024u * 1024u), iMemoryTotal / (1024u * 1024u), dMemoryPct);
+        Core::Log->ListAdd(CORE_LOG_BOLD("Float Precision:") " lowp (%d) mediump (%d) highp (%d)", aiPrecision[0], aiPrecision[1], aiPrecision[2]);
         Core::Log->ListAdd(sExtensions        .c_str());
         Core::Log->ListAdd(sPlatformExtensions.c_str());
         Core::Log->ListAdd("GL_MAX_SAMPLES (%u) GL_MAX_TEXTURE_MAX_ANISOTROPY (%u) GL_MAX_TEXTURE_IMAGE_UNITS (%u) GL_MIN_MAP_BUFFER_ALIGNMENT (%u) GL_CONTEXT_FLAGS (0x%02X) GL_CONTEXT_PROFILE_MASK (0x%02X)", m_iMaxSamples, m_iMaxAnisotropy, m_iMaxTextures, aiStatus[0], aiStatus[1], aiStatus[2]);

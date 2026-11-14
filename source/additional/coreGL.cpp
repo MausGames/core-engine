@@ -155,6 +155,7 @@ void __coreInitOpenGL()
         __IMPROVE(GLEW_AMD_framebuffer_multisample_advanced, false)
         __IMPROVE(GLEW_AMD_gpu_shader_half_float,            false)                                                        // shader extension
         __IMPROVE(GLEW_AMD_shader_trinary_minmax,            false)                                                        // shader extension
+        __IMPROVE(GLEW_ARB_ES2_compatibility,                GLEW_VERSION_4_1)
         __IMPROVE(GLEW_ARB_ES3_1_compatibility,              GLEW_VERSION_4_5)                                             // shader extension (also)
         __IMPROVE(GLEW_ARB_buffer_storage,                   GLEW_VERSION_4_4)
         __IMPROVE(GLEW_ARB_clear_buffer_object,              GLEW_VERSION_4_3)

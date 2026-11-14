@@ -577,6 +577,12 @@ PFNGLSPECIALIZESHADERPROC __glewSpecializeShader = NULL;
 PFNGLNAMEDRENDERBUFFERSTORAGEMULTISAMPLEADVANCEDAMDPROC __glewNamedRenderbufferStorageMultisampleAdvancedAMD = NULL;
 PFNGLRENDERBUFFERSTORAGEMULTISAMPLEADVANCEDAMDPROC __glewRenderbufferStorageMultisampleAdvancedAMD = NULL;
 
+PFNGLCLEARDEPTHFPROC __glewClearDepthf = NULL;
+PFNGLDEPTHRANGEFPROC __glewDepthRangef = NULL;
+PFNGLGETSHADERPRECISIONFORMATPROC __glewGetShaderPrecisionFormat = NULL;
+PFNGLRELEASESHADERCOMPILERPROC __glewReleaseShaderCompiler = NULL;
+PFNGLSHADERBINARYPROC __glewShaderBinary = NULL;
+
 PFNGLMEMORYBARRIERBYREGIONPROC __glewMemoryBarrierByRegion = NULL;
 
 PFNGLBUFFERSTORAGEPROC __glewBufferStorage = NULL;
@@ -1306,6 +1312,7 @@ GLboolean __GLEW_AMD_conservative_depth = GL_FALSE;
 GLboolean __GLEW_AMD_framebuffer_multisample_advanced = GL_FALSE;
 GLboolean __GLEW_AMD_gpu_shader_half_float = GL_FALSE;
 GLboolean __GLEW_AMD_shader_trinary_minmax = GL_FALSE;
+GLboolean __GLEW_ARB_ES2_compatibility = GL_FALSE;
 GLboolean __GLEW_ARB_ES3_1_compatibility = GL_FALSE;
 GLboolean __GLEW_ARB_buffer_storage = GL_FALSE;
 GLboolean __GLEW_ARB_clear_buffer_object = GL_FALSE;
@@ -1408,6 +1415,9 @@ static const char * _glewExtensionLookup[] = {
 #endif
 #ifdef GL_AMD_shader_trinary_minmax
   "GL_AMD_shader_trinary_minmax",
+#endif
+#ifdef GL_ARB_ES2_compatibility
+  "GL_ARB_ES2_compatibility",
 #endif
 #ifdef GL_ARB_ES3_1_compatibility
   "GL_ARB_ES3_1_compatibility",
@@ -1749,6 +1759,9 @@ static GLboolean* _glewExtensionEnabled[] = {
 #endif
 #ifdef GL_AMD_shader_trinary_minmax
   &__GLEW_AMD_shader_trinary_minmax,
+#endif
+#ifdef GL_ARB_ES2_compatibility
+  &__GLEW_ARB_ES2_compatibility,
 #endif
 #ifdef GL_ARB_ES3_1_compatibility
   &__GLEW_ARB_ES3_1_compatibility,
@@ -2092,6 +2105,7 @@ static GLboolean _glewInit_GL_VERSION_4_4 (void);
 static GLboolean _glewInit_GL_VERSION_4_5 (void);
 static GLboolean _glewInit_GL_VERSION_4_6 (void);
 static GLboolean _glewInit_GL_AMD_framebuffer_multisample_advanced (void);
+static GLboolean _glewInit_GL_ARB_ES2_compatibility (void);
 static GLboolean _glewInit_GL_ARB_ES3_1_compatibility (void);
 static GLboolean _glewInit_GL_ARB_buffer_storage (void);
 static GLboolean _glewInit_GL_ARB_clear_buffer_object (void);
@@ -2628,6 +2642,7 @@ static GLboolean _glewInit_GL_VERSION_4_1 (void)
   GLboolean r = GL_FALSE;
 
   // additional
+  _glewInit_GL_ARB_ES2_compatibility();
   _glewInit_GL_ARB_get_program_binary();
 
   return r;
@@ -2739,6 +2754,23 @@ static GLboolean _glewInit_GL_AMD_framebuffer_multisample_advanced (void)
 }
 
 #endif /* GL_AMD_framebuffer_multisample_advanced */
+
+#ifdef GL_ARB_ES2_compatibility
+
+static GLboolean _glewInit_GL_ARB_ES2_compatibility (void)
+{
+  GLboolean r = GL_FALSE;
+
+  r = ((glClearDepthf = (PFNGLCLEARDEPTHFPROC)glewGetProcAddress((const GLubyte*)"glClearDepthf")) == NULL) || r;
+  r = ((glDepthRangef = (PFNGLDEPTHRANGEFPROC)glewGetProcAddress((const GLubyte*)"glDepthRangef")) == NULL) || r;
+  r = ((glGetShaderPrecisionFormat = (PFNGLGETSHADERPRECISIONFORMATPROC)glewGetProcAddress((const GLubyte*)"glGetShaderPrecisionFormat")) == NULL) || r;
+  r = ((glReleaseShaderCompiler = (PFNGLRELEASESHADERCOMPILERPROC)glewGetProcAddress((const GLubyte*)"glReleaseShaderCompiler")) == NULL) || r;
+  r = ((glShaderBinary = (PFNGLSHADERBINARYPROC)glewGetProcAddress((const GLubyte*)"glShaderBinary")) == NULL) || r;
+
+  return r;
+}
+
+#endif /* GL_ARB_ES2_compatibility */
 
 #ifdef GL_ARB_ES3_1_compatibility
 
@@ -4291,6 +4323,9 @@ static GLenum GLEWAPIENTRY glewContextInit (void)
 #ifdef GL_AMD_framebuffer_multisample_advanced
   if (glewExperimental || GLEW_AMD_framebuffer_multisample_advanced) GLEW_AMD_framebuffer_multisample_advanced = !_glewInit_GL_AMD_framebuffer_multisample_advanced();
 #endif /* GL_AMD_framebuffer_multisample_advanced */
+#ifdef GL_ARB_ES2_compatibility
+  if (glewExperimental || GLEW_ARB_ES2_compatibility) GLEW_ARB_ES2_compatibility = !_glewInit_GL_ARB_ES2_compatibility();
+#endif /* GL_ARB_ES2_compatibility */
 #ifdef GL_ARB_ES3_1_compatibility
   if (glewExperimental || GLEW_ARB_ES3_1_compatibility) GLEW_ARB_ES3_1_compatibility = !_glewInit_GL_ARB_ES3_1_compatibility();
 #endif /* GL_ARB_ES3_1_compatibility */
@@ -4748,6 +4783,13 @@ GLboolean GLEWAPIENTRY glewIsSupported (const char* name)
       }
       if (_glewStrSame2(&pos, &len, (const GLubyte*)"ARB_", 4))
       {
+#ifdef GL_ARB_ES2_compatibility
+        if (_glewStrSame3(&pos, &len, (const GLubyte*)"ES2_compatibility", 17))
+        {
+          ret = GLEW_ARB_ES2_compatibility;
+          continue;
+        }
+#endif
 #ifdef GL_ARB_ES3_1_compatibility
         if (_glewStrSame3(&pos, &len, (const GLubyte*)"ES3_1_compatibility", 19))
         {
