@@ -37,7 +37,7 @@ coreReplay::~coreReplay()
 /* start replay recording */
 coreStatus coreReplay::StartRecording(const coreChar* pcPath)
 {
-    ASSERT(m_eMode == CORE_REPLAY_MODE_DISABLED)
+    ASSERT((m_eMode == CORE_REPLAY_MODE_DISABLED) && !m_pRecordingStream)
 
     // save path
     m_sPath = pcPath;
@@ -76,7 +76,7 @@ coreStatus coreReplay::StartRecording(const coreChar* pcPath)
 /* start replay playback */
 coreStatus coreReplay::StartPlayback(const coreChar* pcPath)
 {
-    ASSERT(m_eMode == CORE_REPLAY_MODE_DISABLED)
+    ASSERT((m_eMode == CORE_REPLAY_MODE_DISABLED) && !m_pPlaybackFile)
 
     // save path
     m_sPath = pcPath;

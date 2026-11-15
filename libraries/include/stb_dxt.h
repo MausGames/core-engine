@@ -1,7 +1,7 @@
 // Modified version for Core Engine
 // Please use the original library from https://github.com/nothings/stb
 
-// stb_dxt.h - v1.12 - DXT1/DXT5 compressor - public domain
+// stb_dxt.h - v1.13 - DXT1/DXT5 compressor - public domain
 // original by fabian "ryg" giesen - ported to C by stb
 // use '#define STB_DXT_IMPLEMENTATION' before including to create the implementation
 //
@@ -12,7 +12,8 @@
 //     must supply some constant alpha in the alpha channel).
 //     You can turn on dithering and "high quality" using mode.
 //
-// version history:
+// version history
+//   v1.13  - (stb) fix warning
 //   v1.12  - (ryg) fix bug in single-color table generator
 //   v1.11  - (ryg) avoid racy global init, better single-color tables, remove dither
 //   v1.10  - (i.c) various small quality improvements
@@ -70,6 +71,7 @@ void stb_compress_dxt_block(unsigned char* __restrict dest, const unsigned char*
 // #define STB_DXT_USE_ROUNDING_BIAS
 
 #include <stdlib.h>
+#include <string.h>
 #include <math.h>
 
 alignas(64) static const unsigned char stb__OMatch5[256][2] = {
@@ -155,9 +157,9 @@ static void stb__From16Bit(unsigned char* __restrict out, unsigned short v)
    int bv = (v & 0x001f) >>  0;
 
    // expand to 8 bits via bit replication
-   out[0] = (rv * 33) >> 2;
-   out[1] = (gv * 65) >> 4;
-   out[2] = (bv * 33) >> 2;
+   out[0] = (unsigned char)((rv * 33) >> 2);
+   out[1] = (unsigned char)((gv * 65) >> 4);
+   out[2] = (unsigned char)((bv * 33) >> 2);
    out[3] = 0;
 }
 

@@ -142,7 +142,7 @@ public:
     /* get object properties */
     inline const GLuint&                GetIdentifier ()const {return m_iIdentifier;}
     inline const coreDataBufferStorage& GetStorageType()const {return m_eStorageType;}
-    inline const GLenum&                GetTarget     ()const {return m_iTarget;}
+    inline       GLenum                 GetTarget     ()const {return m_iTarget;}
     inline const coreUint32&            GetSize       ()const {return m_iSize;}
 };
 

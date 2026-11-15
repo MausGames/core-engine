@@ -20,6 +20,8 @@
 // TODO 3: glUniform1ui etc. required GL3, GLES3, GL_EXT_gpu_shader4 (GL), no GLES ext
 // TODO 4: v_av4LightDir <> u_av4LightDir (and *Pos) is a bit confusing in shaders (u_ is base, v_ is transformed)
 // TODO 5: could includes be handled as own compiled shader resources, or do some drivers have issues with multiple shaders of the same type in one program ?
+// TODO 3: store valid texture slots and only bind corresponding textures (like a mask)
+// TODO 3: add check for valid attributes and uniform buffers without binding
 
 
 // ****************************************************************

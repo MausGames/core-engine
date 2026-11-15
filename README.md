@@ -27,7 +27,7 @@ It is **designed to be supportive, versatile and powerful**, and to dynamically 
 ### 🌈 Graphics
 
 - **OpenGL, OpenGL ES, WebGL:** extension-based feature selection, forward-compatibility with tons of fallbacks, state caching, explicit synchronization, ANGLE support (DirectX, Vulkan, Metal)
-- **Render State Handling:** camera and view frustum, lighting (simple), stencil testing, scissor testing, conservative rasterization, canonical aspect ratio (for sizing viewport and UI)
+- **Render State Handling:** camera and view frustum, lighting (simple), stencil testing, scissor testing, polygon offset, conservative rasterization, canonical aspect ratio (for sizing viewport and UI)
 - **Frame Buffers:** multi output-color support, invalidation, MSAA, [EQAA](https://www.pcgamingwiki.com/wiki/Glossary:Anti-aliasing_(AA)#Enhanced_Quality_Anti-Aliasing_.28EQAA.29) (AMD), [CSAA](https://www.pcgamingwiki.com/wiki/Glossary:Anti-aliasing_(AA)#Coverage_Sampling_Anti-Aliasing_.28CSAA.29) (Nvidia), [CMAA](https://www.pcgamingwiki.com/wiki/Glossary:Anti-aliasing_(AA)#Conservative_Morphological_Anti-Aliasing_.28CMAA.29) (Intel)
 - **Data Buffers:** persistent mapping, multi-buffering, explicit orphaning, vertex format spec configuration (interleaved or separate)
 - **Models:** custom model format (for now), pre and post-transform vertex cache optimization, attribute packing, acceleration structure generation

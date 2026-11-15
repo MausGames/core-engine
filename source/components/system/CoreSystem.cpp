@@ -366,6 +366,7 @@ CoreSystem::CoreSystem()noexcept
 
     // set function properties
     coreProperties oProps;
+    SDL_SetStringProperty (oProps, SDL_PROP_WINDOW_CREATE_TITLE_STRING,               "Have fun!");
     SDL_SetNumberProperty (oProps, SDL_PROP_WINDOW_CREATE_X_NUMBER,                   iPos);
     SDL_SetNumberProperty (oProps, SDL_PROP_WINDOW_CREATE_Y_NUMBER,                   iPos);
     SDL_SetNumberProperty (oProps, SDL_PROP_WINDOW_CREATE_WIDTH_NUMBER,               iSizeX);
