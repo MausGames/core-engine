@@ -3767,6 +3767,21 @@ typedef void (GLAPIENTRY * PFNGLMAXSHADERCOMPILERTHREADSARBPROC) (GLuint count);
 
 #endif /* GL_ARB_pixel_buffer_object */
 
+/* ---------------------- GL_ARB_polygon_offset_clamp ---------------------- */
+
+#ifndef GL_ARB_polygon_offset_clamp
+#define GL_ARB_polygon_offset_clamp 1
+
+#define GL_POLYGON_OFFSET_CLAMP 0x8E1B
+
+typedef void (GLAPIENTRY * PFNGLPOLYGONOFFSETCLAMPPROC) (GLfloat factor, GLfloat units, GLfloat clamp);
+
+#define glPolygonOffsetClamp GLEW_GET_FUN(__glewPolygonOffsetClamp)
+
+#define GLEW_ARB_polygon_offset_clamp GLEW_GET_VAR(__GLEW_ARB_polygon_offset_clamp)
+
+#endif /* GL_ARB_polygon_offset_clamp */
+
 /* --------------------- GL_ARB_program_interface_query -------------------- */
 
 #ifndef GL_ARB_program_interface_query
@@ -5400,6 +5415,21 @@ typedef void (GLAPIENTRY * PFNGLVERTEXATTRIBIPOINTEREXTPROC) (GLuint index, GLin
 
 #endif /* GL_EXT_pixel_buffer_object */
 
+/* ---------------------- GL_EXT_polygon_offset_clamp ---------------------- */
+
+#ifndef GL_EXT_polygon_offset_clamp
+#define GL_EXT_polygon_offset_clamp 1
+
+#define GL_POLYGON_OFFSET_CLAMP_EXT 0x8E1B
+
+typedef void (GLAPIENTRY * PFNGLPOLYGONOFFSETCLAMPEXTPROC) (GLfloat factor, GLfloat units, GLfloat clamp);
+
+#define glPolygonOffsetClampEXT GLEW_GET_FUN(__glewPolygonOffsetClampEXT)
+
+#define GLEW_EXT_polygon_offset_clamp GLEW_GET_VAR(__GLEW_EXT_polygon_offset_clamp)
+
+#endif /* GL_EXT_polygon_offset_clamp */
+
 /* --------------------- GL_EXT_shader_image_load_store -------------------- */
 
 #ifndef GL_EXT_shader_image_load_store
@@ -6544,6 +6574,8 @@ GLEW_FUN_EXPORT PFNGLBINDVERTEXBUFFERSPROC __glewBindVertexBuffers;
 
 GLEW_FUN_EXPORT PFNGLMAXSHADERCOMPILERTHREADSARBPROC __glewMaxShaderCompilerThreadsARB;
 
+GLEW_FUN_EXPORT PFNGLPOLYGONOFFSETCLAMPPROC __glewPolygonOffsetClamp;
+
 GLEW_FUN_EXPORT PFNGLGETPROGRAMINTERFACEIVPROC __glewGetProgramInterfaceiv;
 GLEW_FUN_EXPORT PFNGLGETPROGRAMRESOURCEINDEXPROC __glewGetProgramResourceIndex;
 GLEW_FUN_EXPORT PFNGLGETPROGRAMRESOURCELOCATIONPROC __glewGetProgramResourceLocation;
@@ -6964,6 +6996,8 @@ GLEW_FUN_EXPORT PFNGLVERTEXATTRIBI4UIVEXTPROC __glewVertexAttribI4uivEXT;
 GLEW_FUN_EXPORT PFNGLVERTEXATTRIBI4USVEXTPROC __glewVertexAttribI4usvEXT;
 GLEW_FUN_EXPORT PFNGLVERTEXATTRIBIPOINTEREXTPROC __glewVertexAttribIPointerEXT;
 
+GLEW_FUN_EXPORT PFNGLPOLYGONOFFSETCLAMPEXTPROC __glewPolygonOffsetClampEXT;
+
 GLEW_FUN_EXPORT PFNGLBINDIMAGETEXTUREEXTPROC __glewBindImageTextureEXT;
 GLEW_FUN_EXPORT PFNGLMEMORYBARRIEREXTPROC __glewMemoryBarrierEXT;
 
@@ -7094,6 +7128,7 @@ GLEW_VAR_EXPORT GLboolean __GLEW_ARB_multi_bind;
 GLEW_VAR_EXPORT GLboolean __GLEW_ARB_parallel_shader_compile;
 GLEW_VAR_EXPORT GLboolean __GLEW_ARB_pipeline_statistics_query;
 GLEW_VAR_EXPORT GLboolean __GLEW_ARB_pixel_buffer_object;
+GLEW_VAR_EXPORT GLboolean __GLEW_ARB_polygon_offset_clamp;
 GLEW_VAR_EXPORT GLboolean __GLEW_ARB_program_interface_query;
 GLEW_VAR_EXPORT GLboolean __GLEW_ARB_provoking_vertex;
 GLEW_VAR_EXPORT GLboolean __GLEW_ARB_robust_buffer_access_behavior;
@@ -7132,6 +7167,7 @@ GLEW_VAR_EXPORT GLboolean __GLEW_EXT_gpu_shader4;
 GLEW_VAR_EXPORT GLboolean __GLEW_EXT_packed_depth_stencil;
 GLEW_VAR_EXPORT GLboolean __GLEW_EXT_packed_float;
 GLEW_VAR_EXPORT GLboolean __GLEW_EXT_pixel_buffer_object;
+GLEW_VAR_EXPORT GLboolean __GLEW_EXT_polygon_offset_clamp;
 GLEW_VAR_EXPORT GLboolean __GLEW_EXT_shader_image_load_store;
 GLEW_VAR_EXPORT GLboolean __GLEW_EXT_texture_compression_rgtc;
 GLEW_VAR_EXPORT GLboolean __GLEW_EXT_texture_compression_s3tc;

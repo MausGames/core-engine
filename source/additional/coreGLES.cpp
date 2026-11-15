@@ -183,6 +183,12 @@ void __coreInitOpenGLES()
         __CORE_GLES_FETCH(glVertexAttribDivisor,   NV, false)
     }
 
+    // implement EXT_polygon_offset_clamp
+    if(__CORE_GLES_CHECK(GL_EXT_polygon_offset_clamp, false))
+    {
+        __CORE_GLES_FETCH(glPolygonOffsetClamp, EXT, false)
+    }
+
     // implement GL_EXT_robustness
     if(__CORE_GLES_CHECK(GL_EXT_robustness, bES32))
     {

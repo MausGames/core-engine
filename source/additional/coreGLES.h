@@ -190,6 +190,14 @@ using PFNGLVERTEXATTRIBDIVISORPROC   = void (GL_APIENTRY *) (GLuint index, GLuin
 
 
 // ****************************************************************
+/* GL_EXT_polygon_offset_clamp (mapped on GL_ARB_polygon_offset_clamp) */
+#define CORE_GL_ARB_polygon_offset_clamp (__CORE_GLES_VAR(GL_EXT_polygon_offset_clamp))
+
+using PFNGLPOLYGONOFFSETCLAMPPROC = void (GL_APIENTRY *) (GLfloat factor, GLfloat units, GLfloat clamp);
+#define glPolygonOffsetClamp __CORE_GLES_FUNC(glPolygonOffsetClamp)
+
+
+// ****************************************************************
 /* GL_EXT_robustness (mapped on GL_ARB_robustness) */
 #define CORE_GL_ARB_robustness (__CORE_GLES_VAR(GL_EXT_robustness) && !DEFINED(_CORE_EMSCRIPTEN_))
 
@@ -565,6 +573,7 @@ struct coreContextGLES final
     coreBool __GL_EXT_disjoint_timer_query;
     coreBool __GL_EXT_draw_buffers;
     coreBool __GL_EXT_instanced_arrays;
+    coreBool __GL_EXT_polygon_offset_clamp;
     coreBool __GL_EXT_robustness;
     coreBool __GL_EXT_sRGB_write_control;
     coreBool __GL_EXT_texture_compression_bptc;
@@ -617,6 +626,7 @@ struct coreContextGLES final
     PFNGLDRAWARRAYSINSTANCEDPROC                    __glDrawArraysInstanced;
     PFNGLDRAWELEMENTSINSTANCEDPROC                  __glDrawElementsInstanced;
     PFNGLVERTEXATTRIBDIVISORPROC                    __glVertexAttribDivisor;
+    PFNGLPOLYGONOFFSETCLAMPPROC                     __glPolygonOffsetClamp;
     PFNGLGETGRAPHICSRESETSTATUSPROC                 __glGetGraphicsResetStatus;
     PFNGLREADNPIXELSPROC                            __glReadnPixels;
     PFNGLTEXSTORAGE2DPROC                           __glTexStorage2D;

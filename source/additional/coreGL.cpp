@@ -181,6 +181,7 @@ void __coreInitOpenGL()
         __IMPROVE(GLEW_ARB_parallel_shader_compile,          false            || GLEW_KHR_parallel_shader_compile)
         __IMPROVE(GLEW_ARB_pipeline_statistics_query,        GLEW_VERSION_4_6)
         __IMPROVE(GLEW_ARB_pixel_buffer_object,              GLEW_VERSION_2_1 || GLEW_EXT_pixel_buffer_object)
+        __IMPROVE(GLEW_ARB_polygon_offset_clamp,             GLEW_VERSION_4_6 || GLEW_EXT_polygon_offset_clamp)
         __IMPROVE(GLEW_ARB_program_interface_query,          GLEW_VERSION_4_3)
         __IMPROVE(GLEW_ARB_robust_buffer_access_behavior,    false            || GLEW_KHR_robust_buffer_access_behavior)   // indirectly used
         __IMPROVE(GLEW_ARB_robustness,                       GLEW_VERSION_4_5 || GLEW_KHR_robustness)
@@ -295,6 +296,9 @@ void __coreInitOpenGL()
         __REMAP(glUniform4ui,           glUniform4uiEXT)
         __REMAP(glUniform4uiv,          glUniform4uivEXT)
         __REMAP(glVertexAttribIPointer, glVertexAttribIPointerEXT)
+
+        // remap GL_EXT_polygon_offset_clamp to GL_ARB_polygon_offset_clamp
+        __REMAP(glPolygonOffsetClamp, glPolygonOffsetClampEXT)
 
         // remap GL_EXT_shader_image_load_store to GL_ARB_shader_image_load_store
         __REMAP(glBindImageTexture, r_cast<PFNGLBINDIMAGETEXTUREPROC>(glBindImageTextureEXT))

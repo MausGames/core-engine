@@ -791,6 +791,8 @@ PFNGLBINDVERTEXBUFFERSPROC __glewBindVertexBuffers = NULL;
 
 PFNGLMAXSHADERCOMPILERTHREADSARBPROC __glewMaxShaderCompilerThreadsARB = NULL;
 
+PFNGLPOLYGONOFFSETCLAMPPROC __glewPolygonOffsetClamp = NULL;
+
 PFNGLGETPROGRAMINTERFACEIVPROC __glewGetProgramInterfaceiv = NULL;
 PFNGLGETPROGRAMRESOURCEINDEXPROC __glewGetProgramResourceIndex = NULL;
 PFNGLGETPROGRAMRESOURCELOCATIONPROC __glewGetProgramResourceLocation = NULL;
@@ -1211,6 +1213,8 @@ PFNGLVERTEXATTRIBI4UIVEXTPROC __glewVertexAttribI4uivEXT = NULL;
 PFNGLVERTEXATTRIBI4USVEXTPROC __glewVertexAttribI4usvEXT = NULL;
 PFNGLVERTEXATTRIBIPOINTEREXTPROC __glewVertexAttribIPointerEXT = NULL;
 
+PFNGLPOLYGONOFFSETCLAMPEXTPROC __glewPolygonOffsetClampEXT = NULL;
+
 PFNGLBINDIMAGETEXTUREEXTPROC __glewBindImageTextureEXT = NULL;
 PFNGLMEMORYBARRIEREXTPROC __glewMemoryBarrierEXT = NULL;
 
@@ -1341,6 +1345,7 @@ GLboolean __GLEW_ARB_multi_bind = GL_FALSE;
 GLboolean __GLEW_ARB_parallel_shader_compile = GL_FALSE;
 GLboolean __GLEW_ARB_pipeline_statistics_query = GL_FALSE;
 GLboolean __GLEW_ARB_pixel_buffer_object = GL_FALSE;
+GLboolean __GLEW_ARB_polygon_offset_clamp = GL_FALSE;
 GLboolean __GLEW_ARB_program_interface_query = GL_FALSE;
 GLboolean __GLEW_ARB_provoking_vertex = GL_FALSE;
 GLboolean __GLEW_ARB_robust_buffer_access_behavior = GL_FALSE;
@@ -1379,6 +1384,7 @@ GLboolean __GLEW_EXT_gpu_shader4 = GL_FALSE;
 GLboolean __GLEW_EXT_packed_depth_stencil = GL_FALSE;
 GLboolean __GLEW_EXT_packed_float = GL_FALSE;
 GLboolean __GLEW_EXT_pixel_buffer_object = GL_FALSE;
+GLboolean __GLEW_EXT_polygon_offset_clamp = GL_FALSE;
 GLboolean __GLEW_EXT_shader_image_load_store = GL_FALSE;
 GLboolean __GLEW_EXT_texture_compression_rgtc = GL_FALSE;
 GLboolean __GLEW_EXT_texture_compression_s3tc = GL_FALSE;
@@ -1503,6 +1509,9 @@ static const char * _glewExtensionLookup[] = {
 #ifdef GL_ARB_pixel_buffer_object
   "GL_ARB_pixel_buffer_object",
 #endif
+#ifdef GL_ARB_polygon_offset_clamp
+  "GL_ARB_polygon_offset_clamp",
+#endif
 #ifdef GL_ARB_program_interface_query
   "GL_ARB_program_interface_query",
 #endif
@@ -1616,6 +1625,9 @@ static const char * _glewExtensionLookup[] = {
 #endif
 #ifdef GL_EXT_pixel_buffer_object
   "GL_EXT_pixel_buffer_object",
+#endif
+#ifdef GL_EXT_polygon_offset_clamp
+  "GL_EXT_polygon_offset_clamp",
 #endif
 #ifdef GL_EXT_shader_image_load_store
   "GL_EXT_shader_image_load_store",
@@ -1847,6 +1859,9 @@ static GLboolean* _glewExtensionEnabled[] = {
 #ifdef GL_ARB_pixel_buffer_object
   &__GLEW_ARB_pixel_buffer_object,
 #endif
+#ifdef GL_ARB_polygon_offset_clamp
+  &__GLEW_ARB_polygon_offset_clamp,
+#endif
 #ifdef GL_ARB_program_interface_query
   &__GLEW_ARB_program_interface_query,
 #endif
@@ -1960,6 +1975,9 @@ static GLboolean* _glewExtensionEnabled[] = {
 #endif
 #ifdef GL_EXT_pixel_buffer_object
   &__GLEW_EXT_pixel_buffer_object,
+#endif
+#ifdef GL_EXT_polygon_offset_clamp
+  &__GLEW_EXT_polygon_offset_clamp,
 #endif
 #ifdef GL_EXT_shader_image_load_store
   &__GLEW_EXT_shader_image_load_store,
@@ -2124,6 +2142,7 @@ static GLboolean _glewInit_GL_ARB_invalidate_subdata (void);
 static GLboolean _glewInit_GL_ARB_map_buffer_range (void);
 static GLboolean _glewInit_GL_ARB_multi_bind (void);
 static GLboolean _glewInit_GL_ARB_parallel_shader_compile (void);
+static GLboolean _glewInit_GL_ARB_polygon_offset_clamp (void);
 static GLboolean _glewInit_GL_ARB_program_interface_query (void);
 static GLboolean _glewInit_GL_ARB_provoking_vertex (void);
 static GLboolean _glewInit_GL_ARB_robustness (void);
@@ -2145,6 +2164,7 @@ static GLboolean _glewInit_GL_EXT_framebuffer_multisample (void);
 static GLboolean _glewInit_GL_EXT_framebuffer_object (void);
 static GLboolean _glewInit_GL_EXT_geometry_shader4 (void);
 static GLboolean _glewInit_GL_EXT_gpu_shader4 (void);
+static GLboolean _glewInit_GL_EXT_polygon_offset_clamp (void);
 static GLboolean _glewInit_GL_EXT_shader_image_load_store (void);
 static GLboolean _glewInit_GL_EXT_texture_integer (void);
 static GLboolean _glewInit_GL_EXT_texture_storage (void);
@@ -2736,6 +2756,10 @@ static GLboolean _glewInit_GL_VERSION_4_6 (void)
   r = ((glMultiDrawElementsIndirectCount = (PFNGLMULTIDRAWELEMENTSINDIRECTCOUNTPROC)glewGetProcAddress((const GLubyte*)"glMultiDrawElementsIndirectCount")) == NULL) || r;
   r = ((glSpecializeShader = (PFNGLSPECIALIZESHADERPROC)glewGetProcAddress((const GLubyte*)"glSpecializeShader")) == NULL) || r;
 
+  // additional
+  _glewInit_GL_ARB_polygon_offset_clamp();
+  _glewInit_GL_EXT_polygon_offset_clamp();
+
   return r;
 }
 
@@ -3181,6 +3205,19 @@ static GLboolean _glewInit_GL_ARB_parallel_shader_compile (void)
 }
 
 #endif /* GL_ARB_parallel_shader_compile */
+
+#ifdef GL_ARB_polygon_offset_clamp
+
+static GLboolean _glewInit_GL_ARB_polygon_offset_clamp (void)
+{
+  GLboolean r = GL_FALSE;
+
+  r = ((glPolygonOffsetClamp = (PFNGLPOLYGONOFFSETCLAMPPROC)glewGetProcAddress((const GLubyte*)"glPolygonOffsetClamp")) == NULL) || r;
+
+  return r;
+}
+
+#endif /* GL_ARB_polygon_offset_clamp */
 
 #ifdef GL_ARB_program_interface_query
 
@@ -3848,6 +3885,19 @@ static GLboolean _glewInit_GL_EXT_gpu_shader4 (void)
 
 #endif /* GL_EXT_gpu_shader4 */
 
+#ifdef GL_EXT_polygon_offset_clamp
+
+static GLboolean _glewInit_GL_EXT_polygon_offset_clamp (void)
+{
+  GLboolean r = GL_FALSE;
+
+  r = ((glPolygonOffsetClampEXT = (PFNGLPOLYGONOFFSETCLAMPEXTPROC)glewGetProcAddress((const GLubyte*)"glPolygonOffsetClampEXT")) == NULL) || r;
+
+  return r;
+}
+
+#endif /* GL_EXT_polygon_offset_clamp */
+
 #ifdef GL_EXT_shader_image_load_store
 
 static GLboolean _glewInit_GL_EXT_shader_image_load_store (void)
@@ -4380,6 +4430,9 @@ static GLenum GLEWAPIENTRY glewContextInit (void)
 #ifdef GL_ARB_parallel_shader_compile
   if (glewExperimental || GLEW_ARB_parallel_shader_compile) GLEW_ARB_parallel_shader_compile = !_glewInit_GL_ARB_parallel_shader_compile();
 #endif /* GL_ARB_parallel_shader_compile */
+#ifdef GL_ARB_polygon_offset_clamp
+  if (glewExperimental || GLEW_ARB_polygon_offset_clamp) GLEW_ARB_polygon_offset_clamp = !_glewInit_GL_ARB_polygon_offset_clamp();
+#endif /* GL_ARB_polygon_offset_clamp */
 #ifdef GL_ARB_program_interface_query
   if (glewExperimental || GLEW_ARB_program_interface_query) GLEW_ARB_program_interface_query = !_glewInit_GL_ARB_program_interface_query();
 #endif /* GL_ARB_program_interface_query */
@@ -4443,6 +4496,9 @@ static GLenum GLEWAPIENTRY glewContextInit (void)
 #ifdef GL_EXT_gpu_shader4
   if (glewExperimental || GLEW_EXT_gpu_shader4) GLEW_EXT_gpu_shader4 = !_glewInit_GL_EXT_gpu_shader4();
 #endif /* GL_EXT_gpu_shader4 */
+#ifdef GL_EXT_polygon_offset_clamp
+  if (glewExperimental || GLEW_EXT_polygon_offset_clamp) GLEW_EXT_polygon_offset_clamp = !_glewInit_GL_EXT_polygon_offset_clamp();
+#endif /* GL_EXT_polygon_offset_clamp */
 #ifdef GL_EXT_shader_image_load_store
   if (glewExperimental || GLEW_EXT_shader_image_load_store) GLEW_EXT_shader_image_load_store = !_glewInit_GL_EXT_shader_image_load_store();
 #endif /* GL_EXT_shader_image_load_store */
@@ -4986,6 +5042,13 @@ GLboolean GLEWAPIENTRY glewIsSupported (const char* name)
           continue;
         }
 #endif
+#ifdef GL_ARB_polygon_offset_clamp
+        if (_glewStrSame3(&pos, &len, (const GLubyte*)"polygon_offset_clamp", 20))
+        {
+          ret = GLEW_ARB_polygon_offset_clamp;
+          continue;
+        }
+#endif
 #ifdef GL_ARB_program_interface_query
         if (_glewStrSame3(&pos, &len, (const GLubyte*)"program_interface_query", 23))
         {
@@ -5252,6 +5315,13 @@ GLboolean GLEWAPIENTRY glewIsSupported (const char* name)
         if (_glewStrSame3(&pos, &len, (const GLubyte*)"pixel_buffer_object", 19))
         {
           ret = GLEW_EXT_pixel_buffer_object;
+          continue;
+        }
+#endif
+#ifdef GL_EXT_polygon_offset_clamp
+        if (_glewStrSame3(&pos, &len, (const GLubyte*)"polygon_offset_clamp", 20))
+        {
+          ret = GLEW_EXT_polygon_offset_clamp;
           continue;
         }
 #endif

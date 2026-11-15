@@ -80,6 +80,7 @@ private:
     coreUint8         m_iUniformUpdate;             // update status for the UBOs (dirty flag)
 
     coreUint32 m_aiScissorData[4];                  // current scissor test properties
+    coreFloat  m_afPolygonData[3];                  // current polygon offset properties
 
     coreSet<coreScreenshot*> m_apScreenshotQueue;   // screenshot requests
     coreLock                 m_ScreenshotLock;      // lock to prevent concurrent screenshot requests access
@@ -120,7 +121,7 @@ public:
     /* update global uniform data */
     void UpdateTransformation3D();
     void UpdateTransformation2D();
-    void UpdateAmbient();
+    void UpdateAmbient         ();
 
     /* handle stencil testing */
     void WriteStencilTest(const GLenum iBackZFail, const GLenum iBackZPass, const GLenum iFrontZFail, const GLenum iFrontZPass);
@@ -133,9 +134,13 @@ public:
     void StartScissorTest(const coreVector2 vLowerLeft, const coreVector2 vUpperRight);
     void EndScissorTest  ();
 
+    /* handle polygon offset */
+    void StartPolygonOffset(const coreFloat fFactor, const coreFloat fUnits, const coreFloat fClamp);
+    void EndPolygonOffset  ();
+
     /* handle conservative rasterization */
     coreStatus StartConservativeRaster();
-    void       EndConservativeRaster();
+    void       EndConservativeRaster  ();
 
     /* handle OpenGL debug output */
     friend void GL_APIENTRY WriteOpenGL(const GLenum iSource, const GLenum iType, const GLuint iID, const GLenum iSeverity, const GLsizei iLength, const GLchar* pcMessage, const void* pUserParam);

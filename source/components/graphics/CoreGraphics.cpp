@@ -31,6 +31,7 @@ CoreGraphics::CoreGraphics()noexcept
 , m_AmbientBuffer     ()
 , m_iUniformUpdate    (0u)
 , m_aiScissorData     {}
+, m_afPolygonData     {}
 , m_apScreenshotQueue {}
 , m_ScreenshotLock    ()
 , m_iOverrideState    (0u)
@@ -186,6 +187,7 @@ CoreGraphics::CoreGraphics()noexcept
     // setup depth testing
     if(CORE_GL_SUPPORT(ARB_depth_clamp)) glEnable(GL_DEPTH_CLAMP);
     glEnable(GL_DEPTH_TEST);
+    glDisable(GL_POLYGON_OFFSET_FILL);
     glDepthFunc(GL_LEQUAL);
     glDepthMask(true);
     glClearDepth(1.0f);
@@ -596,6 +598,40 @@ void CoreGraphics::EndScissorTest()
 {
     // disable scissor testing
     glDisable(GL_SCISSOR_TEST);
+}
+
+
+// ****************************************************************
+/* handle polygon offset */
+void CoreGraphics::StartPolygonOffset(const coreFloat fFactor, const coreFloat fUnits, const coreFloat fClamp)
+{
+    // update offset properties
+    if((fFactor != m_afPolygonData[0]) || (fUnits != m_afPolygonData[1]) || (fClamp != m_afPolygonData[2]))
+    {
+        m_afPolygonData[0] = fFactor;
+        m_afPolygonData[1] = fUnits;
+        m_afPolygonData[2] = fClamp;
+
+        if(CORE_GL_SUPPORT(ARB_polygon_offset_clamp))
+        {
+            // set with clamp (>0 = min, <0 = max, 0 = disabled)
+            glPolygonOffsetClamp(fFactor, fUnits, fClamp);
+        }
+        else
+        {
+            // set without clamp
+            glPolygonOffset(fFactor, fUnits);
+        }
+    }
+
+    // enable polygon offset
+    glEnable(GL_POLYGON_OFFSET_FILL);
+}
+
+void CoreGraphics::EndPolygonOffset()
+{
+    // disable polygon offset
+    glDisable(GL_POLYGON_OFFSET_FILL);
 }
 
 
