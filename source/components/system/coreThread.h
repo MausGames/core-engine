@@ -11,16 +11,17 @@
 #define _CORE_GUARD_THREAD_H_
 
 // TODO 5: maintain separate sorted token-table to make dependency-lookup faster (or other way to accelerate dependency-lookup)
-// TODO 3: implement configurable stack-size and adjust/reduce sizes for resource-thread and music-thread (but no idea how much stack third-party libs, OS functions and drivers need (on end-user machines), maybe stay conservative)
-// TODO 2: thread_local/__thread variables increase the minimum required thread stack-size (at least on Linux debug)
 // TODO 4: rename Function to Task ?
+
+// NOTE: thread-local variables may increase the minimum required thread stack-size
 
 
 // ****************************************************************
 /* thread definitions */
-#define CORE_THREAD_TOKEN_INVALID (0u)   // invalid/unused function token value
+#define CORE_THREAD_STACKSIZE_DEFAULT (512u * 1024u)   // default thread stack-size (in bytes)
+#define CORE_THREAD_TOKEN_INVALID     (0u)             // invalid/unused function token value
 
-using coreThreadToken = coreUint32;      // function token type
+using coreThreadToken = coreUint32;                    // function token type
 
 
 // ****************************************************************
@@ -40,6 +41,7 @@ private:
 private:
     SDL_Thread* m_pThread;                     // pointer to thread structure
     coreString  m_sName;                       // name of the thread
+    coreUint32  m_iStackSize;                  // thread stack-size (in bytes)
 
     coreAtomic<coreFloat> m_fFrequency;        // average number of iterations per second (0.0f = ignore)
     coreAtomic<coreBool>  m_bActive;           // currently active and not forced to shut down
@@ -55,7 +57,7 @@ private:
 
 
 public:
-    explicit coreThread(const coreChar* pcName)noexcept;
+    explicit coreThread(const coreChar* pcName, const coreUint32 iStackSize = CORE_THREAD_STACKSIZE_DEFAULT)noexcept;
     virtual ~coreThread();
 
     DISABLE_COPY(coreThread)
@@ -73,10 +75,11 @@ public:
     inline void SetFrequency(const coreFloat fFrequency) {m_fFrequency = fFrequency;}
 
     /* get object properties */
-    inline const coreChar*  GetName        ()const {return m_sName.c_str();}
-    inline       coreFloat  GetFrequency   ()const {return m_fFrequency;}
-    inline       coreBool   GetActive      ()const {return m_bActive;}
-    inline       coreUint16 GetNumFunctions()const {return m_iFuncNum;}
+    inline const coreChar*   GetName        ()const {return m_sName.c_str();}
+    inline const coreUint32& GetStackSize   ()const {return m_iStackSize;}
+    inline       coreFloat   GetFrequency   ()const {return m_fFrequency;}
+    inline       coreBool    GetActive      ()const {return m_bActive;}
+    inline       coreUint16  GetNumFunctions()const {return m_iFuncNum;}
 
 
 private:

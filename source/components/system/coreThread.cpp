@@ -11,9 +11,10 @@
 
 // ****************************************************************
 /* constructor */
-coreThread::coreThread(const coreChar* pcName)noexcept
+coreThread::coreThread(const coreChar* pcName, const coreUint32 iStackSize)noexcept
 : m_pThread      (NULL)
 , m_sName        (pcName)
+, m_iStackSize   (iStackSize)
 , m_fFrequency   (0.0f)
 , m_bActive      (false)
 , m_anFuncNew    {}
@@ -53,9 +54,9 @@ SDL_Thread* coreThread::StartThread()
         // set function properties
         coreProperties oProps;
         SDL_SetPointerProperty(oProps, SDL_PROP_THREAD_CREATE_ENTRY_FUNCTION_POINTER, r_cast<void*>(coreThreadMain));
-        SDL_SetStringProperty (oProps, SDL_PROP_THREAD_CREATE_NAME_STRING,            m_sName.c_str());
         SDL_SetPointerProperty(oProps, SDL_PROP_THREAD_CREATE_USERDATA_POINTER,       this);
-        SDL_SetNumberProperty (oProps, SDL_PROP_THREAD_CREATE_STACKSIZE_NUMBER,       512 * 1024);
+        SDL_SetStringProperty (oProps, SDL_PROP_THREAD_CREATE_NAME_STRING,            m_sName.c_str());
+        SDL_SetNumberProperty (oProps, SDL_PROP_THREAD_CREATE_STACKSIZE_NUMBER,       m_iStackSize);
 
         // create thread object
         m_pThread = SDL_CreateThreadWithProperties(oProps);
@@ -181,8 +182,8 @@ coreStatus coreThread::__Main()
     coreStatus eReturn = this->__InitThread();
 
     // cache time coefficient (# also to handle engine reset)
-    const coreDouble dFrequency = Core::System->GetPerfFrequency();
-    ASSERT(dFrequency)
+    const coreDouble dPerfFrequency = Core::System->GetPerfFrequency();
+    ASSERT(dPerfFrequency)
 
     // begin main-loop
     while(eReturn == CORE_OK)
@@ -191,7 +192,7 @@ coreStatus coreThread::__Main()
         {
             // handle thread-overhead
             iBeforeTime = SDL_GetPerformanceCounter();
-            dWait      -= coreDouble(iBeforeTime - iAfterTime) / dFrequency;
+            dWait      -= coreDouble(iBeforeTime - iAfterTime) / dPerfFrequency;
 
             // wait for next iteration
             dWait = MAX0(dWait + (1.0 / coreDouble(m_fFrequency)));
@@ -199,7 +200,7 @@ coreStatus coreThread::__Main()
 
             // handle waiting-overhead
             iAfterTime = SDL_GetPerformanceCounter();
-            dWait     -= coreDouble(iAfterTime - iBeforeTime) / dFrequency;
+            dWait     -= coreDouble(iAfterTime - iBeforeTime) / dPerfFrequency;
         }
         else
         {
