@@ -110,9 +110,11 @@ Definitions
 
 Functions
 
-    float coreGGX   (in float v1Dot, in float v1Rough)   // GGX specular function
-    float coreDither(in ivec2 i2PixelCoord)              // ordered dithering function (modified)
-    float coreDither()
+    float coreGGX          (in float v1Dot, in float v1Rough)   // GGX specular function
+    float coreDither       (in vec2 v2PixelCoord)               // interleaved gradient noise function
+    float coreDither       ()
+    float coreDitherOrdered(in vec2 v2PixelCoord)               // ordered dithering function (4x4)
+    float coreDitherOrdered()
 
 Input
 

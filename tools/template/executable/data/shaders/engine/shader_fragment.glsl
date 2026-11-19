@@ -80,21 +80,28 @@
         return v1RoughSq / (PI * v1Value * v1Value);
     }
 
-    // ordered dithering function (modified)
-    float coreDither(const in ivec2 i2PixelCoord)
+    // interleaved gradient noise function
+    float coreDither(const in vec2 v2PixelCoord)
+    {
+        return fract(52.9829189 * fract(dot(v2PixelCoord, vec2(0.06711056, 0.00583715)))) - 0.5;
+    }
+    float coreDither() {return coreDither(gl_FragCoord.xy);}
+
+    // ordered dithering function (4x4)
+    float coreDitherOrdered(const in vec2 v2PixelCoord)
     {
         mat4 c_m4Matrix = mat4( 0.0,  8.0,  2.0, 10.0,   // # Intel hotfix: do not declare as const
                                12.0,  4.0, 14.0,  6.0,
                                 3.0, 11.0,  1.0,  9.0,
                                15.0,  7.0, 13.0,  5.0) / 15.0 - 0.5;
 
-        ivec2 i2Index = coreIntMod(i2PixelCoord, 4);
+        ivec2 i2Index = coreIntMod(ivec2(v2PixelCoord), 4);
         #if defined(GL_ES)
             for(int i = 0; i < 4; ++i) for(int j = 0; j < 4; ++j) if((i == i2Index.y) && (j == i2Index.x)) return c_m4Matrix[i][j];
         #else
             return c_m4Matrix[i2Index.y][i2Index.x];
         #endif
     }
-    float coreDither() {return coreDither(ivec2(gl_FragCoord.xy));}
+    float coreDitherOrdered() {return coreDitherOrdered(gl_FragCoord.xy);}
 
 #endif
