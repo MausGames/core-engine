@@ -40,7 +40,7 @@ CoreSystem::CoreSystem()noexcept
 , m_bWinHidden       (false)
 , m_bTerminated      (false)
 {
-    Core::Log->Header("System Interface");
+    Core::Log->Header("💻 System Interface");
 
     // load SDL only once (to improve reset performance, and prevent crashes)
     UNUSED static const coreBool s_bOnce = []()

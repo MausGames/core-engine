@@ -38,7 +38,7 @@ Core::Core()noexcept
     STATIC_NEW(Platform)
 
     // init utilities
-    Log->Header("Configuration");
+    Log->Header("⚙️ Configuration");
     STATIC_NEW(Config, coreData::UserFolderPrivate("config.ini"))
     STATIC_NEW(Language)
     STATIC_NEW(Replay)
@@ -55,7 +55,7 @@ Core::Core()noexcept
     STATIC_NEW(Input)
 
     // init managers
-    Log->Header("Other");
+    Log->Header("📚 Other");
     STATIC_NEW(Manager::Memory)
     STATIC_NEW(Manager::Resource)
     STATIC_NEW(Manager::Object)
@@ -75,10 +75,10 @@ Core::Core()noexcept
     Input ->SetCursor     (CoreApp::Settings::CursorPath);
 
     // init application
-    Log->Header("Application Setup");
+    Log->Header("🌱 Application Setup");
     STATIC_NEW(Application)
     Manager::Resource->UpdateWait(CORE_RESOURCE_WAIT_STARTUP);
-    Log->Header("Application Run");
+    Log->Header("🚀 Application Run");
 }
 
 
@@ -86,7 +86,7 @@ Core::Core()noexcept
 /* destructor */
 Core::~Core()
 {
-    Log->Header("Shut Down");
+    Log->Header("🧹 Shut Down");
 
     // finish all remaining OpenGL operations
     coreSync::Finish();
@@ -124,7 +124,7 @@ Core::~Core()
 /* reset engine */
 void Core::Reset()
 {
-    Log->Warning("Reset started");
+    Log->Warning("Engine reset started");
 
     // finish all remaining OpenGL operations
     coreSync::Finish();
@@ -186,7 +186,7 @@ void Core::Reset()
         Input->ShowCursor(false);
     }
 
-    Log->Header("Reset finished");
+    Log->Warning("Engine reset finished");
 }
 
 
@@ -347,7 +347,7 @@ coreStatus Core::__RunEngine()
 /* perform deferred application restart */
 void Core::__PerformRestart()
 {
-    Log->Warning("Application Restart");
+    Log->Warning("Application restart started");
 
     // reset certain state
     System->m_dTotalTime       = 0.0;
@@ -361,5 +361,5 @@ void Core::__PerformRestart()
     // reload all resources
     Manager::Resource->UpdateWait(CORE_RESOURCE_WAIT_STARTUP);
 
-    Log->Header("Application Run");
+    Log->Warning("Application restart finished");
 }

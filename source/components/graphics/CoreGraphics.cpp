@@ -45,7 +45,7 @@ CoreGraphics::CoreGraphics()noexcept
 , m_VersionOpenGL     (corePoint3U8(0u, 0u, 0u))
 , m_VersionGLSL       (corePoint3U8(0u, 0u, 0u))
 {
-    Core::Log->Header("Graphics Interface");
+    Core::Log->Header("🌈 Graphics Interface");
 
     // create render context
     m_pRenderContext = SDL_GL_CreateContext(Core::System->GetWindow());

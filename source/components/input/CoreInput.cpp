@@ -21,7 +21,7 @@ CoreInput::CoreInput()noexcept
 , m_bCursorVisible (true)
 , m_iAnyButton     (0u)
 {
-    Core::Log->Header("Input Interface");
+    Core::Log->Header("🕹️ Input Interface");
 
     const auto nLoadFunc = [](const coreChar* pcPath)
     {

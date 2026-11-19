@@ -36,7 +36,7 @@ CorePlatform::CorePlatform()noexcept
 , m_aLeaderboard {}
 , m_Presence     {}
 {
-    Core::Log->Header("Platform Interface");
+    Core::Log->Header("🏆 Platform Interface");
 
     // loop through all registered backends
     FOR_EACH(it, coreBackend::s_apBackendSet)

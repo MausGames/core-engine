@@ -31,7 +31,7 @@ CoreAudio::CoreAudio()noexcept
 , m_iDeviceFix      (0u)
 , m_aiAttributes    {}
 {
-    Core::Log->Header("Audio Interface");
+    Core::Log->Header("🎺 Audio Interface");
 
 #if !defined(_CORE_EMSCRIPTEN_) && !defined(_CORE_SWITCH_)
 
