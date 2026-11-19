@@ -237,6 +237,7 @@ public:
     /* retrieve archives and resource files */
     coreArchive* RetrieveArchive(const coreHashString& sPath);
     coreFile*    RetrieveFile   (const coreHashString& sPath);
+    coreBool     FileExists     (const coreHashString& sPath)const;
     void         DirectoryScan  (const coreChar* pcPath, const coreChar* pcFilter, coreList<coreString>* OUTPUT pasOutput)const;
 
     /* point resource proxy to foreign handle */

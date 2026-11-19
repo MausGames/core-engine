@@ -271,6 +271,23 @@ coreFile* coreResourceManager::RetrieveFile(const coreHashString& sPath)
 
 
 // ****************************************************************
+/* check if resource file exists */
+coreBool coreResourceManager::FileExists(const coreHashString& sPath)const
+{
+    // check direct resource file first
+    if(coreData::FileExists(sPath.GetString())) return true;
+
+    // check archives
+    FOR_EACH(it, m_apArchive)
+    {
+        if((*it)->HasFile(sPath)) return true;
+    }
+
+    return false;
+}
+
+
+// ****************************************************************
 /* retrieve relative paths of all available resource files */
 void coreResourceManager::DirectoryScan(const coreChar* pcPath, const coreChar* pcFilter, coreList<coreString>* OUTPUT pasOutput)const
 {
